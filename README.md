@@ -6,7 +6,7 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 
 ## Status
 
-Early setup. Spec-driven (OpenSpec) — app code not started yet.
+OpenSpec initialized (Cursor). Specs and app code not started yet.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 
@@ -14,9 +14,10 @@ Early setup. Spec-driven (OpenSpec) — app code not started yet.
 
 - Python 3.12 + uv
 - Mission Spec (Pydantic) → compiler via PyDCS
-- OpenSpec for SDD
+- OpenSpec (`npx openspec`) for SDD
 
 ## Docs
 
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
+- OpenSpec config: [`openspec/config.yaml`](openspec/config.yaml)
 - Local research samples are gitignored (`research/`)

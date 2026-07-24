@@ -1,0 +1,27 @@
+schema: spec-driven
+
+context: |
+  Project: DCS AI Mission Planner — natural language → Mission Spec → deterministic .miz.
+  Principle: AI plans; software compiles. Never emit raw DCS Lua from an LLM.
+
+  MVP scope:
+  - Theatre: TheChannel
+  - Player aircraft: SpitfireLFMkIX
+  - First acceptance: cold start free flight at Manston (airdromeId 5), 09:00 (start_time 32400), sunny/clear weather, nothing else
+  - Compiler backend (v1): PyDCS behind a CompilerInterface
+  - Package manager: uv; Python >=3.12,<3.14
+
+  Verified DCS ids (do not invent):
+  - SpitfireLFMkIX, Bf-109K-4, FW-190A8, FW-190D9
+  - Manston airdromeId=5; cold parking = TakeOffParking / From Parking Area
+
+  Process: OpenSpec SDD first; no app code until change specs are approved.
+  Local research/ samples are gitignored — use findings only as background, not as source of truth in specs.
+
+rules:
+  proposal:
+    - Keep proposals under 500 words
+    - Always include a Non-goals section
+    - Tie acceptance to opening the .miz in DCS Mission Editor / Instant Action when relevant
+  tasks:
+    - Prefer small vertical slices; first slice is Manston cold free flight only

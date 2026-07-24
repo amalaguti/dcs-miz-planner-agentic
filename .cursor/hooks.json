@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "python .cursor/hooks/readme-on-push.py",
+        "matcher": "git\\s+push"
+      }
+    ]
+  }
+}

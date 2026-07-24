@@ -1,0 +1,7 @@
+# Local research samples / findings (not for version control)
+research/
+
+# Node / OpenSpec
+node_modules/
+npm-debug.log*
+.npm/
