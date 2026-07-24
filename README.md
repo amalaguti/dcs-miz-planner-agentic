@@ -29,5 +29,6 @@ Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blo
 ## Docs
 
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
+- Roadmap / backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md)
 - OpenSpec config: [`openspec/config.yaml`](openspec/config.yaml)
 - Local research samples are gitignored (`research/`)
