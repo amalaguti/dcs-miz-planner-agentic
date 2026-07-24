@@ -15,6 +15,16 @@ OpenSpec initialized (Cursor). Specs and app code not started yet.
 - Python 3.12 + uv
 - Mission Spec (Pydantic) → compiler via PyDCS
 - OpenSpec (`npx openspec`) for SDD
+- pre-commit (blocks commits on `master`/`main`)
+
+## Setup notes
+
+```bash
+uv tool install pre-commit
+pre-commit install
+```
+
+Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blocked there by pre-commit.
 
 ## Docs
 

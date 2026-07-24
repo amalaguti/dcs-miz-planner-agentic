@@ -5,6 +5,17 @@
       {
         "command": "python .cursor/hooks/readme-on-push.py",
         "matcher": "git\\s+push"
+      },
+      {
+        "command": "python .cursor/hooks/protect-master.py",
+        "failClosed": false
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "python .cursor/hooks/protect-master.py",
+        "matcher": "Write|StrReplace|Delete|EditNotebook",
+        "failClosed": false
       }
     ]
   }
