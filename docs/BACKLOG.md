@@ -37,14 +37,14 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote:** `installed-theatres-probe`
+**Next promote:** `validation-engine`
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 2 | `mission-spec-schema` | Formalize Mission Spec (free flight + extension points for combat) | `done` (accepted in-game 2026-07-26) |
 | 7 | `dev-module-map` | Checked-in architecture diagram + short module relationship doc (`docs/ARCHITECTURE.md`); refreshed manually, push hook reminds when `src/` changes | `done` (2026-07-26) |
-| 3 | `reference-registry-channel` | Queryable Channel registry (YAML tables + Python API; SQLite deferred): airfields, aircraft, weather presets, payload CLSIDs; agent + validator share one source of truth | `done` (accepted in-game 2026-07-26) |
-| 4 | `installed-theatres-probe` | Detect theatres/maps present in the local DCS install so generation only offers what the user can fly | `idea` |
+| 3 | `reference-registry-channel` | Queryable Channel registry (YAML tables + Python API as product SoT; SQLite reserved for user-local install cache in `#4`): airfields, aircraft, weather presets, payload CLSIDs | `done` (accepted in-game 2026-07-26) |
+| 4 | `installed-theatres-probe` | User-local SQLite install inventory (install/remove + enable/disable); refresh on demand; YAML registry stays product SoT; only offer maps both available and planner-supported | `done` (CLI accepted 2026-07-26; registry Path discovery) |
 | 5 | `validation-engine` | Structural + DCS-exists + semantic validation with clear errors | `idea` |
 | 6 | `golden-fixtures-tests` | pytest regression: spec → `.miz` structural asserts | `idea` |
 
@@ -151,7 +151,7 @@ Source: `ideas-concepts.txt` (2026-07-26).
 | Raw idea | Disposition |
 |----------|-------------|
 | Module diagram + relationship docs on update | **M2** `#7` `dev-module-map` |
-| SQLite inventory (airports, aircraft, weapons, landmarks…) for user + agent | **M2** `#3` `reference-registry-channel` (YAML + Python API shipped; SQLite deferred) |
+| SQLite inventory (airports, aircraft, weapons, landmarks…) for user + agent | **M2** `#3` YAML product registry shipped; **M2** `#4` starts user-local SQLite for *install* inventory (theatres first); landmarks/weapons later |
 | Detect installed maps | **M2** `#4` `installed-theatres-probe` |
 | Agent narrates as US/RAF Squadron Commander | **M3** `#11` `squadron-commander-voice` (+ M5 briefings) |
 | Agent knows / offers all planning options | **M3** `#9` `mission-option-catalog` + tools on `#8` |
@@ -173,7 +173,8 @@ Resolve these inside the relevant proposal, not here.
 | Output path: `Saved Games\DCS\Missions\` vs `./out/` | M1 (default `out/` shipped) |
 | CLI (`compile spec.yaml`) vs library entrypoint only | M1 (CLI shipped) |
 | Clipped-wing `SpitfireLFMkIXCW` ever in scope | M2 |
-| Registry storage: SQLite vs JSON/YAML tables vs both | M2 `#3` — **decided in proposal: YAML + Python API; SQLite deferred** |
+| Registry storage: SQLite vs JSON/YAML tables vs both | M2 `#3` — **YAML = product SoT**; M2 `#4` — **SQLite = user-local install cache only** |
+| Install inventory cache format / path | M2 `#4` — **decided: `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`; refresh on demand** |
 | How much of `research/FINDINGS.md` becomes committed main specs | M2 |
 | Auto-refresh of `dev-module-map` (manual vs hook on push) | M2 `#7` — **decided: hand-written doc + non-blocking push reminder; no CI generator** |
 | Default squadron voice: RAF vs USAAF vs user pick | M3 `#11` |

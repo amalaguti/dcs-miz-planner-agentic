@@ -10,7 +10,9 @@ First vertical slice done: Manston cold free flight compiles and flies in DCS
 (accepted in-game). Mission Spec is formalized (`schema_version: "1"`, unknown
 fields rejected, combat/trigger keys reserved for later). Channel DCS facts
 (airfields, aircraft, radio, weather presets) live in packaged YAML under
-`src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Module map:
+`src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
+availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
+refresh with `dcs-miz theatres --refresh`. Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
@@ -32,6 +34,17 @@ uv run dcs-miz examples/manston_cold_freeflight.yaml
 
 Open the result in the DCS Mission Editor, or copy it into
 `Saved Games\DCS\Missions\` to fly it from Instant Action / Load Mission.
+
+## List local theatres
+
+```bash
+uv run dcs-miz theatres                 # SQLite cache (scans once if empty)
+uv run dcs-miz theatres --refresh       # rescan DCS install + update cache
+uv run dcs-miz theatres --json          # machine-readable
+uv run dcs-miz theatres --dcs-root "S:/DCS World"
+```
+
+Product theatre ids stay in YAML; the SQLite file is only a user-local install inventory.
 
 ## Setup notes
 

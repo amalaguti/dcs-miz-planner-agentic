@@ -7,6 +7,14 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Install inventory: SQLite cache, never execute DCS Lua
+
+- **Date:** 2026-07-26
+- **Lesson:** Local theatre availability lives in `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite` (override with `DCS_MIZ_INVENTORY_DB` / `--db`). Ordinary `dcs-miz theatres` reads the cache; `--refresh` rescans. Packaged Channel YAML stays the product SoT — do not copy registry facts into SQLite.
+- **Parse only:** `autoupdate.cfg` (JSON), terrain `entry.lua` / `pluginsEnabled.lua` via constrained regex for quoted fields. Never `exec` / import DCS Lua.
+- **Discovery:** on Windows, prefer `HKCU/HKLM\SOFTWARE\Eagle Dynamics\DCS World` `Path` (covers non-Program-Files installs like `S:\DCS World`), then common Program Files / Steam locations; override with `--dcs-root` / `DCS_MIZ_DCS_ROOT`.
+- **Code:** `src/dcs_miz_planner/install/`.
+
 ## Stock Channel Spitfire: native triggers, almost no Lua
 
 - **Date:** 2026-07-26

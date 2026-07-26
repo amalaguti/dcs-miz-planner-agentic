@@ -12,19 +12,24 @@ deterministic code decides *how* it becomes a `.miz`. No LLM writes DCS Lua.
 ```mermaid
 flowchart TD
     yaml["examples/*.yaml<br/>Mission Spec (YAML)"]
-    cli["cli.py<br/>dcs-miz entrypoint"]
+    cli["cli.py<br/>dcs-miz compile / theatres"]
     loader["loader.py<br/>YAML parse + SpecLoadError"]
     models["models.py<br/>MissionSpec (Pydantic)<br/>schema_version, extra=forbid"]
     base["compiler/base.py<br/>CompilerInterface (ABC)"]
     pydcs["compiler/pydcs_compiler.py<br/>PyDCSCompiler"]
     registry["registry.py<br/>ChannelRegistry API"]
     data["data/channel/*.yaml<br/>airfields, aircraft, theatres,<br/>weather, payloads"]
+    install["install/<br/>probe + SQLite inventory"]
+    invdb["%LOCALAPPDATA%/dcs-miz-planner/<br/>inventory.sqlite"]
     ref["reference.py<br/>compat façade"]
     lib["PyDCS (dcs.*)<br/>third party"]
     miz["out/*.miz<br/>zip: mission, options,<br/>theatre, warehouses"]
 
     yaml --> cli --> loader --> models
     cli --> base
+    cli --> install
+    install --> invdb
+    install --> registry
     base -.implemented by.-> pydcs
     models --> pydcs
     data --> registry
@@ -43,20 +48,31 @@ YAML spec -> cli -> loader -> MissionSpec -> CompilerInterface
                                                   |  (PyDCS)              ^
                                                   v                 reference.py (façade)
                                                .miz
+
+cli theatres -> install/ (probe) -> inventory.sqlite  (refresh on demand)
+                      \-> registry.list_theatres() for planner_supported
 ```
 
 ## Modules
 
 | Module | Responsibility | Depends on |
 |--------|----------------|------------|
-| `cli.py` | Parse args, load spec, call compiler, report clean errors (exit `2` on bad spec) | `loader`, `compiler` |
+| `cli.py` | `compile` / legacy spec path; `theatres` list/refresh; clean errors | `loader`, `compiler`, `install` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
 | `models.py` | The public contract: `MissionSpec` + enums. Rejects unknown fields; reserves `enemies`/`objectives`/`triggers` | `pydantic` |
 | `data/channel/` | Committed Channel YAML tables (airdromeIds, aircraft+radio, theatres, weather presets, payload stub) | — |
 | `registry.py` | Loads packaged YAML; lookup API shared by compiler (later validator/agent) | `data/channel`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
+| `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
 | `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Places the flight, applies time/weather/radio, writes the `.miz` | `models`, `registry`, `dcs.*` |
+
+Two stores stay separate on purpose:
+
+- **YAML registry** = product source of truth (what this planner knows how to compile).
+- **SQLite inventory** = user-local cache of what is installed/enabled on this PC
+  (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`). Ordinary reads hit the DB;
+  `dcs-miz theatres --refresh` rescans. Never commit the DB.
 
 Two boundaries worth respecting:
 
@@ -66,6 +82,8 @@ Two boundaries worth respecting:
   never eagerly loads a DCS install. That module also carries deliberate workarounds
   (payload-scan disable, `theatre` member, VHF frequency) — see
   [`LESSONS_LEARNED.md`](LESSONS_LEARNED.md) before editing it.
+- **Install probe never executes DCS Lua**; it only extracts static quoted fields from
+  `entry.lua` / `pluginsEnabled.lua`.
 
 ## Repo layout
 
@@ -73,7 +91,7 @@ Two boundaries worth respecting:
 |------|------------------|
 | `src/dcs_miz_planner/` | Product code (the modules above) |
 | `examples/` | Checked-in Mission Specs; `manston_cold_freeflight.yaml` is the acceptance fixture |
-| `tests/` | pytest: schema contract tests + end-to-end compile asserts |
+| `tests/` | pytest: schema, registry, install probe (synthetic fixtures), compile asserts |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |
 | `docs/` | This file, `BACKLOG.md`, `LESSONS_LEARNED.md` |
