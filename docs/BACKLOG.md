@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote:** M3 `agent-tools-surface` (after intercept; see [`JUDGMENT.md`](JUDGMENT.md))
+**Next promote:** M3 `agent-tools-surface` (after intercept)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|

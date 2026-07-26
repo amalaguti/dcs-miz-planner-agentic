@@ -71,7 +71,6 @@ Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blo
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
 - Architecture / module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Roadmap / backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md)
-- Milestone judgment (2026-07-26): [`docs/JUDGMENT.md`](docs/JUDGMENT.md)
 - Agent lessons (PyDCS/DCS pitfalls): [`docs/LESSONS_LEARNED.md`](docs/LESSONS_LEARNED.md)
 - OpenSpec config: [`openspec/config.yaml`](openspec/config.yaml)
 - Local research samples are gitignored (`research/`)
