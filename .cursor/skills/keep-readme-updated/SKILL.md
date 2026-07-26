@@ -15,3 +15,10 @@ description: Keep the project README.md brief and current when status, scope, st
 ## When pushing
 
 Before `git push`, check whether this session’s work changed status or setup. If yes, update `README.md` in the same commit set (or a follow-up commit) before pushing.
+
+## Related: architecture map
+
+`docs/ARCHITECTURE.md` is the developer module map. Update it (same commit) when package layout,
+module responsibilities, or the Mission Spec → `.miz` flow change. A push hook
+(`.cursor/hooks/architecture-on-push.py`) reminds you when `src/dcs_miz_planner/` is being pushed
+without it. Keep diagrams there, not in README.

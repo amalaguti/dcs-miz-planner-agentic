@@ -37,14 +37,13 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote:** `dev-module-map` (architecture map first — easier onboarding before more package churn).
-Then resume `reference-registry-channel` (OpenSpec proposal already drafted on branch `reference-registry-channel`).
+**Next promote:** `reference-registry-channel` (OpenSpec proposal already on master under `openspec/changes/`).
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 2 | `mission-spec-schema` | Formalize Mission Spec (free flight + extension points for combat) | `done` (accepted in-game 2026-07-26) |
-| 7 | `dev-module-map` | Checked-in architecture diagram + short module relationship doc; refresh on meaningful package/layout commits (hook or CI optional later) | `idea` — **do next** |
-| 3 | `reference-registry-channel` | Queryable Channel registry (YAML tables + Python API; SQLite deferred): airfields, aircraft, weather presets, payload CLSIDs; agent + validator share one source of truth | `proposed` (paused; proposal on branch) |
+| 7 | `dev-module-map` | Checked-in architecture diagram + short module relationship doc (`docs/ARCHITECTURE.md`); refreshed manually, push hook reminds when `src/` changes | `done` (2026-07-26) |
+| 3 | `reference-registry-channel` | Queryable Channel registry (YAML tables + Python API; SQLite deferred): airfields, aircraft, weather presets, payload CLSIDs; agent + validator share one source of truth | `proposed` |
 | 4 | `installed-theatres-probe` | Detect theatres/maps present in the local DCS install so generation only offers what the user can fly | `idea` |
 | 5 | `validation-engine` | Structural + DCS-exists + semantic validation with clear errors | `idea` |
 | 6 | `golden-fixtures-tests` | pytest regression: spec → `.miz` structural asserts | `idea` |
@@ -176,7 +175,7 @@ Resolve these inside the relevant proposal, not here.
 | Clipped-wing `SpitfireLFMkIXCW` ever in scope | M2 |
 | Registry storage: SQLite vs JSON/YAML tables vs both | M2 `#3` — **decided in proposal: YAML + Python API; SQLite deferred** |
 | How much of `research/FINDINGS.md` becomes committed main specs | M2 |
-| Auto-refresh of `dev-module-map` (manual vs hook on push) | M2 `#7` — resolve in that proposal |
+| Auto-refresh of `dev-module-map` (manual vs hook on push) | M2 `#7` — **decided: hand-written doc + non-blocking push reminder; no CI generator** |
 | Default squadron voice: RAF vs USAAF vs user pick | M3 `#11` |
 | Trigger model expressiveness: minimal condition/action set vs full DCS trigger surface | M6 `#20` — seed from R5 recurring native patterns |
 | Embedded Lua snippets: `.miz` script member vs `DO SCRIPT` trigger action | M6 `#22` — R5 Training uses DictKey + `a_do_script`, not zip-root `.lua` |

@@ -8,7 +8,8 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 
 First vertical slice done: Manston cold free flight compiles and flies in DCS
 (accepted in-game). Mission Spec is formalized (`schema_version: "1"`, unknown
-fields rejected, combat/trigger keys reserved for later).
+fields rejected, combat/trigger keys reserved for later). Module map:
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 
@@ -42,6 +43,7 @@ Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blo
 ## Docs
 
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
+- Architecture / module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Roadmap / backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md)
 - Agent lessons (PyDCS/DCS pitfalls): [`docs/LESSONS_LEARNED.md`](docs/LESSONS_LEARNED.md)
 - OpenSpec config: [`openspec/config.yaml`](openspec/config.yaml)

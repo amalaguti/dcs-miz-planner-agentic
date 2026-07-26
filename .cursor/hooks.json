@@ -16,6 +16,10 @@
         "matcher": "git\\s+push"
       },
       {
+        "command": "python .cursor/hooks/architecture-on-push.py",
+        "matcher": "git\\s+push"
+      },
+      {
         "command": "python .cursor/hooks/protect-master.py",
         "failClosed": false
       }
