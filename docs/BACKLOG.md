@@ -41,7 +41,7 @@ Only after M1 produces a file. Next promote: `mission-spec-schema`.
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
-| 2 | `mission-spec-schema` | Formalize Mission Spec (free flight + extension points for combat) | `idea` |
+| 2 | `mission-spec-schema` | Formalize Mission Spec (free flight + extension points for combat) | `done` (accepted in-game 2026-07-26) |
 | 3 | `reference-registry-channel` | Queryable Channel registry (SQLite or generated tables): airfields, aircraft, weather presets, payload CLSIDs, landmarks/cities as available; agent + validator share one source of truth | `idea` |
 | 4 | `installed-theatres-probe` | Detect theatres/maps present in the local DCS install so generation only offers what the user can fly | `idea` |
 | 5 | `validation-engine` | Structural + DCS-exists + semantic validation with clear errors | `idea` |

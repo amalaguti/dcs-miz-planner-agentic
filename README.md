@@ -6,8 +6,9 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 
 ## Status
 
-First vertical slice done: `manston-cold-freeflight` compiles a Mission Spec to a `.miz`
-that loads and flies in DCS (accepted in-game).
+First vertical slice done: Manston cold free flight compiles and flies in DCS
+(accepted in-game). Mission Spec is formalized (`schema_version: "1"`, unknown
+fields rejected, combat/trigger keys reserved for later).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 
