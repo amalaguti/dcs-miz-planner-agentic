@@ -27,15 +27,20 @@ The Mission Spec SHALL reject undeclared fields at every model level (no silent 
 - **THEN** loading MUST fail with a validation error that identifies the unexpected field
 
 ### Requirement: Reserved extension points for future combat and triggers
-The Mission Spec MAY include optional top-level keys `enemies`, `objectives`, and `triggers` as reserved extension points. For free-flight missions those keys MUST be absent or empty. Non-empty values MUST NOT be compiled; the system MUST fail with a clear “not supported yet” error until a later change implements them.
+The Mission Spec MAY include optional top-level keys `enemies`, `objectives`, and `triggers`.
+For free-flight missions those keys MUST be absent or empty. For intercept missions, `enemies`
+and `objectives` MUST be non-empty per intercept rules; `triggers` MUST remain empty until a
+later change implements the trigger model. The system MUST NOT silently drop unsupported
+non-empty values.
 
 #### Scenario: Free flight with absent extensions compiles
 - **WHEN** a free-flight Mission Spec omits `enemies`, `objectives`, and `triggers`
 - **THEN** the Spec SHALL be structurally valid and the compiler MUST proceed as for free flight
 
-#### Scenario: Non-empty reserved extensions rejected for now
-- **WHEN** a Mission Spec sets any of `enemies`, `objectives`, or `triggers` to a non-empty value
-- **THEN** the system MUST refuse compilation (or refuse load) with an error stating that capability is not supported yet
+#### Scenario: Free flight refuses non-empty enemies
+- **WHEN** a free-flight Mission Spec sets `enemies` to a non-empty value
+- **THEN** the system MUST refuse load or validation with a clear error that free_flight
+  requires empty combat extensions
 
 ### Requirement: Free-flight Mission Spec schema
 The system SHALL define a Mission Spec for free-flight missions that includes `schema_version`, theatre, date, start time, weather preset, and a single player aircraft placement.
@@ -64,3 +69,41 @@ The repository SHALL include a checked-in example Mission Spec that encodes the 
 #### Scenario: Example file present
 - **WHEN** a developer clones the repository
 - **THEN** an example Mission Spec for Manston cold free flight MUST be present, include `schema_version` `"1"`, and be usable as compile input
+
+### Requirement: Intercept mission type
+The Mission Spec SHALL support `mission_type` value `intercept` in addition to `free_flight`.
+An intercept Spec MUST include a non-empty `enemies` collection using verified DCS aircraft
+ids and a positive count. Free-flight Specs MUST continue to require empty `enemies`,
+`objectives`, and `triggers`.
+
+#### Scenario: Intercept with Bf-109K-4 enemies accepted
+- **WHEN** a Mission Spec sets `mission_type` to `intercept`, player `SpitfireLFMkIX` at
+  Manston, and `enemies` containing at least one entry with aircraft `Bf-109K-4` and count ≥ 1
+- **THEN** the Spec MUST load as structurally valid for intercept compilation
+
+#### Scenario: Free flight still refuses enemies
+- **WHEN** a Mission Spec sets `mission_type` to `free_flight` with a non-empty `enemies` list
+- **THEN** loading or validation MUST fail with a clear not-supported / empty-extensions error
+
+### Requirement: Minimal intercept objective
+An intercept Mission Spec MUST declare a minimal objective indicating enemy interception
+(structured field agreed in design). Unknown objective types MUST be rejected. Non-empty
+`triggers` MUST still be rejected in this change.
+
+#### Scenario: intercept_enemy objective accepted
+- **WHEN** an intercept Spec includes the supported intercept objective shape and empty
+  `triggers`
+- **THEN** validation MUST accept the Spec (subject to other intercept rules)
+
+#### Scenario: Non-empty triggers still refused
+- **WHEN** an intercept Spec sets a non-empty `triggers` list
+- **THEN** validation MUST fail stating triggers are not supported yet
+
+### Requirement: Checked-in intercept example Spec
+The repository SHALL include a checked-in example Mission Spec for the Manston dawn-style
+intercept (early start time, Channel, Spitfire player, Bf-109K-4 enemies) usable as validate
+and compile input.
+
+#### Scenario: Example present
+- **WHEN** a developer clones the repository
+- **THEN** an intercept example Spec MUST be present and loadable under schema_version `"1"`

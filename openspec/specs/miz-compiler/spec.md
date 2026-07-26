@@ -65,11 +65,16 @@ When compiling a free-flight Mission Spec, the compiler SHALL treat absent or em
 - **THEN** the system MUST write a `.miz` that places the player cold at Manston on The Channel with the Spec’s time and weather, and the `.miz` MUST remain openable in the DCS Mission Editor / Instant Action
 
 ### Requirement: Non-empty extension points not compiled yet
-The compiler (or loader, before compile) MUST NOT silently drop non-empty `enemies`, `objectives`, or `triggers`. Until a later change implements those capabilities, non-empty values MUST cause a clear failure.
+For free-flight Specs, the compiler (or loader, before compile) MUST NOT silently drop
+non-empty `enemies`, `objectives`, or `triggers`. Until a later change implements those
+capabilities for free flight, non-empty values MUST cause a clear failure. Intercept Specs
+MAY compile non-empty `enemies` / `objectives` per intercept requirements; non-empty
+`triggers` MUST still fail for all schema_version `"1"` types.
 
-#### Scenario: Non-empty enemies refused
-- **WHEN** a Mission Spec includes a non-empty `enemies` collection
-- **THEN** compilation MUST NOT produce a combat `.miz`, and the user MUST receive an error that combat extensions are not supported yet
+#### Scenario: Free-flight non-empty enemies refused
+- **WHEN** a free-flight Mission Spec includes a non-empty `enemies` collection
+- **THEN** compilation MUST NOT produce a combat `.miz`, and the user MUST receive an error
+  that free_flight requires empty combat extensions
 
 ### Requirement: Compiler resolves facts via Channel registry
 The free-flight compiler SHALL resolve theatre support, player airfield → `airdromeId`, known aircraft checks, and group radio frequency through the Channel reference registry API rather than private ad-hoc constants inaccessible to other components.
@@ -104,3 +109,31 @@ required zip members) MUST remain enforced through that suite.
   structure (for example wrong frequency or missing `theatre` member)
 - **THEN** the golden-fixture (or equivalent Manston structural) tests MUST fail before the
   change is considered acceptable
+
+### Requirement: Compile intercept Mission Spec to .miz
+The compiler SHALL transform a validated intercept Mission Spec into a DCS `.miz` that places
+the player flight and at least one enemy `Bf-109K-4` flight on The Channel, using registry
+facts for aircraft ids and radio frequencies. It MUST NOT invent DCS identifiers. Free-flight
+compile behaviour MUST remain unchanged for free-flight Specs. WWII Axis enemies MUST use
+PyDCS country `ThirdReich` on red (not modern `Germany` on blue).
+
+#### Scenario: Manston intercept example compiles
+- **WHEN** the checked-in Manston intercept example Spec is compiled with Channel available
+  in inventory
+- **THEN** the system MUST write a `.miz` containing required zip members and mission content
+  for player `SpitfireLFMkIX` and enemy `Bf-109K-4`, with in-band group frequencies from the
+  Channel registry
+
+#### Scenario: Free-flight Manston still compiles
+- **WHEN** the checked-in Manston cold free-flight Spec is compiled
+- **THEN** the compiler MUST still produce the accepted free-flight `.miz` behaviour
+
+### Requirement: Human acceptance for intercept in DCS
+A compiled intercept example `.miz` MUST be openable in the DCS Mission Editor and flyable
+as Instant Action / single mission with The Channel, Spitfire LF Mk IX, and Bf-109K-4
+available.
+
+#### Scenario: Load intercept in DCS
+- **WHEN** a user opens the compiled intercept `.miz` in DCS Mission Editor or Instant Action
+- **THEN** the mission MUST load without editor errors and present the player and enemy
+  flights as specified (Axis/red for Bf-109s)
