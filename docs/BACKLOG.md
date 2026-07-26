@@ -54,12 +54,19 @@ Editor and is flyable, reproducibly, from a single command.
 
 The AI arrives only once compilation is trustworthy.
 
+**Catalog & memory direction:** agent-facing lookups prefer a **local SQLite catalog**
+(synced from YAML registry + Spec enums + install inventory — not a second DCS-id SoT).
+Same DB family may hold **user preferences**, **generation history**, and **satisfaction /
+feedback** so the agent can learn tastes over time. Compile/validate still use registry + Spec.
+
 | # | Item | Goal | Status |
 |---|------|------|--------|
-| 8 | `agent-tools-surface` | Tools: `find_airfield`, `get_aircraft_details`, `list_mission_options`, `validate_mission_spec`, `compile_mission` (backed by registry) | `idea` |
-| 9 | `mission-option-catalog` | Enumerate planning knobs the agent can ask about / suggest (start type, weather, time, opposition density, ROE seeds, payload families) before NL→spec | `idea` |
-| 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling | `idea` |
-| 11 | `squadron-commander-voice` | Agent persona: USAAF or RAF squadron commander tone for questions, guidance, and briefings (configurable) | `idea` |
+| 8 | `agent-tools-surface` | Tools: `find_airfield`, `get_aircraft_details`, `list_mission_options`, `validate_mission_spec`, `compile_mission` (query catalog SQLite where appropriate; validate/compile stay registry-backed) | `idea` |
+| 9 | `mission-option-catalog` | Enumerate planning knobs the agent can ask about / suggest (start type, weather, time, opposition density, ROE seeds, payload families); load into SQLite catalog for list/ask | `idea` |
+| 8a | `agent-catalog-sqlite` | Sync YAML registry + mission types/options into queryable SQLite tables for agent/UI; keep install inventory schema distinct (`catalog_*` vs `install_*`) | `idea` |
+| 8b | `user-prefs-and-history` | Store user preferences, mission-generation history (Spec path, outcome), and post-flight / post-gen satisfaction surveys; agent tools to read prefs and record feedback | `idea` |
+| 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling (uses catalog + prefs/history tools) | `idea` |
+| 11 | `squadron-commander-voice` | Agent persona: USAAF or RAF squadron commander tone for questions, guidance, and briefings (configurable; may follow prefs) | `idea` |
 
 ---
 
@@ -151,8 +158,9 @@ Source: `ideas-concepts.txt` (2026-07-26).
 | Raw idea | Disposition |
 |----------|-------------|
 | Module diagram + relationship docs on update | **M2** `#7` `dev-module-map` |
-| SQLite inventory (airports, aircraft, weapons, landmarks…) for user + agent | **M2** `#3` YAML product registry shipped; **M2** `#4` starts user-local SQLite for *install* inventory (theatres first); landmarks/weapons later |
-| Mission types catalog in SQLite (for agent / UI listing) | **Park** → when expanding agent-facing inventory beyond install theatres (M3 `#8`/`#9`); keep Spec enums + YAML as compile SoT; SQLite = queryable catalog/cache, not a second truth for DCS ids |
+| SQLite inventory (airports, aircraft, weapons, landmarks…) for user + agent | **M2** `#3` YAML product SoT; **M2** `#4` install SQLite; **M3** `#8a` agent **catalog** SQLite synced from YAML/enums (query layer, not second SoT) |
+| Mission types catalog in SQLite (for agent / UI listing) | **M3** `#8a` / `#9` — intended |
+| User preferences, gen history, satisfaction survey | **M3** `#8b` `user-prefs-and-history` — intended |
 | Detect installed maps | **M2** `#4` `installed-theatres-probe` |
 | Agent narrates as US/RAF Squadron Commander | **M3** `#11` `squadron-commander-voice` (+ M5 briefings) |
 | Agent knows / offers all planning options | **M3** `#9` `mission-option-catalog` + tools on `#8` |
@@ -174,7 +182,7 @@ Resolve these inside the relevant proposal, not here.
 | Output path: `Saved Games\DCS\Missions\` vs `./out/` | M1 (default `out/` shipped) |
 | CLI (`compile spec.yaml`) vs library entrypoint only | M1 (CLI shipped) |
 | Clipped-wing `SpitfireLFMkIXCW` ever in scope | M2 |
-| Registry storage: SQLite vs JSON/YAML tables vs both | M2 `#3` — **YAML = product SoT**; M2 `#4` — **SQLite = user-local install cache only** |
+| Registry storage: SQLite vs JSON/YAML tables vs both | **YAML = compile SoT**; **SQLite install** = theatres cache (`#4`); **SQLite catalog** = agent/UI queries synced from YAML (`#8a`); prefs/history in same local DB family (`#8b`) |
 | Install inventory cache format / path | M2 `#4` — **decided: `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`; refresh on demand** |
 | How much of `research/FINDINGS.md` becomes committed main specs | M2 |
 | Auto-refresh of `dev-module-map` (manual vs hook on push) | M2 `#7` — **decided: hand-written doc + non-blocking push reminder; no CI generator** |
