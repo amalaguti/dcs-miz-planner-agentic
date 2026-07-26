@@ -10,7 +10,6 @@ import re
 import subprocess
 import sys
 
-
 PROTECTED = frozenset({"master", "main"})
 
 # Tools that mutate the workspace (Cursor agent tool names).
@@ -96,12 +95,7 @@ def handle_pre_tool(payload: dict) -> dict:
     if not on_protected():
         return allow()
 
-    tool = (
-        payload.get("tool_name")
-        or payload.get("toolName")
-        or payload.get("tool")
-        or ""
-    )
+    tool = payload.get("tool_name") or payload.get("toolName") or payload.get("tool") or ""
     tool = str(tool)
 
     # Match bare tool names and MCP-style names.
@@ -130,10 +124,7 @@ def handle_shell(payload: dict) -> dict:
         return allow()
 
     # Fail closed for other shell on protected branches (avoids echo>file etc.).
-    return deny(
-        MSG
-        + " Shell on master/main is limited to read-only git and checkout/switch."
-    )
+    return deny(MSG + " Shell on master/main is limited to read-only git and checkout/switch.")
 
 
 def main() -> None:
@@ -144,14 +135,15 @@ def main() -> None:
         payload = {}
 
     # Heuristic: shell hooks include "command"; tool hooks include tool name fields.
-    if "command" in payload and (
-        payload.get("tool_name") is None
-        and payload.get("toolName") is None
-        and "tool_input" not in payload
-    ):
-        out = handle_shell(payload)
-    elif payload.get("command") and not (
-        payload.get("tool_name") or payload.get("toolName") or payload.get("tool")
+    if (
+        "command" in payload
+        and (
+            payload.get("tool_name") is None
+            and payload.get("toolName") is None
+            and "tool_input" not in payload
+        )
+        or payload.get("command")
+        and not (payload.get("tool_name") or payload.get("toolName") or payload.get("tool"))
     ):
         out = handle_shell(payload)
     else:

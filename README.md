@@ -17,7 +17,7 @@ fields rejected, combat/trigger keys reserved for later).
 - Python 3.12 + uv
 - Mission Spec (Pydantic) → compiler via PyDCS (behind `CompilerInterface`)
 - OpenSpec (`npx openspec`) for SDD
-- pre-commit (blocks commits on `master`/`main`)
+- pre-commit (blocks commits on `master`/`main`; runs Ruff lint + format on Python)
 
 ## Compile the Manston example
 
@@ -37,7 +37,7 @@ uv tool install pre-commit
 pre-commit install
 ```
 
-Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blocked there by pre-commit.
+Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blocked there by pre-commit. Every commit runs Ruff (`ruff-check --fix` + `ruff-format`) via pre-commit.
 
 ## Docs
 

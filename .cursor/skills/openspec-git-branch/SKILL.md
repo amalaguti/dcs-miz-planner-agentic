@@ -37,4 +37,7 @@ Do **not** create, edit, or commit project changes on `master` or `main`.
 
 ## Also enforced by pre-commit
 
-`no-commit-to-branch` in `.pre-commit-config.yaml` rejects commits on `master` / `main`. Cursor hooks block edits earlier; pre-commit is the repo safety net. After clone: `uv tool install pre-commit` then `pre-commit install`.
+`no-commit-to-branch` in `.pre-commit-config.yaml` rejects commits on `master` / `main`.
+`ruff-check --fix` and `ruff-format` run on staged Python (see `[tool.ruff]` in `pyproject.toml`).
+Cursor hooks block edits earlier; pre-commit is the repo safety net. After clone:
+`uv tool install pre-commit` then `pre-commit install`.

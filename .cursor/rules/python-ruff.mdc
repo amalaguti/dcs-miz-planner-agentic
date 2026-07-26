@@ -1,0 +1,13 @@
+---
+description: Run Ruff (lint + format) before committing Python; pre-commit enforces it on every commit.
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python lint / format (Ruff)
+
+- **Enforced on commit:** `.pre-commit-config.yaml` runs `ruff-check --fix` and `ruff-format` on staged Python files. Do not skip with `--no-verify`.
+- Config lives in `pyproject.toml` under `[tool.ruff]` (line-length 100, py312).
+- Before finishing a coding task, prefer `uv run ruff check --fix .` and `uv run ruff format .` on touched files so the commit hook does not fail or auto-rewrite unexpectedly.
+- If a commit fails because pre-commit reformatted files, stage the hook changes and create a **new** commit (do not amend unless the user asked and amend rules allow it).
+- Do not weaken or remove the Ruff pre-commit hooks without an explicit user request.

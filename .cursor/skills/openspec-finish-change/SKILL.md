@@ -37,6 +37,7 @@ means `master` receives one coherent state: code, synced specs, archived change.
 
 Code, tests, examples, and the doc updates from step 1 — reviewable on its own.
 Never stage gitignored scratch files (`research/`, `out/`, `ideas-*.txt`).
+Pre-commit runs Ruff on Python; if the hook auto-fixes files, stage those changes and commit (new commit unless amend rules allow).
 
 **3. Sync delta specs, then archive the change**
 

@@ -58,6 +58,5 @@ def airdrome_id(theatre: str, airfield_name: str) -> int:
         return CHANNEL_AIRDROME_IDS[airfield_name]
     except KeyError as exc:
         raise KeyError(
-            f"Unknown Channel airfield '{airfield_name}'. "
-            f"Known: {sorted(CHANNEL_AIRDROME_IDS)}"
+            f"Unknown Channel airfield '{airfield_name}'. Known: {sorted(CHANNEL_AIRDROME_IDS)}"
         ) from exc

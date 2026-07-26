@@ -80,9 +80,7 @@ class PyDCSCompiler(CompilerInterface):
             mission.coalition[spec.player.coalition.value].add_country(country_cls())
             country = mission.country(spec.player.country)
 
-        airport = mission.terrain.airport_by_id(
-            airdrome_id(spec.theatre, spec.player.airfield)
-        )
+        airport = mission.terrain.airport_by_id(airdrome_id(spec.theatre, spec.player.airfield))
         if airport is None:
             raise ValueError(f"Airport not found for {spec.player.airfield}")
 
