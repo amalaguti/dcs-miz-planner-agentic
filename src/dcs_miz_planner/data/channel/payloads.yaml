@@ -1,0 +1,3 @@
+# Verified payload CLSID names only. Free-flight compile does not apply payloads;
+# do not harvest from a live DCS install (see LESSONS_LEARNED.md).
+payloads: {}

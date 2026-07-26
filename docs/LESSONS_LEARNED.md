@@ -27,8 +27,8 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 - **Date:** 2026-07-26
 - **Symptom:** Compiled Manston free-flight `.miz` opens in the Mission Editor, but launching the flight warns the radio frequency is invalid for the Spitfire. PyDCS defaults every group to `["frequency"]=251`.
 - **Cause:** 251 MHz is a modern UHF value. WWII radios cannot tune it: Allied VHF is ~**100–156 MHz**, German VHF ~**38.4–42.4 MHz**.
-- **Fix:** Set the group frequency from `AIRCRAFT_RADIO_MHZ` (Spitfire **124**, Bf-109K-4 40, FW-190 38.4) — the values every stock ED Channel mission uses. Assigning `group.frequency` is enough; DCS tunes the aircraft's first radio channel from it, and stock missions leave `radioSet = false`.
-- **Code:** `src/dcs_miz_planner/compiler/pydcs_compiler.py`; table in `reference.py`.
+- **Fix:** Set the group frequency from the Channel registry radio table (Spitfire **124**, Bf-109K-4 40, FW-190 38.4) — the values every stock ED Channel mission uses. Assigning `group.frequency` is enough; DCS tunes the aircraft's first radio channel from it, and stock missions leave `radioSet = false`.
+- **Code:** `src/dcs_miz_planner/compiler/pydcs_compiler.py`; data in `data/channel/aircraft.yaml` via `registry.py`.
 - **Do not:** use the airfield ATC frequency as the flight frequency. It is in-band and works (Channel ATC VHF-high runs 118.05–118.6, Manston = 118.45), but it is the tower channel, not the flight's, and diverges from every stock mission.
 - **Note:** PyDCS `set_frequency()` also flips `radio_set` and writes channel presets — more than ME does. Plain attribute assignment matches stock output.
 
@@ -70,7 +70,7 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 - **Date:** 2026-07-24 (research) / reinforced in M1
 - **Symptom:** Mission fails to load or units missing if type / airfield ids are wrong.
 - **Cause:** Guessing spellings (`Spitfire IX`, wrong `airdromeId`, etc.).
-- **Fix:** Use verified ids only (`SpitfireLFMkIX`, Manston → `airdromeId` 5, theatre `TheChannel`, …). Prefer `reference.py` / registry over memory. Expand the registry in OpenSpec change `reference-registry-channel`, not ad-hoc in prompts.
+- **Fix:** Use verified ids only (`SpitfireLFMkIX`, Manston → `airdromeId` 5, theatre `TheChannel`, …). Prefer `registry.py` / `data/channel/*.yaml` over memory. Expand the registry via data PRs, not ad-hoc in prompts.
 
 ## Mission Spec vs PyDCS boundary
 

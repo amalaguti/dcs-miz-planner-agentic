@@ -1,0 +1,13 @@
+# Exact DCS type ids and default group radio (MHz) from stock Channel missions.
+# WWII VHF: Allied ~100-156, German ~38.4-42.4. Do not invent spellings.
+aircraft:
+  SpitfireLFMkIX:
+    radio_mhz: 124.0
+  SpitfireLFMkIXCW:
+    radio_mhz: 124.0
+  Bf-109K-4:
+    radio_mhz: 40.0
+  FW-190A8:
+    radio_mhz: 38.4
+  FW-190D9:
+    radio_mhz: 38.4

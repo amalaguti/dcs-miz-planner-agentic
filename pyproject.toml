@@ -20,6 +20,10 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/dcs_miz_planner"]
 
+# Packaged YAML under data/ must ship with the wheel (hatchling skips non-.py by default).
+[tool.hatch.build.targets.wheel.force-include]
+"src/dcs_miz_planner/data" = "dcs_miz_planner/data"
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",

@@ -1,0 +1,4 @@
+# Named weather presets used by Mission Spec (schema_version "1").
+presets:
+  sunny_clear:
+    description: Clear skies, no fog/dust, high visibility

@@ -17,7 +17,9 @@ flowchart TD
     models["models.py<br/>MissionSpec (Pydantic)<br/>schema_version, extra=forbid"]
     base["compiler/base.py<br/>CompilerInterface (ABC)"]
     pydcs["compiler/pydcs_compiler.py<br/>PyDCSCompiler"]
-    ref["reference.py<br/>airdromeId, aircraft, radio MHz"]
+    registry["registry.py<br/>ChannelRegistry API"]
+    data["data/channel/*.yaml<br/>airfields, aircraft, theatres,<br/>weather, payloads"]
+    ref["reference.py<br/>compat façade"]
     lib["PyDCS (dcs.*)<br/>third party"]
     miz["out/*.miz<br/>zip: mission, options,<br/>theatre, warehouses"]
 
@@ -25,7 +27,9 @@ flowchart TD
     cli --> base
     base -.implemented by.-> pydcs
     models --> pydcs
-    ref --> pydcs
+    data --> registry
+    registry --> pydcs
+    registry --> ref
     pydcs --> lib
     pydcs --> miz
 ```
@@ -35,9 +39,9 @@ ASCII fallback:
 ```text
 YAML spec -> cli -> loader -> MissionSpec -> CompilerInterface
                                                   |
-                                          PyDCSCompiler <- reference.py
-                                                  |  (PyDCS)
-                                                  v
+                                          PyDCSCompiler <- registry.py <- data/channel/*.yaml
+                                                  |  (PyDCS)              ^
+                                                  v                 reference.py (façade)
                                                .miz
 ```
 
@@ -48,9 +52,11 @@ YAML spec -> cli -> loader -> MissionSpec -> CompilerInterface
 | `cli.py` | Parse args, load spec, call compiler, report clean errors (exit `2` on bad spec) | `loader`, `compiler` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
 | `models.py` | The public contract: `MissionSpec` + enums. Rejects unknown fields; reserves `enemies`/`objectives`/`triggers` | `pydantic` |
-| `reference.py` | Verified DCS facts: Channel `airdromeId`, known aircraft, radio MHz, supported theatres | — |
+| `data/channel/` | Committed Channel YAML tables (airdromeIds, aircraft+radio, theatres, weather presets, payload stub) | — |
+| `registry.py` | Loads packaged YAML; lookup API shared by compiler (later validator/agent) | `data/channel`, `pyyaml` |
+| `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
-| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Places the flight, applies time/weather/radio, writes the `.miz` | `models`, `reference`, `dcs.*` |
+| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Places the flight, applies time/weather/radio, writes the `.miz` | `models`, `registry`, `dcs.*` |
 
 Two boundaries worth respecting:
 

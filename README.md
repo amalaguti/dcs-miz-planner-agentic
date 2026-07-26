@@ -8,7 +8,9 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 
 First vertical slice done: Manston cold free flight compiles and flies in DCS
 (accepted in-game). Mission Spec is formalized (`schema_version: "1"`, unknown
-fields rejected, combat/trigger keys reserved for later). Module map:
+fields rejected, combat/trigger keys reserved for later). Channel DCS facts
+(airfields, aircraft, radio, weather presets) live in packaged YAML under
+`src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.

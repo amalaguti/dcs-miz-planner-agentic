@@ -1,0 +1,15 @@
+# Channel Map airfield display name -> DCS airdromeId.
+# Verified from local DCS / PyDCS terrain; expand via data PRs only.
+airfields:
+  Abbeville: 1
+  MervilleCalonne: 2
+  SaintOmer: 3
+  Dunkirk: 4
+  Manston: 5
+  Hawkinge: 6
+  Lympne: 7
+  Detling: 8
+  Eastchurch: 10
+  HighHalden: 12
+  Headcorn: 13
+  BigginHill: 14

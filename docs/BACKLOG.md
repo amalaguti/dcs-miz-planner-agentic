@@ -37,13 +37,13 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote:** `reference-registry-channel` (OpenSpec proposal already on master under `openspec/changes/`).
+**Next promote:** `installed-theatres-probe`
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 2 | `mission-spec-schema` | Formalize Mission Spec (free flight + extension points for combat) | `done` (accepted in-game 2026-07-26) |
 | 7 | `dev-module-map` | Checked-in architecture diagram + short module relationship doc (`docs/ARCHITECTURE.md`); refreshed manually, push hook reminds when `src/` changes | `done` (2026-07-26) |
-| 3 | `reference-registry-channel` | Queryable Channel registry (YAML tables + Python API; SQLite deferred): airfields, aircraft, weather presets, payload CLSIDs; agent + validator share one source of truth | `proposed` |
+| 3 | `reference-registry-channel` | Queryable Channel registry (YAML tables + Python API; SQLite deferred): airfields, aircraft, weather presets, payload CLSIDs; agent + validator share one source of truth | `done` (accepted in-game 2026-07-26) |
 | 4 | `installed-theatres-probe` | Detect theatres/maps present in the local DCS install so generation only offers what the user can fly | `idea` |
 | 5 | `validation-engine` | Structural + DCS-exists + semantic validation with clear errors | `idea` |
 | 6 | `golden-fixtures-tests` | pytest regression: spec → `.miz` structural asserts | `idea` |
@@ -151,7 +151,7 @@ Source: `ideas-concepts.txt` (2026-07-26).
 | Raw idea | Disposition |
 |----------|-------------|
 | Module diagram + relationship docs on update | **M2** `#7` `dev-module-map` |
-| SQLite inventory (airports, aircraft, weapons, landmarks…) for user + agent | **M2** `#3` `reference-registry-channel` (storage may be SQLite; shape matches concept registry) |
+| SQLite inventory (airports, aircraft, weapons, landmarks…) for user + agent | **M2** `#3` `reference-registry-channel` (YAML + Python API shipped; SQLite deferred) |
 | Detect installed maps | **M2** `#4` `installed-theatres-probe` |
 | Agent narrates as US/RAF Squadron Commander | **M3** `#11` `squadron-commander-voice` (+ M5 briefings) |
 | Agent knows / offers all planning options | **M3** `#9` `mission-option-catalog` + tools on `#8` |

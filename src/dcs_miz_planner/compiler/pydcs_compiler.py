@@ -10,12 +10,7 @@ import datetime
 from pathlib import Path
 
 from ..models import MissionSpec, StartType, WeatherPreset
-from ..reference import (
-    KNOWN_AIRCRAFT,
-    SUPPORTED_THEATRES,
-    airdrome_id,
-    radio_frequency_mhz,
-)
+from ..registry import RegistryError, get_channel_registry
 from .base import CompilerInterface
 
 
@@ -80,7 +75,14 @@ class PyDCSCompiler(CompilerInterface):
             mission.coalition[spec.player.coalition.value].add_country(country_cls())
             country = mission.country(spec.player.country)
 
-        airport = mission.terrain.airport_by_id(airdrome_id(spec.theatre, spec.player.airfield))
+        registry = get_channel_registry()
+        try:
+            airport_id = registry.airdrome_id(spec.player.airfield)
+            radio_mhz = registry.radio_mhz(spec.player.aircraft)
+        except RegistryError as exc:
+            raise ValueError(str(exc)) from exc
+
+        airport = mission.terrain.airport_by_id(airport_id)
         if airport is None:
             raise ValueError(f"Airport not found for {spec.player.airfield}")
 
@@ -100,7 +102,7 @@ class PyDCSCompiler(CompilerInterface):
         # PyDCS defaults groups to 251 MHz, outside the WWII VHF bands; DCS
         # refuses the flight with a radio warning. Assigning the group
         # frequency is enough — DCS tunes the first radio channel from it.
-        group.frequency = radio_frequency_mhz(spec.player.aircraft)
+        group.frequency = radio_mhz
 
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -125,17 +127,21 @@ class PyDCSCompiler(CompilerInterface):
 
     @staticmethod
     def _validate(spec: MissionSpec) -> None:
-        if spec.theatre not in SUPPORTED_THEATRES:
+        registry = get_channel_registry()
+        if not registry.has_theatre(spec.theatre):
             raise ValueError(
-                f"Unsupported theatre '{spec.theatre}'. Supported: {sorted(SUPPORTED_THEATRES)}"
+                f"Unsupported theatre '{spec.theatre}'. Supported: {registry.list_theatres()}"
             )
-        if spec.player.aircraft not in KNOWN_AIRCRAFT:
-            raise ValueError(
-                f"Unknown aircraft '{spec.player.aircraft}'. Known: {sorted(KNOWN_AIRCRAFT)}"
-            )
+        try:
+            registry.get_aircraft(spec.player.aircraft)
+            registry.weather_preset(spec.weather.value)
+            registry.airdrome_id(spec.player.airfield)
+        except RegistryError as exc:
+            raise ValueError(str(exc)) from exc
 
     @staticmethod
     def _apply_weather(mission, preset: WeatherPreset) -> None:
+        # Existence already checked in _validate via the Channel registry.
         if preset is WeatherPreset.SUNNY_CLEAR:
             from dcs.weather import Weather
 
