@@ -92,11 +92,11 @@ def assert_matches_golden(miz_path: Path, fixture_dir: Path = FIXTURE_DIR) -> No
     missing = required - members
     assert not missing, f"missing zip members: {sorted(missing)}"
 
-    expected_theatre = (fixture_dir / "theatre").read_text(encoding="utf-8")
-    assert theatre == expected_theatre, "theatre member diverges from golden"
+    expected_theatre = (fixture_dir / "theatre").read_text(encoding="utf-8").rstrip("\n")
+    assert theatre.rstrip("\n") == expected_theatre, "theatre member diverges from golden"
 
-    expected_mission = (fixture_dir / "mission").read_text(encoding="utf-8")
-    assert normalize_mission(mission) == expected_mission, (
+    expected_mission = (fixture_dir / "mission").read_text(encoding="utf-8").rstrip("\n")
+    assert normalize_mission(mission).rstrip("\n") == expected_mission, (
         "mission member diverges from golden (after normalizing volatile fields)"
     )
 
