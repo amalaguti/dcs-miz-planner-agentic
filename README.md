@@ -12,7 +12,8 @@ fields rejected, combat/trigger keys reserved for later). Channel DCS facts
 (airfields, aircraft, radio, weather presets) live in packaged YAML under
 `src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
-refresh with `dcs-miz theatres --refresh`. Shared validation
+refresh with `dcs-miz theatres --refresh`. Known agent catalog (`catalog_*` tables in the
+same DB) syncs from Channel YAML + Spec enums via `dcs-miz catalog sync`. Shared validation
 (`dcs-miz validate` / compile) checks registry + local theatre inventory.
 Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
 (refresh: `uv run python tests/refresh_manston_golden.py`). Intercept Spec
@@ -21,7 +22,7 @@ approach corridor — open the compiled `.miz` in DCS to accept. Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next combat slice:** dawn Manston intercept vs Bf-109K-4 (accepted in-game 2026-07-26).
+**Next:** agent tools surface (`agent-tools-surface`) on top of the catalog SQLite.
 
 ## Stack
 
@@ -56,6 +57,19 @@ uv run dcs-miz theatres --dcs-root "S:/DCS World"
 ```
 
 Product theatre ids stay in YAML; the SQLite file is only a user-local install inventory.
+
+## Agent catalog (known + discovery)
+
+```bash
+uv run dcs-miz catalog sync              # replace catalog_* from packaged YAML + Spec enums
+uv run dcs-miz catalog list              # theatres: known vs installed vs offerable
+uv run dcs-miz catalog list --known-only
+uv run dcs-miz catalog list --type aircraft --json
+```
+
+To grow **known** entries: edit `src/dcs_miz_planner/data/channel/*.yaml` (and Spec enums
+when needed), accept in DCS when compile-supported, then `catalog sync`. Discovered
+install theatres are listed with `known=false` and are not auto-promoted.
 
 ## Setup notes
 

@@ -160,6 +160,14 @@ class ChannelRegistry:
     def list_payloads(self) -> list[str]:
         return sorted(self._payloads)
 
+    def payload_meta(self, name: str) -> Any:
+        try:
+            return self._payloads[name]
+        except KeyError as exc:
+            raise RegistryError(
+                f"Unknown payload '{name}'. Known: {sorted(self._payloads)}"
+            ) from exc
+
 
 @lru_cache(maxsize=1)
 def get_channel_registry() -> ChannelRegistry:

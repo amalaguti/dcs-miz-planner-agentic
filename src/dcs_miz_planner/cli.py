@@ -1,4 +1,4 @@
-"""Command-line entrypoint: compile, validate, and list local theatres."""
+"""Command-line entrypoint: compile, validate, theatres, and agent catalog."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 
+from .catalog import AIRCRAFT_DISCOVERY_DEFERRED, LIST_TYPES, CatalogService
 from .compiler import PyDCSCompiler
 from .install import InventoryService, default_db_path
 from .loader import SpecLoadError, load_mission_spec
@@ -140,10 +141,100 @@ def _theatres_cmd(args: argparse.Namespace) -> int:
     return 0
 
 
+def _catalog_sync_cmd(args: argparse.Namespace) -> int:
+    service = CatalogService(db_path=args.db if args.db else None)
+    snap = service.sync()
+    print(
+        f"Catalog synced source={snap.source} synced_at={snap.synced_at.isoformat()} "
+        f"db={service.db_path}"
+    )
+    print(
+        f"  theatres={len(snap.theatres)} airfields={len(snap.airfields)} "
+        f"aircraft={len(snap.aircraft)} weather={len(snap.weather_presets)} "
+        f"payloads={len(snap.payloads)}"
+    )
+    return 0
+
+
+def _catalog_list_cmd(args: argparse.Namespace) -> int:
+    service = CatalogService(db_path=args.db if args.db else None)
+    resource_type = args.type or "theatres"
+
+    if resource_type == "theatres":
+        views = service.list_theatres(include_discovered=not args.known_only)
+        if args.json:
+            payload = {
+                "db_path": str(service.db_path),
+                "type": "theatres",
+                "rows": [
+                    {
+                        "theatre_id": v.theatre_id,
+                        "known": v.known,
+                        "installed": v.installed,
+                        "install_state": v.install_state,
+                        "planner_supported": v.planner_supported,
+                        "offerable": v.offerable,
+                        "dcs_root": v.dcs_root,
+                    }
+                    for v in views
+                ],
+            }
+            print(json.dumps(payload, indent=2))
+            return 0
+        print(f"Catalog theatres db={service.db_path}")
+        print(
+            f"{'theatre_id':<22} {'known':<6} {'installed':<10} "
+            f"{'state':<12} {'offerable':<10} root"
+        )
+        print("-" * 90)
+        for v in views:
+            state = v.install_state or "-"
+            root = v.dcs_root or "-"
+            print(
+                f"{v.theatre_id:<22} {v.known!s:<6} {v.installed!s:<10} "
+                f"{state:<12} {v.offerable!s:<10} {root}"
+            )
+        return 0
+
+    if resource_type == "aircraft":
+        note = AIRCRAFT_DISCOVERY_DEFERRED
+    else:
+        note = None
+
+    try:
+        rows = service.list_rows(resource_type)
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+
+    if args.json:
+        payload: dict[str, object] = {
+            "db_path": str(service.db_path),
+            "type": resource_type,
+            "rows": rows,
+        }
+        if note:
+            payload["note"] = note
+        print(json.dumps(payload, indent=2))
+        return 0
+
+    print(f"Catalog {resource_type} db={service.db_path} ({len(rows)} rows)")
+    if note:
+        print(f"Note: {note}")
+    for row in rows:
+        print("  " + " ".join(f"{k}={v}" for k, v in row.items()))
+    return 0
+
+
+def _catalog_root_cmd(_args: argparse.Namespace) -> int:
+    print("Usage: dcs-miz catalog {sync,list} ...", file=sys.stderr)
+    return 2
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="dcs-miz",
-        description="DCS Mission Spec compiler, validator, and local theatre inventory.",
+        description="DCS Mission Spec compiler, validator, theatre inventory, and agent catalog.",
     )
     sub = parser.add_subparsers(dest="command")
 
@@ -183,6 +274,45 @@ def _build_parser() -> argparse.ArgumentParser:
     theatres_p.add_argument("--json", action="store_true", help="Machine-readable JSON output")
     theatres_p.set_defaults(func=_theatres_cmd)
 
+    catalog_p = sub.add_parser(
+        "catalog",
+        help="Sync/list known agent catalog (YAML + Spec enums; joins install for theatres)",
+    )
+    catalog_p.set_defaults(func=_catalog_root_cmd)
+    catalog_sub = catalog_p.add_subparsers(dest="catalog_command")
+
+    sync_p = catalog_sub.add_parser(
+        "sync",
+        help="Replace known catalog_* tables from packaged Channel YAML + Spec enums",
+    )
+    sync_p.add_argument(
+        "--db",
+        help=f"SQLite path shared with install inventory (default: {default_db_path()})",
+    )
+    sync_p.set_defaults(func=_catalog_sync_cmd)
+
+    list_p = catalog_sub.add_parser(
+        "list",
+        help="List catalog rows (theatres include install discovery unless --known-only)",
+    )
+    list_p.add_argument(
+        "--type",
+        choices=LIST_TYPES,
+        default="theatres",
+        help="Resource type to list (default: theatres)",
+    )
+    list_p.add_argument(
+        "--known-only",
+        action="store_true",
+        help="For theatres: omit discovered-only install theatres",
+    )
+    list_p.add_argument(
+        "--db",
+        help=f"SQLite path shared with install inventory (default: {default_db_path()})",
+    )
+    list_p.add_argument("--json", action="store_true", help="Machine-readable JSON output")
+    list_p.set_defaults(func=_catalog_list_cmd)
+
     return parser
 
 
@@ -199,6 +329,7 @@ def main(argv: list[str] | None = None) -> int:
             "compile",
             "validate",
             "theatres",
+            "catalog",
         }
     ):
         legacy = argparse.ArgumentParser(prog="dcs-miz")
