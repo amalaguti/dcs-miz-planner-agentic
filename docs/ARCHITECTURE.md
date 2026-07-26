@@ -12,9 +12,10 @@ deterministic code decides *how* it becomes a `.miz`. No LLM writes DCS Lua.
 ```mermaid
 flowchart TD
     yaml["examples/*.yaml<br/>Mission Spec (YAML)"]
-    cli["cli.py<br/>dcs-miz compile / theatres"]
+    cli["cli.py<br/>dcs-miz validate / compile / theatres"]
     loader["loader.py<br/>YAML parse + SpecLoadError"]
     models["models.py<br/>MissionSpec (Pydantic)<br/>schema_version, extra=forbid"]
+    validation["validation.py<br/>validate_mission_spec"]
     base["compiler/base.py<br/>CompilerInterface (ABC)"]
     pydcs["compiler/pydcs_compiler.py<br/>PyDCSCompiler"]
     registry["registry.py<br/>ChannelRegistry API"]
@@ -26,12 +27,17 @@ flowchart TD
     miz["out/*.miz<br/>zip: mission, options,<br/>theatre, warehouses"]
 
     yaml --> cli --> loader --> models
+    cli --> validation
     cli --> base
     cli --> install
+    models --> validation
+    validation --> registry
+    validation --> install
     install --> invdb
     install --> registry
     base -.implemented by.-> pydcs
     models --> pydcs
+    pydcs --> validation
     data --> registry
     registry --> pydcs
     registry --> ref
@@ -42,30 +48,33 @@ flowchart TD
 ASCII fallback:
 
 ```text
-YAML spec -> cli -> loader -> MissionSpec -> CompilerInterface
-                                                  |
-                                          PyDCSCompiler <- registry.py <- data/channel/*.yaml
-                                                  |  (PyDCS)              ^
-                                                  v                 reference.py (façade)
+YAML spec -> cli -> loader -> MissionSpec -> validate_mission_spec
+                                                  |     ^
+                                                  |     | (same engine)
+                                                  v     |
+                                          PyDCSCompiler <- registry + install inventory
+                                                  |  (PyDCS)
+                                                  v
                                                .miz
 
-cli theatres -> install/ (probe) -> inventory.sqlite  (refresh on demand)
-                      \-> registry.list_theatres() for planner_supported
+cli validate  -> validation.py
+cli theatres  -> install/ (probe) -> inventory.sqlite  (refresh on demand)
 ```
 
 ## Modules
 
 | Module | Responsibility | Depends on |
 |--------|----------------|------------|
-| `cli.py` | `compile` / legacy spec path; `theatres` list/refresh; clean errors | `loader`, `compiler`, `install` |
+| `cli.py` | `validate` / `compile` / legacy spec path; `theatres` list/refresh; clean errors | `loader`, `validation`, `compiler`, `install` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
 | `models.py` | The public contract: `MissionSpec` + enums. Rejects unknown fields; reserves `enemies`/`objectives`/`triggers` | `pydantic` |
+| `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + free-flight semantics); multi-error result | `models`, `registry`, `install` |
 | `data/channel/` | Committed Channel YAML tables (airdromeIds, aircraft+radio, theatres, weather presets, payload stub) | — |
-| `registry.py` | Loads packaged YAML; lookup API shared by compiler (later validator/agent) | `data/channel`, `pyyaml` |
+| `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
-| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Places the flight, applies time/weather/radio, writes the `.miz` | `models`, `registry`, `dcs.*` |
+| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, then places the flight / writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |
 
 Two stores stay separate on purpose:
 

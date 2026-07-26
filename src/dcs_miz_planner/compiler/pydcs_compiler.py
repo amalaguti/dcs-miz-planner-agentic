@@ -9,8 +9,10 @@ from __future__ import annotations
 import datetime
 from pathlib import Path
 
+from ..install.models import TheatreInventory
 from ..models import MissionSpec, StartType, WeatherPreset
 from ..registry import RegistryError, get_channel_registry
+from ..validation import MissionValidationError, validate_mission_spec
 from .base import CompilerInterface
 
 
@@ -34,6 +36,10 @@ def _disable_payload_scan(*unit_types) -> None:
 
 class PyDCSCompiler(CompilerInterface):
     """Compile a free-flight Mission Spec into a .miz via PyDCS."""
+
+    def __init__(self, *, inventory: TheatreInventory | None = None) -> None:
+        # Optional inject for tests; production uses the SQLite install cache.
+        self._inventory = inventory
 
     def compile(self, spec: MissionSpec, output_path: str | Path) -> Path:
         # Imports are local so the boundary is explicit and importing our
@@ -125,18 +131,11 @@ class PyDCSCompiler(CompilerInterface):
         with zipfile.ZipFile(miz_path, "a", zipfile.ZIP_DEFLATED) as z:
             z.writestr("theatre", theatre)
 
-    @staticmethod
-    def _validate(spec: MissionSpec) -> None:
-        registry = get_channel_registry()
-        if not registry.has_theatre(spec.theatre):
-            raise ValueError(
-                f"Unsupported theatre '{spec.theatre}'. Supported: {registry.list_theatres()}"
-            )
+    def _validate(self, spec: MissionSpec) -> None:
+        result = validate_mission_spec(spec, inventory=self._inventory)
         try:
-            registry.get_aircraft(spec.player.aircraft)
-            registry.weather_preset(spec.weather.value)
-            registry.airdrome_id(spec.player.airfield)
-        except RegistryError as exc:
+            result.raise_if_errors()
+        except MissionValidationError as exc:
             raise ValueError(str(exc)) from exc
 
     @staticmethod

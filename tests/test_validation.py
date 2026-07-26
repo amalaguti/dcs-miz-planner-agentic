@@ -1,0 +1,149 @@
+"""Mission Spec validation engine tests."""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from pathlib import Path
+
+import pytest
+
+from dcs_miz_planner.cli import main
+from dcs_miz_planner.compiler import PyDCSCompiler
+from dcs_miz_planner.install.models import AvailabilityState, TheatreInventory, TheatreRecord
+from dcs_miz_planner.loader import load_mission_spec
+from dcs_miz_planner.models import MissionDate, MissionSpec, MissionType, Player, WeatherPreset
+from dcs_miz_planner.validation import validate_mission_spec
+
+EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "manston_cold_freeflight.yaml"
+
+
+def _channel_inventory(
+    *, state: AvailabilityState = AvailabilityState.AVAILABLE
+) -> TheatreInventory:
+    return TheatreInventory(
+        scanned_at=datetime.now(UTC),
+        dcs_roots=("S:/DCS World",),
+        saved_games_roots=(),
+        theatres=(
+            TheatreRecord(
+                theatre_id="TheChannel",
+                update_id="THECHANNEL_terrain",
+                dcs_root="S:/DCS World",
+                state=state,
+                planner_supported=True,
+            ),
+        ),
+    )
+
+
+def _base_spec(**player_overrides) -> MissionSpec:
+    player = {
+        "aircraft": "SpitfireLFMkIX",
+        "airfield": "Manston",
+    }
+    player.update(player_overrides)
+    return MissionSpec(
+        schema_version="1",
+        mission_type=MissionType.FREE_FLIGHT,
+        theatre="TheChannel",
+        date=MissionDate(year=1944, month=6, day=6),
+        start_time="09:00",
+        weather=WeatherPreset.SUNNY_CLEAR,
+        player=Player(**player),
+    )
+
+
+def test_manston_example_validates(tmp_path: Path):
+    spec = load_mission_spec(EXAMPLE)
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert result.ok
+
+
+def test_unknown_airfield():
+    spec = _base_spec(airfield="NotARealField")
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert not result.ok
+    assert any(e.code == "unknown_airfield" for e in result.errors)
+
+
+def test_unknown_aircraft_and_airfield_collected():
+    bad = _base_spec(aircraft="NoSuchJet", airfield="Nowhere")
+    result = validate_mission_spec(bad, inventory=_channel_inventory())
+    codes = {e.code for e in result.errors}
+    assert "unknown_aircraft" in codes
+    assert "unknown_airfield" in codes
+
+
+def test_unknown_weather_via_registry(monkeypatch):
+    from dcs_miz_planner.registry import RegistryError, get_channel_registry
+
+    registry = get_channel_registry()
+
+    def boom(_name: str):
+        raise RegistryError("nope")
+
+    monkeypatch.setattr(registry, "weather_preset", boom)
+    result = validate_mission_spec(_base_spec(), registry=registry, inventory=_channel_inventory())
+    assert any(e.code == "unknown_weather" for e in result.errors)
+
+
+def test_theatre_not_locally_available():
+    spec = load_mission_spec(EXAMPLE)
+    result = validate_mission_spec(
+        spec, inventory=_channel_inventory(state=AvailabilityState.DISABLED)
+    )
+    assert not result.ok
+    assert any(e.code == "theatre_not_available" for e in result.errors)
+
+
+def test_empty_inventory_diagnostic():
+    spec = load_mission_spec(EXAMPLE)
+    empty = TheatreInventory(
+        scanned_at=datetime.now(UTC),
+        dcs_roots=(),
+        saved_games_roots=(),
+        theatres=(),
+    )
+    result = validate_mission_spec(spec, inventory=empty)
+    assert any(e.code == "install_inventory_unavailable" for e in result.errors)
+
+
+def test_cli_validate_success(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "dcs_miz_planner.cli.validate_mission_spec",
+        lambda spec: validate_mission_spec(spec, inventory=_channel_inventory()),
+    )
+    assert main(["validate", str(EXAMPLE)]) == 0
+    assert "Valid:" in capsys.readouterr().out
+
+
+def test_cli_validate_failure_json(tmp_path: Path, capsys, monkeypatch):
+    bad = tmp_path / "bad.yaml"
+    bad.write_text(
+        EXAMPLE.read_text(encoding="utf-8").replace("Manston", "FakeField"),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        "dcs_miz_planner.cli.validate_mission_spec",
+        lambda spec: validate_mission_spec(spec, inventory=_channel_inventory()),
+    )
+    assert main(["validate", str(bad), "--json"]) == 2
+    import json
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["ok"] is False
+    assert any(e["code"] == "unknown_airfield" for e in payload["errors"])
+
+
+def test_compile_refuses_invalid_without_writing(tmp_path: Path):
+    spec = _base_spec(airfield="FakeField")
+    out = tmp_path / "nope.miz"
+    with pytest.raises(ValueError, match="unknown_airfield|Unknown Channel airfield"):
+        PyDCSCompiler(inventory=_channel_inventory()).compile(spec, out)
+    assert not out.exists()
+
+
+def test_compile_manston_with_injected_inventory(tmp_path: Path):
+    spec = load_mission_spec(EXAMPLE)
+    out = PyDCSCompiler(inventory=_channel_inventory()).compile(spec, tmp_path / "ok.miz")
+    assert out.exists()

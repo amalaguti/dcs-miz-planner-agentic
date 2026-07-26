@@ -1,4 +1,4 @@
-"""Command-line entrypoint: compile Mission Specs and list local theatres."""
+"""Command-line entrypoint: compile, validate, and list local theatres."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from pathlib import Path
 from .compiler import PyDCSCompiler
 from .install import InventoryService, default_db_path
 from .loader import SpecLoadError, load_mission_spec
+from .validation import validate_mission_spec
 
 DEFAULT_OUTPUT_DIR = Path("out")
 
@@ -27,9 +28,51 @@ def _compile_cmd(args: argparse.Namespace) -> int:
         return 2
 
     output = Path(args.output) if args.output else DEFAULT_OUTPUT_DIR / f"{spec_path.stem}.miz"
-    written = PyDCSCompiler().compile(spec, output)
+    try:
+        written = PyDCSCompiler().compile(spec, output)
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
+        return 2
     print(f"Wrote {written}")
     return 0
+
+
+def _validate_cmd(args: argparse.Namespace) -> int:
+    spec_path = Path(args.spec)
+    if not spec_path.exists():
+        print(f"Spec not found: {spec_path}", file=sys.stderr)
+        return 2
+
+    try:
+        spec = load_mission_spec(spec_path)
+    except SpecLoadError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+
+    result = validate_mission_spec(spec)
+    if args.json:
+        payload = {
+            "ok": result.ok,
+            "errors": [
+                {
+                    "code": e.code,
+                    "path": e.path,
+                    "message": e.message,
+                    "hint": e.hint,
+                }
+                for e in result.errors
+            ],
+        }
+        print(json.dumps(payload, indent=2))
+    elif result.ok:
+        print(f"Valid: {spec_path}")
+    else:
+        print(f"Invalid: {spec_path}", file=sys.stderr)
+        for err in result.errors:
+            loc = f"{err.path}: " if err.path else ""
+            hint = f" — {err.hint}" if err.hint else ""
+            print(f"  [{err.code}] {loc}{err.message}{hint}", file=sys.stderr)
+    return 0 if result.ok else 2
 
 
 def _theatres_cmd(args: argparse.Namespace) -> int:
@@ -100,7 +143,7 @@ def _theatres_cmd(args: argparse.Namespace) -> int:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="dcs-miz",
-        description="DCS Mission Spec compiler and local theatre inventory.",
+        description="DCS Mission Spec compiler, validator, and local theatre inventory.",
     )
     sub = parser.add_subparsers(dest="command")
 
@@ -113,6 +156,14 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
     )
     compile_p.set_defaults(func=_compile_cmd)
+
+    validate_p = sub.add_parser(
+        "validate",
+        help="Validate a Mission Spec without compiling",
+    )
+    validate_p.add_argument("spec", help="Path to a Mission Spec YAML file")
+    validate_p.add_argument("--json", action="store_true", help="Machine-readable JSON output")
+    validate_p.set_defaults(func=_validate_cmd)
 
     theatres_p = sub.add_parser(
         "theatres",
@@ -140,7 +191,16 @@ def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
 
     # Legacy: `dcs-miz <spec.yaml> [-o ...]` without a subcommand.
-    if argv and not argv[0].startswith("-") and argv[0] not in {"compile", "theatres"}:
+    if (
+        argv
+        and not argv[0].startswith("-")
+        and argv[0]
+        not in {
+            "compile",
+            "validate",
+            "theatres",
+        }
+    ):
         legacy = argparse.ArgumentParser(prog="dcs-miz")
         legacy.add_argument("spec")
         legacy.add_argument("-o", "--output", default=None)

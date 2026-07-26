@@ -3,18 +3,37 @@
 from __future__ import annotations
 
 import zipfile
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dcs_miz_planner.compiler import PyDCSCompiler
+from dcs_miz_planner.install.models import AvailabilityState, TheatreInventory, TheatreRecord
 from dcs_miz_planner.loader import load_mission_spec
 
 EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "manston_cold_freeflight.yaml"
 REQUIRED_MEMBERS = {"mission", "options", "theatre", "warehouses"}
 
 
+def _channel_available() -> TheatreInventory:
+    return TheatreInventory(
+        scanned_at=datetime.now(UTC),
+        dcs_roots=("S:/DCS World",),
+        saved_games_roots=(),
+        theatres=(
+            TheatreRecord(
+                theatre_id="TheChannel",
+                update_id="THECHANNEL_terrain",
+                dcs_root="S:/DCS World",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
+        ),
+    )
+
+
 def test_manston_example_compiles(tmp_path):
     spec = load_mission_spec(EXAMPLE)
-    out = PyDCSCompiler().compile(spec, tmp_path / "manston.miz")
+    out = PyDCSCompiler(inventory=_channel_available()).compile(spec, tmp_path / "manston.miz")
 
     assert out.exists()
     with zipfile.ZipFile(out) as z:
@@ -41,7 +60,9 @@ def test_manston_miz_roundtrips_through_pydcs(tmp_path):
     from dcs.unit import Skill
 
     spec = load_mission_spec(EXAMPLE)
-    out = PyDCSCompiler().compile(spec, tmp_path / "manston_roundtrip.miz")
+    out = PyDCSCompiler(inventory=_channel_available()).compile(
+        spec, tmp_path / "manston_roundtrip.miz"
+    )
 
     loaded = Mission()
     status = loaded.load_file(str(out))

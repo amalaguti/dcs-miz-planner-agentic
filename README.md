@@ -12,7 +12,9 @@ fields rejected, combat/trigger keys reserved for later). Channel DCS facts
 (airfields, aircraft, radio, weather presets) live in packaged YAML under
 `src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
-refresh with `dcs-miz theatres --refresh`. Module map:
+refresh with `dcs-miz theatres --refresh`. Shared validation
+(`dcs-miz validate` / compile) checks registry + local theatre inventory.
+Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
@@ -20,14 +22,15 @@ refresh with `dcs-miz theatres --refresh`. Module map:
 ## Stack
 
 - Python 3.12 + uv
-- Mission Spec (Pydantic) → compiler via PyDCS (behind `CompilerInterface`)
+- Mission Spec (Pydantic) → shared validation → compiler via PyDCS (behind `CompilerInterface`)
 - OpenSpec (`npx openspec`) for SDD
 - pre-commit (blocks commits on `master`/`main`; runs Ruff lint + format on Python)
 
-## Compile the Manston example
+## Validate and compile the Manston example
 
 ```bash
 uv sync
+uv run dcs-miz validate examples/manston_cold_freeflight.yaml
 uv run dcs-miz examples/manston_cold_freeflight.yaml
 # -> out/manston_cold_freeflight.miz
 ```
