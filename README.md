@@ -6,16 +6,28 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 
 ## Status
 
-OpenSpec initialized (Cursor). Specs and app code not started yet.
+First vertical slice done: `manston-cold-freeflight` compiles a Mission Spec to a `.miz`
+that loads and flies in DCS (accepted in-game).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 
-## Stack (planned)
+## Stack
 
 - Python 3.12 + uv
-- Mission Spec (Pydantic) → compiler via PyDCS
+- Mission Spec (Pydantic) → compiler via PyDCS (behind `CompilerInterface`)
 - OpenSpec (`npx openspec`) for SDD
 - pre-commit (blocks commits on `master`/`main`)
+
+## Compile the Manston example
+
+```bash
+uv sync
+uv run dcs-miz examples/manston_cold_freeflight.yaml
+# -> out/manston_cold_freeflight.miz
+```
+
+Open the result in the DCS Mission Editor, or copy it into
+`Saved Games\DCS\Missions\` to fly it from Instant Action / Load Mission.
 
 ## Setup notes
 
@@ -30,5 +42,6 @@ Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blo
 
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
 - Roadmap / backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md)
+- Agent lessons (PyDCS/DCS pitfalls): [`docs/LESSONS_LEARNED.md`](docs/LESSONS_LEARNED.md)
 - OpenSpec config: [`openspec/config.yaml`](openspec/config.yaml)
 - Local research samples are gitignored (`research/`)

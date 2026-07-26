@@ -1,9 +1,18 @@
 {
   "version": 1,
   "hooks": {
+    "sessionStart": [
+      {
+        "command": "python .cursor/hooks/lessons-learned.py"
+      }
+    ],
     "beforeShellExecution": [
       {
         "command": "python .cursor/hooks/readme-on-push.py",
+        "matcher": "git\\s+push"
+      },
+      {
+        "command": "python .cursor/hooks/lessons-learned.py",
         "matcher": "git\\s+push"
       },
       {

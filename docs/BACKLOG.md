@@ -25,7 +25,7 @@ The whole point of M1: prove the pipeline end-to-end on the simplest possible mi
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
-| 1 | `manston-cold-freeflight` | Spitfire cold on Manston parking, 09:00, sunny, Channel — compiles and loads in DCS | `idea` (next) |
+| 1 | `manston-cold-freeflight` | Spitfire cold on Manston parking, 09:00, sunny, Channel — compiles and loads in DCS | `done` (accepted in-game 2026-07-26) |
 
 Scope note: intentionally folds the `uv` project skeleton, a minimal Mission Spec, and the
 PyDCS compile path into one vertical slice. Split only if the proposal gets fat.
@@ -79,6 +79,7 @@ Each is a thin slice on top of a working compiler + validator.
 | 12 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks) | `idea` |
 | 13 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `idea` |
 | 14 | `mission-randomization` | Seeded variation for replayability | `idea` |
+| 15 | `spitfire-radio-channel-presets` | Match ED stock Spitfire radio bank (A=124, B=40, C=41, D=42, E=108.9), not only group frequency | `idea` |
 
 ---
 

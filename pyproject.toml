@@ -1,0 +1,34 @@
+[project]
+name = "dcs-miz-planner"
+version = "0.1.0"
+description = "Natural-language -> Mission Spec -> deterministic DCS .miz compiler"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "pydantic>=2.7",
+    "pyyaml>=6.0",
+    "pydcs>=0.15.0",
+]
+
+[project.scripts]
+dcs-miz = "dcs_miz_planner.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dcs_miz_planner"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

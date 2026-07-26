@@ -1,7 +1,20 @@
 # Local research samples / findings (not for version control)
 research/
+# Ideas and concepts
+ideas-concepts.txt
+ideas-in-progress.txt
 
 # Node / OpenSpec
 node_modules/
 npm-debug.log*
 .npm/
+
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Generated missions
+out/

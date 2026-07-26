@@ -7,6 +7,23 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Spitfire / WWII: group frequency must be in VHF band
+
+- **Date:** 2026-07-26
+- **Symptom:** Compiled Manston free-flight `.miz` opens in the Mission Editor, but launching the flight warns the radio frequency is invalid for the Spitfire. PyDCS defaults every group to `["frequency"]=251`.
+- **Cause:** 251 MHz is a modern UHF value. WWII radios cannot tune it: Allied VHF is ~**100–156 MHz**, German VHF ~**38.4–42.4 MHz**.
+- **Fix:** Set the group frequency from `AIRCRAFT_RADIO_MHZ` (Spitfire **124**, Bf-109K-4 40, FW-190 38.4) — the values every stock ED Channel mission uses. Assigning `group.frequency` is enough; DCS tunes the aircraft's first radio channel from it, and stock missions leave `radioSet = false`.
+- **Code:** `src/dcs_miz_planner/compiler/pydcs_compiler.py`; table in `reference.py`.
+- **Do not:** use the airfield ATC frequency as the flight frequency. It is in-band and works (Channel ATC VHF-high runs 118.05–118.6, Manston = 118.45), but it is the tower channel, not the flight's, and diverges from every stock mission.
+- **Note:** PyDCS `set_frequency()` also flips `radio_set` and writes channel presets — more than ME does. Plain attribute assignment matches stock output.
+
+## Spitfire cockpit arguments: triggers only, not compile input
+
+- **Date:** 2026-07-25
+- **Lesson:** Community list [DCS User Files 3349460](https://www.digitalcombatsimulator.com/en/files/3349460/) (ModelViewer2 args for Spitfire LF Mk.IX) is for Mission Editor **triggers** that watch cockpit state (e.g. switch/gauge animation args). It does **not** set cold-start / parking state and is **not** needed for free-flight `.miz` compile.
+- **Caveats:** Tied to DCS **2.9.25.21402**; some rows marked incomplete (red text in the sheet). Animation argument numbers are not the same as clickable command IDs — re-verify in-game before promoting into a registry.
+- **Local copy:** `research/spitfire-cockpit-arguments/` (PDF + Excel; gitignored under `research/`). Do not commit the RAR or dump raw args into the product registry until an interactive/training-mission change needs them.
+
 ## PyDCS: payload loader KeyError when DCS install is present
 
 - **Date:** 2026-07-25
