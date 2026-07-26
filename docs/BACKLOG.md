@@ -37,16 +37,17 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-Only after M1 produces a file. Next promote: `reference-registry-channel`.
+**Next promote:** `dev-module-map` (architecture map first — easier onboarding before more package churn).
+Then resume `reference-registry-channel` (OpenSpec proposal already drafted on branch `reference-registry-channel`).
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 2 | `mission-spec-schema` | Formalize Mission Spec (free flight + extension points for combat) | `done` (accepted in-game 2026-07-26) |
-| 3 | `reference-registry-channel` | Queryable Channel registry (SQLite or generated tables): airfields, aircraft, weather presets, payload CLSIDs, landmarks/cities as available; agent + validator share one source of truth | `idea` |
+| 7 | `dev-module-map` | Checked-in architecture diagram + short module relationship doc; refresh on meaningful package/layout commits (hook or CI optional later) | `idea` — **do next** |
+| 3 | `reference-registry-channel` | Queryable Channel registry (YAML tables + Python API; SQLite deferred): airfields, aircraft, weather presets, payload CLSIDs; agent + validator share one source of truth | `proposed` (paused; proposal on branch) |
 | 4 | `installed-theatres-probe` | Detect theatres/maps present in the local DCS install so generation only offers what the user can fly | `idea` |
 | 5 | `validation-engine` | Structural + DCS-exists + semantic validation with clear errors | `idea` |
 | 6 | `golden-fixtures-tests` | pytest regression: spec → `.miz` structural asserts | `idea` |
-| 7 | `dev-module-map` | Checked-in architecture diagram + short module relationship doc; refresh on meaningful package/layout commits (hook or CI optional later) | `idea` |
 
 ---
 
@@ -106,9 +107,9 @@ the trigger/script text itself is human-authored, versioned, and tested.
 
 Sequencing note: 20–21 need `mission-spec-schema` (M2 `#2`), `validation-engine` (M2 `#5`) and
 `golden-fixtures-tests` (M2 `#6`) first — an unvalidated trigger graph is how missions silently
-break. 22 stays optional: prefer native triggers whenever they suffice. Before designing `#20`–`#22`,
-prefer having **R5** findings (from R1–R2 mission/campaign Lua audits) so the trigger model matches
-real Spitfire content, not a theoretical API surface.
+break. 22 stays optional: prefer native triggers whenever they suffice. **R5 (stock Channel) is done:**
+model zones/flags/time/unit-dead/radio/messages first; Mist/MOOSE default **off** until R1–R2 say otherwise.
+Still useful to revisit R5 after user-file audits.
 
 ---
 
@@ -122,8 +123,8 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R2 | `research-spitfire-campaigns` | Same for campaigns ([filter](https://files.digitalcombatsimulator.com/en/files/filter/type-is-campaign/unit-is-spitfire_lf_mk.ix/apply/)); track each file; learn campaign structure; **same Lua/trigger audit as R1 across campaign missions** | `idea` |
 | R3 | `research-historical-spitfire-sorties` | Web research of real historical Spitfire sorties usable as mission templates (feeds intercept/CAP/escort + historical validation) | `idea` |
 | R4 | `research-spitfire-cockpit-args` | Keep [cockpit args list](https://files.digitalcombatsimulator.com/en/files/3349460/) as trigger/training reference only (see `LESSONS_LEARNED.md`); re-verify on DCS version bumps; promote only when an interactive-mission change needs it | `idea` |
-| R5 | `research-lua-usage-patterns` | Synthesize R1–R2 (+ a few ED stock Channel missions): classify Lua usage — none / native triggers only / Mist·MOOSE / custom scripts; list recurring trigger patterns worth modeling in M6 `#20`–`#22`; write a short findings note under `research/` | `idea` |
-| R6 | `research-lua-ide-tooling` | Lab setup for snippet authoring: pin/vendor [dcs-world-schema](https://github.com/YoloWingPixie/dcs-world-schema) (or DCS-Scripting-Library) + LuaLS in Cursor; optional VEAF MCP (`veaf-tools mcp`) only to observe how scripts/triggers land in a `.miz` — never as product compiler | `idea` |
+| R5 | `research-lua-usage-patterns` | Stock Channel Spitfire IA + Training + Beware campaign audited; findings in `research/lua-usage-patterns.md` | `done` (2026-07-26; revise after R1–R2) |
+| R6 | `research-lua-ide-tooling` | Recipe in `research/lua-ide-tooling.md`: pin dcs-world-schema EmmyLua + LuaLS lab; VEAF MCP only at first `#22` snippet work | `done` (notes only; lab vendor not installed) |
 
 Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 
@@ -173,14 +174,14 @@ Resolve these inside the relevant proposal, not here.
 | Output path: `Saved Games\DCS\Missions\` vs `./out/` | M1 (default `out/` shipped) |
 | CLI (`compile spec.yaml`) vs library entrypoint only | M1 (CLI shipped) |
 | Clipped-wing `SpitfireLFMkIXCW` ever in scope | M2 |
-| Registry storage: SQLite vs JSON/YAML tables vs both | M2 `#3` |
+| Registry storage: SQLite vs JSON/YAML tables vs both | M2 `#3` — **decided in proposal: YAML + Python API; SQLite deferred** |
 | How much of `research/FINDINGS.md` becomes committed main specs | M2 |
-| Auto-refresh of `dev-module-map` (manual vs hook on push) | M2 `#7` |
+| Auto-refresh of `dev-module-map` (manual vs hook on push) | M2 `#7` — resolve in that proposal |
 | Default squadron voice: RAF vs USAAF vs user pick | M3 `#11` |
-| Trigger model expressiveness: minimal condition/action set vs full DCS trigger surface | M6 `#20` |
-| Embedded Lua snippets: `.miz` script member vs `DO SCRIPT` trigger action | M6 `#22` |
-| Whether to pin Mist/MOOSE as optional runtime deps (from R5 findings) | M6 `#22` |
-| When to install VEAF MCP locally (R6) vs wait until first snippet work | R6 |
+| Trigger model expressiveness: minimal condition/action set vs full DCS trigger surface | M6 `#20` — seed from R5 recurring native patterns |
+| Embedded Lua snippets: `.miz` script member vs `DO SCRIPT` trigger action | M6 `#22` — R5 Training uses DictKey + `a_do_script`, not zip-root `.lua` |
+| Whether to pin Mist/MOOSE as optional runtime deps (from R5 findings) | M6 `#22` — **default no** (stock Channel); revisit after R1–R2 |
+| When to install VEAF MCP locally (R6) vs wait until first snippet work | R6 — **at first `#22` snippet authoring**, not during M2 |
 
 ---
 

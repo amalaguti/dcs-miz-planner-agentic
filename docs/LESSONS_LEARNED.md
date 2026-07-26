@@ -7,6 +7,21 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Stock Channel Spitfire: native triggers, almost no Lua
+
+- **Date:** 2026-07-26
+- **Lesson:** ED Channel Spitfire Instant Action missions audited in R5 use **native ME triggers** (zones, flags, radio menus, unit-dead, messages/VO). **No Mist, no MOOSE, no zip-root `.lua`** in that corpus. Prefer native trigger compile (M6 `#20`–`#21`) for Channel combat behaviour.
+- **Training exception:** `1-Startup.miz` uses short `a_do_script` payloads stored as **dictionary ActionText** keys (Mission Scripting API / event handlers), not separate zip `.lua` files — template for optional M6 `#22` snippets.
+- **Beware! Beware!** Channel campaign missions can ship with **empty** trigger tables; immersion is briefing/kneeboard/VO/AI routes, not triggers.
+- **Source:** `research/lua-usage-patterns.md` (gitignored). Revisit after R1–R2 user-file audits.
+- **Do not:** assume free flight ⇒ zero triggers (stock Cold/Free Flight still have zone→VO scaffolding).
+
+## Mission Scripting API defs ≠ ME trigger predicates
+
+- **Date:** 2026-07-26
+- **Lesson:** EmmyLua / `dcs-world-schema` helps author **SSE** Lua (`trigger.action.*`, `world.addEventHandler`). It does **not** validate Mission Editor action names (`a_out_text_delay`, `c_part_of_coalition_in_zone`). Those need PyDCS emit + golden fixtures against stock extracts.
+- **Source:** `research/lua-ide-tooling.md`. Vendor LuaLS lab only when M6 `#22` starts; VEAF MCP is a lab microscope, never the product compiler.
+
 ## Spitfire / WWII: group frequency must be in VHF band
 
 - **Date:** 2026-07-26
