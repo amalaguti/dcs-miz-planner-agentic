@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-Only after M1 produces a file. Next promote: `mission-spec-schema`.
+Only after M1 produces a file. Next promote: `reference-registry-channel`.
 
 | # | Item | Goal | Status |
 |---|------|------|--------|

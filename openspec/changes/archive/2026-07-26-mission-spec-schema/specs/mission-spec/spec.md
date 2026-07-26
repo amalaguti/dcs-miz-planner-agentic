@@ -1,12 +1,4 @@
-# Mission Spec
-
-## Purpose
-
-The Mission Spec is the public contract between the planning layer (eventually an AI agent)
-and the compiler. It is a declarative, backend-agnostic description of a mission that
-contains no DCS Lua and no compiler types.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Schema version on Mission Spec
 The Mission Spec SHALL include a `schema_version` field. For this change the required value MUST be `"1"`.
@@ -27,7 +19,7 @@ The Mission Spec SHALL reject undeclared fields at every model level (no silent 
 - **THEN** loading MUST fail with a validation error that identifies the unexpected field
 
 ### Requirement: Reserved extension points for future combat and triggers
-The Mission Spec MAY include optional top-level keys `enemies`, `objectives`, and `triggers` as reserved extension points. For free-flight missions those keys MUST be absent or empty. Non-empty values MUST NOT be compiled; the system MUST fail with a clear “not supported yet” error until a later change implements them.
+The Mission Spec MAY include optional top-level keys `enemies`, `objectives`, and `triggers` as reserved extension points. For free-flight missions in this change, those keys MUST be absent or empty. Non-empty values MUST NOT be compiled; the system MUST fail with a clear “not supported yet” error.
 
 #### Scenario: Free flight with absent extensions compiles
 - **WHEN** a free-flight Mission Spec omits `enemies`, `objectives`, and `triggers`
@@ -37,26 +29,14 @@ The Mission Spec MAY include optional top-level keys `enemies`, `objectives`, an
 - **WHEN** a Mission Spec sets any of `enemies`, `objectives`, or `triggers` to a non-empty value
 - **THEN** the system MUST refuse compilation (or refuse load) with an error stating that capability is not supported yet
 
+## MODIFIED Requirements
+
 ### Requirement: Free-flight Mission Spec schema
 The system SHALL define a Mission Spec for free-flight missions that includes `schema_version`, theatre, date, start time, weather preset, and a single player aircraft placement.
 
 #### Scenario: Manston cold free-flight example is representable
 - **WHEN** an author provides a free-flight Mission Spec with `schema_version` `"1"` for Channel with player `SpitfireLFMkIX`, airfield `Manston`, start type cold parking, start time 09:00, and weather preset `sunny_clear`
 - **THEN** the Mission Spec SHALL be accepted as structurally valid for compilation
-
-### Requirement: Exact DCS identifiers in the Mission Spec
-The Mission Spec SHALL use verified DCS identifiers for theatre and aircraft type and SHALL NOT invent alternate spellings.
-
-#### Scenario: Theatre and aircraft ids
-- **WHEN** a free-flight Mission Spec targets The Channel and Spitfire LF Mk IX
-- **THEN** theatre MUST be `TheChannel` and player aircraft type MUST be `SpitfireLFMkIX`
-
-### Requirement: Airfield referenced by name in the Mission Spec
-The Mission Spec SHALL allow the player departure airfield to be specified by display name (e.g. `Manston`), with mapping to DCS `airdromeId` performed by the compiler layer.
-
-#### Scenario: Manston by name
-- **WHEN** the Mission Spec sets player airfield to `Manston`
-- **THEN** the compiled mission MUST place the player at Manston (`airdromeId` 5)
 
 ### Requirement: Checked-in example Mission Spec
 The repository SHALL include a checked-in example Mission Spec that encodes the Manston cold free-flight acceptance mission and includes `schema_version` `"1"`.
