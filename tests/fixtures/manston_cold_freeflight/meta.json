@@ -1,0 +1,20 @@
+{
+  "required_members": [
+    "mission",
+    "options",
+    "theatre",
+    "warehouses"
+  ],
+  "mission_must_contain": [
+    "SpitfireLFMkIX",
+    "[\"airdromeId\"]=5",
+    "[\"start_time\"]=32400",
+    "TakeOffParking",
+    "\"Player\"",
+    "[\"frequency\"]=124.0"
+  ],
+  "source_spec": "examples/manston_cold_freeflight.yaml",
+  "normalized_fields": [
+    "onboard_num"
+  ]
+}

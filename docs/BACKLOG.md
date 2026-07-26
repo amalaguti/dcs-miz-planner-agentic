@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote:** `golden-fixtures-tests`
+**Next promote:** M3 (`agent-tools-surface`) — or pick from backlog
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -46,7 +46,7 @@ Editor and is flyable, reproducibly, from a single command.
 | 3 | `reference-registry-channel` | Queryable Channel registry (YAML tables + Python API as product SoT; SQLite reserved for user-local install cache in `#4`): airfields, aircraft, weather presets, payload CLSIDs | `done` (accepted in-game 2026-07-26) |
 | 4 | `installed-theatres-probe` | User-local SQLite install inventory (install/remove + enable/disable); refresh on demand; YAML registry stays product SoT; only offer maps both available and planner-supported | `done` (CLI accepted 2026-07-26; registry Path discovery) |
 | 5 | `validation-engine` | Structural + DCS-exists + semantic validation with clear errors (shared API + `dcs-miz validate`; compile uses same engine) | `done` (accepted in-game 2026-07-26) |
-| 6 | `golden-fixtures-tests` | pytest regression: spec → `.miz` structural asserts | `idea` |
+| 6 | `golden-fixtures-tests` | pytest regression: spec → `.miz` structural asserts | `done` (accepted 2026-07-26; suite green) |
 
 ---
 

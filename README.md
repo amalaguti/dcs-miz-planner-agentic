@@ -14,7 +14,8 @@ fields rejected, combat/trigger keys reserved for later). Channel DCS facts
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
 refresh with `dcs-miz theatres --refresh`. Shared validation
 (`dcs-miz validate` / compile) checks registry + local theatre inventory.
-Module map:
+Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
+(refresh: `uv run python tests/refresh_manston_golden.py`). Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.

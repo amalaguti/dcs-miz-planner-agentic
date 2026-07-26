@@ -100,7 +100,7 @@ Two boundaries worth respecting:
 |------|------------------|
 | `src/dcs_miz_planner/` | Product code (the modules above) |
 | `examples/` | Checked-in Mission Specs; `manston_cold_freeflight.yaml` is the acceptance fixture |
-| `tests/` | pytest: schema, registry, install probe (synthetic fixtures), compile asserts |
+| `tests/` | pytest: schema, registry, install probe, validation, Manston golden fixtures (`tests/fixtures/`) + PyDCS round-trip smoke |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |
 | `docs/` | This file, `BACKLOG.md`, `LESSONS_LEARNED.md` |

@@ -7,6 +7,14 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Golden fixtures: normalize random `onboard_num`
+
+- **Date:** 2026-07-26
+- **Symptom:** Full `mission` member comparison fails across processes even when the Spec is unchanged.
+- **Cause:** PyDCS assigns a random `["onboard_num"]` per process; other Manston free-flight fields stay stable.
+- **Fix:** Store a normalized golden (`onboard_num` → `"<num>"`) and compare after the same normalization; keep explicit substring contracts (Manston, frequency, etc.).
+- **Code:** `tests/fixtures_support.py`, `tests/fixtures/manston_cold_freeflight/`; refresh with `uv run python tests/refresh_manston_golden.py`.
+
 ## Install inventory: SQLite cache, never execute DCS Lua
 
 - **Date:** 2026-07-26
