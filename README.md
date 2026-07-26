@@ -15,10 +15,13 @@ availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqli
 refresh with `dcs-miz theatres --refresh`. Shared validation
 (`dcs-miz validate` / compile) checks registry + local theatre inventory.
 Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
-(refresh: `uv run python tests/refresh_manston_golden.py`). Module map:
+(refresh: `uv run python tests/refresh_manston_golden.py`). Intercept Spec
+(`examples/manston_dawn_intercept.yaml`) places Bf-109K-4s on a Hawkinge/Dover
+approach corridor — open the compiled `.miz` in DCS to accept. Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
+**Next combat slice:** dawn Manston intercept vs Bf-109K-4 (accepted in-game 2026-07-26).
 
 ## Stack
 
@@ -27,13 +30,17 @@ Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
 - OpenSpec (`npx openspec`) for SDD
 - pre-commit (blocks commits on `master`/`main`; runs Ruff lint + format on Python)
 
-## Validate and compile the Manston example
+## Validate and compile examples
 
 ```bash
 uv sync
 uv run dcs-miz validate examples/manston_cold_freeflight.yaml
 uv run dcs-miz examples/manston_cold_freeflight.yaml
 # -> out/manston_cold_freeflight.miz
+
+uv run dcs-miz validate examples/manston_dawn_intercept.yaml
+uv run dcs-miz examples/manston_dawn_intercept.yaml
+# -> out/manston_dawn_intercept.miz
 ```
 
 Open the result in the DCS Mission Editor, or copy it into
@@ -64,6 +71,7 @@ Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blo
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
 - Architecture / module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Roadmap / backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md)
+- Milestone judgment (2026-07-26): [`docs/JUDGMENT.md`](docs/JUDGMENT.md)
 - Agent lessons (PyDCS/DCS pitfalls): [`docs/LESSONS_LEARNED.md`](docs/LESSONS_LEARNED.md)
 - OpenSpec config: [`openspec/config.yaml`](openspec/config.yaml)
 - Local research samples are gitignored (`research/`)

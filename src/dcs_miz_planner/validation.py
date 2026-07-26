@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
-from .models import MissionSpec, MissionType
+from .models import MissionSpec, MissionType, ObjectiveType
 from .registry import ChannelRegistry, RegistryError, get_channel_registry
 
 
@@ -58,25 +58,77 @@ def validate_mission_spec(
     registry = registry if registry is not None else get_channel_registry()
     errors: list[ValidationError] = []
 
-    if spec.mission_type is not MissionType.FREE_FLIGHT:
+    if spec.mission_type not in (MissionType.FREE_FLIGHT, MissionType.INTERCEPT):
         errors.append(
             ValidationError(
                 code="unsupported_mission_type",
                 path="mission_type",
                 message=f"Unsupported mission_type {spec.mission_type.value!r}",
-                hint="Only free_flight is supported in schema_version 1",
+                hint="Supported: free_flight, intercept",
             )
         )
 
-    for name in ("enemies", "objectives", "triggers"):
-        if getattr(spec, name):
+    if spec.triggers:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="triggers",
+                message="triggers not supported yet: must be empty in schema_version 1",
+            )
+        )
+
+    if spec.mission_type is MissionType.FREE_FLIGHT:
+        for name in ("enemies", "objectives"):
+            if getattr(spec, name):
+                errors.append(
+                    ValidationError(
+                        code="extension_not_supported",
+                        path=name,
+                        message=(
+                            f"{name} not supported for free_flight: must be empty "
+                            "(use mission_type intercept)"
+                        ),
+                    )
+                )
+    elif spec.mission_type is MissionType.INTERCEPT:
+        if not spec.enemies:
             errors.append(
                 ValidationError(
-                    code="extension_not_supported",
-                    path=name,
-                    message=f"{name} not supported yet: must be empty in schema_version 1",
+                    code="enemies_required",
+                    path="enemies",
+                    message="intercept missions require a non-empty enemies list",
                 )
             )
+        if not spec.objectives:
+            errors.append(
+                ValidationError(
+                    code="objectives_required",
+                    path="objectives",
+                    message="intercept missions require a non-empty objectives list",
+                )
+            )
+        for i, obj in enumerate(spec.objectives):
+            if obj.type is not ObjectiveType.INTERCEPT_ENEMY:
+                errors.append(
+                    ValidationError(
+                        code="unknown_objective",
+                        path=f"objectives[{i}].type",
+                        message=f"Unsupported objective type {obj.type.value!r}",
+                        hint="Supported: intercept_enemy",
+                    )
+                )
+        for i, enemy in enumerate(spec.enemies):
+            try:
+                registry.get_aircraft(enemy.aircraft)
+            except RegistryError:
+                errors.append(
+                    ValidationError(
+                        code="unknown_aircraft",
+                        path=f"enemies[{i}].aircraft",
+                        message=f"Unknown aircraft '{enemy.aircraft}'",
+                        hint=f"Known: {registry.list_aircraft()}",
+                    )
+                )
 
     if not registry.has_theatre(spec.theatre):
         errors.append(

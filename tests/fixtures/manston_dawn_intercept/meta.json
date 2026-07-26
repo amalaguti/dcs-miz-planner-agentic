@@ -1,0 +1,22 @@
+{
+  "required_members": [
+    "mission",
+    "options",
+    "theatre",
+    "warehouses"
+  ],
+  "mission_must_contain": [
+    "SpitfireLFMkIX",
+    "Bf-109K-4",
+    "[\"airdromeId\"]=5",
+    "[\"start_time\"]=21600",
+    "TakeOffParking",
+    "\"Player\"",
+    "[\"frequency\"]=124.0",
+    "[\"frequency\"]=40.0"
+  ],
+  "source_spec": "examples/manston_dawn_intercept.yaml",
+  "normalized_fields": [
+    "onboard_num"
+  ]
+}

@@ -11,10 +11,20 @@ from dcs_miz_planner.cli import main
 from dcs_miz_planner.compiler import PyDCSCompiler
 from dcs_miz_planner.install.models import AvailabilityState, TheatreInventory, TheatreRecord
 from dcs_miz_planner.loader import load_mission_spec
-from dcs_miz_planner.models import MissionDate, MissionSpec, MissionType, Player, WeatherPreset
+from dcs_miz_planner.models import (
+    EnemyFlight,
+    MissionDate,
+    MissionSpec,
+    MissionType,
+    Objective,
+    ObjectiveType,
+    Player,
+    WeatherPreset,
+)
 from dcs_miz_planner.validation import validate_mission_spec
 
 EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "manston_cold_freeflight.yaml"
+INTERCEPT_EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "manston_dawn_intercept.yaml"
 
 
 def _channel_inventory(
@@ -57,6 +67,30 @@ def test_manston_example_validates(tmp_path: Path):
     spec = load_mission_spec(EXAMPLE)
     result = validate_mission_spec(spec, inventory=_channel_inventory())
     assert result.ok
+
+
+def test_intercept_example_validates():
+    spec = load_mission_spec(INTERCEPT_EXAMPLE)
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert result.ok
+
+
+def test_intercept_unknown_enemy_aircraft():
+    spec = MissionSpec(
+        schema_version="1",
+        mission_type=MissionType.INTERCEPT,
+        theatre="TheChannel",
+        date=MissionDate(year=1944, month=6, day=6),
+        start_time="06:00",
+        weather=WeatherPreset.SUNNY_CLEAR,
+        player=Player(aircraft="SpitfireLFMkIX", airfield="Manston"),
+        enemies=[EnemyFlight(aircraft="NoSuchJet", count=2)],
+        objectives=[Objective(type=ObjectiveType.INTERCEPT_ENEMY)],
+    )
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert any(
+        e.code == "unknown_aircraft" and e.path == "enemies[0].aircraft" for e in result.errors
+    )
 
 
 def test_unknown_airfield():

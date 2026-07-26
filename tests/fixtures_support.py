@@ -14,7 +14,9 @@ from dcs_miz_planner.loader import load_mission_spec
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE_SPEC = REPO_ROOT / "examples" / "manston_cold_freeflight.yaml"
+INTERCEPT_SPEC = REPO_ROOT / "examples" / "manston_dawn_intercept.yaml"
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cold_freeflight"
+INTERCEPT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_dawn_intercept"
 
 REQUIRED_MEMBERS = ("mission", "options", "theatre", "warehouses")
 MISSION_CONTRACTS = (
@@ -24,6 +26,16 @@ MISSION_CONTRACTS = (
     "TakeOffParking",
     '"Player"',
     '["frequency"]=124.0',
+)
+INTERCEPT_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    "Bf-109K-4",
+    '["airdromeId"]=5',
+    '["start_time"]=21600',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+    '["frequency"]=40.0',
 )
 
 # PyDCS assigns a random board number each process; pin it for stable goldens.
@@ -56,6 +68,11 @@ def compile_manston(output_path: Path) -> Path:
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
 
 
+def compile_intercept(output_path: Path) -> Path:
+    spec = load_mission_spec(INTERCEPT_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
+
+
 def extract_structural(miz_path: Path) -> tuple[set[str], str, str]:
     with zipfile.ZipFile(miz_path) as z:
         members = set(z.namelist())
@@ -64,7 +81,13 @@ def extract_structural(miz_path: Path) -> tuple[set[str], str, str]:
     return members, theatre, mission
 
 
-def write_golden(miz_path: Path, fixture_dir: Path = FIXTURE_DIR) -> None:
+def write_golden(
+    miz_path: Path,
+    fixture_dir: Path,
+    *,
+    source_spec: str,
+    mission_contracts: tuple[str, ...],
+) -> None:
     members, theatre, mission = extract_structural(miz_path)
     missing = set(REQUIRED_MEMBERS) - members
     if missing:
@@ -75,12 +98,30 @@ def write_golden(miz_path: Path, fixture_dir: Path = FIXTURE_DIR) -> None:
     (fixture_dir / "mission").write_text(normalize_mission(mission), encoding="utf-8", newline="\n")
     meta = {
         "required_members": list(REQUIRED_MEMBERS),
-        "mission_must_contain": list(MISSION_CONTRACTS),
-        "source_spec": "examples/manston_cold_freeflight.yaml",
+        "mission_must_contain": list(mission_contracts),
+        "source_spec": source_spec,
         "normalized_fields": ["onboard_num"],
     }
     (fixture_dir / "meta.json").write_text(
         json.dumps(meta, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
+
+
+def write_manston_golden(miz_path: Path, fixture_dir: Path = FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_cold_freeflight.yaml",
+        mission_contracts=MISSION_CONTRACTS,
+    )
+
+
+def write_intercept_golden(miz_path: Path, fixture_dir: Path = INTERCEPT_FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_dawn_intercept.yaml",
+        mission_contracts=INTERCEPT_MISSION_CONTRACTS,
     )
 
 

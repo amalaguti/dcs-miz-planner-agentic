@@ -68,7 +68,7 @@ def test_non_empty_enemies_rejected(tmp_path):
     data["enemies"] = [{"aircraft": "Bf-109K-4", "count": 4}]
     with pytest.raises(SpecLoadError) as exc:
         load_mission_spec(_write(tmp_path, data))
-    assert "not supported yet" in str(exc.value)
+    assert "free_flight" in str(exc.value) or "not supported" in str(exc.value)
 
 
 def test_non_empty_triggers_rejected(tmp_path):
@@ -76,7 +76,16 @@ def test_non_empty_triggers_rejected(tmp_path):
     data["triggers"] = [{"when": "start", "do": "message"}]
     with pytest.raises(SpecLoadError) as exc:
         load_mission_spec(_write(tmp_path, data))
-    assert "not supported yet" in str(exc.value)
+    assert "triggers" in str(exc.value)
+
+
+def test_intercept_example_loads():
+    path = Path(__file__).resolve().parents[1] / "examples" / "manston_dawn_intercept.yaml"
+    spec = load_mission_spec(path)
+    assert spec.mission_type.value == "intercept"
+    assert len(spec.enemies) == 1
+    assert spec.enemies[0].aircraft == "Bf-109K-4"
+    assert spec.objectives[0].type.value == "intercept_enemy"
 
 
 def test_non_dict_yaml_rejected(tmp_path):

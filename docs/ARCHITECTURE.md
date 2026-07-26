@@ -67,14 +67,14 @@ cli theatres  -> install/ (probe) -> inventory.sqlite  (refresh on demand)
 |--------|----------------|------------|
 | `cli.py` | `validate` / `compile` / legacy spec path; `theatres` list/refresh; clean errors | `loader`, `validation`, `compiler`, `install` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
-| `models.py` | The public contract: `MissionSpec` + enums. Rejects unknown fields; reserves `enemies`/`objectives`/`triggers` | `pydantic` |
-| `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + free-flight semantics); multi-error result | `models`, `registry`, `install` |
+| `models.py` | The public contract: `MissionSpec` + enums. Free flight + intercept; reserves `triggers` | `pydantic` |
+| `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules); multi-error result | `models`, `registry`, `install` |
 | `data/channel/` | Committed Channel YAML tables (airdromeIds, aircraft+radio, theatres, weather presets, payload stub) | — |
 | `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
-| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, then places the flight / writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |
+| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, places player (and intercept enemies), writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |
 
 Two stores stay separate on purpose:
 
@@ -99,8 +99,8 @@ Two boundaries worth respecting:
 | Path | What lives there |
 |------|------------------|
 | `src/dcs_miz_planner/` | Product code (the modules above) |
-| `examples/` | Checked-in Mission Specs; `manston_cold_freeflight.yaml` is the acceptance fixture |
-| `tests/` | pytest: schema, registry, install probe, validation, Manston golden fixtures (`tests/fixtures/`) + PyDCS round-trip smoke |
+| `examples/` | Checked-in Mission Specs; `manston_cold_freeflight.yaml` + `manston_dawn_intercept.yaml` |
+| `tests/` | pytest: schema, registry, install probe, validation, Manston free-flight + intercept goldens |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |
 | `docs/` | This file, `BACKLOG.md`, `LESSONS_LEARNED.md` |

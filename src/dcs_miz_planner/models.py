@@ -1,13 +1,12 @@
 """Mission Spec models — the AI/compiler contract.
 
 Public, backend-agnostic domain model. Never contains PyDCS types.
-Scope (v1): free-flight missions only.
+Scope: free-flight and intercept (schema_version \"1\").
 """
 
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -23,6 +22,7 @@ class SpecModel(BaseModel):
 
 class MissionType(str, Enum):
     FREE_FLIGHT = "free_flight"
+    INTERCEPT = "intercept"
 
 
 class Coalition(str, Enum):
@@ -36,6 +36,10 @@ class StartType(str, Enum):
 
 class WeatherPreset(str, Enum):
     SUNNY_CLEAR = "sunny_clear"
+
+
+class ObjectiveType(str, Enum):
+    INTERCEPT_ENEMY = "intercept_enemy"
 
 
 class MissionDate(SpecModel):
@@ -53,13 +57,26 @@ class Player(SpecModel):
     start: StartType = StartType.COLD_PARKING
 
 
-class MissionSpec(SpecModel):
-    """Declarative free-flight mission specification.
+class EnemyFlight(SpecModel):
+    """One enemy flight for intercept (and later combat types)."""
 
-    ``enemies`` / ``objectives`` / ``triggers`` are reserved extension points for
-    future combat and immersion work (backlog M4 / M6). They MUST stay empty in
-    this schema version; the compiler ignores them when empty and refuses to
-    silently drop non-empty values.
+    aircraft: str  # exact DCS type id, e.g. Bf-109K-4
+    count: int = Field(ge=1, le=16)
+    skill: str = "Average"
+    country: str = "ThirdReich"
+    coalition: Coalition = Coalition.RED
+
+
+class Objective(SpecModel):
+    type: ObjectiveType
+
+
+class MissionSpec(SpecModel):
+    """Declarative mission specification (free flight or intercept).
+
+    ``triggers`` remain reserved for M6 and MUST stay empty in this schema version.
+    ``enemies`` / ``objectives`` are required for intercept and must stay empty for
+    free_flight.
     """
 
     schema_version: str = Field(description='Mission Spec schema version. Only "1" is supported.')
@@ -72,10 +89,9 @@ class MissionSpec(SpecModel):
     name: str = "Free Flight"
     description: str = ""
 
-    # Reserved extension points — not compiled yet (must be empty in v1).
-    enemies: list[Any] = Field(default_factory=list)
-    objectives: list[Any] = Field(default_factory=list)
-    triggers: list[Any] = Field(default_factory=list)
+    enemies: list[EnemyFlight] = Field(default_factory=list)
+    objectives: list[Objective] = Field(default_factory=list)
+    triggers: list[dict] = Field(default_factory=list)
 
     @field_validator("schema_version")
     @classmethod
@@ -98,14 +114,30 @@ class MissionSpec(SpecModel):
         return v
 
     @model_validator(mode="after")
-    def _reject_unsupported_extensions(self) -> MissionSpec:
-        used = [name for name in ("enemies", "objectives", "triggers") if getattr(self, name)]
-        if used:
+    def _mission_type_extension_rules(self) -> MissionSpec:
+        if self.triggers:
             raise ValueError(
-                f"{', '.join(used)} not supported yet: combat/trigger extension "
-                "points are reserved for a future schema version and must be empty"
+                "triggers not supported yet: must be empty in schema_version 1 "
+                "(reserved for a future trigger model)"
             )
-        return self
+
+        if self.mission_type is MissionType.FREE_FLIGHT:
+            used = [name for name in ("enemies", "objectives") if getattr(self, name)]
+            if used:
+                raise ValueError(
+                    f"{', '.join(used)} not supported for free_flight: "
+                    "combat extension points must be empty (use mission_type intercept)"
+                )
+            return self
+
+        if self.mission_type is MissionType.INTERCEPT:
+            if not self.enemies:
+                raise ValueError("intercept missions require a non-empty enemies list")
+            if not self.objectives:
+                raise ValueError("intercept missions require a non-empty objectives list")
+            return self
+
+        raise ValueError(f"Unsupported mission_type {self.mission_type!r}")  # pragma: no cover
 
     @property
     def start_seconds(self) -> int:

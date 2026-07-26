@@ -7,6 +7,25 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Channel WWII Axis: use `ThirdReich`, not `Germany`
+
+- **Date:** 2026-07-26
+- **Symptom:** Intercept `.miz` shows “Allies flight: Bf 109 K-4” in the Mission Editor.
+- **Cause:** PyDCS Channel defaults put modern **Germany** on **blue** (Allies). Looking up
+  `Germany` reuses that blue country even when the Spec says `coalition: red`.
+- **Fix:** Spec/compiler use PyDCS country id **`ThirdReich`** (DCS name “Third Reich”) on
+  **red**. `_ensure_country` resolves by class attribute name, looks up by DCS display name,
+  and refuses a country already parked on the wrong coalition.
+- **Code:** `compiler/pydcs_compiler.py` (`_ensure_country`); example
+  `examples/manston_dawn_intercept.yaml`.
+
+## Intercept spawn: Hawkinge anchor + Dover-approach offset
+
+- **Date:** 2026-07-26
+- **Lesson:** First intercept enemy flight is spawned inflight from PyDCS `TheChannel` **Hawkinge** (airdromeId 6) map x/y, plus a fixed SE offset toward the Strait as a Dover-approach corridor relative to Manston. Do not invent WGS84 lat/lon; stay in Channel terrain units.
+- **Radio:** Enemy `Bf-109K-4` group frequency from registry (**40.0** MHz), same VHF rule as Spitfire 124.
+- **Code:** `src/dcs_miz_planner/compiler/pydcs_compiler.py` (`_place_enemies`); example `examples/manston_dawn_intercept.yaml`.
+
 ## Golden fixtures: normalize random `onboard_num`
 
 - **Date:** 2026-07-26

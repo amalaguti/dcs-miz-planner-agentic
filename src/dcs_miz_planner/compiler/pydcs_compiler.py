@@ -1,4 +1,4 @@
-"""PyDCS-backed compiler for free-flight missions.
+"""PyDCS-backed compiler for free-flight and intercept missions.
 
 Boundary rule: this module is the only place allowed to import PyDCS.
 The rest of the app depends on `MissionSpec` and `CompilerInterface`.
@@ -10,10 +10,21 @@ import datetime
 from pathlib import Path
 
 from ..install.models import TheatreInventory
-from ..models import MissionSpec, StartType, WeatherPreset
+from ..models import MissionSpec, MissionType, StartType, WeatherPreset
 from ..registry import RegistryError, get_channel_registry
 from ..validation import MissionValidationError, validate_mission_spec
 from .base import CompilerInterface
+
+# Enemy spawn for the checked-in Manston dawn intercept example.
+# Source: PyDCS `TheChannel` airport Hawkinge (airdromeId 6) map position, offset
+# south-east toward the Strait as a Dover-approach corridor (Channel geography
+# relative to Manston id 5). Not invented lat/lon — terrain units from PyDCS.
+_HAWKINGE_X = 26989.935547
+_HAWKINGE_Y = -29402.577148
+_DOVER_APPROACH_OFFSET_X = 4000.0
+_DOVER_APPROACH_OFFSET_Y = -6000.0
+_ENEMY_ALTITUDE_M = 3500
+_ENEMY_SPEED_KMH = 450
 
 
 def _disable_payload_scan(*unit_types) -> None:
@@ -34,8 +45,17 @@ def _disable_payload_scan(*unit_types) -> None:
             unit_type.payloads = {}
 
 
+def _skill_from_name(name: str):
+    from dcs.unit import Skill
+
+    try:
+        return Skill[name]
+    except KeyError as exc:
+        raise ValueError(f"Unknown skill {name!r}") from exc
+
+
 class PyDCSCompiler(CompilerInterface):
-    """Compile a free-flight Mission Spec into a .miz via PyDCS."""
+    """Compile a Mission Spec into a .miz via PyDCS."""
 
     def __init__(self, *, inventory: TheatreInventory | None = None) -> None:
         # Optional inject for tests; production uses the SQLite install cache.
@@ -49,7 +69,6 @@ class PyDCSCompiler(CompilerInterface):
         from dcs.mission import StartType as DcsStartType
         from dcs.planes import plane_map
         from dcs.terrain import TheChannel
-        from dcs.unit import Skill
 
         self._validate(spec)
 
@@ -57,7 +76,14 @@ class PyDCSCompiler(CompilerInterface):
         if aircraft_type is None:
             raise ValueError(f"Unknown PyDCS plane id: {spec.player.aircraft}")
 
-        _disable_payload_scan(aircraft_type)
+        enemy_types = []
+        for enemy in spec.enemies:
+            et = plane_map.get(enemy.aircraft)
+            if et is None:
+                raise ValueError(f"Unknown PyDCS plane id: {enemy.aircraft}")
+            enemy_types.append(et)
+
+        _disable_payload_scan(aircraft_type, *enemy_types)
 
         mission = Mission(terrain=TheChannel())
 
@@ -73,13 +99,9 @@ class PyDCSCompiler(CompilerInterface):
 
         self._apply_weather(mission, spec.weather)
 
-        country = mission.country(spec.player.country)
-        if country is None:
-            country_cls = getattr(countries, spec.player.country, None)
-            if country_cls is None:
-                raise ValueError(f"Unknown country: {spec.player.country}")
-            mission.coalition[spec.player.coalition.value].add_country(country_cls())
-            country = mission.country(spec.player.country)
+        country = self._ensure_country(
+            mission, countries, spec.player.country, spec.player.coalition.value
+        )
 
         registry = get_channel_registry()
         try:
@@ -103,18 +125,87 @@ class PyDCSCompiler(CompilerInterface):
             start_type=start_type,
             group_size=1,
         )
-        group.units[0].skill = Skill.Player
+        group.units[0].skill = _skill_from_name(spec.player.skill)
 
         # PyDCS defaults groups to 251 MHz, outside the WWII VHF bands; DCS
         # refuses the flight with a radio warning. Assigning the group
         # frequency is enough — DCS tunes the first radio channel from it.
         group.frequency = radio_mhz
 
+        if spec.mission_type is MissionType.INTERCEPT:
+            self._place_enemies(mission, countries, registry, spec, enemy_types)
+
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)
         mission.save(str(out))
         self._ensure_theatre_member(out, spec.theatre)
         return out
+
+    @staticmethod
+    def _ensure_country(mission, countries_mod, country_name: str, coalition: str):
+        """Add/find a PyDCS country on the requested coalition.
+
+        Spec uses the PyDCS class attribute name (``UK``, ``ThirdReich``). Lookup in
+        the mission uses the DCS display name (``UK``, ``Third Reich``). Modern
+        ``Germany`` is already on blue in Channel defaults — WWII Axis must use
+        ``ThirdReich`` on red, or bandits appear as Allies.
+        """
+        country_cls = getattr(countries_mod, country_name, None)
+        if country_cls is None:
+            raise ValueError(f"Unknown country: {country_name}")
+
+        dcs_name = country_cls.name
+        existing = mission.country(dcs_name)
+        if existing is not None:
+            for side, coal in mission.coalition.items():
+                if dcs_name in coal.countries:
+                    if side != coalition:
+                        raise ValueError(
+                            f"Country {country_name!r} ({dcs_name}) is already on "
+                            f"coalition {side!r}; cannot place on {coalition!r}. "
+                            f"For WWII Axis use country ThirdReich on red, not Germany."
+                        )
+                    return existing
+            return existing
+
+        mission.coalition[coalition].add_country(country_cls())
+        country = mission.country(dcs_name)
+        if country is None:
+            raise ValueError(f"Failed to add country: {country_name}")
+        return country
+
+    def _place_enemies(
+        self, mission, countries_mod, registry, spec: MissionSpec, enemy_types
+    ) -> None:
+        from dcs.mapping import Point
+
+        for enemy, aircraft_type in zip(spec.enemies, enemy_types, strict=True):
+            country = self._ensure_country(
+                mission, countries_mod, enemy.country, enemy.coalition.value
+            )
+            try:
+                radio_mhz = registry.radio_mhz(enemy.aircraft)
+            except RegistryError as exc:
+                raise ValueError(str(exc)) from exc
+
+            position = Point(
+                _HAWKINGE_X + _DOVER_APPROACH_OFFSET_X,
+                _HAWKINGE_Y + _DOVER_APPROACH_OFFSET_Y,
+                mission.terrain,
+            )
+            eg = mission.flight_group_inflight(
+                country=country,
+                name=f"Enemy {enemy.aircraft}",
+                aircraft_type=aircraft_type,
+                position=position,
+                altitude=_ENEMY_ALTITUDE_M,
+                speed=_ENEMY_SPEED_KMH,
+                group_size=enemy.count,
+            )
+            skill = _skill_from_name(enemy.skill)
+            for unit in eg.units:
+                unit.skill = skill
+            eg.frequency = radio_mhz
 
     @staticmethod
     def _ensure_theatre_member(miz_path: Path, theatre: str) -> None:

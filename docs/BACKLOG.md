@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote:** M3 (`agent-tools-surface`) — or pick from backlog
+**Next promote:** M3 `agent-tools-surface` (after intercept; see [`JUDGMENT.md`](JUDGMENT.md))
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -65,11 +65,11 @@ The AI arrives only once compilation is trustworthy.
 
 ## M4 — Mission types
 
-Each is a thin slice on top of a working compiler + validator. Inspiration inputs live under Research track (below).
+**M4 complete for now:** `mission-type-intercept` done; further mission types stay `idea`
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
-| 12 | `mission-type-intercept` | Dawn Manston intercept vs Bf-109K-4 (the concept doc's example) | `idea` |
+| 12 | `mission-type-intercept` | Dawn Manston intercept vs Bf-109K-4 (the concept doc's example) | `done` (accepted in-game 2026-07-26; ThirdReich/red) |
 | 13 | `mission-type-cap` | Patrol station, engagement rules | `idea` |
 | 14 | `mission-type-ground-attack` | Ground targets, payload selection | `idea` |
 | 15 | `mission-type-escort` | Escort a friendly package | `idea` |
@@ -152,6 +152,7 @@ Source: `ideas-concepts.txt` (2026-07-26).
 |----------|-------------|
 | Module diagram + relationship docs on update | **M2** `#7` `dev-module-map` |
 | SQLite inventory (airports, aircraft, weapons, landmarks…) for user + agent | **M2** `#3` YAML product registry shipped; **M2** `#4` starts user-local SQLite for *install* inventory (theatres first); landmarks/weapons later |
+| Mission types catalog in SQLite (for agent / UI listing) | **Park** → when expanding agent-facing inventory beyond install theatres (M3 `#8`/`#9`); keep Spec enums + YAML as compile SoT; SQLite = queryable catalog/cache, not a second truth for DCS ids |
 | Detect installed maps | **M2** `#4` `installed-theatres-probe` |
 | Agent narrates as US/RAF Squadron Commander | **M3** `#11` `squadron-commander-voice` (+ M5 briefings) |
 | Agent knows / offers all planning options | **M3** `#9` `mission-option-catalog` + tools on `#8` |

@@ -1,4 +1,4 @@
-"""Refresh Manston golden fixtures from a fresh compile.
+"""Refresh Manston free-flight golden fixtures from a fresh compile.
 
 Usage (from repo root):
 
@@ -12,13 +12,13 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
-from fixtures_support import FIXTURE_DIR, compile_manston, write_golden
+from fixtures_support import FIXTURE_DIR, compile_manston, write_manston_golden
 
 
 def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         miz = compile_manston(Path(tmp) / "manston.miz")
-        write_golden(miz, FIXTURE_DIR)
+        write_manston_golden(miz, FIXTURE_DIR)
     print(f"Wrote goldens under {FIXTURE_DIR}")
 
 
