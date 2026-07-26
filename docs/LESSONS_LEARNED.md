@@ -7,6 +7,16 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Agent catalog shares `inventory.sqlite` (query layer, not SoT)
+
+- **Date:** 2026-07-26
+- **Lesson:** Known agent rows live in `catalog_*` tables in the same
+  `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite` as install inventory. YAML under
+  `data/channel/` + Spec enums remain the product SoT; `dcs-miz catalog sync` replaces
+  `catalog_*` from that package. Theatre **offerable** = known ∧ available ∧
+  planner_supported. Never auto-promote discovered install theatres into known YAML.
+- **Code:** `catalog/`; CLI `dcs-miz catalog sync|list`.
+
 ## Channel WWII Axis: use `ThirdReich`, not `Germany`
 
 - **Date:** 2026-07-26
@@ -37,7 +47,7 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 ## Install inventory: SQLite cache, never execute DCS Lua
 
 - **Date:** 2026-07-26
-- **Lesson:** Local theatre availability lives in `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite` (override with `DCS_MIZ_INVENTORY_DB` / `--db`). Ordinary `dcs-miz theatres` reads the cache; `--refresh` rescans. Packaged Channel YAML stays the product SoT — do not copy registry facts into SQLite.
+- **Lesson:** Local theatre availability lives in `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite` (override with `DCS_MIZ_INVENTORY_DB` / `--db`). Ordinary `dcs-miz theatres` reads the cache; `--refresh` rescans. Packaged Channel YAML stays the product SoT — do not treat install inventory rows as known catalog. Known agent rows are separate `catalog_*` tables in the same file, filled only by `dcs-miz catalog sync`.
 - **Parse only:** `autoupdate.cfg` (JSON), terrain `entry.lua` / `pluginsEnabled.lua` via constrained regex for quoted fields. Never `exec` / import DCS Lua.
 - **Discovery:** on Windows, prefer `HKCU/HKLM\SOFTWARE\Eagle Dynamics\DCS World` `Path` (covers non-Program-Files installs like `S:\DCS World`), then common Program Files / Steam locations; override with `--dcs-root` / `DCS_MIZ_DCS_ROOT`.
 - **Code:** `src/dcs_miz_planner/install/`.

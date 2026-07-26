@@ -12,7 +12,7 @@ deterministic code decides *how* it becomes a `.miz`. No LLM writes DCS Lua.
 ```mermaid
 flowchart TD
     yaml["examples/*.yaml<br/>Mission Spec (YAML)"]
-    cli["cli.py<br/>dcs-miz validate / compile / theatres"]
+    cli["cli.py<br/>dcs-miz validate / compile / theatres / catalog"]
     loader["loader.py<br/>YAML parse + SpecLoadError"]
     models["models.py<br/>MissionSpec (Pydantic)<br/>schema_version, extra=forbid"]
     validation["validation.py<br/>validate_mission_spec"]
@@ -20,6 +20,7 @@ flowchart TD
     pydcs["compiler/pydcs_compiler.py<br/>PyDCSCompiler"]
     registry["registry.py<br/>ChannelRegistry API"]
     data["data/channel/*.yaml<br/>airfields, aircraft, theatres,<br/>weather, payloads"]
+    catalog["catalog/<br/>known catalog_* sync + theatre join"]
     install["install/<br/>probe + SQLite inventory"]
     invdb["%LOCALAPPDATA%/dcs-miz-planner/<br/>inventory.sqlite"]
     ref["reference.py<br/>compat façade"]
@@ -30,10 +31,13 @@ flowchart TD
     cli --> validation
     cli --> base
     cli --> install
+    cli --> catalog
     models --> validation
     validation --> registry
     validation --> install
     install --> invdb
+    catalog --> invdb
+    catalog --> registry
     install --> registry
     base -.implemented by.-> pydcs
     models --> pydcs
@@ -59,29 +63,38 @@ YAML spec -> cli -> loader -> MissionSpec -> validate_mission_spec
 
 cli validate  -> validation.py
 cli theatres  -> install/ (probe) -> inventory.sqlite  (refresh on demand)
+cli catalog   -> catalog/ (sync known from YAML+enums; list joins install theatres)
 ```
 
 ## Modules
 
 | Module | Responsibility | Depends on |
 |--------|----------------|------------|
-| `cli.py` | `validate` / `compile` / legacy spec path; `theatres` list/refresh; clean errors | `loader`, `validation`, `compiler`, `install` |
+| `cli.py` | `validate` / `compile` / legacy spec path; `theatres` list/refresh; `catalog sync|list`; clean errors | `loader`, `validation`, `compiler`, `install`, `catalog` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
 | `models.py` | The public contract: `MissionSpec` + enums. Free flight + intercept; reserves `triggers` | `pydantic` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules); multi-error result | `models`, `registry`, `install` |
 | `data/channel/` | Committed Channel YAML tables (airdromeIds, aircraft+radio, theatres, weather presets, payload stub) | — |
 | `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
+| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums; theatre views join install inventory (`known` / `offerable`) | `registry`, `install`, stdlib `sqlite3` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
 | `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, places player (and intercept enemies), writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |
 
-Two stores stay separate on purpose:
+Three stores stay separate on purpose:
 
 - **YAML registry** = product source of truth (what this planner knows how to compile).
-- **SQLite inventory** = user-local cache of what is installed/enabled on this PC
-  (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`). Ordinary reads hit the DB;
-  `dcs-miz theatres --refresh` rescans. Never commit the DB.
+- **SQLite install inventory** = user-local cache of what is installed/enabled on this PC
+  (`theatres` / `scan_meta` tables in `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`).
+- **SQLite known catalog** = agent/UI query layer (`catalog_*` tables in the **same** DB file),
+  replaced by `dcs-miz catalog sync` from packaged YAML + Spec enums — not a second DCS-id SoT.
+
+Ordinary install reads hit the DB; `dcs-miz theatres --refresh` rescans. Never commit the DB.
+
+**Promote-to-known (ad-hoc):** edit `data/channel/*.yaml` (and Spec enums when needed) →
+accept compile in DCS when that asset is compile-supported → run `dcs-miz catalog sync`.
+Do not auto-promote discovered install theatres/modules into known YAML.
 
 Two boundaries worth respecting:
 
@@ -100,7 +113,7 @@ Two boundaries worth respecting:
 |------|------------------|
 | `src/dcs_miz_planner/` | Product code (the modules above) |
 | `examples/` | Checked-in Mission Specs; `manston_cold_freeflight.yaml` + `manston_dawn_intercept.yaml` |
-| `tests/` | pytest: schema, registry, install probe, validation, Manston free-flight + intercept goldens |
+| `tests/` | pytest: schema, registry, install probe, catalog, validation, Manston free-flight + intercept goldens |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |
 | `docs/` | This file, `BACKLOG.md`, `LESSONS_LEARNED.md` |
@@ -118,5 +131,5 @@ A Cursor hook (`.cursor/hooks/architecture-on-push.py`) reminds you on `git push
 `src/dcs_miz_planner/` is part of what you are pushing. It only reminds; it never blocks,
 and it is not a generator — the map is written by hand so it explains intent, not just imports.
 
-Not yet built (arrives with M3 in the backlog): the agent layer that turns natural language
-into a Mission Spec, plus registry-backed lookup tools.
+Not yet built (arrives with later M3 items): NL agent tools on top of this catalog, plus
+prefs/history. Aircraft module discovery from install is deferred (`catalog-discover-modules`).
