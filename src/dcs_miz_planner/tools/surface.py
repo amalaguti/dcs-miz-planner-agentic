@@ -12,6 +12,7 @@ from ..install.models import TheatreInventory
 from ..loader import SpecLoadError, load_mission_spec
 from ..memory import UserMemoryService
 from ..validation import validate_mission_spec as _validate_mission_spec
+from .research import gather_research_notes
 from .results import err_result, ok_result
 
 
@@ -304,3 +305,41 @@ def list_generation_history(
         for r in rows
     ]
     return ok_result(generations=generations)
+
+
+def research_guidance(
+    query: str,
+    *,
+    mission_type: str | None = None,
+    theatre: str | None = None,
+    aircraft: str | None = None,
+    live: bool | None = None,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """
+    Gather short tactics/procedure/history notes for commander briefs.
+
+    Soft-fails: always returns ok with notes (fixtures on offline or live error).
+    Research is not Spec or DCS-id authority. ``db_path`` unused (tool signature parity).
+    """
+    del db_path
+    q = (query or "").strip()
+    if not q:
+        return err_result("query must be a non-empty string", code="invalid_query")
+    notes, warning = gather_research_notes(
+        q,
+        mission_type=mission_type,
+        theatre=theatre,
+        aircraft=aircraft,
+        live=live,
+    )
+    payload: dict[str, Any] = {"notes": notes, "query": q}
+    if mission_type:
+        payload["mission_type"] = mission_type
+    if theatre:
+        payload["theatre"] = theatre
+    if aircraft:
+        payload["aircraft"] = aircraft
+    if warning:
+        payload["warning"] = warning
+    return ok_result(**payload)

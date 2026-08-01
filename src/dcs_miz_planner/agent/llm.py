@@ -123,6 +123,31 @@ def stub_with_get_user_prefs_then_spec() -> StubLLM:
     )
 
 
+def stub_with_research_guidance_then_spec() -> StubLLM:
+    """Script: call research_guidance, then emit Manston Spec JSON."""
+    return StubLLM(
+        script=[
+            LLMResponse(
+                tool_calls=(
+                    ToolCall(
+                        id="call_research",
+                        name="research_guidance",
+                        arguments=json.dumps(
+                            {
+                                "query": "Spitfire Channel free flight procedures",
+                                "mission_type": "free_flight",
+                                "theatre": "TheChannel",
+                                "aircraft": "SpitfireLFMkIX",
+                            }
+                        ),
+                    ),
+                )
+            ),
+            LLMResponse(content=MANSTON_FREE_FLIGHT_JSON),
+        ]
+    )
+
+
 @dataclass
 class OpenAILLM:
     """Live OpenAI-compatible chat client."""

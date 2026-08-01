@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-SYSTEM_PROMPT = """\
+from .voice import DEFAULT_VOICE, ops_brief_rules, persona_pack, resolve_voice
+
+BASE_PLANNING_RULES = """\
 You are the mission planner for DCS AI Mission Planner.
 You produce Mission Spec JSON only — never DCS Lua or .miz contents.
 
@@ -19,6 +21,8 @@ Rules:
   or claim they compile.
 - Advisory options guide existing Spec fields (e.g. time_of_day → start_time,
   opposition_density → enemies.count); use their meta hints when present.
+- Call research_guidance when you need tactics, procedures, or historical context for
+  the commander brief; never treat research as Spec or DCS-id authority.
 - Known player aircraft examples: SpitfireLFMkIX. Enemy examples: Bf-109K-4.
 - Countries: UK (blue), ThirdReich (red) for Channel WWII Axis.
 - Weather preset must be a known catalog value (e.g. sunny_clear).
@@ -33,3 +37,17 @@ Rules:
 When ready, respond with ONLY a single JSON object matching the Mission Spec
 (no markdown fences). The host will validate and may ask you to repair once.
 """
+
+
+def compose_system_prompt(voice: str | None = None) -> str:
+    """Build system prompt: base rules + persona pack + ops-brief guidance."""
+    resolved = resolve_voice(cli_voice=voice) if voice else DEFAULT_VOICE
+    parts = [BASE_PLANNING_RULES.strip(), ops_brief_rules().strip()]
+    pack = persona_pack(resolved).strip()
+    if pack:
+        parts.insert(1, pack)
+    return "\n\n".join(parts) + "\n"
+
+
+# Backward-compatible default (RAF persona).
+SYSTEM_PROMPT = compose_system_prompt(DEFAULT_VOICE)

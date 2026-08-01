@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from fixtures_support import EXAMPLE_SPEC, channel_available_inventory
 
 from dcs_miz_planner.catalog import CatalogService
@@ -18,6 +19,7 @@ from dcs_miz_planner.tools import (
     list_mission_options,
     record_feedback,
     record_generation,
+    research_guidance,
     set_user_prefs,
     validate_mission_spec,
 )
@@ -34,6 +36,7 @@ def test_tools_export_surface() -> None:
     assert callable(record_generation)
     assert callable(record_feedback)
     assert callable(list_generation_history)
+    assert callable(research_guidance)
 
 
 def test_find_airfield_manston(tmp_path: Path) -> None:
@@ -145,3 +148,49 @@ def test_user_memory_tools(tmp_path: Path) -> None:
         db_path=db,
     )
     assert fb["ok"] is True
+
+
+def test_research_guidance_offline_notes() -> None:
+    result = research_guidance(
+        "Channel Spitfire intercept vs Bf-109",
+        mission_type="intercept",
+        live=False,
+    )
+    assert result["ok"] is True
+    assert result["notes"]
+    assert any(
+        "intercept" in n["snippet"].lower() or "bounce" in n["snippet"].lower()
+        for n in result["notes"]
+    )
+
+
+def test_research_guidance_soft_fails_on_live_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    from dcs_miz_planner.tools import research as research_mod
+
+    def boom(_query: str) -> list:
+        raise TimeoutError("simulated")
+
+    notes, warning = research_mod.gather_research_notes(
+        "tactics",
+        mission_type="free_flight",
+        live=True,
+        web_fetch=boom,
+    )
+    assert notes
+    assert warning is not None
+    assert "failed" in warning.lower()
+    # Tool surface still ok.
+    monkeypatch.setenv("DCS_MIZ_RESEARCH_LIVE", "0")
+    tool = research_guidance("free flight procedures", mission_type="free_flight", live=False)
+    assert tool["ok"] is True
+
+
+def test_dispatch_research_guidance() -> None:
+    from dcs_miz_planner.agent.tool_bridge import dispatch_tool
+
+    result = dispatch_tool(
+        "research_guidance",
+        {"query": "Spitfire procedures", "mission_type": "free_flight"},
+    )
+    assert result["ok"] is True
+    assert result["notes"]

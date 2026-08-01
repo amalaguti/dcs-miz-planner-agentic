@@ -22,9 +22,10 @@ from ..memory import (
 from ..models import MissionSpec
 from ..validation import validate_mission_spec
 from .llm import LLMClient, LLMResponse, default_tools
-from .prompts import SYSTEM_PROMPT
+from .prompts import compose_system_prompt
 from .realism import channel_date_realism_warnings
 from .tool_bridge import dispatch_tool
+from .voice import build_commander_brief, resolve_voice
 
 _JSON_FENCE = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
 
@@ -39,6 +40,9 @@ class PlanResult:
     spec: MissionSpec | None = None
     warnings: tuple[str, ...] = ()
     generation_id: int | None = None
+    voice: str | None = None
+    system_prompt: str | None = None
+    brief: str | None = None
 
 
 def _extract_json_object(text: str) -> dict[str, Any]:
@@ -96,6 +100,13 @@ def _record_plan(
         return None
 
 
+def _load_prefs(db_path: Path | str | None) -> dict[str, Any]:
+    try:
+        return UserMemoryService(db_path=db_path).get_prefs()
+    except OSError:
+        return {}
+
+
 def plan_mission(
     prompt: str,
     output_path: str | Path,
@@ -105,12 +116,16 @@ def plan_mission(
     miz_path: str | Path | None = None,
     inventory: TheatreInventory | None = None,
     db_path: Path | str | None = None,
+    voice: str | None = None,
     max_turns: int = 8,
 ) -> PlanResult:
     """Run the tool-using planner and write a validated Mission Spec YAML."""
     out = Path(output_path)
+    prefs = _load_prefs(db_path)
+    resolved_voice = resolve_voice(cli_voice=voice, prefs=prefs)
+    system_prompt = compose_system_prompt(resolved_voice)
     messages: list[dict[str, Any]] = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": prompt},
     ]
     tools = default_tools()
@@ -181,7 +196,10 @@ def plan_mission(
                         error=str(exc),
                         spec=spec,
                         generation_id=gid,
+                        voice=resolved_voice,
+                        system_prompt=system_prompt,
                     )
+            brief = build_commander_brief(spec, resolved_voice)
             gid = _record_plan(
                 db_path=db_path,
                 prompt=prompt,
@@ -192,6 +210,7 @@ def plan_mission(
                 detail={
                     "aircraft": spec.player.aircraft,
                     "airfield": spec.player.airfield,
+                    "voice": resolved_voice,
                 },
             )
             return PlanResult(
@@ -201,6 +220,9 @@ def plan_mission(
                 spec=spec,
                 warnings=channel_date_realism_warnings(spec),
                 generation_id=gid,
+                voice=resolved_voice,
+                system_prompt=system_prompt,
+                brief=brief,
             )
 
         errors = tuple(
@@ -226,6 +248,8 @@ def plan_mission(
                 validation_errors=errors,
                 spec=spec,
                 generation_id=gid,
+                voice=resolved_voice,
+                system_prompt=system_prompt,
             )
         repair_used = True
         messages.append(
@@ -249,4 +273,6 @@ def plan_mission(
         ok=False,
         error=last_parse_error or f"Planner exceeded max_turns={max_turns}",
         generation_id=gid,
+        voice=resolved_voice,
+        system_prompt=system_prompt,
     )

@@ -22,7 +22,7 @@ approach corridor — open the compiled `.miz` in DCS to accept. Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** squadron-commander voice (prefs/history already in local SQLite).
+**Next:** next mission type / immersion (squadron-commander voice done — RAF default).
 
 ## Stack
 
@@ -83,6 +83,8 @@ Import from `dcs_miz_planner.tools` (no dedicated tools CLI — pytest is the ac
 - `list_mission_options()` — Spec enums + enriched planning options + offerable theatres
 - `get_user_prefs` / `set_user_prefs` / `list_generation_history` / `record_generation` /
   `record_feedback` — local user memory
+- `research_guidance(query, …)` — tactics/procedures/history notes for commander briefs
+  (offline fixtures by default; set `DCS_MIZ_RESEARCH_LIVE=1` for best-effort web)
 - `validate_mission_spec(path)` / `compile_mission(path, output)` — wrap existing engines
 
 Results are JSON-friendly dicts with an `ok` flag for later LLM tool calling.
@@ -93,6 +95,7 @@ Same SQLite file as install/catalog (`%LOCALAPPDATA%\dcs-miz-planner\inventory.s
 
 ```bash
 uv run dcs-miz prefs set preferred_airfield Manston
+uv run dcs-miz prefs set squadron_voice raf   # raf | usaaf | neutral
 uv run dcs-miz prefs list --json
 uv run dcs-miz prefs history --json
 uv run dcs-miz feedback --score 5 --note "good sortie"
@@ -107,8 +110,12 @@ Offline stub (no API key — canned Manston free flight):
 
 ```bash
 uv run dcs-miz plan "cold Spitfire free flight at Manston" --stub -o out/planned.yaml
-uv run dcs-miz plan "..." --stub --compile -o out/planned.yaml
+uv run dcs-miz plan "..." --stub --voice usaaf --compile -o out/planned.yaml
 ```
+
+The planner speaks as a squadron commander (default **raf**; override with `--voice` or
+pref `squadron_voice`). On success it prints a short commander brief: situation, tactics,
+procedures, and watch-outs. Spec YAML stays plain machine fields.
 
 Live (OpenAI-compatible):
 
@@ -116,6 +123,7 @@ Live (OpenAI-compatible):
 # PowerShell
 $env:OPENAI_API_KEY = "sk-..."
 # optional: $env:DCS_MIZ_LLM_MODEL = "gpt-4o-mini"
+# optional: $env:DCS_MIZ_RESEARCH_LIVE = "1"  # web-backed research_guidance
 uv run dcs-miz plan "dawn intercept from Manston vs Bf-109s" -o out/planned.yaml --compile
 ```
 

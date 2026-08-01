@@ -14,6 +14,7 @@ from dcs_miz_planner.agent import (
     plan_mission,
     stub_with_find_airfield_then_spec,
     stub_with_get_user_prefs_then_spec,
+    stub_with_research_guidance_then_spec,
 )
 from dcs_miz_planner.agent.tool_bridge import dispatch_tool
 from dcs_miz_planner.cli import main
@@ -38,11 +39,19 @@ def test_stub_plan_writes_valid_yaml(tmp_path: Path) -> None:
         llm=StubLLM(),
         inventory=inv,
         db_path=db,
+        voice="raf",
     )
     assert result.ok is True
     assert out.is_file()
     assert result.warnings == ()
     assert result.generation_id is not None
+    assert result.voice == "raf"
+    assert result.system_prompt is not None
+    assert "RAF squadron commander" in result.system_prompt
+    assert result.brief is not None
+    assert "## Tactics" in result.brief
+    assert "## Procedures" in result.brief
+    assert "## Watch-outs" in result.brief
     hist = UserMemoryService(db_path=db).list_generations()
     assert len(hist) == 1
     assert hist[0].outcome == OUTCOME_SUCCESS
@@ -52,6 +61,26 @@ def test_stub_plan_writes_valid_yaml(tmp_path: Path) -> None:
     assert spec.player.aircraft == "SpitfireLFMkIX"
     miz = PyDCSCompiler(inventory=inv).compile(spec, tmp_path / "planned.miz")
     assert miz.is_file()
+
+
+def test_stub_plan_usaaf_voice(tmp_path: Path) -> None:
+    inv = channel_available_inventory()
+    out = tmp_path / "usaaf.yaml"
+    result = plan_mission(
+        "Manston free flight",
+        out,
+        llm=StubLLM(),
+        inventory=inv,
+        db_path=tmp_path / "inventory.sqlite",
+        voice="usaaf",
+    )
+    assert result.ok is True
+    assert result.voice == "usaaf"
+    assert result.system_prompt is not None
+    assert "USAAF" in result.system_prompt
+    assert result.brief is not None
+    assert "Listen up" in result.brief or "skipper" in result.brief.lower()
+    assert load_mission_spec(out).player.airfield == "Manston"
 
 
 def test_modern_date_emits_realism_warning(tmp_path: Path) -> None:
@@ -112,6 +141,21 @@ def test_stub_get_user_prefs_then_spec(tmp_path: Path) -> None:
     )
 
 
+def test_stub_research_guidance_then_spec(tmp_path: Path) -> None:
+    inv = channel_available_inventory()
+    out = tmp_path / "via_research.yaml"
+    result = plan_mission(
+        "Manston free flight",
+        out,
+        llm=stub_with_research_guidance_then_spec(),
+        inventory=inv,
+        db_path=tmp_path / "inventory.sqlite",
+    )
+    assert result.ok is True
+    assert result.brief is not None
+    assert "## Tactics" in result.brief
+
+
 def test_live_llm_from_env_missing_key() -> None:
     with pytest.raises(AgentConfigError, match="OPENAI_API_KEY"):
         live_llm_from_env(env={})
@@ -126,7 +170,22 @@ def test_cli_plan_stub(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     out = tmp_path / "cli_planned.yaml"
     db = tmp_path / "inventory.sqlite"
-    assert main(["plan", "Manston free flight", "--stub", "-o", str(out), "--db", str(db)]) == 0
+    assert (
+        main(
+            [
+                "plan",
+                "Manston free flight",
+                "--stub",
+                "--voice",
+                "raf",
+                "-o",
+                str(out),
+                "--db",
+                str(db),
+            ]
+        )
+        == 0
+    )
     assert out.is_file()
     assert load_mission_spec(out).player.airfield == "Manston"
     assert main(["prefs", "history", "--db", str(db), "--json"]) == 0

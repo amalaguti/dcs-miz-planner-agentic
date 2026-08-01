@@ -11,6 +11,7 @@ from .surface import (
     list_mission_options,
     record_feedback,
     record_generation,
+    research_guidance,
     set_user_prefs,
     validate_mission_spec,
 )
@@ -24,6 +25,7 @@ __all__ = [
     "list_mission_options",
     "record_feedback",
     "record_generation",
+    "research_guidance",
     "set_user_prefs",
     "validate_mission_spec",
 ]

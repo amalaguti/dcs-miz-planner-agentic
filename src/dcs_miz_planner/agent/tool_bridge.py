@@ -15,6 +15,7 @@ from ..tools import (
     list_mission_options,
     record_feedback,
     record_generation,
+    research_guidance,
     set_user_prefs,
     validate_mission_spec,
 )
@@ -155,6 +156,30 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
+            "name": "research_guidance",
+            "description": (
+                "Research short notes on flight procedures, combat manoeuvres, "
+                "pilot accounts, or historical context for the commander brief. "
+                "Not a source of DCS type ids or Spec fields."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "What to research"},
+                    "mission_type": {
+                        "type": "string",
+                        "description": "Optional: free_flight, intercept, …",
+                    },
+                    "theatre": {"type": "string"},
+                    "aircraft": {"type": "string"},
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "validate_mission_spec",
             "description": "Validate a Mission Spec YAML file path.",
             "parameters": {
@@ -242,6 +267,14 @@ def dispatch_tool(
             score=int(score) if score is not None else None,
             note=args.get("note"),
             tags=tags,
+            db_path=db_path,
+        )
+    if name == "research_guidance":
+        return research_guidance(
+            str(args.get("query", "")),
+            mission_type=args.get("mission_type"),
+            theatre=args.get("theatre"),
+            aircraft=args.get("aircraft"),
             db_path=db_path,
         )
     if name == "validate_mission_spec":

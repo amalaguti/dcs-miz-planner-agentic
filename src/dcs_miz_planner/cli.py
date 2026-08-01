@@ -261,6 +261,7 @@ def _plan_cmd(args: argparse.Namespace) -> int:
         compile_output=bool(args.compile),
         miz_path=miz,
         db_path=args.db if getattr(args, "db", None) else None,
+        voice=args.voice if getattr(args, "voice", None) else None,
     )
     if not result.ok:
         print(result.error or "Planning failed", file=sys.stderr)
@@ -270,6 +271,11 @@ def _plan_cmd(args: argparse.Namespace) -> int:
     print(f"Wrote Spec {result.spec_path}")
     if result.miz_path:
         print(f"Wrote {result.miz_path}")
+    if result.voice:
+        print(f"Voice: {result.voice}")
+    if result.brief:
+        print()
+        print(result.brief)
     for warning in result.warnings:
         print(f"Warning: {warning}", file=sys.stderr)
     return 0
@@ -489,6 +495,14 @@ def _build_parser() -> argparse.ArgumentParser:
         "--db",
         help=f"SQLite path for user memory / catalog (default: {default_db_path()})",
     )
+    plan_p.add_argument(
+        "--voice",
+        help=(
+            "Squadron voice for this run: raf | usaaf | neutral "
+            "(default: pref squadron_voice, else raf)"
+        ),
+        default=None,
+    )
     plan_p.set_defaults(func=_plan_cmd)
 
     prefs_p = sub.add_parser(
@@ -507,7 +521,10 @@ def _build_parser() -> argparse.ArgumentParser:
     prefs_list.set_defaults(func=_prefs_cmd)
 
     prefs_set = prefs_sub.add_parser("set", help="Set one preference key")
-    prefs_set.add_argument("key", help="Preference key (e.g. preferred_airfield)")
+    prefs_set.add_argument(
+        "key",
+        help="Preference key (e.g. preferred_airfield, squadron_voice=raf|usaaf|neutral)",
+    )
     prefs_set.add_argument(
         "value",
         help="Value (JSON if parseable, otherwise raw string)",

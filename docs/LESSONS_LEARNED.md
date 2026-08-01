@@ -7,6 +7,16 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Squadron voice is USAAF (not USAF); brief is not Spec
+
+- **Date:** 2026-08-01
+- **Lesson:** WWII Channel persona id is `usaaf` (Army Air Forces). `usaf` is post-1947 —
+  do not rename the voice id. Default voice is `raf`. Commander briefs (tactics /
+  procedures / watch-outs) are CLI/`PlanResult.brief` only — never write them into Spec
+  fields or `.miz` `l10n` in this layer. `research_guidance` soft-fails to fixtures; set
+  `DCS_MIZ_RESEARCH_LIVE=1` for best-effort web. Research is not DCS-id authority.
+- **Code:** `agent/voice.py`, `agent/prompts.py`, `tools/research.py`, `agent/planner.py`.
+
 ## User memory tables are not catalog_*
 
 - **Date:** 2026-08-01

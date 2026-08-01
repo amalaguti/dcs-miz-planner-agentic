@@ -1,0 +1,172 @@
+"""Squadron-commander voice packs, resolution, and host-side briefs."""
+
+from __future__ import annotations
+
+from typing import Any
+
+from ..models import MissionSpec
+
+VOICE_RAF = "raf"
+VOICE_USAAF = "usaaf"
+VOICE_NEUTRAL = "neutral"
+DEFAULT_VOICE = VOICE_RAF
+KNOWN_VOICES = frozenset({VOICE_RAF, VOICE_USAAF, VOICE_NEUTRAL})
+
+_ALIASES: dict[str, str] = {
+    "raf": VOICE_RAF,
+    "royal air force": VOICE_RAF,
+    "uk": VOICE_RAF,
+    "british": VOICE_RAF,
+    "usaaf": VOICE_USAAF,
+    "usaa": VOICE_USAAF,
+    "us": VOICE_USAAF,
+    "usa": VOICE_USAAF,
+    "american": VOICE_USAAF,
+    "us army air forces": VOICE_USAAF,
+    "neutral": VOICE_NEUTRAL,
+    "off": VOICE_NEUTRAL,
+    "none": VOICE_NEUTRAL,
+    "plain": VOICE_NEUTRAL,
+}
+
+_RAF_PACK = """\
+Persona (RAF squadron commander):
+You address the pilot as their squadron commander — calm, direct, period-appropriate.
+Use restrained RAF Fighter Command register and jargon when speaking (not in Spec JSON):
+scramble, bandits, kite, angels, bogey only if fitting, RTB, ops, gen, prang (sparingly).
+No modern chatbot filler ("Happy to help!", emoji). Sound like a wartime briefing officer.
+"""
+
+_USAAF_PACK = """\
+Persona (USAAF squadron commander):
+You address the pilot as their skipper / squadron CO — calm, direct, period-appropriate.
+Use restrained USAAF Eighth Air Force flavour and jargon when speaking (not in Spec JSON):
+bogeys, bandits, fighters, scramble, angels, skipper, RTB, flak, bounce (sparingly).
+No modern chatbot filler. Sound like a wartime briefing officer talking to his pilots.
+"""
+
+_OPS_BRIEF_RULES = """\
+Operational brief (after Spec is accepted by the host):
+When advising pilots, cover tactics for the mission type and plan, procedures
+(start-up / taxi / climb / engagement / recovery as relevant), and watch-outs
+(weather, fuel, bogeys/bandits, navigation, deconfliction). Prefer researched notes
+from research_guidance or well-known WWII fighter practice; label uncertainty.
+Do NOT put slang or briefing prose into Mission Spec field values — Spec JSON stays plain.
+High-level guidance only; not a substitute for real flight training.
+"""
+
+_PERSONA_PACKS: dict[str, str] = {
+    VOICE_RAF: _RAF_PACK,
+    VOICE_USAAF: _USAAF_PACK,
+    VOICE_NEUTRAL: "",
+}
+
+
+def normalize_voice(raw: str | None) -> str | None:
+    """Return a known voice id, or None if blank/unknown."""
+    if raw is None:
+        return None
+    key = " ".join(str(raw).strip().lower().split())
+    if not key:
+        return None
+    if key in KNOWN_VOICES:
+        return key
+    return _ALIASES.get(key)
+
+
+def resolve_voice(
+    *,
+    cli_voice: str | None = None,
+    prefs: dict[str, Any] | None = None,
+    default: str = DEFAULT_VOICE,
+) -> str:
+    """CLI override → squadron_voice pref → default. Unknown inputs fall back to default."""
+    for candidate in (cli_voice, (prefs or {}).get("squadron_voice")):
+        normalized = normalize_voice(
+            candidate if isinstance(candidate, str) else (str(candidate) if candidate else None)
+        )
+        if normalized is not None:
+            return normalized
+    return normalize_voice(default) or DEFAULT_VOICE
+
+
+def persona_pack(voice: str) -> str:
+    """Return curated persona text for a resolved voice id."""
+    return _PERSONA_PACKS.get(voice, "")
+
+
+def ops_brief_rules() -> str:
+    return _OPS_BRIEF_RULES
+
+
+def build_commander_brief(spec: MissionSpec, voice: str) -> str:
+    """Deterministic host brief with Situation / Tactics / Procedures / Watch-outs."""
+    mt = spec.mission_type.value
+    airfield = spec.player.airfield
+    aircraft = spec.player.aircraft
+    weather = spec.weather
+    start = spec.start_time
+    start_type = spec.player.start.value
+
+    if voice == VOICE_USAAF:
+        opener = (
+            f"Listen up. Sortie from {airfield} in the {aircraft}, "
+            f"{start} local, weather {weather}, start {start_type}."
+        )
+        closing = "Fly smart, keep your head on a swivel, and bring it home."
+    elif voice == VOICE_RAF:
+        opener = (
+            f"Right. You're away from {airfield} in the {aircraft}, "
+            f"{start} hours, weather {weather}, start {start_type}."
+        )
+        closing = "Keep a sharp lookout, mind your fuel state, and RTB with the kite intact."
+    else:
+        opener = (
+            f"Mission: {mt} from {airfield} ({aircraft}), "
+            f"start {start}, weather {weather}, start type {start_type}."
+        )
+        closing = "Review the plan, fly the procedures, and abort early if unsafe."
+
+    if mt == "intercept":
+        enemy_bits = []
+        for e in spec.enemies:
+            enemy_bits.append(f"{e.count}× {e.aircraft}")
+        opposition = ", ".join(enemy_bits) or "hostile fighters"
+        tactics = (
+            f"For this intercept against {opposition}: climb with purpose, "
+            "gain altitude advantage before committing, bounce from up-sun when you can, "
+            "and break contact if the fight turns against you. Pair up; do not chase alone."
+        )
+        procedures = (
+            "Cold or hot start as briefed; taxi clear; climb on the assigned heading toward "
+            "the threat axis. Confirm guns/sight; call tally before merge. "
+            "Disengage with speed and altitude, then recover to base."
+        )
+        watch = (
+            "Watch for escort fighters above the bombers or bounce from cloud; "
+            "guard your six in the merge; mind Channel over-water navigation and fuel; "
+            "do not press into flak or numbers you cannot handle."
+        )
+    else:
+        tactics = (
+            "Free flight: treat this as a familiarisation / local area hop. "
+            "Build situational awareness, practise gentle handling, and keep clear of "
+            "known flak belts and crowded corridors unless tasked."
+        )
+        procedures = (
+            "Complete start checks, taxi and takeoff as briefed, climb to a safe working "
+            "altitude, fly a disciplined local pattern or area tour, then recover for a "
+            "stable approach and landing."
+        )
+        watch = (
+            "Watch weather deterioration and cloud base, mid-air conflict near the field, "
+            "fuel state on the way home, and Channel ditching risk if you wander offshore."
+        )
+
+    return (
+        f"## Situation / sortie\n{opener}\n\n"
+        f"## Tactics\n{tactics}\n\n"
+        f"## Procedures\n{procedures}\n\n"
+        f"## Watch-outs\n{watch}\n\n"
+        f"{closing}"
+    )

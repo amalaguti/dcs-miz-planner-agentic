@@ -76,8 +76,8 @@ cli validate  -> validation.py
 cli theatres  -> install/ (probe) -> inventory.sqlite  (refresh on demand)
 cli catalog   -> catalog/ (sync known from YAML+enums; list joins install theatres)
 cli prefs / feedback -> memory/ (user_* tables in same SQLite)
-cli plan      -> agent/ (NL→Spec; tools + stub/live LLM; validate gate; records history)
-tools.*       -> catalog + memory + validation + PyDCSCompiler (agent API)
+cli plan      -> agent/ (NL→Spec; voice + tools + stub/live LLM; validate gate; commander brief; records history)
+tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent API)
 ```
 
 ## Modules
@@ -93,8 +93,8 @@ tools.*       -> catalog + memory + validation + PyDCSCompiler (agent API)
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
 | `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options; theatre views join install inventory (`known` / `offerable`) | `registry`, `install`, stdlib `sqlite3` |
 | `memory/` | User prefs, generation history, satisfaction feedback (`user_*` tables; never wiped by catalog sync) | `install.default_db_path`, stdlib `sqlite3` |
-| `tools/` | Agent-facing callables: catalog lookups, validate/compile, prefs/history/feedback | `catalog`, `memory`, `validation`, `compiler`, `loader` |
-| `agent/` | NL→Spec planner: tool loop, stub LLM, OpenAI-compatible live client (`OPENAI_API_KEY`); host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
+| `tools/` | Agent-facing callables: catalog lookups, validate/compile, prefs/history/feedback, research_guidance | `catalog`, `memory`, `validation`, `compiler`, `loader` |
+| `agent/` | NL→Spec planner: tool loop, squadron voice packs, commander brief, stub LLM, OpenAI live client; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
 | `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, places player (and intercept enemies), writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |
@@ -153,5 +153,5 @@ A Cursor hook (`.cursor/hooks/architecture-on-push.py`) reminds you on `git push
 `src/dcs_miz_planner/` is part of what you are pushing. It only reminds; it never blocks,
 and it is not a generator — the map is written by hand so it explains intent, not just imports.
 
-Not yet built (later M3): squadron voice. Aircraft module discovery from install is
+Not yet built (later M3/M4): aircraft module discovery from install is
 deferred (`catalog-discover-modules`).
