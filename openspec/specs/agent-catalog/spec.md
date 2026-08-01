@@ -43,6 +43,14 @@ including filters for type and known vs discovery-inclusive theatre listing.
 - **WHEN** a user lists airfields after sync
 - **THEN** output MUST include Manston and other known Channel airfields
 
+### Requirement: Catalog sync includes planning options
+Catalog sync from packaged Channel data SHALL also replace planning-option rows from the
+packaged planning-options source so agent/UI queries stay aligned with the product package.
+
+#### Scenario: Sync refreshes planning options idempotently
+- **WHEN** catalog sync runs twice without package changes
+- **THEN** planning-option query results MUST remain equivalent (same ids and support levels)
+
 ### Requirement: Ad-hoc growth of known catalog
 Expanding what the planner can compile MUST be done by updating packaged known sources
 (YAML / Spec enums) through the normal change process, then re-running catalog sync.
