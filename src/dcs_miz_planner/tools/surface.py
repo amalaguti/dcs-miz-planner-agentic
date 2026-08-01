@@ -1,0 +1,175 @@
+"""Agent-facing tool callables (catalog lookups + validate/compile wrappers)."""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+from ..catalog import CatalogService
+from ..compiler import PyDCSCompiler
+from ..install.models import TheatreInventory
+from ..loader import SpecLoadError, load_mission_spec
+from ..validation import validate_mission_spec as _validate_mission_spec
+from .results import err_result, ok_result
+
+
+def _catalog(db_path: Path | str | None = None) -> CatalogService:
+    return CatalogService(db_path=db_path)
+
+
+def find_airfield(
+    query: str,
+    *,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Find known catalog airfields whose name matches ``query`` (case-insensitive substring)."""
+    q = (query or "").strip()
+    if not q:
+        return err_result("query must be a non-empty string", code="invalid_query")
+
+    service = _catalog(db_path)
+    rows = service.list_rows("airfields")
+    needle = q.casefold()
+    matches = [r for r in rows if needle in str(r["name"]).casefold()]
+    if not matches:
+        return err_result(
+            f"No known airfield matching {query!r}",
+            code="not_found",
+            query=query,
+            airfields=[],
+        )
+    return ok_result(query=query, airfields=matches)
+
+
+def get_aircraft_details(
+    aircraft_id: str,
+    *,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Return known catalog details for one aircraft id."""
+    aid = (aircraft_id or "").strip()
+    if not aid:
+        return err_result("aircraft_id must be a non-empty string", code="invalid_query")
+
+    service = _catalog(db_path)
+    rows = service.list_rows("aircraft")
+    for row in rows:
+        if row["aircraft_id"] == aid:
+            return ok_result(
+                aircraft_id=row["aircraft_id"],
+                radio_mhz=row["radio_mhz"],
+            )
+    known = [str(r["aircraft_id"]) for r in rows]
+    return err_result(
+        f"Unknown aircraft {aircraft_id!r}",
+        code="not_found",
+        aircraft_id=aircraft_id,
+        known=known,
+    )
+
+
+def list_mission_options(
+    *,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Return known planning enums plus offerable theatres."""
+    service = _catalog(db_path)
+    snap = service.ensure_synced()
+    theatres = service.list_theatres(include_discovered=True)
+    offerable = [
+        {
+            "theatre_id": v.theatre_id,
+            "known": v.known,
+            "installed": v.installed,
+            "install_state": v.install_state,
+            "planner_supported": v.planner_supported,
+            "offerable": v.offerable,
+        }
+        for v in theatres
+        if v.offerable
+    ]
+    return ok_result(
+        mission_types=[r.value for r in snap.mission_types],
+        start_types=[r.value for r in snap.start_types],
+        weather_presets=[w.name for w in snap.weather_presets],
+        coalitions=[r.value for r in snap.coalitions],
+        objective_types=[r.value for r in snap.objective_types],
+        countries=[r.value for r in snap.countries],
+        aircraft=[a.aircraft_id for a in snap.aircraft],
+        offerable_theatres=offerable,
+    )
+
+
+def validate_mission_spec(
+    spec_path: str | Path,
+    *,
+    db_path: Path | str | None = None,
+    inventory: TheatreInventory | None = None,
+) -> dict[str, Any]:
+    """Validate a Mission Spec YAML path via the shared validation engine."""
+    path = Path(spec_path)
+    if not path.is_file():
+        return err_result(f"Spec not found: {path}", code="not_found", path=str(path))
+
+    try:
+        spec = load_mission_spec(path)
+    except SpecLoadError as exc:
+        return err_result(str(exc), code="spec_load_error", path=str(path))
+
+    if inventory is None and db_path is not None:
+        from ..install import InventoryService
+
+        inventory = InventoryService(db_path=db_path).get()
+
+    result = _validate_mission_spec(spec, inventory=inventory)
+    errors = [
+        {
+            "code": e.code,
+            "path": e.path,
+            "message": e.message,
+            "hint": e.hint,
+        }
+        for e in result.errors
+    ]
+    if result.ok:
+        return ok_result(path=str(path), errors=errors)
+    return err_result(
+        "Mission Spec validation failed",
+        code="validation_failed",
+        path=str(path),
+        errors=errors,
+    )
+
+
+def compile_mission(
+    spec_path: str | Path,
+    output_path: str | Path,
+    *,
+    db_path: Path | str | None = None,
+    inventory: TheatreInventory | None = None,
+) -> dict[str, Any]:
+    """Compile a Mission Spec YAML to a ``.miz`` via PyDCSCompiler."""
+    path = Path(spec_path)
+    if not path.is_file():
+        return err_result(f"Spec not found: {path}", code="not_found", path=str(path))
+
+    try:
+        spec = load_mission_spec(path)
+    except SpecLoadError as exc:
+        return err_result(str(exc), code="spec_load_error", path=str(path))
+
+    if inventory is None and db_path is not None:
+        from ..install import InventoryService
+
+        inventory = InventoryService(db_path=db_path).get()
+
+    pre = validate_mission_spec(path, inventory=inventory)
+    if not pre.get("ok"):
+        return pre
+
+    out = Path(output_path)
+    try:
+        written = PyDCSCompiler(inventory=inventory).compile(spec, out)
+    except ValueError as exc:
+        return err_result(str(exc), code="compile_failed", path=str(path))
+    return ok_result(path=str(path), output=str(written))
