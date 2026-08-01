@@ -18,11 +18,12 @@ same DB) syncs from Channel YAML + Spec enums via `dcs-miz catalog sync`. Shared
 Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
 (refresh: `uv run python tests/refresh_manston_golden.py`). Intercept Spec
 (`examples/manston_dawn_intercept.yaml`) places Bf-109K-4s on a Hawkinge/Dover
-approach corridor — open the compiled `.miz` in DCS to accept. Module map:
+approach corridor. CAP Spec (`examples/manston_cap.yaml`) orbits a station SE of
+Manston with engagement/ROE (accepted in-game 2026-08-01). Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** next mission type / immersion (squadron-commander voice done — RAF default).
+**Next:** `mission-type-ground-attack`, then escort; `briefing-generation` after M4 types.
 
 ## Stack
 
@@ -42,6 +43,10 @@ uv run dcs-miz examples/manston_cold_freeflight.yaml
 uv run dcs-miz validate examples/manston_dawn_intercept.yaml
 uv run dcs-miz examples/manston_dawn_intercept.yaml
 # -> out/manston_dawn_intercept.miz
+
+uv run dcs-miz validate examples/manston_cap.yaml
+uv run dcs-miz examples/manston_cap.yaml
+# -> out/manston_cap.miz
 ```
 
 Open the result in the DCS Mission Editor, or copy it into

@@ -15,8 +15,10 @@ from dcs_miz_planner.loader import load_mission_spec
 REPO_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE_SPEC = REPO_ROOT / "examples" / "manston_cold_freeflight.yaml"
 INTERCEPT_SPEC = REPO_ROOT / "examples" / "manston_dawn_intercept.yaml"
+CAP_SPEC = REPO_ROOT / "examples" / "manston_cap.yaml"
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cold_freeflight"
 INTERCEPT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_dawn_intercept"
+CAP_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cap"
 
 REQUIRED_MEMBERS = ("mission", "options", "theatre", "warehouses")
 MISSION_CONTRACTS = (
@@ -36,6 +38,21 @@ INTERCEPT_MISSION_CONTRACTS = (
     '"Player"',
     '["frequency"]=124.0',
     '["frequency"]=40.0',
+)
+CAP_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    "Bf-109K-4",
+    '["airdromeId"]=5',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+    '["frequency"]=40.0',
+    '["task"]="CAP"',
+    "Orbit",
+    '["pattern"]="Circle"',
+    "ControlledTask",
+    '["value"]=0',  # OptROE WeaponFree
 )
 
 # PyDCS assigns a random board number each process; pin it for stable goldens.
@@ -70,6 +87,11 @@ def compile_manston(output_path: Path) -> Path:
 
 def compile_intercept(output_path: Path) -> Path:
     spec = load_mission_spec(INTERCEPT_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
+
+
+def compile_cap(output_path: Path) -> Path:
+    spec = load_mission_spec(CAP_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
 
 
@@ -122,6 +144,15 @@ def write_intercept_golden(miz_path: Path, fixture_dir: Path = INTERCEPT_FIXTURE
         fixture_dir,
         source_spec="examples/manston_dawn_intercept.yaml",
         mission_contracts=INTERCEPT_MISSION_CONTRACTS,
+    )
+
+
+def write_cap_golden(miz_path: Path, fixture_dir: Path = CAP_FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_cap.yaml",
+        mission_contracts=CAP_MISSION_CONTRACTS,
     )
 
 

@@ -54,3 +54,17 @@ def test_compose_neutral_omits_commander_persona() -> None:
     assert "USAAF squadron commander" not in prompt
     assert "TheChannel" in prompt
     assert "research_guidance" in prompt
+    assert "cap" in prompt
+
+
+def test_cap_brief_sections() -> None:
+    from pathlib import Path
+
+    from dcs_miz_planner.agent.voice import build_commander_brief
+    from dcs_miz_planner.loader import load_mission_spec
+
+    spec = load_mission_spec(Path(__file__).resolve().parents[1] / "examples" / "manston_cap.yaml")
+    brief = build_commander_brief(spec, VOICE_RAF)
+    assert "## Tactics" in brief
+    assert "CAP" in brief or "orbit" in brief.lower()
+    assert "weapons_free" in brief or "ROE" in brief

@@ -36,7 +36,7 @@ def test_build_snapshot_includes_enums_and_registry() -> None:
     assert [t.theatre_id for t in snap.theatres] == ["TheChannel"]
     assert snap.airfields[0].name == "Manston"
     assert snap.airfields[0].theatre_id == "TheChannel"
-    assert {m.value for m in snap.mission_types} >= {"free_flight", "intercept"}
+    assert {m.value for m in snap.mission_types} >= {"free_flight", "intercept", "cap"}
     assert {c.value for c in snap.countries} == {"ThirdReich", "UK"}
     assert snap.source == "channel_yaml+spec_enums"
 
@@ -156,7 +156,9 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert by_key[("weather", "sunny_clear")].support == "supported"
     assert by_key[("start_type", "cold_parking")].support == "supported"
     assert by_key[("time_of_day", "dawn")].support == "advisory"
-    assert by_key[("roe_seed", "weapons_free")].support == "future"
+    assert by_key[("roe_seed", "weapons_free")].support == "supported"
+    assert by_key[("roe_seed", "weapons_hold")].support == "supported"
+    assert by_key[("mission_type", "cap")].support == "supported"
 
 
 def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:

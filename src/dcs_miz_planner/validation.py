@@ -10,6 +10,25 @@ from .models import MissionSpec, MissionType, ObjectiveType
 from .registry import ChannelRegistry, RegistryError, get_channel_registry
 
 
+def _validate_enemy_aircraft(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+) -> None:
+    for i, enemy in enumerate(spec.enemies):
+        try:
+            registry.get_aircraft(enemy.aircraft)
+        except RegistryError:
+            errors.append(
+                ValidationError(
+                    code="unknown_aircraft",
+                    path=f"enemies[{i}].aircraft",
+                    message=f"Unknown aircraft '{enemy.aircraft}'",
+                    hint=f"Known: {registry.list_aircraft()}",
+                )
+            )
+
+
 @dataclass(frozen=True)
 class ValidationError:
     """One validation finding."""
@@ -58,13 +77,17 @@ def validate_mission_spec(
     registry = registry if registry is not None else get_channel_registry()
     errors: list[ValidationError] = []
 
-    if spec.mission_type not in (MissionType.FREE_FLIGHT, MissionType.INTERCEPT):
+    if spec.mission_type not in (
+        MissionType.FREE_FLIGHT,
+        MissionType.INTERCEPT,
+        MissionType.CAP,
+    ):
         errors.append(
             ValidationError(
                 code="unsupported_mission_type",
                 path="mission_type",
                 message=f"Unsupported mission_type {spec.mission_type.value!r}",
-                hint="Supported: free_flight, intercept",
+                hint="Supported: free_flight, intercept, cap",
             )
         )
 
@@ -78,6 +101,14 @@ def validate_mission_spec(
         )
 
     if spec.mission_type is MissionType.FREE_FLIGHT:
+        if spec.cap is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="cap",
+                    message="cap not supported for free_flight: omit the cap block",
+                )
+            )
         for name in ("enemies", "objectives"):
             if getattr(spec, name):
                 errors.append(
@@ -86,11 +117,19 @@ def validate_mission_spec(
                         path=name,
                         message=(
                             f"{name} not supported for free_flight: must be empty "
-                            "(use mission_type intercept)"
+                            "(use mission_type intercept or cap)"
                         ),
                     )
                 )
     elif spec.mission_type is MissionType.INTERCEPT:
+        if spec.cap is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="cap",
+                    message="cap not supported for intercept: omit the cap block",
+                )
+            )
         if not spec.enemies:
             errors.append(
                 ValidationError(
@@ -117,18 +156,44 @@ def validate_mission_spec(
                         hint="Supported: intercept_enemy",
                     )
                 )
-        for i, enemy in enumerate(spec.enemies):
-            try:
-                registry.get_aircraft(enemy.aircraft)
-            except RegistryError:
+        _validate_enemy_aircraft(spec, registry, errors)
+    elif spec.mission_type is MissionType.CAP:
+        if spec.cap is None:
+            errors.append(
+                ValidationError(
+                    code="cap_required",
+                    path="cap",
+                    message="cap missions require a nested cap block",
+                )
+            )
+        if not spec.objectives:
+            errors.append(
+                ValidationError(
+                    code="objectives_required",
+                    path="objectives",
+                    message="cap missions require a non-empty objectives list",
+                )
+            )
+        else:
+            if not any(o.type is ObjectiveType.PATROL for o in spec.objectives):
                 errors.append(
                     ValidationError(
-                        code="unknown_aircraft",
-                        path=f"enemies[{i}].aircraft",
-                        message=f"Unknown aircraft '{enemy.aircraft}'",
-                        hint=f"Known: {registry.list_aircraft()}",
+                        code="objectives_required",
+                        path="objectives",
+                        message="cap missions require at least one patrol objective",
                     )
                 )
+            for i, obj in enumerate(spec.objectives):
+                if obj.type is not ObjectiveType.PATROL:
+                    errors.append(
+                        ValidationError(
+                            code="unknown_objective",
+                            path=f"objectives[{i}].type",
+                            message=f"Unsupported objective type {obj.type.value!r} for cap",
+                            hint="Supported: patrol",
+                        )
+                    )
+        _validate_enemy_aircraft(spec, registry, errors)
 
     if not registry.has_theatre(spec.theatre):
         errors.append(

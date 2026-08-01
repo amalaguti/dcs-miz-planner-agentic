@@ -19,11 +19,19 @@ Directory: `tests/fixtures/manston_dawn_intercept/`
 
 Same layout; contracts include `Bf-109K-4` and German VHF `40.0` MHz.
 
+## Manston CAP
+
+Directory: `tests/fixtures/manston_cap/`
+
+Contracts include CAP task, Orbit/Circle, ControlledTask duration, OptROE value, and
+optional Bf-109 opposition.
+
 ## Refresh after an intentional compiler change
 
 ```bash
 uv run python tests/refresh_manston_golden.py
 uv run python tests/refresh_intercept_golden.py
+uv run python tests/refresh_cap_golden.py
 uv run pytest -q
 ```
 

@@ -1,4 +1,4 @@
-"""PyDCS-backed compiler for free-flight and intercept missions.
+"""PyDCS-backed compiler for free-flight, intercept, and CAP missions.
 
 Boundary rule: this module is the only place allowed to import PyDCS.
 The rest of the app depends on `MissionSpec` and `CompilerInterface`.
@@ -10,7 +10,14 @@ import datetime
 from pathlib import Path
 
 from ..install.models import TheatreInventory
-from ..models import MissionSpec, MissionType, StartType, WeatherPreset
+from ..models import (
+    CapPattern,
+    Engagement,
+    MissionSpec,
+    MissionType,
+    StartType,
+    WeatherPreset,
+)
 from ..registry import RegistryError, get_channel_registry
 from ..validation import MissionValidationError, validate_mission_spec
 from .base import CompilerInterface
@@ -25,6 +32,12 @@ _DOVER_APPROACH_OFFSET_X = 4000.0
 _DOVER_APPROACH_OFFSET_Y = -6000.0
 _ENEMY_ALTITUDE_M = 3500
 _ENEMY_SPEED_KMH = 450
+
+# CAP opposition near the patrol station (station-relative, metres).
+_CAP_ENEMY_OFFSET_M_X = 3000.0
+_CAP_ENEMY_OFFSET_M_Y = -2000.0
+_CAP_RACE_TRACK_LEG_M = 10000.0
+_CAP_ORBIT_SPEED_KMH = 400
 
 
 def _disable_payload_scan(*unit_types) -> None:
@@ -52,6 +65,17 @@ def _skill_from_name(name: str):
         return Skill[name]
     except KeyError as exc:
         raise ValueError(f"Unknown skill {name!r}") from exc
+
+
+def _opt_roe_value(engagement: Engagement):
+    from dcs.task import OptROE
+
+    return {
+        Engagement.WEAPONS_FREE: OptROE.Values.WeaponFree,
+        Engagement.OPEN_FIRE: OptROE.Values.OpenFire,
+        Engagement.RETURN_FIRE: OptROE.Values.ReturnFire,
+        Engagement.WEAPONS_HOLD: OptROE.Values.WeaponHold,
+    }[engagement]
 
 
 class PyDCSCompiler(CompilerInterface):
@@ -134,6 +158,10 @@ class PyDCSCompiler(CompilerInterface):
 
         if spec.mission_type is MissionType.INTERCEPT:
             self._place_enemies(mission, countries, registry, spec, enemy_types)
+        elif spec.mission_type is MissionType.CAP:
+            self._apply_cap(mission, group, airport, spec)
+            if spec.enemies:
+                self._place_cap_enemies(mission, countries, registry, spec, enemy_types, airport)
 
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -174,6 +202,58 @@ class PyDCSCompiler(CompilerInterface):
             raise ValueError(f"Failed to add country: {country_name}")
         return country
 
+    def _apply_cap(self, mission, group, airport, spec: MissionSpec) -> None:
+        from dcs.task import CAP, ControlledTask, OptROE, OrbitAction
+
+        del mission  # station uses airport.position / terrain via Point
+        assert spec.cap is not None
+        cap = spec.cap
+        group.task = CAP.name
+
+        station = airport.position.point_from_heading(cap.bearing_deg, cap.distance_km * 1000.0)
+        group.add_waypoint(
+            airport.position.point_from_heading(cap.bearing_deg, 5000.0),
+            altitude=min(cap.altitude_m, 1500.0),
+            speed=_CAP_ORBIT_SPEED_KMH,
+            name="Climb",
+        )
+
+        pattern = (
+            OrbitAction.OrbitPattern.Circle
+            if cap.pattern is CapPattern.CIRCLE
+            else OrbitAction.OrbitPattern.RaceTrack
+        )
+        orbit = OrbitAction(
+            altitude=cap.altitude_m,
+            speed=_CAP_ORBIT_SPEED_KMH,
+            pattern=pattern,
+        )
+        if cap.duration_min is not None:
+            controlled = ControlledTask(orbit)
+            controlled.stop_after_duration(int(cap.duration_min) * 60)
+            orbit_task = controlled
+        else:
+            orbit_task = orbit
+
+        cap_wp = group.add_waypoint(
+            station,
+            altitude=cap.altitude_m,
+            speed=_CAP_ORBIT_SPEED_KMH,
+            name="CAP",
+        )
+        cap_wp.add_task(orbit_task)
+        cap_wp.add_task(OptROE(_opt_roe_value(cap.engagement)))
+
+        if cap.pattern is CapPattern.RACE_TRACK:
+            # Second point defines the race-track long axis (~10 km along bearing).
+            leg = station.point_from_heading(cap.bearing_deg, _CAP_RACE_TRACK_LEG_M)
+            group.add_waypoint(
+                leg,
+                altitude=cap.altitude_m,
+                speed=_CAP_ORBIT_SPEED_KMH,
+                name="CAP leg",
+            )
+
     def _place_enemies(
         self, mission, countries_mod, registry, spec: MissionSpec, enemy_types
     ) -> None:
@@ -199,6 +279,54 @@ class PyDCSCompiler(CompilerInterface):
                 aircraft_type=aircraft_type,
                 position=position,
                 altitude=_ENEMY_ALTITUDE_M,
+                speed=_ENEMY_SPEED_KMH,
+                group_size=enemy.count,
+            )
+            skill = _skill_from_name(enemy.skill)
+            for unit in eg.units:
+                unit.skill = skill
+            eg.frequency = radio_mhz
+
+    def _place_cap_enemies(
+        self,
+        mission,
+        countries_mod,
+        registry,
+        spec: MissionSpec,
+        enemy_types,
+        airport,
+    ) -> None:
+        from dcs.mapping import Point
+
+        assert spec.cap is not None
+        station = airport.position.point_from_heading(
+            spec.cap.bearing_deg, spec.cap.distance_km * 1000.0
+        )
+        # Offset in metres from station toward a neighbouring patch of sky.
+        # Heading offset keeps enemies near the CAP orbit without sharing
+        # the intercept Hawkinge corridor unless the station happens to land there.
+        enemy_pos = Point(
+            station.x + _CAP_ENEMY_OFFSET_M_X,
+            station.y + _CAP_ENEMY_OFFSET_M_Y,
+            mission.terrain,
+        )
+        altitude = max(spec.cap.altitude_m - 500.0, 500.0)
+
+        for enemy, aircraft_type in zip(spec.enemies, enemy_types, strict=True):
+            country = self._ensure_country(
+                mission, countries_mod, enemy.country, enemy.coalition.value
+            )
+            try:
+                radio_mhz = registry.radio_mhz(enemy.aircraft)
+            except RegistryError as exc:
+                raise ValueError(str(exc)) from exc
+
+            eg = mission.flight_group_inflight(
+                country=country,
+                name=f"Enemy {enemy.aircraft}",
+                aircraft_type=aircraft_type,
+                position=enemy_pos,
+                altitude=altitude,
                 speed=_ENEMY_SPEED_KMH,
                 group_size=enemy.count,
             )

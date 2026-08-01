@@ -7,6 +7,19 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## CAP station is airfield-relative; ROE is Spec-backed
+
+- **Date:** 2026-08-01
+- **Lesson:** CAP Spec uses `bearing_deg` + `distance_km` from the player airfield
+  (PyDCS `point_from_heading`, metres), not raw map x/y or WGS84. Example Manston CAP:
+  135° / 25 km / 4000 m / circle. Engagement maps to PyDCS `OptROE` on the CAP waypoint
+  (`weapons_free`→0, `open_fire`→2, `return_fire`→3, `weapons_hold`→4). Optional enemies
+  spawn near the station (`+3000`, `-2000` m), not the intercept Hawkinge corridor.
+  Optional `duration_min` wraps Orbit in `ControlledTask.stop_after_duration`. Group
+  `task` must be `"CAP"`.
+- **Code:** `models.Cap`, `compiler/pydcs_compiler.py` (`_apply_cap`, `_place_cap_enemies`);
+  example `examples/manston_cap.yaml`.
+
 ## Squadron voice is USAAF (not USAF); brief is not Spec
 
 - **Date:** 2026-08-01

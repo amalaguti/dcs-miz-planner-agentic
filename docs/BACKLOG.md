@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote / in proposal:** `mission-type-cap` (or immersion / research)
+**Next promote / in proposal:** (see M4 — `mission-type-ground-attack`)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -73,12 +73,12 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 
 ## M4 — Mission types
 
-**M4 complete for now:** `mission-type-intercept` done; further mission types stay `idea`
+**Next promote / in proposal:** `mission-type-ground-attack` (briefing waits until M4 types finish)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 12 | `mission-type-intercept` | Dawn Manston intercept vs Bf-109K-4 (the concept doc's example) | `done` (accepted in-game 2026-07-26; ThirdReich/red) |
-| 13 | `mission-type-cap` | Patrol station, engagement rules | `idea` |
+| 13 | `mission-type-cap` | Patrol station, engagement rules | `done` (accepted in-game 2026-08-01) |
 | 14 | `mission-type-ground-attack` | Ground targets, payload selection | `idea` |
 | 15 | `mission-type-escort` | Escort a friendly package | `idea` |
 
@@ -88,7 +88,7 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
-| 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `idea` |
+| 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `idea` (after M4 types) |
 | 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `idea` |
 | 18 | `mission-randomization` | Seeded variation for replayability | `idea` |
 | 19 | `spitfire-radio-channel-presets` | Match ED stock Spitfire radio bank (A=124, B=40, C=41, D=42, E=108.9), not only group frequency | `idea` |

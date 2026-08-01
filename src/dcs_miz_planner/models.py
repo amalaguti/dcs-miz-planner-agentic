@@ -1,7 +1,7 @@
 """Mission Spec models — the AI/compiler contract.
 
 Public, backend-agnostic domain model. Never contains PyDCS types.
-Scope: free-flight and intercept (schema_version \"1\").
+Scope: free-flight, intercept, and CAP (schema_version \"1\").
 """
 
 from __future__ import annotations
@@ -23,6 +23,7 @@ class SpecModel(BaseModel):
 class MissionType(str, Enum):
     FREE_FLIGHT = "free_flight"
     INTERCEPT = "intercept"
+    CAP = "cap"
 
 
 class Coalition(str, Enum):
@@ -40,6 +41,19 @@ class WeatherPreset(str, Enum):
 
 class ObjectiveType(str, Enum):
     INTERCEPT_ENEMY = "intercept_enemy"
+    PATROL = "patrol"
+
+
+class CapPattern(str, Enum):
+    CIRCLE = "circle"
+    RACE_TRACK = "race_track"
+
+
+class Engagement(str, Enum):
+    WEAPONS_FREE = "weapons_free"
+    OPEN_FIRE = "open_fire"
+    RETURN_FIRE = "return_fire"
+    WEAPONS_HOLD = "weapons_hold"
 
 
 class MissionDate(SpecModel):
@@ -58,7 +72,7 @@ class Player(SpecModel):
 
 
 class EnemyFlight(SpecModel):
-    """One enemy flight for intercept (and later combat types)."""
+    """One enemy flight for intercept / CAP opposition."""
 
     aircraft: str  # exact DCS type id, e.g. Bf-109K-4
     count: int = Field(ge=1, le=16)
@@ -67,16 +81,27 @@ class EnemyFlight(SpecModel):
     coalition: Coalition = Coalition.RED
 
 
+class Cap(SpecModel):
+    """CAP patrol station relative to the player departure airfield."""
+
+    bearing_deg: float = Field(ge=0, le=360)
+    distance_km: float = Field(gt=0)
+    altitude_m: float = Field(gt=0)
+    pattern: CapPattern = CapPattern.CIRCLE
+    engagement: Engagement
+    duration_min: int | None = Field(default=None, ge=1)
+
+
 class Objective(SpecModel):
     type: ObjectiveType
 
 
 class MissionSpec(SpecModel):
-    """Declarative mission specification (free flight or intercept).
+    """Declarative mission specification (free flight, intercept, or CAP).
 
     ``triggers`` remain reserved for M6 and MUST stay empty in this schema version.
-    ``enemies`` / ``objectives`` are required for intercept and must stay empty for
-    free_flight.
+    ``enemies`` / ``objectives`` rules depend on ``mission_type``.
+    ``cap`` is required for CAP and forbidden otherwise.
     """
 
     schema_version: str = Field(description='Mission Spec schema version. Only "1" is supported.')
@@ -92,6 +117,7 @@ class MissionSpec(SpecModel):
     enemies: list[EnemyFlight] = Field(default_factory=list)
     objectives: list[Objective] = Field(default_factory=list)
     triggers: list[dict] = Field(default_factory=list)
+    cap: Cap | None = None
 
     @field_validator("schema_version")
     @classmethod
@@ -122,19 +148,33 @@ class MissionSpec(SpecModel):
             )
 
         if self.mission_type is MissionType.FREE_FLIGHT:
+            if self.cap is not None:
+                raise ValueError("cap not supported for free_flight: omit the cap block")
             used = [name for name in ("enemies", "objectives") if getattr(self, name)]
             if used:
                 raise ValueError(
                     f"{', '.join(used)} not supported for free_flight: "
-                    "combat extension points must be empty (use mission_type intercept)"
+                    "combat extension points must be empty "
+                    "(use mission_type intercept or cap)"
                 )
             return self
 
         if self.mission_type is MissionType.INTERCEPT:
+            if self.cap is not None:
+                raise ValueError("cap not supported for intercept: omit the cap block")
             if not self.enemies:
                 raise ValueError("intercept missions require a non-empty enemies list")
             if not self.objectives:
                 raise ValueError("intercept missions require a non-empty objectives list")
+            return self
+
+        if self.mission_type is MissionType.CAP:
+            if self.cap is None:
+                raise ValueError("cap missions require a nested cap block")
+            if not self.objectives:
+                raise ValueError("cap missions require a non-empty objectives list")
+            if not any(o.type is ObjectiveType.PATROL for o in self.objectives):
+                raise ValueError("cap missions require at least one patrol objective")
             return self
 
         raise ValueError(f"Unsupported mission_type {self.mission_type!r}")  # pragma: no cover

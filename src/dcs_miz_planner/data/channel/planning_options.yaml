@@ -16,6 +16,12 @@ options:
     description: Player scramble against an enemy flight with intercept objective.
     support: supported
 
+  - family: mission_type
+    id: cap
+    label: CAP / patrol
+    description: Patrol a station with orbit pattern and engagement rules; optional opposition.
+    support: supported
+
   - family: start_type
     id: cold_parking
     label: Cold parking
@@ -101,11 +107,31 @@ options:
   - family: roe_seed
     id: weapons_hold
     label: Weapons hold
-    description: Future ROE seed; not a Mission Spec field yet.
-    support: future
+    description: Hold fire; maps to CAP Spec cap.engagement.
+    support: supported
+    meta:
+      engagement: weapons_hold
 
   - family: roe_seed
     id: weapons_free
     label: Weapons free
-    description: Future ROE seed; not a Mission Spec field yet.
-    support: future
+    description: Engage detected threats; maps to CAP Spec cap.engagement.
+    support: supported
+    meta:
+      engagement: weapons_free
+
+  - family: roe_seed
+    id: open_fire
+    label: Open fire
+    description: Engage tasked targets; maps to CAP Spec cap.engagement.
+    support: supported
+    meta:
+      engagement: open_fire
+
+  - family: roe_seed
+    id: return_fire
+    label: Return fire
+    description: Fire only when fired upon; maps to CAP Spec cap.engagement.
+    support: supported
+    meta:
+      engagement: return_fire

@@ -147,6 +147,32 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
             "guard your six in the merge; mind Channel over-water navigation and fuel; "
             "do not press into flak or numbers you cannot handle."
         )
+    elif mt == "cap":
+        cap = spec.cap
+        station = (
+            f"bearing {cap.bearing_deg:g}°, {cap.distance_km:g} km, "
+            f"{cap.altitude_m:g} m, pattern {cap.pattern.value}, "
+            f"ROE {cap.engagement.value}"
+            if cap is not None
+            else "assigned CAP station"
+        )
+        enemy_bits = [f"{e.count}× {e.aircraft}" for e in spec.enemies]
+        opposition = ", ".join(enemy_bits) if enemy_bits else "no planned bandits"
+        tactics = (
+            f"CAP on station ({station}). Hold the orbit, scan systematically, "
+            f"and commit only with advantage. Opposition briefed: {opposition}. "
+            "Do not chase so far that you abandon the station or bingo fuel."
+        )
+        procedures = (
+            "Start and depart as briefed; climb toward the CAP bearing; "
+            "establish the orbit at altitude; manage fuel and lookout cycles; "
+            "recover to base when relieved or bingo."
+        )
+        watch = (
+            "Watch bogeys diving from above or out of cloud, fuel state on a long CAP, "
+            "navigation over the Channel, and mid-air conflict near the station; "
+            "honour your ROE and do not press hopeless odds."
+        )
     else:
         tactics = (
             "Free flight: treat this as a familiarisation / local area hop. "

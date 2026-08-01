@@ -93,6 +93,7 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert result["ok"] is True
     assert "free_flight" in result["mission_types"]
     assert "intercept" in result["mission_types"]
+    assert "cap" in result["mission_types"]
     offerable_ids = {t["theatre_id"] for t in result["offerable_theatres"]}
     assert "TheChannel" in offerable_ids
     options = result["options"]
@@ -101,7 +102,8 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("weather", "sunny_clear")]["support"] == "supported"
     assert by_key[("time_of_day", "dawn")]["support"] == "advisory"
     assert by_key[("time_of_day", "dawn")]["meta"]["start_time"] == "06:00"
-    assert by_key[("roe_seed", "weapons_hold")]["support"] == "future"
+    assert by_key[("roe_seed", "weapons_hold")]["support"] == "supported"
+    assert by_key[("mission_type", "cap")]["support"] == "supported"
     supports = {o["support"] for o in options}
     assert supports >= {"supported", "advisory", "future"}
 
