@@ -21,6 +21,17 @@ compiler when requested.
 - **WHEN** planning is invoked with compile enabled
 - **THEN** any `.miz` MUST be produced by the existing PyDCS compiler path, not by the LLM
 
+#### Scenario: Out-of-period date warns but succeeds
+- **WHEN** a planned Channel Spec uses a date year outside the usual WWII backdrop
+  (about 1939–1945)
+- **THEN** the plan MUST still succeed and MUST include a user-visible warning that the
+  date does not match that historical backdrop, while noting other eras or modern dates
+  remain allowed
+
+#### Scenario: Period date has no realism warning
+- **WHEN** a planned Channel Spec uses a date year in 1939–1945
+- **THEN** the plan MUST NOT emit that Channel era/date mismatch warning
+
 ### Requirement: Tool-using agent loop
 The planning agent SHALL be able to invoke the existing agent tools
 (`find_airfield`, `get_aircraft_details`, `list_mission_options`, `validate_mission_spec`,

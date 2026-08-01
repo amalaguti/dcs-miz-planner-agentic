@@ -37,11 +37,34 @@ def test_stub_plan_writes_valid_yaml(tmp_path: Path) -> None:
     )
     assert result.ok is True
     assert out.is_file()
+    assert result.warnings == ()
     spec = load_mission_spec(out)
     assert spec.player.airfield == "Manston"
     assert spec.player.aircraft == "SpitfireLFMkIX"
     miz = PyDCSCompiler(inventory=inv).compile(spec, tmp_path / "planned.miz")
     assert miz.is_file()
+
+
+def test_modern_date_emits_realism_warning(tmp_path: Path) -> None:
+    import json
+
+    from dcs_miz_planner.agent.llm import MANSTON_FREE_FLIGHT_JSON, LLMResponse
+
+    modern = json.loads(MANSTON_FREE_FLIGHT_JSON)
+    modern["date"] = {"year": 2023, "month": 10, "day": 1}
+    inv = channel_available_inventory()
+    out = tmp_path / "modern.yaml"
+    result = plan_mission(
+        "Manston free flight",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=json.dumps(modern))]),
+        inventory=inv,
+    )
+    assert result.ok is True
+    assert len(result.warnings) == 1
+    assert "2023" in result.warnings[0]
+    assert "historical backdrop" in result.warnings[0].lower() or "WWII" in result.warnings[0]
+    assert "modern" in result.warnings[0].lower()
 
 
 def test_stub_tool_call_then_spec(tmp_path: Path) -> None:

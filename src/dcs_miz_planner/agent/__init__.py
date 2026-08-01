@@ -13,6 +13,7 @@ from .llm import (
     stub_with_find_airfield_then_spec,
 )
 from .planner import PlanResult, plan_mission
+from .realism import channel_date_realism_warnings
 
 __all__ = [
     "ENV_API_KEY",
@@ -22,6 +23,7 @@ __all__ = [
     "OpenAILLM",
     "PlanResult",
     "StubLLM",
+    "channel_date_realism_warnings",
     "live_llm_from_env",
     "plan_mission",
     "stub_with_find_airfield_then_spec",

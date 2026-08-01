@@ -259,6 +259,8 @@ def _plan_cmd(args: argparse.Namespace) -> int:
     print(f"Wrote Spec {result.spec_path}")
     if result.miz_path:
         print(f"Wrote {result.miz_path}")
+    for warning in result.warnings:
+        print(f"Warning: {warning}", file=sys.stderr)
     return 0
 
 
