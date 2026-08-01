@@ -1,4 +1,4 @@
-"""Command-line entrypoint: compile, validate, theatres, and agent catalog."""
+"""Command-line entrypoint: compile, validate, theatres, catalog, and NL plan."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 
+from .agent import AgentConfigError, StubLLM, live_llm_from_env, plan_mission
 from .catalog import AIRCRAFT_DISCOVERY_DEFERRED, LIST_TYPES, CatalogService
 from .compiler import PyDCSCompiler
 from .install import InventoryService, default_db_path
@@ -231,10 +232,42 @@ def _catalog_root_cmd(_args: argparse.Namespace) -> int:
     return 2
 
 
+def _plan_cmd(args: argparse.Namespace) -> int:
+    output = Path(args.output) if args.output else DEFAULT_OUTPUT_DIR / "planned.yaml"
+    if args.stub:
+        llm = StubLLM()
+    else:
+        try:
+            llm = live_llm_from_env()
+        except AgentConfigError as exc:
+            print(exc, file=sys.stderr)
+            return 2
+
+    miz = Path(args.miz) if args.miz else None
+    result = plan_mission(
+        args.prompt,
+        output,
+        llm=llm,
+        compile_output=bool(args.compile),
+        miz_path=miz,
+    )
+    if not result.ok:
+        print(result.error or "Planning failed", file=sys.stderr)
+        for err in result.validation_errors:
+            print(f"  [{err.get('code')}] {err.get('message')}", file=sys.stderr)
+        return 2
+    print(f"Wrote Spec {result.spec_path}")
+    if result.miz_path:
+        print(f"Wrote {result.miz_path}")
+    return 0
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="dcs-miz",
-        description="DCS Mission Spec compiler, validator, theatre inventory, and agent catalog.",
+        description=(
+            "DCS Mission Spec compiler, validator, theatre inventory, catalog, and NL planner."
+        ),
     )
     sub = parser.add_subparsers(dest="command")
 
@@ -313,6 +346,34 @@ def _build_parser() -> argparse.ArgumentParser:
     list_p.add_argument("--json", action="store_true", help="Machine-readable JSON output")
     list_p.set_defaults(func=_catalog_list_cmd)
 
+    plan_p = sub.add_parser(
+        "plan",
+        help="Natural language → Mission Spec (uses LLM tools; --stub for offline)",
+    )
+    plan_p.add_argument("prompt", help="Natural-language mission request")
+    plan_p.add_argument(
+        "-o",
+        "--output",
+        help="Output Mission Spec YAML (default: out/planned.yaml)",
+        default=None,
+    )
+    plan_p.add_argument(
+        "--stub",
+        action="store_true",
+        help="Offline stub LLM (no API key; canned Manston free-flight Spec)",
+    )
+    plan_p.add_argument(
+        "--compile",
+        action="store_true",
+        help="Also compile the planned Spec to a .miz",
+    )
+    plan_p.add_argument(
+        "--miz",
+        help="Output .miz path when using --compile (default: same stem as Spec)",
+        default=None,
+    )
+    plan_p.set_defaults(func=_plan_cmd)
+
     return parser
 
 
@@ -330,6 +391,7 @@ def main(argv: list[str] | None = None) -> int:
             "validate",
             "theatres",
             "catalog",
+            "plan",
         }
     ):
         legacy = argparse.ArgumentParser(prog="dcs-miz")

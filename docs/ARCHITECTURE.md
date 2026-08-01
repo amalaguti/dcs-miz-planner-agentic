@@ -12,7 +12,7 @@ deterministic code decides *how* it becomes a `.miz`. No LLM writes DCS Lua.
 ```mermaid
 flowchart TD
     yaml["examples/*.yaml<br/>Mission Spec (YAML)"]
-    cli["cli.py<br/>dcs-miz validate / compile / theatres / catalog"]
+    cli["cli.py<br/>dcs-miz validate / compile / theatres / catalog / plan"]
     loader["loader.py<br/>YAML parse + SpecLoadError"]
     models["models.py<br/>MissionSpec (Pydantic)<br/>schema_version, extra=forbid"]
     validation["validation.py<br/>validate_mission_spec"]
@@ -22,6 +22,7 @@ flowchart TD
     data["data/channel/*.yaml<br/>airfields, aircraft, theatres,<br/>weather, payloads"]
     catalog["catalog/<br/>known catalog_* sync + theatre join"]
     tools["tools/<br/>agent tool surface"]
+    agent["agent/<br/>NL→Spec planner + LLM"]
     install["install/<br/>probe + SQLite inventory"]
     invdb["%LOCALAPPDATA%/dcs-miz-planner/<br/>inventory.sqlite"]
     ref["reference.py<br/>compat façade"]
@@ -33,6 +34,8 @@ flowchart TD
     cli --> base
     cli --> install
     cli --> catalog
+    cli --> agent
+    agent --> tools
     tools --> catalog
     tools --> validation
     tools --> base
@@ -68,14 +71,15 @@ YAML spec -> cli -> loader -> MissionSpec -> validate_mission_spec
 cli validate  -> validation.py
 cli theatres  -> install/ (probe) -> inventory.sqlite  (refresh on demand)
 cli catalog   -> catalog/ (sync known from YAML+enums; list joins install theatres)
-tools.*       -> catalog lookups + validation + PyDCSCompiler (agent API; no LLM)
+cli plan      -> agent/ (NL→Spec; tools + stub/live LLM; validate gate)
+tools.*       -> catalog lookups + validation + PyDCSCompiler (agent API)
 ```
 
 ## Modules
 
 | Module | Responsibility | Depends on |
 |--------|----------------|------------|
-| `cli.py` | `validate` / `compile` / legacy spec path; `theatres` list/refresh; `catalog sync|list`; clean errors | `loader`, `validation`, `compiler`, `install`, `catalog` |
+| `cli.py` | `validate` / `compile` / `theatres` / `catalog` / `plan`; legacy spec path | `loader`, `validation`, `compiler`, `install`, `catalog`, `agent` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
 | `models.py` | The public contract: `MissionSpec` + enums. Free flight + intercept; reserves `triggers` | `pydantic` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules); multi-error result | `models`, `registry`, `install` |
@@ -84,6 +88,7 @@ tools.*       -> catalog lookups + validation + PyDCSCompiler (agent API; no LLM
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
 | `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums; theatre views join install inventory (`known` / `offerable`) | `registry`, `install`, stdlib `sqlite3` |
 | `tools/` | Agent-facing callables: `find_airfield`, `get_aircraft_details`, `list_mission_options`, `validate_mission_spec`, `compile_mission` | `catalog`, `validation`, `compiler`, `loader` |
+| `agent/` | NL→Spec planner: tool loop, stub LLM, OpenAI-compatible live client (`OPENAI_API_KEY`) | `tools`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
 | `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, places player (and intercept enemies), writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |
@@ -119,7 +124,7 @@ Two boundaries worth respecting:
 |------|------------------|
 | `src/dcs_miz_planner/` | Product code (the modules above) |
 | `examples/` | Checked-in Mission Specs; `manston_cold_freeflight.yaml` + `manston_dawn_intercept.yaml` |
-| `tests/` | pytest: schema, registry, install probe, catalog, tools, validation, Manston free-flight + intercept goldens |
+| `tests/` | pytest: schema, registry, install, catalog, tools, agent, validation, goldens |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |
 | `docs/` | This file, `BACKLOG.md`, `LESSONS_LEARNED.md` |
@@ -137,5 +142,5 @@ A Cursor hook (`.cursor/hooks/architecture-on-push.py`) reminds you on `git push
 `src/dcs_miz_planner/` is part of what you are pushing. It only reminds; it never blocks,
 and it is not a generator — the map is written by hand so it explains intent, not just imports.
 
-Not yet built (later M3): NL→Spec agent on top of `tools/`, plus prefs/history.
-Aircraft module discovery from install is deferred (`catalog-discover-modules`).
+Not yet built (later M3): prefs/history, squadron voice. Aircraft module discovery
+from install is deferred (`catalog-discover-modules`).
