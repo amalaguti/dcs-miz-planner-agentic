@@ -74,12 +74,23 @@ agent tools. These tools MUST NOT invent DCS identifiers or bypass validation/co
 - **WHEN** at least one generation has been recorded and `list_generation_history` is called
 - **THEN** the result MUST include that generation in the recent list
 
+### Requirement: Research guidance tool
+The system SHALL expose a callable `research_guidance` tool that returns short notes on
+flight procedures, combat manoeuvres, pilot accounts, or historical context for commander
+briefs. Offline/stub mode MUST use fixtures without network access. Live mode MAY use
+web-backed retrieval. Failures MUST soft-fail (structured ok with fixture fallback or
+warning) and MUST NOT invent DCS identifiers or Spec field authority.
+
+#### Scenario: Offline research returns notes
+- **WHEN** `research_guidance` is called in offline mode for an intercept-oriented query
+- **THEN** the result MUST report ok with non-empty notes
+
 ### Requirement: Stable import surface
 Agent-facing callers MUST be able to import the tool callables from a single package surface
 (e.g. `dcs_miz_planner.tools`) without depending on unrelated internal modules for catalog
-lookup, validate/compile, and user-memory operations.
+lookup, validate/compile, user-memory, and research-guidance operations.
 
 #### Scenario: Import tools package
 - **WHEN** a test imports the tools surface
-- **THEN** the catalog, validate/compile, and user-memory tools MUST be available for
-  invocation
+- **THEN** the catalog, validate/compile, user-memory, and research guidance tools MUST be
+  available for invocation
