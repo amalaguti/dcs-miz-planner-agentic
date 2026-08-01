@@ -37,6 +37,16 @@ class CatalogPayload:
 
 
 @dataclass(frozen=True)
+class CatalogPlanningOption:
+    family: str
+    id: str
+    label: str
+    description: str
+    support: str
+    meta_json: str
+
+
+@dataclass(frozen=True)
 class CatalogEnumRow:
     value: str
 
@@ -65,6 +75,7 @@ class CatalogSnapshot:
     aircraft: tuple[CatalogAircraft, ...]
     weather_presets: tuple[CatalogWeatherPreset, ...]
     payloads: tuple[CatalogPayload, ...]
+    planning_options: tuple[CatalogPlanningOption, ...]
     mission_types: tuple[CatalogEnumRow, ...]
     start_types: tuple[CatalogEnumRow, ...]
     coalitions: tuple[CatalogEnumRow, ...]

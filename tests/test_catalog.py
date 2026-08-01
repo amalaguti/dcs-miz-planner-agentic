@@ -152,3 +152,74 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert "Manston" in {a.name for a in snap.airfields}
     assert "SpitfireLFMkIX" in {a.aircraft_id for a in snap.aircraft}
     assert "sunny_clear" in {w.name for w in snap.weather_presets}
+    by_key = {(o.family, o.id): o for o in snap.planning_options}
+    assert by_key[("weather", "sunny_clear")].support == "supported"
+    assert by_key[("start_type", "cold_parking")].support == "supported"
+    assert by_key[("time_of_day", "dawn")].support == "advisory"
+    assert by_key[("roe_seed", "weapons_free")].support == "future"
+
+
+def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
+    """After catalog_schema_version changes, empty tables must not look 'already synced'."""
+    import sqlite3
+
+    from dcs_miz_planner.catalog.store import CATALOG_SCHEMA_VERSION, CatalogStore
+
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    store = CatalogStore(db)
+    assert store.has_catalog() is True
+
+    with sqlite3.connect(db) as conn:
+        conn.execute(
+            "UPDATE catalog_meta SET value = ? WHERE key = 'catalog_schema_version'",
+            (str(CATALOG_SCHEMA_VERSION - 1),),
+        )
+        conn.commit()
+
+    # Opening with the current schema version wipes rows and clears synced_at.
+    assert store.has_catalog() is False
+    snap = CatalogService(db_path=db).ensure_synced()
+    assert len(snap.airfields) > 0
+    assert len(snap.planning_options) > 0
+
+    import io
+    import json
+    from contextlib import redirect_stdout
+
+    db = tmp_path / "inventory.sqlite"
+    assert main(["catalog", "sync", "--db", str(db)]) == 0
+
+    service = CatalogService(db_path=db)
+    weather = service.list_rows("planning_options", family="weather", support="supported")
+    assert {r["id"] for r in weather} == {"sunny_clear"}
+
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        assert (
+            main(
+                [
+                    "catalog",
+                    "list",
+                    "--type",
+                    "planning_options",
+                    "--family",
+                    "weather",
+                    "--support",
+                    "supported",
+                    "--db",
+                    str(db),
+                    "--json",
+                ]
+            )
+            == 0
+        )
+    payload = json.loads(buf.getvalue())
+    assert {r["id"] for r in payload["rows"]} == {"sunny_clear"}
+    assert all(r["support"] == "supported" for r in payload["rows"])
+
+    first = CatalogService(db_path=db).sync()
+    second = CatalogService(db_path=db).sync()
+    assert {(o.family, o.id, o.support) for o in first.planning_options} == {
+        (o.family, o.id, o.support) for o in second.planning_options
+    }

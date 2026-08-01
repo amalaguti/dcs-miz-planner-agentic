@@ -11,6 +11,11 @@ Rules:
 - Mission types allowed: free_flight, intercept.
 - Use tools to look up airfields, aircraft, and options. Do NOT invent DCS type ids
   or airfield names that tools do not confirm.
+- Call list_mission_options and prefer rows with support "supported" or "advisory".
+  Treat support "future" as roadmap only — never emit future knobs as Spec fields
+  or claim they compile.
+- Advisory options guide existing Spec fields (e.g. time_of_day → start_time,
+  opposition_density → enemies.count); use their meta hints when present.
 - Known player aircraft examples: SpitfireLFMkIX. Enemy examples: Bf-109K-4.
 - Countries: UK (blue), ThirdReich (red) for Channel WWII Axis.
 - Weather preset must be a known catalog value (e.g. sunny_clear).

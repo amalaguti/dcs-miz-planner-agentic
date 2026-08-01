@@ -11,12 +11,13 @@ from .models import (
     CatalogAirfield,
     CatalogEnumRow,
     CatalogPayload,
+    CatalogPlanningOption,
     CatalogSnapshot,
     CatalogTheatre,
     CatalogWeatherPreset,
 )
 
-CATALOG_SCHEMA_VERSION = 1
+CATALOG_SCHEMA_VERSION = 2
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS catalog_meta (
@@ -43,6 +44,15 @@ CREATE TABLE IF NOT EXISTS catalog_payloads (
     name TEXT PRIMARY KEY,
     meta_json TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS catalog_planning_options (
+    family TEXT NOT NULL,
+    id TEXT NOT NULL,
+    label TEXT NOT NULL,
+    description TEXT NOT NULL,
+    support TEXT NOT NULL,
+    meta_json TEXT NOT NULL,
+    PRIMARY KEY (family, id)
+);
 CREATE TABLE IF NOT EXISTS catalog_mission_types (
     value TEXT PRIMARY KEY
 );
@@ -66,6 +76,7 @@ _KNOWN_TABLES = (
     "catalog_aircraft",
     "catalog_weather_presets",
     "catalog_payloads",
+    "catalog_planning_options",
     "catalog_mission_types",
     "catalog_start_types",
     "catalog_coalitions",
@@ -101,6 +112,8 @@ class CatalogStore:
                 "UPDATE catalog_meta SET value = ? WHERE key = 'catalog_schema_version'",
                 (str(CATALOG_SCHEMA_VERSION),),
             )
+            # Force ensure_synced() to rebuild from packaged YAML after a schema bump.
+            conn.execute("DELETE FROM catalog_meta WHERE key IN ('synced_at', 'source')")
             conn.commit()
         return conn
 
@@ -134,6 +147,14 @@ class CatalogStore:
             conn.executemany(
                 "INSERT INTO catalog_payloads(name, meta_json) VALUES (?, ?)",
                 [(p.name, p.meta_json) for p in snapshot.payloads],
+            )
+            conn.executemany(
+                "INSERT INTO catalog_planning_options"
+                "(family, id, label, description, support, meta_json) VALUES (?, ?, ?, ?, ?, ?)",
+                [
+                    (o.family, o.id, o.label, o.description, o.support, o.meta_json)
+                    for o in snapshot.planning_options
+                ],
             )
             for table, rows in (
                 ("catalog_mission_types", snapshot.mission_types),
@@ -196,6 +217,20 @@ class CatalogStore:
                     "SELECT name, meta_json FROM catalog_payloads ORDER BY name"
                 )
             )
+            planning_options = tuple(
+                CatalogPlanningOption(
+                    row["family"],
+                    row["id"],
+                    row["label"],
+                    row["description"],
+                    row["support"],
+                    row["meta_json"],
+                )
+                for row in conn.execute(
+                    "SELECT family, id, label, description, support, meta_json "
+                    "FROM catalog_planning_options ORDER BY family, id"
+                )
+            )
 
             def enum_rows(table: str) -> tuple[CatalogEnumRow, ...]:
                 return tuple(
@@ -211,6 +246,7 @@ class CatalogStore:
                 aircraft=aircraft,
                 weather_presets=weather,
                 payloads=payloads,
+                planning_options=planning_options,
                 mission_types=enum_rows("catalog_mission_types"),
                 start_types=enum_rows("catalog_start_types"),
                 coalitions=enum_rows("catalog_coalitions"),

@@ -19,7 +19,7 @@ flowchart TD
     base["compiler/base.py<br/>CompilerInterface (ABC)"]
     pydcs["compiler/pydcs_compiler.py<br/>PyDCSCompiler"]
     registry["registry.py<br/>ChannelRegistry API"]
-    data["data/channel/*.yaml<br/>airfields, aircraft, theatres,<br/>weather, payloads"]
+    data["data/channel/*.yaml<br/>airfields, aircraft, theatres,<br/>weather, payloads, planning_options"]
     catalog["catalog/<br/>known catalog_* sync + theatre join"]
     tools["tools/<br/>agent tool surface"]
     agent["agent/<br/>NL→Spec planner + LLM"]
@@ -83,10 +83,10 @@ tools.*       -> catalog lookups + validation + PyDCSCompiler (agent API)
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
 | `models.py` | The public contract: `MissionSpec` + enums. Free flight + intercept; reserves `triggers` | `pydantic` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules); multi-error result | `models`, `registry`, `install` |
-| `data/channel/` | Committed Channel YAML tables (airdromeIds, aircraft+radio, theatres, weather presets, payload stub) | — |
+| `data/channel/` | Committed Channel YAML SoT (airdromeIds, aircraft+radio, theatres, weather, payloads, planning_options) | shipped in wheel via hatch force-include |
 | `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
-| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums; theatre views join install inventory (`known` / `offerable`) | `registry`, `install`, stdlib `sqlite3` |
+| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options; theatre views join install inventory (`known` / `offerable`) | `registry`, `install`, stdlib `sqlite3` |
 | `tools/` | Agent-facing callables: `find_airfield`, `get_aircraft_details`, `list_mission_options`, `validate_mission_spec`, `compile_mission` | `catalog`, `validation`, `compiler`, `loader` |
 | `agent/` | NL→Spec planner: tool loop, stub LLM, OpenAI-compatible live client (`OPENAI_API_KEY`) | `tools`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
@@ -99,7 +99,10 @@ Three stores stay separate on purpose:
 - **SQLite install inventory** = user-local cache of what is installed/enabled on this PC
   (`theatres` / `scan_meta` tables in `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`).
 - **SQLite known catalog** = agent/UI query layer (`catalog_*` tables in the **same** DB file),
-  replaced by `dcs-miz catalog sync` from packaged YAML + Spec enums — not a second DCS-id SoT.
+  replaced by `dcs-miz catalog sync` from packaged YAML + Spec enums + planning-option rows —
+  not a second DCS-id SoT. Planning options carry `supported` / `advisory` / `future` so the
+  agent can invent situations without claiming unsupported knobs compile. Extra DCS maps
+  (e.g. Normandy) are not required for this catalog.
 
 Ordinary install reads hit the DB; `dcs-miz theatres --refresh` rescans. Never commit the DB.
 

@@ -7,6 +7,18 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Catalog schema bump must clear synced_at
+
+- **Date:** 2026-08-01
+- **Symptom:** After bumping `CATALOG_SCHEMA_VERSION`, agent tools return empty catalog
+  (`find_airfield` not_found) even though packaged YAML is fine.
+- **Cause:** Version mismatch wiped `catalog_*` tables but left `catalog_meta.synced_at`,
+  so `ensure_synced()` treated the empty DB as already synced.
+- **Fix:** On schema mismatch, also delete `synced_at` / `source` so the next ensure/sync
+  rebuilds from packaged YAML. Users with a stuck empty catalog can run
+  `dcs-miz catalog sync`.
+- **Code:** `catalog/store.py` (`CatalogStore._connect`).
+
 ## NL planner: stub offline, live via env key only
 
 - **Date:** 2026-08-01

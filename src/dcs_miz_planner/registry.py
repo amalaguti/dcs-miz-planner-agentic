@@ -34,6 +34,21 @@ class WeatherPresetRef:
     description: str = ""
 
 
+@dataclass(frozen=True)
+class PlanningOptionRef:
+    """Curated planning knob for agent/CLI discovery (not a DCS type id)."""
+
+    family: str
+    id: str
+    label: str
+    description: str
+    support: str  # supported | advisory | future
+    meta: dict[str, Any]
+
+
+_VALID_SUPPORT = frozenset({"supported", "advisory", "future"})
+
+
 def _load_yaml(name: str) -> dict[str, Any]:
     root = resources.files("dcs_miz_planner.data.channel")
     text = (root / name).read_text(encoding="utf-8")
@@ -54,12 +69,14 @@ class ChannelRegistry:
         theatres: frozenset[str],
         weather_presets: dict[str, WeatherPresetRef],
         payloads: dict[str, Any] | None = None,
+        planning_options: tuple[PlanningOptionRef, ...] | None = None,
     ) -> None:
         self._airfields = dict(airfields)
         self._aircraft = dict(aircraft)
         self._theatres = frozenset(theatres)
         self._weather_presets = dict(weather_presets)
         self._payloads = dict(payloads or {})
+        self._planning_options = tuple(planning_options or ())
 
     @classmethod
     def from_packaged_yaml(cls) -> ChannelRegistry:
@@ -104,12 +121,18 @@ class ChannelRegistry:
         if not isinstance(payloads_raw, dict):
             raise RegistryError("payloads.yaml: 'payloads' must be a mapping")
 
+        options_raw = _load_yaml("planning_options.yaml").get("options") or []
+        if not isinstance(options_raw, list):
+            raise RegistryError("planning_options.yaml: 'options' must be a list")
+        planning_options = tuple(_parse_planning_option(row) for row in options_raw)
+
         return cls(
             airfields=airfields,
             aircraft=aircraft,
             theatres=theatres,
             weather_presets=weather_presets,
             payloads=payloads_raw,
+            planning_options=planning_options,
         )
 
     def airdrome_id(self, name: str) -> int:
@@ -167,6 +190,37 @@ class ChannelRegistry:
             raise RegistryError(
                 f"Unknown payload '{name}'. Known: {sorted(self._payloads)}"
             ) from exc
+
+    def list_planning_options(self) -> tuple[PlanningOptionRef, ...]:
+        return self._planning_options
+
+
+def _parse_planning_option(row: Any) -> PlanningOptionRef:
+    if not isinstance(row, dict):
+        raise RegistryError("planning_options.yaml: each option must be a mapping")
+    family = str(row.get("family") or "").strip()
+    option_id = str(row.get("id") or "").strip()
+    label = str(row.get("label") or "").strip()
+    description = str(row.get("description") or "").strip()
+    support = str(row.get("support") or "").strip()
+    if not family or not option_id or not label:
+        raise RegistryError("planning_options.yaml: each option needs family, id, and label")
+    if support not in _VALID_SUPPORT:
+        raise RegistryError(
+            f"planning_options.yaml: {family}/{option_id} support must be one of "
+            f"{sorted(_VALID_SUPPORT)}, got {support!r}"
+        )
+    meta_raw = row.get("meta") or {}
+    if not isinstance(meta_raw, dict):
+        raise RegistryError(f"planning_options.yaml: {family}/{option_id} meta must be a mapping")
+    return PlanningOptionRef(
+        family=family,
+        id=option_id,
+        label=label,
+        description=description,
+        support=support,
+        meta=dict(meta_raw),
+    )
 
 
 @lru_cache(maxsize=1)

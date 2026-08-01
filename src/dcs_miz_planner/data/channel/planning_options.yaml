@@ -1,0 +1,111 @@
+# Curated Channel planning knobs for agent/CLI discovery.
+# support: supported | advisory | future
+# - supported: Spec/compiler-backed id
+# - advisory: guides an existing Spec field (see meta)
+# - future: roadmap only — do not emit as compile-backed
+options:
+  - family: mission_type
+    id: free_flight
+    label: Free flight
+    description: Solo/player flight with no enemies or objectives.
+    support: supported
+
+  - family: mission_type
+    id: intercept
+    label: Intercept
+    description: Player scramble against an enemy flight with intercept objective.
+    support: supported
+
+  - family: start_type
+    id: cold_parking
+    label: Cold parking
+    description: Start from parking cold (DCS TakeOffParking).
+    support: supported
+
+  - family: weather
+    id: sunny_clear
+    label: Sunny clear
+    description: Clear skies, no fog/dust, high visibility.
+    support: supported
+
+  - family: time_of_day
+    id: dawn
+    label: Dawn
+    description: First light; suggest start_time around 06:00.
+    support: advisory
+    meta:
+      start_time: "06:00"
+
+  - family: time_of_day
+    id: morning
+    label: Morning
+    description: Mid-morning training / free flight default band.
+    support: advisory
+    meta:
+      start_time: "09:00"
+
+  - family: time_of_day
+    id: noon
+    label: Noon
+    description: Midday high sun.
+    support: advisory
+    meta:
+      start_time: "12:00"
+
+  - family: time_of_day
+    id: dusk
+    label: Dusk
+    description: Evening light; suggest start_time around 18:00.
+    support: advisory
+    meta:
+      start_time: "18:00"
+
+  - family: time_of_day
+    id: night
+    label: Night
+    description: Night ops; suggest start_time around 22:00.
+    support: advisory
+    meta:
+      start_time: "22:00"
+
+  - family: opposition_density
+    id: light
+    label: Light opposition
+    description: Single enemy flight, small count for intercept.
+    support: advisory
+    meta:
+      enemies_count: 1
+
+  - family: opposition_density
+    id: medium
+    label: Medium opposition
+    description: Typical intercept pair or small section.
+    support: advisory
+    meta:
+      enemies_count: 2
+
+  - family: opposition_density
+    id: heavy
+    label: Heavy opposition
+    description: Larger enemy flight; still maps to enemies.count only.
+    support: advisory
+    meta:
+      enemies_count: 4
+
+  - family: payload_family
+    id: default_loadout
+    label: Default loadout
+    description: Placeholder until payloads.yaml grows curated families.
+    support: future
+
+  - family: roe_seed
+    id: weapons_hold
+    label: Weapons hold
+    description: Future ROE seed; not a Mission Spec field yet.
+    support: future
+
+  - family: roe_seed
+    id: weapons_free
+    label: Weapons free
+    description: Future ROE seed; not a Mission Spec field yet.
+    support: future

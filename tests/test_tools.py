@@ -82,6 +82,15 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert "intercept" in result["mission_types"]
     offerable_ids = {t["theatre_id"] for t in result["offerable_theatres"]}
     assert "TheChannel" in offerable_ids
+    options = result["options"]
+    assert options
+    by_key = {(o["family"], o["id"]): o for o in options}
+    assert by_key[("weather", "sunny_clear")]["support"] == "supported"
+    assert by_key[("time_of_day", "dawn")]["support"] == "advisory"
+    assert by_key[("time_of_day", "dawn")]["meta"]["start_time"] == "06:00"
+    assert by_key[("roe_seed", "weapons_hold")]["support"] == "future"
+    supports = {o["support"] for o in options}
+    assert supports >= {"supported", "advisory", "future"}
 
 
 def test_validate_and_compile_manston(tmp_path: Path) -> None:

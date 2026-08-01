@@ -17,6 +17,7 @@ from .models import (
     CatalogAirfield,
     CatalogEnumRow,
     CatalogPayload,
+    CatalogPlanningOption,
     CatalogSnapshot,
     CatalogTheatre,
     CatalogWeatherPreset,
@@ -58,6 +59,17 @@ def build_snapshot_from_registry(
         )
         for name in registry.list_payloads()
     )
+    planning_options = tuple(
+        CatalogPlanningOption(
+            family=opt.family,
+            id=opt.id,
+            label=opt.label,
+            description=opt.description,
+            support=opt.support,
+            meta_json=json.dumps(opt.meta, sort_keys=True),
+        )
+        for opt in registry.list_planning_options()
+    )
 
     return CatalogSnapshot(
         synced_at=synced_at,
@@ -67,6 +79,7 @@ def build_snapshot_from_registry(
         aircraft=aircraft,
         weather_presets=weather,
         payloads=payloads,
+        planning_options=planning_options,
         mission_types=tuple(CatalogEnumRow(m.value) for m in MissionType),
         start_types=tuple(CatalogEnumRow(s.value) for s in StartType),
         coalitions=tuple(CatalogEnumRow(c.value) for c in Coalition),

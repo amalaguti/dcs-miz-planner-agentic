@@ -152,7 +152,7 @@ def _catalog_sync_cmd(args: argparse.Namespace) -> int:
     print(
         f"  theatres={len(snap.theatres)} airfields={len(snap.airfields)} "
         f"aircraft={len(snap.aircraft)} weather={len(snap.weather_presets)} "
-        f"payloads={len(snap.payloads)}"
+        f"payloads={len(snap.payloads)} planning_options={len(snap.planning_options)}"
     )
     return 0
 
@@ -202,8 +202,17 @@ def _catalog_list_cmd(args: argparse.Namespace) -> int:
     else:
         note = None
 
+    family = getattr(args, "family", None)
+    support = getattr(args, "support", None)
+    if resource_type != "planning_options" and (family or support):
+        print(
+            "--family/--support apply only with --type planning_options",
+            file=sys.stderr,
+        )
+        return 2
+
     try:
-        rows = service.list_rows(resource_type)
+        rows = service.list_rows(resource_type, family=family, support=support)
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -340,6 +349,15 @@ def _build_parser() -> argparse.ArgumentParser:
         "--known-only",
         action="store_true",
         help="For theatres: omit discovered-only install theatres",
+    )
+    list_p.add_argument(
+        "--family",
+        help="For planning_options: filter by family (e.g. weather, time_of_day)",
+    )
+    list_p.add_argument(
+        "--support",
+        choices=("supported", "advisory", "future"),
+        help="For planning_options: filter by support level",
     )
     list_p.add_argument(
         "--db",

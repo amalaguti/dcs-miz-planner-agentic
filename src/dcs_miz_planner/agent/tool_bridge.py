@@ -46,7 +46,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "list_mission_options",
-            "description": "List known mission types, weather, and offerable theatres.",
+            "description": (
+                "List known mission enums, offerable theatres, and enriched planning "
+                "options with support levels (supported|advisory|future)."
+            ),
             "parameters": {"type": "object", "properties": {}},
         },
     },

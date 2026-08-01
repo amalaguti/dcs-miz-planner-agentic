@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -72,7 +73,7 @@ def list_mission_options(
     *,
     db_path: Path | str | None = None,
 ) -> dict[str, Any]:
-    """Return known planning enums plus offerable theatres."""
+    """Return known planning enums, enriched options, and offerable theatres."""
     service = _catalog(db_path)
     snap = service.ensure_synced()
     theatres = service.list_theatres(include_discovered=True)
@@ -88,6 +89,24 @@ def list_mission_options(
         for v in theatres
         if v.offerable
     ]
+    options = []
+    for opt in snap.planning_options:
+        try:
+            meta = json.loads(opt.meta_json) if opt.meta_json else {}
+        except json.JSONDecodeError:
+            meta = {}
+        if not isinstance(meta, dict):
+            meta = {}
+        options.append(
+            {
+                "family": opt.family,
+                "id": opt.id,
+                "label": opt.label,
+                "description": opt.description,
+                "support": opt.support,
+                "meta": meta,
+            }
+        )
     return ok_result(
         mission_types=[r.value for r in snap.mission_types],
         start_types=[r.value for r in snap.start_types],
@@ -96,6 +115,7 @@ def list_mission_options(
         objective_types=[r.value for r in snap.objective_types],
         countries=[r.value for r in snap.countries],
         aircraft=[a.aircraft_id for a in snap.aircraft],
+        options=options,
         offerable_theatres=offerable,
     )
 

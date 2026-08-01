@@ -24,12 +24,15 @@ LIST_TYPES = (
     "aircraft",
     "weather",
     "payloads",
+    "planning_options",
     "mission_types",
     "start_types",
     "coalitions",
     "objective_types",
     "countries",
 )
+
+_VALID_OPTION_SUPPORT = frozenset({"supported", "advisory", "future"})
 
 
 def _prefer_theatre(a: TheatreRecord, b: TheatreRecord) -> TheatreRecord:
@@ -128,7 +131,13 @@ class CatalogService:
             return [v for v in views if v.known]
         return views
 
-    def list_rows(self, resource_type: str) -> list[dict[str, object]]:
+    def list_rows(
+        self,
+        resource_type: str,
+        *,
+        family: str | None = None,
+        support: str | None = None,
+    ) -> list[dict[str, object]]:
         """Return known catalog rows as plain dicts for CLI/JSON (not theatres join)."""
         if resource_type not in LIST_TYPES:
             raise ValueError(
@@ -152,6 +161,28 @@ class CatalogService:
             return [{"name": w.name, "description": w.description} for w in snap.weather_presets]
         if resource_type == "payloads":
             return [{"name": p.name, "meta_json": p.meta_json} for p in snap.payloads]
+        if resource_type == "planning_options":
+            if support is not None and support not in _VALID_OPTION_SUPPORT:
+                raise ValueError(
+                    f"Unknown support {support!r}. Known: {', '.join(sorted(_VALID_OPTION_SUPPORT))}"
+                )
+            rows: list[dict[str, object]] = []
+            for opt in snap.planning_options:
+                if family is not None and opt.family != family:
+                    continue
+                if support is not None and opt.support != support:
+                    continue
+                rows.append(
+                    {
+                        "family": opt.family,
+                        "id": opt.id,
+                        "label": opt.label,
+                        "description": opt.description,
+                        "support": opt.support,
+                        "meta_json": opt.meta_json,
+                    }
+                )
+            return rows
         enum_map = {
             "mission_types": snap.mission_types,
             "start_types": snap.start_types,
