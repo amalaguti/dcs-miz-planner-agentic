@@ -13,7 +13,12 @@ from dcs_miz_planner.tools import (
     compile_mission,
     find_airfield,
     get_aircraft_details,
+    get_user_prefs,
+    list_generation_history,
     list_mission_options,
+    record_feedback,
+    record_generation,
+    set_user_prefs,
     validate_mission_spec,
 )
 
@@ -24,6 +29,11 @@ def test_tools_export_surface() -> None:
     assert callable(list_mission_options)
     assert callable(validate_mission_spec)
     assert callable(compile_mission)
+    assert callable(get_user_prefs)
+    assert callable(set_user_prefs)
+    assert callable(record_generation)
+    assert callable(record_feedback)
+    assert callable(list_generation_history)
 
 
 def test_find_airfield_manston(tmp_path: Path) -> None:
@@ -102,3 +112,36 @@ def test_validate_and_compile_manston(tmp_path: Path) -> None:
     compiled = compile_mission(EXAMPLE_SPEC, out, inventory=inv)
     assert compiled["ok"] is True
     assert Path(compiled["output"]).is_file()
+
+
+def test_user_memory_tools(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    empty = get_user_prefs(db_path=db)
+    assert empty["ok"] is True
+    assert empty["prefs"] == {}
+
+    written = set_user_prefs({"preferred_airfield": "Manston"}, db_path=db)
+    assert written["ok"] is True
+    assert written["prefs"]["preferred_airfield"] == "Manston"
+
+    gid = record_generation(
+        outcome="success",
+        prompt="test",
+        mission_type="free_flight",
+        theatre="TheChannel",
+        spec_path="out/x.yaml",
+        db_path=db,
+    )
+    assert gid["ok"] is True
+    hist = list_generation_history(db_path=db)
+    assert hist["ok"] is True
+    assert hist["generations"][0]["id"] == gid["generation_id"]
+
+    fb = record_feedback(
+        score=4,
+        note="solid",
+        generation_id=gid["generation_id"],
+        source="cli",
+        db_path=db,
+    )
+    assert fb["ok"] is True

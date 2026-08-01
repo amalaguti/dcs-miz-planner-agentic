@@ -13,11 +13,13 @@ from dcs_miz_planner.agent import (
     live_llm_from_env,
     plan_mission,
     stub_with_find_airfield_then_spec,
+    stub_with_get_user_prefs_then_spec,
 )
 from dcs_miz_planner.agent.tool_bridge import dispatch_tool
 from dcs_miz_planner.cli import main
 from dcs_miz_planner.compiler import PyDCSCompiler
 from dcs_miz_planner.loader import load_mission_spec
+from dcs_miz_planner.memory import OUTCOME_SUCCESS, UserMemoryService
 
 
 def test_dispatch_find_airfield() -> None:
@@ -28,16 +30,23 @@ def test_dispatch_find_airfield() -> None:
 
 def test_stub_plan_writes_valid_yaml(tmp_path: Path) -> None:
     inv = channel_available_inventory()
+    db = tmp_path / "inventory.sqlite"
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "cold Spitfire free flight at Manston sunny 09:00",
         out,
         llm=StubLLM(),
         inventory=inv,
+        db_path=db,
     )
     assert result.ok is True
     assert out.is_file()
     assert result.warnings == ()
+    assert result.generation_id is not None
+    hist = UserMemoryService(db_path=db).list_generations()
+    assert len(hist) == 1
+    assert hist[0].outcome == OUTCOME_SUCCESS
+    assert hist[0].spec_path == str(out)
     spec = load_mission_spec(out)
     assert spec.player.airfield == "Manston"
     assert spec.player.aircraft == "SpitfireLFMkIX"
@@ -59,6 +68,7 @@ def test_modern_date_emits_realism_warning(tmp_path: Path) -> None:
         out,
         llm=StubLLM(script=[LLMResponse(content=json.dumps(modern))]),
         inventory=inv,
+        db_path=tmp_path / "inventory.sqlite",
     )
     assert result.ok is True
     assert len(result.warnings) == 1
@@ -75,10 +85,31 @@ def test_stub_tool_call_then_spec(tmp_path: Path) -> None:
         out,
         llm=stub_with_find_airfield_then_spec(),
         inventory=inv,
+        db_path=tmp_path / "inventory.sqlite",
     )
     assert result.ok is True
     assert result.spec is not None
     assert result.spec.theatre == "TheChannel"
+
+
+def test_stub_get_user_prefs_then_spec(tmp_path: Path) -> None:
+    inv = channel_available_inventory()
+    db = tmp_path / "inventory.sqlite"
+    UserMemoryService(db_path=db).set_prefs({"preferred_airfield": "Manston"})
+    out = tmp_path / "via_prefs.yaml"
+    result = plan_mission(
+        "free flight",
+        out,
+        llm=stub_with_get_user_prefs_then_spec(),
+        inventory=inv,
+        db_path=db,
+    )
+    assert result.ok is True
+    assert result.generation_id is not None
+    # Bridge returned real prefs during the tool turn (exercise path).
+    assert dispatch_tool("get_user_prefs", {}, db_path=db)["prefs"]["preferred_airfield"] == (
+        "Manston"
+    )
 
 
 def test_live_llm_from_env_missing_key() -> None:
@@ -94,9 +125,18 @@ def test_cli_plan_stub(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     )
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     out = tmp_path / "cli_planned.yaml"
-    assert main(["plan", "Manston free flight", "--stub", "-o", str(out)]) == 0
+    db = tmp_path / "inventory.sqlite"
+    assert main(["plan", "Manston free flight", "--stub", "-o", str(out), "--db", str(db)]) == 0
     assert out.is_file()
     assert load_mission_spec(out).player.airfield == "Manston"
+    assert main(["prefs", "history", "--db", str(db), "--json"]) == 0
+
+
+def test_cli_prefs_and_feedback(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    assert main(["prefs", "set", "preferred_airfield", "Manston", "--db", str(db)]) == 0
+    assert main(["prefs", "list", "--db", str(db), "--json"]) == 0
+    assert main(["feedback", "--score", "5", "--note", "nice", "--db", str(db)]) == 0
 
 
 def test_cli_plan_live_missing_key(monkeypatch: pytest.MonkeyPatch) -> None:

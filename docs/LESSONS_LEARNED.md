@@ -7,6 +7,18 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## User memory tables are not catalog_*
+
+- **Date:** 2026-08-01
+- **Lesson:** Prefs, generation history, and feedback live in the same
+  `inventory.sqlite` as install + catalog, but under `user_meta` / `user_prefs` /
+  `generation_history` / `satisfaction_feedback`. Never name them `catalog_*` —
+  catalog sync and catalog schema bumps wipe those tables. User schema bumps may
+  clear only user-memory tables; they must leave install + catalog intact.
+  Host `plan_mission` records history; do not rely on the LLM calling
+  `record_generation`. Never store API keys in SQLite.
+- **Code:** `memory/store.py`, `agent/planner.py`, `tools/surface.py`.
+
 ## Catalog schema bump must clear synced_at
 
 - **Date:** 2026-08-01

@@ -12,6 +12,13 @@ import yaml
 
 from ..compiler import PyDCSCompiler
 from ..install.models import TheatreInventory
+from ..memory import (
+    OUTCOME_COMPILE_FAILED,
+    OUTCOME_FAILED,
+    OUTCOME_SUCCESS,
+    OUTCOME_VALIDATION_FAILED,
+    UserMemoryService,
+)
 from ..models import MissionSpec
 from ..validation import validate_mission_spec
 from .llm import LLMClient, LLMResponse, default_tools
@@ -31,6 +38,7 @@ class PlanResult:
     validation_errors: tuple[dict[str, Any], ...] = ()
     spec: MissionSpec | None = None
     warnings: tuple[str, ...] = ()
+    generation_id: int | None = None
 
 
 def _extract_json_object(text: str) -> dict[str, Any]:
@@ -64,6 +72,30 @@ def _write_spec_yaml(spec: MissionSpec, path: Path) -> None:
     )
 
 
+def _record_plan(
+    *,
+    db_path: Path | str | None,
+    prompt: str,
+    outcome: str,
+    spec: MissionSpec | None = None,
+    spec_path: Path | None = None,
+    miz_path: Path | None = None,
+    detail: dict[str, Any] | None = None,
+) -> int | None:
+    try:
+        return UserMemoryService(db_path=db_path).record_generation(
+            outcome=outcome,
+            prompt=prompt,
+            mission_type=spec.mission_type.value if spec is not None else None,
+            theatre=spec.theatre if spec is not None else None,
+            spec_path=str(spec_path) if spec_path is not None else None,
+            miz_path=str(miz_path) if miz_path is not None else None,
+            detail=detail,
+        )
+    except OSError:
+        return None
+
+
 def plan_mission(
     prompt: str,
     output_path: str | Path,
@@ -72,6 +104,7 @@ def plan_mission(
     compile_output: bool = False,
     miz_path: str | Path | None = None,
     inventory: TheatreInventory | None = None,
+    db_path: Path | str | None = None,
     max_turns: int = 8,
 ) -> PlanResult:
     """Run the tool-using planner and write a validated Mission Spec YAML."""
@@ -90,7 +123,7 @@ def plan_mission(
 
         if resp.tool_calls:
             for tc in resp.tool_calls:
-                result = dispatch_tool(tc.name, tc.arguments)
+                result = dispatch_tool(tc.name, tc.arguments, db_path=db_path)
                 messages.append(
                     {
                         "role": "tool",
@@ -131,13 +164,43 @@ def plan_mission(
             compiled: Path | None = None
             if compile_output:
                 dest = Path(miz_path) if miz_path else out.with_suffix(".miz")
-                compiled = PyDCSCompiler(inventory=inventory).compile(spec, dest)
+                try:
+                    compiled = PyDCSCompiler(inventory=inventory).compile(spec, dest)
+                except ValueError as exc:
+                    gid = _record_plan(
+                        db_path=db_path,
+                        prompt=prompt,
+                        outcome=OUTCOME_COMPILE_FAILED,
+                        spec=spec,
+                        spec_path=out,
+                        detail={"error": str(exc)},
+                    )
+                    return PlanResult(
+                        ok=False,
+                        spec_path=out,
+                        error=str(exc),
+                        spec=spec,
+                        generation_id=gid,
+                    )
+            gid = _record_plan(
+                db_path=db_path,
+                prompt=prompt,
+                outcome=OUTCOME_SUCCESS,
+                spec=spec,
+                spec_path=out,
+                miz_path=compiled,
+                detail={
+                    "aircraft": spec.player.aircraft,
+                    "airfield": spec.player.airfield,
+                },
+            )
             return PlanResult(
                 ok=True,
                 spec_path=out,
                 miz_path=compiled,
                 spec=spec,
                 warnings=channel_date_realism_warnings(spec),
+                generation_id=gid,
             )
 
         errors = tuple(
@@ -150,11 +213,19 @@ def plan_mission(
             for e in vresult.errors
         )
         if repair_used:
+            gid = _record_plan(
+                db_path=db_path,
+                prompt=prompt,
+                outcome=OUTCOME_VALIDATION_FAILED,
+                spec=spec,
+                detail={"errors": list(errors)},
+            )
             return PlanResult(
                 ok=False,
                 error="Mission Spec failed validation after repair attempt",
                 validation_errors=errors,
                 spec=spec,
+                generation_id=gid,
             )
         repair_used = True
         messages.append(
@@ -168,7 +239,14 @@ def plan_mission(
             }
         )
 
+    gid = _record_plan(
+        db_path=db_path,
+        prompt=prompt,
+        outcome=OUTCOME_FAILED,
+        detail={"error": last_parse_error or f"Planner exceeded max_turns={max_turns}"},
+    )
     return PlanResult(
         ok=False,
         error=last_parse_error or f"Planner exceeded max_turns={max_turns}",
+        generation_id=gid,
     )

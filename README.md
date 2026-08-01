@@ -22,7 +22,7 @@ approach corridor — open the compiled `.miz` in DCS to accept. Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** prefs/history or squadron voice; planning-option catalog is synced for agent discovery.
+**Next:** squadron-commander voice (prefs/history already in local SQLite).
 
 ## Stack
 
@@ -77,13 +77,29 @@ Normandy (or other maps) is not required for the planning-option catalog.
 
 ## Agent tools (Python API)
 
-Import from `dcs_miz_planner.tools` (no dedicated CLI — pytest is the acceptance path):
+Import from `dcs_miz_planner.tools` (no dedicated tools CLI — pytest is the acceptance path):
 
 - `find_airfield(query)` / `get_aircraft_details(aircraft_id)` — known catalog
 - `list_mission_options()` — Spec enums + enriched planning options + offerable theatres
+- `get_user_prefs` / `set_user_prefs` / `list_generation_history` / `record_generation` /
+  `record_feedback` — local user memory
 - `validate_mission_spec(path)` / `compile_mission(path, output)` — wrap existing engines
 
 Results are JSON-friendly dicts with an `ok` flag for later LLM tool calling.
+
+## User prefs and history
+
+Same SQLite file as install/catalog (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`):
+
+```bash
+uv run dcs-miz prefs set preferred_airfield Manston
+uv run dcs-miz prefs list --json
+uv run dcs-miz prefs history --json
+uv run dcs-miz feedback --score 5 --note "good sortie"
+```
+
+The NL planner records generation history on success/failure; prefs are never wiped by
+`catalog sync`.
 
 ## Plan a mission (natural language)
 

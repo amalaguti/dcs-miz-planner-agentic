@@ -1,4 +1,4 @@
-"""Agent-facing tool callables (catalog lookups + validate/compile wrappers)."""
+"""Agent-facing tool callables (catalog lookups + validate/compile + user memory)."""
 
 from __future__ import annotations
 
@@ -10,12 +10,17 @@ from ..catalog import CatalogService
 from ..compiler import PyDCSCompiler
 from ..install.models import TheatreInventory
 from ..loader import SpecLoadError, load_mission_spec
+from ..memory import UserMemoryService
 from ..validation import validate_mission_spec as _validate_mission_spec
 from .results import err_result, ok_result
 
 
 def _catalog(db_path: Path | str | None = None) -> CatalogService:
     return CatalogService(db_path=db_path)
+
+
+def _memory(db_path: Path | str | None = None) -> UserMemoryService:
+    return UserMemoryService(db_path=db_path)
 
 
 def find_airfield(
@@ -193,3 +198,109 @@ def compile_mission(
     except ValueError as exc:
         return err_result(str(exc), code="compile_failed", path=str(path))
     return ok_result(path=str(path), output=str(written))
+
+
+def get_user_prefs(
+    keys: list[str] | None = None,
+    *,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Return stored user preferences (empty map when none are set)."""
+    prefs = _memory(db_path).get_prefs(keys)
+    return ok_result(prefs=prefs)
+
+
+def set_user_prefs(
+    prefs: dict[str, Any] | None = None,
+    *,
+    db_path: Path | str | None = None,
+    **extra: Any,
+) -> dict[str, Any]:
+    """Upsert preference keys; returns the full prefs map after write."""
+    payload = dict(prefs or {})
+    # Allow flat tool-call kwargs (set_user_prefs(preferred_airfield="Manston")).
+    for key, value in extra.items():
+        if key == "db_path":
+            continue
+        payload[key] = value
+    if not payload:
+        return err_result("prefs must include at least one key", code="invalid_query")
+    updated = _memory(db_path).set_prefs(payload)
+    return ok_result(prefs=updated)
+
+
+def record_generation(
+    *,
+    outcome: str,
+    prompt: str | None = None,
+    mission_type: str | None = None,
+    theatre: str | None = None,
+    spec_path: str | None = None,
+    miz_path: str | None = None,
+    detail: dict[str, Any] | None = None,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Append a generation history row."""
+    outcome_s = (outcome or "").strip()
+    if not outcome_s:
+        return err_result("outcome must be a non-empty string", code="invalid_query")
+    gid = _memory(db_path).record_generation(
+        outcome=outcome_s,
+        prompt=prompt,
+        mission_type=mission_type,
+        theatre=theatre,
+        spec_path=spec_path,
+        miz_path=miz_path,
+        detail=detail,
+    )
+    return ok_result(generation_id=gid, outcome=outcome_s)
+
+
+def record_feedback(
+    *,
+    source: str = "agent",
+    generation_id: int | None = None,
+    score: int | None = None,
+    note: str | None = None,
+    tags: list[Any] | None = None,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Append satisfaction feedback, optionally linked to a generation id."""
+    source_s = (source or "").strip() or "agent"
+    if score is None and not (note or "").strip() and not tags:
+        return err_result(
+            "feedback requires score, note, and/or tags",
+            code="invalid_query",
+        )
+    fid = _memory(db_path).record_feedback(
+        source=source_s,
+        generation_id=generation_id,
+        score=score,
+        note=note,
+        tags=tags,
+    )
+    return ok_result(feedback_id=fid, generation_id=generation_id, source=source_s)
+
+
+def list_generation_history(
+    limit: int = 20,
+    *,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """List recent generation history rows (newest first)."""
+    rows = _memory(db_path).list_generations(limit=limit)
+    generations = [
+        {
+            "id": r.id,
+            "created_at": r.created_at,
+            "prompt": r.prompt,
+            "mission_type": r.mission_type,
+            "theatre": r.theatre,
+            "spec_path": r.spec_path,
+            "miz_path": r.miz_path,
+            "outcome": r.outcome,
+            "detail": r.detail,
+        }
+        for r in rows
+    ]
+    return ok_result(generations=generations)

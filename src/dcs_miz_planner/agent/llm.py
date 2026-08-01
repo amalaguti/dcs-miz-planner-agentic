@@ -105,6 +105,24 @@ def stub_with_find_airfield_then_spec() -> StubLLM:
     )
 
 
+def stub_with_get_user_prefs_then_spec() -> StubLLM:
+    """Script: call get_user_prefs, then emit Manston Spec JSON."""
+    return StubLLM(
+        script=[
+            LLMResponse(
+                tool_calls=(
+                    ToolCall(
+                        id="call_prefs",
+                        name="get_user_prefs",
+                        arguments="{}",
+                    ),
+                )
+            ),
+            LLMResponse(content=MANSTON_FREE_FLIGHT_JSON),
+        ]
+    )
+
+
 @dataclass
 class OpenAILLM:
     """Live OpenAI-compatible chat client."""

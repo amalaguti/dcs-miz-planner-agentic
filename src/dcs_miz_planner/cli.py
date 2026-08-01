@@ -1,4 +1,4 @@
-"""Command-line entrypoint: compile, validate, theatres, catalog, and NL plan."""
+"""Command-line entrypoint: compile, validate, theatres, catalog, prefs, and NL plan."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from .catalog import AIRCRAFT_DISCOVERY_DEFERRED, LIST_TYPES, CatalogService
 from .compiler import PyDCSCompiler
 from .install import InventoryService, default_db_path
 from .loader import SpecLoadError, load_mission_spec
+from .memory import UserMemoryService
 from .validation import validate_mission_spec
 
 DEFAULT_OUTPUT_DIR = Path("out")
@@ -259,6 +260,7 @@ def _plan_cmd(args: argparse.Namespace) -> int:
         llm=llm,
         compile_output=bool(args.compile),
         miz_path=miz,
+        db_path=args.db if getattr(args, "db", None) else None,
     )
     if not result.ok:
         print(result.error or "Planning failed", file=sys.stderr)
@@ -273,11 +275,102 @@ def _plan_cmd(args: argparse.Namespace) -> int:
     return 0
 
 
+def _prefs_cmd(args: argparse.Namespace) -> int:
+    mem = UserMemoryService(db_path=args.db if args.db else None)
+    if args.prefs_command == "set":
+        if not args.key:
+            print("Usage: dcs-miz prefs set <key> <value>", file=sys.stderr)
+            return 2
+        raw = args.value if args.value is not None else ""
+        try:
+            value: object = json.loads(raw)
+        except json.JSONDecodeError:
+            value = raw
+        prefs = mem.set_prefs({args.key: value})
+        if args.json:
+            print(json.dumps({"db_path": str(mem.db_path), "prefs": prefs}, indent=2))
+        else:
+            print(f"Set {args.key}={value!r} db={mem.db_path}")
+        return 0
+
+    if args.prefs_command == "history":
+        rows = mem.list_generations(limit=args.limit)
+        payload = [
+            {
+                "id": r.id,
+                "created_at": r.created_at,
+                "outcome": r.outcome,
+                "mission_type": r.mission_type,
+                "theatre": r.theatre,
+                "spec_path": r.spec_path,
+                "prompt": r.prompt,
+            }
+            for r in rows
+        ]
+        if args.json:
+            print(json.dumps({"db_path": str(mem.db_path), "generations": payload}, indent=2))
+        else:
+            print(f"Generation history db={mem.db_path} ({len(payload)} rows)")
+            for row in payload:
+                print(
+                    f"  #{row['id']} {row['outcome']} type={row['mission_type']} "
+                    f"spec={row['spec_path']}"
+                )
+        return 0
+
+    # default: list
+    prefs = mem.get_prefs()
+    if args.json:
+        print(json.dumps({"db_path": str(mem.db_path), "prefs": prefs}, indent=2))
+    elif not prefs:
+        print(f"No prefs set db={mem.db_path}")
+    else:
+        print(f"Prefs db={mem.db_path}")
+        for key, value in sorted(prefs.items()):
+            print(f"  {key}={value!r}")
+    return 0
+
+
+def _prefs_root_cmd(_args: argparse.Namespace) -> int:
+    print("Usage: dcs-miz prefs {list,set,history} ...", file=sys.stderr)
+    return 2
+
+
+def _feedback_cmd(args: argparse.Namespace) -> int:
+    mem = UserMemoryService(db_path=args.db if args.db else None)
+    if args.score is None and not (args.note or "").strip():
+        print("Provide --score and/or --note", file=sys.stderr)
+        return 2
+    fid = mem.record_feedback(
+        source="cli",
+        generation_id=args.generation_id,
+        score=args.score,
+        note=args.note,
+    )
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "db_path": str(mem.db_path),
+                    "feedback_id": fid,
+                    "generation_id": args.generation_id,
+                    "score": args.score,
+                    "note": args.note,
+                },
+                indent=2,
+            )
+        )
+    else:
+        print(f"Recorded feedback #{fid} db={mem.db_path}")
+    return 0
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="dcs-miz",
         description=(
-            "DCS Mission Spec compiler, validator, theatre inventory, catalog, and NL planner."
+            "DCS Mission Spec compiler, validator, theatre inventory, catalog, "
+            "user prefs, and NL planner."
         ),
     )
     sub = parser.add_subparsers(dest="command")
@@ -392,7 +485,71 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Output .miz path when using --compile (default: same stem as Spec)",
         default=None,
     )
+    plan_p.add_argument(
+        "--db",
+        help=f"SQLite path for user memory / catalog (default: {default_db_path()})",
+    )
     plan_p.set_defaults(func=_plan_cmd)
+
+    prefs_p = sub.add_parser(
+        "prefs",
+        help="List/set user preferences or show generation history",
+    )
+    prefs_p.set_defaults(func=_prefs_root_cmd, prefs_command=None)
+    prefs_sub = prefs_p.add_subparsers(dest="prefs_command")
+
+    prefs_list = prefs_sub.add_parser("list", help="List stored preferences")
+    prefs_list.add_argument(
+        "--db",
+        help=f"SQLite path (default: {default_db_path()})",
+    )
+    prefs_list.add_argument("--json", action="store_true", help="Machine-readable JSON")
+    prefs_list.set_defaults(func=_prefs_cmd)
+
+    prefs_set = prefs_sub.add_parser("set", help="Set one preference key")
+    prefs_set.add_argument("key", help="Preference key (e.g. preferred_airfield)")
+    prefs_set.add_argument(
+        "value",
+        help="Value (JSON if parseable, otherwise raw string)",
+    )
+    prefs_set.add_argument(
+        "--db",
+        help=f"SQLite path (default: {default_db_path()})",
+    )
+    prefs_set.add_argument("--json", action="store_true", help="Machine-readable JSON")
+    prefs_set.set_defaults(func=_prefs_cmd)
+
+    prefs_hist = prefs_sub.add_parser("history", help="List recent generation history")
+    prefs_hist.add_argument(
+        "--limit",
+        type=int,
+        default=20,
+        help="Max rows (default 20)",
+    )
+    prefs_hist.add_argument(
+        "--db",
+        help=f"SQLite path (default: {default_db_path()})",
+    )
+    prefs_hist.add_argument("--json", action="store_true", help="Machine-readable JSON")
+    prefs_hist.set_defaults(func=_prefs_cmd)
+
+    feedback_p = sub.add_parser(
+        "feedback",
+        help="Record satisfaction feedback for a generation",
+    )
+    feedback_p.add_argument("--score", type=int, help="Score (e.g. 1–5)")
+    feedback_p.add_argument("--note", help="Free-text note")
+    feedback_p.add_argument(
+        "--generation-id",
+        type=int,
+        help="Optional generation history id to link",
+    )
+    feedback_p.add_argument(
+        "--db",
+        help=f"SQLite path (default: {default_db_path()})",
+    )
+    feedback_p.add_argument("--json", action="store_true", help="Machine-readable JSON")
+    feedback_p.set_defaults(func=_feedback_cmd)
 
     return parser
 
@@ -412,6 +569,8 @@ def main(argv: list[str] | None = None) -> int:
             "theatres",
             "catalog",
             "plan",
+            "prefs",
+            "feedback",
         }
     ):
         legacy = argparse.ArgumentParser(prog="dcs-miz")
