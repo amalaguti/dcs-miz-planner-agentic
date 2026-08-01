@@ -7,6 +7,15 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## NL planner: stub offline, live via env key only
+
+- **Date:** 2026-08-01
+- **Lesson:** `dcs-miz plan` uses `agent/` with tool calling. `--stub` needs no network (canned
+  Manston free flight). Live mode reads `OPENAI_API_KEY` (optional `DCS_MIZ_LLM_MODEL`,
+  `OPENAI_BASE_URL`) — never store the key in SQLite or the repo. Always validate before
+  writing YAML; one repair turn on failure. LLM must not write `.miz`/Lua.
+- **Code:** `agent/planner.py`, `agent/llm.py`; CLI `plan`.
+
 ## Agent tools: structured dicts, no dedicated CLI
 
 - **Date:** 2026-08-01

@@ -8,6 +8,7 @@ dependencies = [
     "pydantic>=2.7",
     "pyyaml>=6.0",
     "pydcs>=0.15.0",
+    "openai>=2.52.0",
 ]
 
 [project.scripts]

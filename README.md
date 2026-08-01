@@ -22,7 +22,7 @@ approach corridor — open the compiled `.miz` in DCS to accept. Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** NL→Spec agent (`nl-to-spec-agent`) using the tools surface.
+**Next:** prefs/history or squadron voice; NL planner is available via `dcs-miz plan`.
 
 ## Stack
 
@@ -80,6 +80,27 @@ Import from `dcs_miz_planner.tools` (no dedicated CLI — pytest is the acceptan
 - `validate_mission_spec(path)` / `compile_mission(path, output)` — wrap existing engines
 
 Results are JSON-friendly dicts with an `ok` flag for later LLM tool calling.
+
+## Plan a mission (natural language)
+
+Offline stub (no API key — canned Manston free flight):
+
+```bash
+uv run dcs-miz plan "cold Spitfire free flight at Manston" --stub -o out/planned.yaml
+uv run dcs-miz plan "..." --stub --compile -o out/planned.yaml
+```
+
+Live (OpenAI-compatible):
+
+```bash
+# PowerShell
+$env:OPENAI_API_KEY = "sk-..."
+# optional: $env:DCS_MIZ_LLM_MODEL = "gpt-4o-mini"
+uv run dcs-miz plan "dawn intercept from Manston vs Bf-109s" -o out/planned.yaml --compile
+```
+
+The agent may call catalog tools, then writes Mission Spec YAML; `--compile` uses PyDCS.
+Never put API keys in the repo or SQLite — environment only.
 
 ## Setup notes
 
