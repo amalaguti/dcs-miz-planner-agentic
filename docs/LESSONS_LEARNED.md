@@ -14,7 +14,10 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   Manston free flight). Live mode reads `OPENAI_API_KEY` (optional `DCS_MIZ_LLM_MODEL`,
   `OPENAI_BASE_URL`) — never store the key in SQLite or the repo. Always validate before
   writing YAML; one repair turn on failure. LLM must not write `.miz`/Lua.
-- **Code:** `agent/planner.py`, `agent/llm.py`; CLI `plan`.
+- **Date / era:** Prefer a date that fits the mission’s historical backdrop (WWII for
+  current Channel Spitfire/Axis content; later eras or modern day when the user wants).
+  Channel years outside ~1939–1945 still succeed but warn (`agent/realism.py` / CLI stderr).
+- **Code:** `agent/planner.py`, `agent/llm.py`, `agent/realism.py`; CLI `plan`.
 
 ## Agent tools: structured dicts, no dedicated CLI
 

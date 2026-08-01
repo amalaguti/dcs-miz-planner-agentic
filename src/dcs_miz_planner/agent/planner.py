@@ -16,6 +16,7 @@ from ..models import MissionSpec
 from ..validation import validate_mission_spec
 from .llm import LLMClient, LLMResponse, default_tools
 from .prompts import SYSTEM_PROMPT
+from .realism import channel_date_realism_warnings
 from .tool_bridge import dispatch_tool
 
 _JSON_FENCE = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
@@ -29,6 +30,7 @@ class PlanResult:
     error: str | None = None
     validation_errors: tuple[dict[str, Any], ...] = ()
     spec: MissionSpec | None = None
+    warnings: tuple[str, ...] = ()
 
 
 def _extract_json_object(text: str) -> dict[str, Any]:
@@ -135,6 +137,7 @@ def plan_mission(
                 spec_path=out,
                 miz_path=compiled,
                 spec=spec,
+                warnings=channel_date_realism_warnings(spec),
             )
 
         errors = tuple(

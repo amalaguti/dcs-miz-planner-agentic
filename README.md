@@ -101,6 +101,9 @@ uv run dcs-miz plan "dawn intercept from Manston vs Bf-109s" -o out/planned.yaml
 
 The agent may call catalog tools, then writes Mission Spec YAML; `--compile` uses PyDCS.
 Never put API keys in the repo or SQLite — environment only.
+Dates should fit the history you want (WWII Channel content usually 1939–1945; modern
+or other eras are allowed). A mismatched Channel date still succeeds but prints a
+**Warning** on stderr.
 
 ## Setup notes
 
