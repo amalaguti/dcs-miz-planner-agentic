@@ -1,0 +1,95 @@
+"""Agent tools surface: catalog lookups + validate/compile wrappers."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from fixtures_support import EXAMPLE_SPEC, channel_available_inventory
+
+from dcs_miz_planner.catalog import CatalogService
+from dcs_miz_planner.install.models import AvailabilityState, TheatreInventory, TheatreRecord
+from dcs_miz_planner.install.store import InventoryStore
+from dcs_miz_planner.tools import (
+    compile_mission,
+    find_airfield,
+    get_aircraft_details,
+    list_mission_options,
+    validate_mission_spec,
+)
+
+
+def test_tools_export_surface() -> None:
+    assert callable(find_airfield)
+    assert callable(get_aircraft_details)
+    assert callable(list_mission_options)
+    assert callable(validate_mission_spec)
+    assert callable(compile_mission)
+
+
+def test_find_airfield_manston(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    result = find_airfield("manston", db_path=db)
+    assert result["ok"] is True
+    names = {a["name"] for a in result["airfields"]}
+    assert "Manston" in names
+    manston = next(a for a in result["airfields"] if a["name"] == "Manston")
+    assert manston["airdrome_id"] == 5
+
+
+def test_get_aircraft_details_spitfire(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    result = get_aircraft_details("SpitfireLFMkIX", db_path=db)
+    assert result["ok"] is True
+    assert result["aircraft_id"] == "SpitfireLFMkIX"
+    assert result["radio_mhz"] == 124.0
+
+
+def test_get_aircraft_details_unknown(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    result = get_aircraft_details("NotARealPlane", db_path=db)
+    assert result["ok"] is False
+    assert result["code"] == "not_found"
+
+
+def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> None:
+    from datetime import UTC, datetime
+
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    InventoryStore(db).replace(
+        TheatreInventory(
+            scanned_at=datetime(2026, 8, 1, tzinfo=UTC),
+            dcs_roots=("C:/FakeDCS",),
+            saved_games_roots=(),
+            theatres=(
+                TheatreRecord(
+                    theatre_id="TheChannel",
+                    update_id="THECHANNEL_terrain",
+                    dcs_root="C:/FakeDCS",
+                    state=AvailabilityState.AVAILABLE,
+                    planner_supported=True,
+                ),
+            ),
+        )
+    )
+    CatalogService(db_path=db).ensure_synced()
+    result = list_mission_options(db_path=db)
+    assert result["ok"] is True
+    assert "free_flight" in result["mission_types"]
+    assert "intercept" in result["mission_types"]
+    offerable_ids = {t["theatre_id"] for t in result["offerable_theatres"]}
+    assert "TheChannel" in offerable_ids
+
+
+def test_validate_and_compile_manston(tmp_path: Path) -> None:
+    inv = channel_available_inventory()
+    validated = validate_mission_spec(EXAMPLE_SPEC, inventory=inv)
+    assert validated["ok"] is True
+
+    out = tmp_path / "tools_manston.miz"
+    compiled = compile_mission(EXAMPLE_SPEC, out, inventory=inv)
+    assert compiled["ok"] is True
+    assert Path(compiled["output"]).is_file()

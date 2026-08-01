@@ -7,6 +7,15 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Agent tools: structured dicts, no dedicated CLI
+
+- **Date:** 2026-08-01
+- **Lesson:** Agent callables live in `dcs_miz_planner.tools` and return JSON-friendly
+  `{ok: …}` dicts. Lookups use catalog; validate/compile wrap existing engines (inject
+  `inventory=` in tests). Browse known data with `dcs-miz catalog list`; there is no
+  `dcs-miz tools` CLI in v1 — pytest / Python REPL is the acceptance path.
+- **Code:** `tools/surface.py`; `tests/test_tools.py`.
+
 ## Agent catalog shares `inventory.sqlite` (query layer, not SoT)
 
 - **Date:** 2026-07-26

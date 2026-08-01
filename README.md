@@ -22,7 +22,7 @@ approach corridor — open the compiled `.miz` in DCS to accept. Module map:
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** agent tools surface (`agent-tools-surface`) on top of the catalog SQLite.
+**Next:** NL→Spec agent (`nl-to-spec-agent`) using the tools surface.
 
 ## Stack
 
@@ -70,6 +70,16 @@ uv run dcs-miz catalog list --type aircraft --json
 To grow **known** entries: edit `src/dcs_miz_planner/data/channel/*.yaml` (and Spec enums
 when needed), accept in DCS when compile-supported, then `catalog sync`. Discovered
 install theatres are listed with `known=false` and are not auto-promoted.
+
+## Agent tools (Python API)
+
+Import from `dcs_miz_planner.tools` (no dedicated CLI — pytest is the acceptance path):
+
+- `find_airfield(query)` / `get_aircraft_details(aircraft_id)` — known catalog
+- `list_mission_options()` — Spec enums + offerable theatres
+- `validate_mission_spec(path)` / `compile_mission(path, output)` — wrap existing engines
+
+Results are JSON-friendly dicts with an `ok` flag for later LLM tool calling.
 
 ## Setup notes
 
