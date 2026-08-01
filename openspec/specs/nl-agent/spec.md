@@ -62,7 +62,7 @@ without overriding an explicit user request.
 After a planning attempt reaches a terminal outcome (successful Spec write, or recorded
 validation/compile failure), the system SHALL append a generation history row. Recording
 MUST be performed by the host planner path and MUST NOT rely solely on the LLM choosing
-  to call `record_generation`.
+to call `record_generation`.
 
 #### Scenario: Successful stub plan writes history
 - **WHEN** the planner succeeds in stub mode and writes a Spec
