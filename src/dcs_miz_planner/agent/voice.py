@@ -99,12 +99,22 @@ def ops_brief_rules() -> str:
     return _OPS_BRIEF_RULES
 
 
+def _weather_phrase(spec: MissionSpec) -> str:
+    """Pilot-facing meteorological wording for briefs (not Spec enum ids)."""
+    from ..registry import RegistryError, get_channel_registry
+
+    try:
+        return get_channel_registry().weather_preset(spec.weather.value).description
+    except RegistryError:
+        return spec.weather.value
+
+
 def build_commander_brief(spec: MissionSpec, voice: str) -> str:
     """Deterministic host brief with Situation / Tactics / Procedures / Watch-outs."""
     mt = spec.mission_type.value
     airfield = spec.player.airfield
     aircraft = spec.player.aircraft
-    weather = spec.weather.value
+    weather = _weather_phrase(spec)
     start = spec.start_time
     start_type = spec.player.start.value
 
