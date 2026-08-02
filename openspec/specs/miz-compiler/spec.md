@@ -69,8 +69,7 @@ For free-flight Specs, the compiler (or loader, before compile) MUST NOT silentl
 non-empty `enemies` or `objectives`. Until a later change implements those capabilities for
 free flight, non-empty combat values MUST cause a clear failure. Intercept Specs MAY compile
 non-empty `enemies` / `objectives` per intercept requirements. Non-empty typed `triggers` /
-`zones` MUST fail compile until native trigger emit is implemented (clear error; no silent
-drop).
+`zones` MUST compile to native ME trigger tables (no silent drop).
 
 #### Scenario: Free-flight non-empty enemies refused
 - **WHEN** a free-flight Mission Spec includes a non-empty `enemies` collection
@@ -277,17 +276,28 @@ weather values MUST fail before writing a `.miz`.
 - **WHEN** the Manston cold free-flight Spec (`sunny_clear`) is compiled
 - **THEN** prior clear-weather behaviour MUST remain
 
-### Requirement: Compile refuses undeclared trigger emit
-Until native trigger compilation is implemented, the compiler MUST refuse to write a `.miz`
-when the Mission Spec has a non-empty `triggers` list or a non-empty `zones` list. The
-error MUST state that trigger/zone emit is not available yet. Specs with empty `triggers`
-and empty `zones` MUST continue to compile as today.
+### Requirement: Compile emits native zones and triggers
+When a Mission Spec has non-empty `zones` or `triggers`, the compiler SHALL write
+corresponding native DCS trigger zones and trigger rules into the `.miz` via PyDCS (or
+equivalent). It MUST NOT refuse solely because triggers are present. Specs with empty
+zones and triggers MUST keep prior compile behaviour.
+
+#### Scenario: Time message sample compiles
+- **WHEN** `examples/manston_freeflight_trigger_sample.yaml` is compiled
+- **THEN** the `.miz` MUST contain a time-after condition and an out-text (message) action
+  and MUST still place the player cold at Manston
 
 #### Scenario: Empty triggers still compile
-- **WHEN** the checked-in Manston cold free-flight Spec (empty triggers/zones) is compiled
-- **THEN** the compiler MUST write a `.miz` successfully
+- **WHEN** the Manston cold free-flight Spec (empty triggers) is compiled
+- **THEN** prior free-flight behaviour MUST remain
 
-#### Scenario: Non-empty triggers blocked at compile
-- **WHEN** a Spec that validates with a non-empty `triggers` list is compiled
-- **THEN** the compiler MUST fail without writing a `.miz`, with a clear not-implemented
-  message
+### Requirement: Spec vocabulary maps to ME predicates
+The compiler SHALL map v1 Spec conditions/actions to native predicates: `time_more` to
+time-after, `flag_is` to flag true/false, `unit_dead` to group-dead for the referenced
+enemy flight, `coalition_in_zone` to part-of-coalition-in-zone; `message` to delayed
+out-text, `set_flag` to set/clear flag, `mission_end` to end-mission with win/lose for the
+player coalition. Unsupported types MUST fail clearly before writing a `.miz`.
+
+#### Scenario: Unknown mapping fails
+- **WHEN** a future/unsupported condition type somehow reaches compile
+- **THEN** compile MUST fail with a clear error and MUST NOT write a `.miz`

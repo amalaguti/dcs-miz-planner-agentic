@@ -116,8 +116,7 @@ An intercept Mission Spec MUST declare a minimal objective indicating enemy inte
 
 #### Scenario: Well-typed triggers allowed on intercept
 - **WHEN** an intercept Spec sets a well-typed non-empty `triggers` list
-- **THEN** structural load and shared validation MUST succeed (compile may still refuse
-  until native trigger emit)
+- **THEN** structural load and shared validation MUST succeed (native ME emit via the compiler)
 
 ### Requirement: Checked-in intercept example Spec
 The repository SHALL include a checked-in example Mission Spec for the Manston dawn-style
@@ -193,8 +192,7 @@ Typed `triggers`/`zones` MAY be present per the mission-triggers model. Objectiv
 
 #### Scenario: Well-typed triggers allowed on CAP
 - **WHEN** a CAP Spec sets a well-typed non-empty `triggers` list
-- **THEN** structural load and shared validation MUST succeed (compile may still refuse
-  until native trigger emit)
+- **THEN** structural load and shared validation MUST succeed (native ME emit via the compiler)
 
 ### Requirement: Checked-in CAP example Spec
 The repository SHALL include a checked-in example Mission Spec for a Manston Channel CAP
@@ -313,8 +311,7 @@ unless a later change explicitly allows it.
 
 #### Scenario: Well-typed triggers allowed on ground-attack
 - **WHEN** a ground-attack Spec sets a well-typed non-empty `triggers` list
-- **THEN** structural load and shared validation MUST succeed (compile may still refuse
-  until native trigger emit)
+- **THEN** structural load and shared validation MUST succeed (native ME emit via the compiler)
 
 ### Requirement: Checked-in ground-attack example Spec
 The repository SHALL include a checked-in example Mission Spec for a Manston Channel
@@ -407,8 +404,7 @@ change explicitly allows it.
 
 #### Scenario: Well-typed triggers allowed on escort
 - **WHEN** an escort Spec sets a well-typed non-empty `triggers` list
-- **THEN** structural load and shared validation MUST succeed (compile may still refuse
-  until native trigger emit)
+- **THEN** structural load and shared validation MUST succeed (native ME emit via the compiler)
 
 ### Requirement: Checked-in escort example Spec
 The repository SHALL include a checked-in example Mission Spec for a Manston Channel escort

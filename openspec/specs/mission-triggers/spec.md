@@ -52,7 +52,7 @@ Supported condition types MUST include `time_more`, `flag_is`, `unit_dead`, and
 The shared validation engine SHALL validate trigger/zone graphs: every `coalition_in_zone`
 zone name MUST exist in `zones`; every `unit_dead.enemy_index` MUST be in range for
 `enemies`; flag names on `flag_is` / `set_flag` MUST be non-empty. Well-formed non-empty
-`triggers`/`zones` MUST pass validation (compile may still refuse until native emit exists).
+`triggers`/`zones` MUST pass validation and MUST be eligible for native compile emit.
 
 #### Scenario: Missing zone reference fails
 - **WHEN** a condition references zone `alpha` but `zones` has no such name
@@ -62,3 +62,12 @@ zone name MUST exist in `zones`; every `unit_dead.enemy_index` MUST be in range 
 - **WHEN** a Spec with a consistent zone and `coalition_in_zone` / `message` trigger is
   validated
 - **THEN** validation MUST succeed for the trigger/zone rules
+
+### Requirement: Validated triggers are compileable
+A Spec that passes shared validation for typed zones/triggers MUST be accepted by the
+compiler for native emit (subject to registry/install checks). The system MUST NOT leave
+validated trigger graphs as validate-only once native compile is implemented.
+
+#### Scenario: Valid sample is not refused
+- **WHEN** the checked-in free-flight trigger sample validates successfully
+- **THEN** compile MUST proceed to write a `.miz` (not a not-implemented refusal)
