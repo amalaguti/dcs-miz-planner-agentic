@@ -100,3 +100,13 @@ vehicle ids MUST NOT be used as sea targets. Lookup MUST fail clearly for unknow
 #### Scenario: Strike unit resolves domain
 - **WHEN** a caller resolves a registered land truck vs a registered Schnellboot
 - **THEN** the registry MUST report domain `land` and `sea` respectively
+
+### Requirement: Package aircraft in Channel registry
+The Channel reference registry SHALL expose exact DCS aircraft type ids usable as escort
+package aircraft, including at least `MosquitoFBMkVI` with a documented Allied VHF group
+radio default. Keys MUST match PyDCS plane ids; the registry MUST NOT invent spellings.
+
+#### Scenario: Mosquito lookup
+- **WHEN** a caller requests aircraft `MosquitoFBMkVI` from the Channel registry
+- **THEN** the registry MUST return the aircraft reference including a radio frequency in
+  the Allied VHF band

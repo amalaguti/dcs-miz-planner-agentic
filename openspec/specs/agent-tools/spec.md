@@ -137,6 +137,16 @@ structured error without inventing a Spec.
 - **WHEN** the standard agent tool definitions are listed
 - **THEN** `get_mission_spec_schema` MUST be among the registered function tools
 
+### Requirement: Escort schema via get_mission_spec_schema
+The `get_mission_spec_schema` agent tool SHALL support `mission_type` `escort`, returning a
+derived example shape consistent with the checked-in escort example (nested `escort`,
+`package`, optional `enemies`, `escort_package` objective).
+
+#### Scenario: Escort schema example validates
+- **WHEN** an agent or test requests `get_mission_spec_schema` for `escort`
+- **THEN** the returned example MUST load as a structurally valid escort Mission Spec
+  (subject to registry checks)
+
 ### Requirement: Stable import surface
 Agent-facing callers MUST be able to import the tool callables from a single package surface
 (e.g. `dcs_miz_planner.tools`) without depending on unrelated internal modules for catalog

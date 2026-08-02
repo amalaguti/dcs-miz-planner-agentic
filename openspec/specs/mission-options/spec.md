@@ -80,3 +80,11 @@ free_flight when the Spec forbids player payloads.
 - **WHEN** catalog sync runs after this change
 - **THEN** packaged `payload_family` entries MUST NOT all remain `future`; at least the
   Spitfire bomb and slipper-tank presets MUST be discoverable as non-`future` support
+
+### Requirement: Escort mission type in planning options
+The planning-options catalog SHALL list `mission_type` value `escort` as `supported`,
+describing Channel escort / package-protection planning.
+
+#### Scenario: escort listed as supported
+- **WHEN** an agent or CLI lists mission-type planning options
+- **THEN** `escort` MUST appear with status `supported`
