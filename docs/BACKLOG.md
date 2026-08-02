@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote / in proposal:** (see M5 — prefer `spitfire-radio-channel-presets`)
+**Next promote / in proposal:** (see M6 — prefer `trigger-model-spec`)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -84,7 +84,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `spitfire-radio-channel-presets` (M5)
+**Next promote / in proposal:** `trigger-model-spec` (M6)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -97,17 +97,21 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M5 — Immersion & replayability
 
+**M5 core done** (briefings, weather trio, randomization). Remaining items are optional polish.
+
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `done` (accepted in-game 2026-08-02; Sortie/Description/Task in ME) |
 | 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `done` (accepted in-game 2026-08-02; meteo brief phrasing) |
 | 17a | `weather-presets-expand` | Optional later: more Channel weather (rain, thunderstorm, IFR / low cloud, stronger wind); keep Spec ids + meteo brief descriptions; not needed for M5 core | `idea` (after M5; only if play shows a gap) |
 | 18 | `mission-randomization` | Seeded Spec→Spec variation for replayability (CLI + tool; compiler stays deterministic) | `done` (accepted 2026-08-02; seed42 vs seed99 CAP) |
-| 19 | `spitfire-radio-channel-presets` | Match ED stock Spitfire radio bank (A=124, B=40, C=41, D=42, E=108.9), not only group frequency | `idea` |
+| 19 | `spitfire-radio-channel-presets` | Match ED Channel Spitfire unit Radio bank (A=124, B=40, C=41, D=42, E=108.9) for cockpit channel clicks; group frequency 124 already correct | `idea` (parked 2026-08-02 — immersion only; not required to fly; revisit if cockpit radio parity matters or M6 radio menus need it) |
 
 ---
 
 ## M6 — Mission enrichment: triggers & Lua
+
+**Next promote / in proposal:** `trigger-model-spec`
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -158,6 +162,9 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 
 ## Later / deferred
 
+- **Spitfire Channel radio A–E bank** — M5 `#19` `spitfire-radio-channel-presets`:
+  parked 2026-08-02; group frequency 124 already flyable; unit Radio bank is cockpit
+  immersion only (ED Channel A=124/B=40/C=41/D=42/E=108.9).
 - **Agent verbose default off** — M3 `#10b` `agent-verbose-default-off`: today `verbose`
   defaults **on** (tool traces on stderr) for development; flip default to off before a
   finalized release, keep `--verbose` / `/verbose on`.

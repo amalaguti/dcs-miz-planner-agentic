@@ -34,7 +34,7 @@ chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `spitfire-radio-channel-presets` (M5); research R7/R8 as hygiene.
+**Next:** `trigger-model-spec` (M6); optional parked M5 polish / research R7/R8.
 
 ## Stack
 
