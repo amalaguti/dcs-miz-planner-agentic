@@ -173,6 +173,45 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
             "navigation over the Channel, and mid-air conflict near the station; "
             "honour your ROE and do not press hopeless odds."
         )
+    elif mt == "ground_attack":
+        strike = spec.strike
+        strike_bits = (
+            f"bearing {strike.bearing_deg:g}°, {strike.distance_km:g} km, "
+            f"ingress {strike.altitude_m:g} m"
+            if strike is not None
+            else "assigned strike area"
+        )
+        tgt_bits = [f"{t.count}× {t.unit}" for t in spec.targets]
+        targets = ", ".join(tgt_bits) or "briefed ground targets"
+        payload = spec.player.payload or "briefed loadout"
+        has_slipper = "slipper" in payload.lower() or "tank" in payload.lower()
+        tactics = (
+            f"Ground attack on {strike_bits}. Targets: {targets} (enemy only). "
+            f"Loadout: {payload}. Run in with a clear abort, release on the briefed "
+            "aiming point, and do not linger in flak."
+        )
+        if has_slipper:
+            procedures = (
+                "Cold start as briefed; taxi and takeoff with the slipper tank fitted; "
+                "climb toward the Channel strike bearing; jettison the external fuel tank "
+                "in the cockpit before the attack run; then press the dive/level attack and "
+                "recover to base."
+            )
+            watch = (
+                "Watch Channel weather and fuel with the slipper, flak around the target, "
+                "navigation over water, and mid-air conflict near the coast; "
+                "jettison the tank before combat and do not press a blind attack into cloud."
+            )
+        else:
+            procedures = (
+                "Cold start as briefed; taxi and takeoff; climb toward the strike bearing; "
+                "confirm bombs/sight; attack the briefed aim point; recover to base."
+            )
+            watch = (
+                "Watch fuel state on a short-radius loadout, flak around the target, "
+                "navigation, and mid-air conflict; abort early if you lose the target or "
+                "the weather closes in."
+            )
     else:
         tactics = (
             "Free flight: treat this as a familiarisation / local area hop. "

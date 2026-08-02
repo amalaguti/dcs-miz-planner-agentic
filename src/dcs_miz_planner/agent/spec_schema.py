@@ -19,28 +19,49 @@ _EXAMPLE_FILES: dict[str, str] = {
     MissionType.FREE_FLIGHT.value: "manston_cold_freeflight.yaml",
     MissionType.INTERCEPT.value: "manston_dawn_intercept.yaml",
     MissionType.CAP.value: "manston_cap.yaml",
+    MissionType.GROUND_ATTACK.value: "manston_ground_attack.yaml",
 }
 
 ANTI_PATTERNS: tuple[str, ...] = (
     'top-level "airfield" / "aircraft" (use nested player.aircraft / player.airfield)',
     '"date" as an ISO string like "1944-06-06" (use {"year","month","day"})',
     'enemies like {"type":"intercept_enemy","id":"..."} (use aircraft + count)',
-    "objectives nested under cap (objectives is top-level only)",
+    "objectives nested under cap or strike (objectives is top-level only)",
     "omitting theatre, player, or triggers (triggers must be [])",
+    "friendly / same-coalition targets without strike.practice true",
+    "inventing bomb CLSIDs (use named player.payload presets from the catalog)",
 )
 
 _TYPE_NOTES: dict[str, tuple[str, ...]] = {
     MissionType.FREE_FLIGHT.value: (
-        "enemies and objectives must be empty lists; omit the cap block.",
+        (
+            "enemies, objectives, and targets must be empty lists; omit cap and strike; "
+            "omit player.payload."
+        ),
     ),
     MissionType.INTERCEPT.value: (
         'enemies must be non-empty; objectives must include {"type":"intercept_enemy"}.',
-        "omit the cap block.",
+        "omit the cap and strike blocks; omit player.payload.",
     ),
     MissionType.CAP.value: (
         "nested cap is required (bearing_deg, distance_km, altitude_m, pattern, engagement).",
         'top-level objectives must include {"type":"patrol"}; enemies are optional.',
         "station is airfield-relative bearing/distance — never invent raw map x/y.",
+        "omit strike, targets, and player.payload.",
+    ),
+    MissionType.GROUND_ATTACK.value: (
+        "nested strike is required (bearing_deg, distance_km, altitude_m).",
+        (
+            "player.payload is required (named preset; prefer spitfire_2x250_slipper for "
+            "Channel crossings)."
+        ),
+        (
+            "targets must be non-empty. Combat: opposing coalition; land on Axis continent "
+            "for Channel WWII; water = ships. Practice (strike.practice true): same-coalition "
+            "/ UK-side targets allowed for bombing practice narrative."
+        ),
+        'objectives must include {"type":"attack_ground"}; enemies must be empty.',
+        "omit the cap block. Pilot jettisons the slipper tank in the cockpit before attack.",
     ),
 }
 
@@ -126,7 +147,7 @@ def format_spec_schema_fragment(view: SpecSchemaView) -> str:
 SPEC_SHAPE_REMINDER = """\
 Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
-(free_flight | intercept | cap) and copy that example's structure.
+(free_flight | intercept | cap | ground_attack) and copy that example's structure.
 
 Always required envelope:
   schema_version, mission_type, theatre, date, start_time, weather, player,
@@ -136,6 +157,7 @@ Anti-patterns (fatal):
 - top-level airfield/aircraft → use nested player{}
 - date as "YYYY-MM-DD" → use {"year","month","day"}
 - enemies as {type,id} → use {aircraft,count,...}
-- objectives under cap → objectives stay top-level
-- inventing DCS ids — use tools/prefs only
+- objectives under cap/strike → objectives stay top-level
+- friendly ground targets without strike.practice → combat strikes need opposing coalition
+- inventing DCS ids / CLSIDs — use tools/prefs and named player.payload only
 """

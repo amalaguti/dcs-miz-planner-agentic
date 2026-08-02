@@ -46,6 +46,51 @@ class PlanningOptionRef:
     meta: dict[str, Any]
 
 
+@dataclass(frozen=True)
+class GroundUnitRef:
+    """Known Channel land strike target (exact DCS / PyDCS vehicle type id)."""
+
+    id: str
+    label: str = ""
+    domain: str = "land"
+
+
+@dataclass(frozen=True)
+class ShipRef:
+    """Known Channel sea strike target (exact DCS / PyDCS ship type id)."""
+
+    id: str
+    label: str = ""
+    domain: str = "sea"
+
+
+@dataclass(frozen=True)
+class StrikeUnitRef:
+    """Land or sea strike target resolved from the Channel registry."""
+
+    id: str
+    domain: str  # land | sea
+    label: str = ""
+
+
+@dataclass(frozen=True)
+class PayloadPylon:
+    """One pylon/CLSID pair in a named payload preset."""
+
+    pylon: int
+    clsid: str
+
+
+@dataclass(frozen=True)
+class PayloadRef:
+    """Named payload preset with verified CLSIDs for one aircraft."""
+
+    name: str
+    aircraft: str
+    label: str
+    pylons: tuple[PayloadPylon, ...]
+
+
 _VALID_SUPPORT = frozenset({"supported", "advisory", "future"})
 
 
@@ -68,7 +113,9 @@ class ChannelRegistry:
         aircraft: dict[str, AircraftRef],
         theatres: frozenset[str],
         weather_presets: dict[str, WeatherPresetRef],
-        payloads: dict[str, Any] | None = None,
+        payloads: dict[str, PayloadRef] | None = None,
+        ground_units: dict[str, GroundUnitRef] | None = None,
+        ships: dict[str, ShipRef] | None = None,
         planning_options: tuple[PlanningOptionRef, ...] | None = None,
     ) -> None:
         self._airfields = dict(airfields)
@@ -76,6 +123,8 @@ class ChannelRegistry:
         self._theatres = frozenset(theatres)
         self._weather_presets = dict(weather_presets)
         self._payloads = dict(payloads or {})
+        self._ground_units = dict(ground_units or {})
+        self._ships = dict(ships or {})
         self._planning_options = tuple(planning_options or ())
 
     @classmethod
@@ -120,6 +169,23 @@ class ChannelRegistry:
         payloads_raw = _load_yaml("payloads.yaml").get("payloads") or {}
         if not isinstance(payloads_raw, dict):
             raise RegistryError("payloads.yaml: 'payloads' must be a mapping")
+        payloads = {
+            str(name): _parse_payload(str(name), meta) for name, meta in payloads_raw.items()
+        }
+
+        ground_raw = _load_yaml("ground_units.yaml").get("ground_units") or {}
+        if not isinstance(ground_raw, dict):
+            raise RegistryError("ground_units.yaml: 'ground_units' must be a mapping")
+        ground_units: dict[str, GroundUnitRef] = {}
+        for unit_id, meta in ground_raw.items():
+            ground_units[str(unit_id)] = _parse_ground_unit(str(unit_id), meta)
+
+        ships_raw = _load_yaml("ships.yaml").get("ships") or {}
+        if not isinstance(ships_raw, dict):
+            raise RegistryError("ships.yaml: 'ships' must be a mapping")
+        ships: dict[str, ShipRef] = {}
+        for ship_id, meta in ships_raw.items():
+            ships[str(ship_id)] = _parse_ship(str(ship_id), meta)
 
         options_raw = _load_yaml("planning_options.yaml").get("options") or []
         if not isinstance(options_raw, list):
@@ -131,7 +197,9 @@ class ChannelRegistry:
             aircraft=aircraft,
             theatres=theatres,
             weather_presets=weather_presets,
-            payloads=payloads_raw,
+            payloads=payloads,
+            ground_units=ground_units,
+            ships=ships,
             planning_options=planning_options,
         )
 
@@ -183,7 +251,7 @@ class ChannelRegistry:
     def list_payloads(self) -> list[str]:
         return sorted(self._payloads)
 
-    def payload_meta(self, name: str) -> Any:
+    def get_payload(self, name: str) -> PayloadRef:
         try:
             return self._payloads[name]
         except KeyError as exc:
@@ -191,8 +259,101 @@ class ChannelRegistry:
                 f"Unknown payload '{name}'. Known: {sorted(self._payloads)}"
             ) from exc
 
+    def payload_meta(self, name: str) -> dict[str, Any]:
+        """JSON-serialisable preset meta (catalog sync / tooling)."""
+        ref = self.get_payload(name)
+        return {
+            "aircraft": ref.aircraft,
+            "label": ref.label,
+            "pylons": [{"pylon": p.pylon, "clsid": p.clsid} for p in ref.pylons],
+        }
+
+    def list_ground_units(self) -> list[str]:
+        return sorted(self._ground_units)
+
+    def get_ground_unit(self, unit_id: str) -> GroundUnitRef:
+        try:
+            return self._ground_units[unit_id]
+        except KeyError as exc:
+            raise RegistryError(
+                f"Unknown ground unit '{unit_id}'. Known: {sorted(self._ground_units)}"
+            ) from exc
+
+    def known_ground_units(self) -> frozenset[str]:
+        return frozenset(self._ground_units)
+
+    def list_ships(self) -> list[str]:
+        return sorted(self._ships)
+
+    def get_ship(self, ship_id: str) -> ShipRef:
+        try:
+            return self._ships[ship_id]
+        except KeyError as exc:
+            raise RegistryError(f"Unknown ship '{ship_id}'. Known: {sorted(self._ships)}") from exc
+
+    def get_strike_unit(self, unit_id: str) -> StrikeUnitRef:
+        """Resolve a land or sea strike target id."""
+        if unit_id in self._ground_units:
+            g = self._ground_units[unit_id]
+            return StrikeUnitRef(id=g.id, domain="land", label=g.label)
+        if unit_id in self._ships:
+            s = self._ships[unit_id]
+            return StrikeUnitRef(id=s.id, domain="sea", label=s.label)
+        known = sorted(set(self._ground_units) | set(self._ships))
+        raise RegistryError(f"Unknown strike target '{unit_id}'. Known: {known}")
+
+    def list_strike_units(self) -> list[str]:
+        return sorted(set(self._ground_units) | set(self._ships))
+
     def list_planning_options(self) -> tuple[PlanningOptionRef, ...]:
         return self._planning_options
+
+
+def _parse_ground_unit(unit_id: str, meta: Any) -> GroundUnitRef:
+    if meta is None:
+        return GroundUnitRef(id=unit_id, domain="land")
+    if not isinstance(meta, dict):
+        raise RegistryError(f"ground_units.yaml: {unit_id!r} must map to a mapping")
+    domain = str(meta.get("domain") or "land").strip()
+    if domain != "land":
+        raise RegistryError(f"ground_units.yaml: {unit_id!r} domain must be 'land'")
+    return GroundUnitRef(id=unit_id, label=str(meta.get("label") or ""), domain="land")
+
+
+def _parse_ship(ship_id: str, meta: Any) -> ShipRef:
+    if meta is None:
+        return ShipRef(id=ship_id, domain="sea")
+    if not isinstance(meta, dict):
+        raise RegistryError(f"ships.yaml: {ship_id!r} must map to a mapping")
+    domain = str(meta.get("domain") or "sea").strip()
+    if domain != "sea":
+        raise RegistryError(f"ships.yaml: {ship_id!r} domain must be 'sea'")
+    return ShipRef(id=ship_id, label=str(meta.get("label") or ""), domain="sea")
+
+
+def _parse_payload(name: str, meta: Any) -> PayloadRef:
+    if not isinstance(meta, dict):
+        raise RegistryError(f"payloads.yaml: {name!r} must map to a mapping")
+    aircraft = str(meta.get("aircraft") or "").strip()
+    if not aircraft:
+        raise RegistryError(f"payloads.yaml: {name!r} requires aircraft")
+    label = str(meta.get("label") or name)
+    pylons_raw = meta.get("pylons") or []
+    if not isinstance(pylons_raw, list) or not pylons_raw:
+        raise RegistryError(f"payloads.yaml: {name!r} requires a non-empty pylons list")
+    pylons: list[PayloadPylon] = []
+    for i, row in enumerate(pylons_raw):
+        if not isinstance(row, dict):
+            raise RegistryError(f"payloads.yaml: {name!r} pylons[{i}] must be a mapping")
+        try:
+            pylon = int(row["pylon"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RegistryError(f"payloads.yaml: {name!r} pylons[{i}] needs integer pylon") from exc
+        clsid = str(row.get("clsid") or "").strip()
+        if not clsid:
+            raise RegistryError(f"payloads.yaml: {name!r} pylons[{i}] needs clsid")
+        pylons.append(PayloadPylon(pylon=pylon, clsid=clsid))
+    return PayloadRef(name=name, aircraft=aircraft, label=label, pylons=tuple(pylons))
 
 
 def _parse_planning_option(row: Any) -> PlanningOptionRef:

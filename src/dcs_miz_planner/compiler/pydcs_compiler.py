@@ -1,4 +1,4 @@
-"""PyDCS-backed compiler for free-flight, intercept, and CAP missions.
+"""PyDCS-backed compiler for free-flight, intercept, CAP, and ground-attack missions.
 
 Boundary rule: this module is the only place allowed to import PyDCS.
 The rest of the app depends on `MissionSpec` and `CompilerInterface`.
@@ -39,6 +39,11 @@ _CAP_ENEMY_OFFSET_M_Y = -2000.0
 _CAP_RACE_TRACK_LEG_M = 10000.0
 _CAP_ORBIT_SPEED_KMH = 400
 
+# Ground-attack ingress / attack speeds (km/h).
+_GA_SPEED_KMH = 400
+# Spread soft targets slightly around the strike point (metres).
+_GA_TARGET_SPREAD_M = 80.0
+
 
 def _disable_payload_scan(*unit_types) -> None:
     """Work around a PyDCS bug when a real DCS install is present.
@@ -47,7 +52,8 @@ def _disable_payload_scan(*unit_types) -> None:
     ``scan_payload_dir`` skipped (files without a ``["unitType"]`` line),
     raising ``KeyError``. Free-flight missions need no payloads, so we mark the
     cache non-empty (skip scanning the install) and give each used type an empty
-    payload set (early-return before the buggy loop).
+    payload set (early-return before the buggy loop). Ground-attack still disables
+    scanning and applies registry CLSIDs manually via ``load_pylon``.
     """
     from dcs.unittype import FlyingType
 
@@ -162,6 +168,8 @@ class PyDCSCompiler(CompilerInterface):
             self._apply_cap(mission, group, airport, spec)
             if spec.enemies:
                 self._place_cap_enemies(mission, countries, registry, spec, enemy_types, airport)
+        elif spec.mission_type is MissionType.GROUND_ATTACK:
+            self._apply_ground_attack(mission, countries, registry, group, airport, spec)
 
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -253,6 +261,97 @@ class PyDCSCompiler(CompilerInterface):
                 speed=_CAP_ORBIT_SPEED_KMH,
                 name="CAP leg",
             )
+
+    def _apply_ground_attack(
+        self,
+        mission,
+        countries_mod,
+        registry,
+        group,
+        airport,
+        spec: MissionSpec,
+    ) -> None:
+        from dcs.mapping import Vector2
+        from dcs.task import Bombing, GroundAttack, OptJettisonEmptyTanks
+
+        assert spec.strike is not None
+        assert spec.player.payload is not None
+        strike = spec.strike
+        group.task = GroundAttack.name
+
+        try:
+            payload = registry.get_payload(spec.player.payload)
+        except RegistryError as exc:
+            raise ValueError(str(exc)) from exc
+
+        for pylon_ref in payload.pylons:
+            group.load_pylon((pylon_ref.pylon, {"clsid": pylon_ref.clsid}))
+
+        target = airport.position.point_from_heading(
+            strike.bearing_deg, strike.distance_km * 1000.0
+        )
+        group.add_waypoint(
+            airport.position.point_from_heading(strike.bearing_deg, 5000.0),
+            altitude=min(strike.altitude_m, 1500.0),
+            speed=_GA_SPEED_KMH,
+            name="Climb",
+        )
+        ip = group.add_waypoint(
+            airport.position.point_from_heading(
+                strike.bearing_deg, max(strike.distance_km * 1000.0 - 8000.0, 8000.0)
+            ),
+            altitude=strike.altitude_m,
+            speed=_GA_SPEED_KMH,
+            name="IP",
+        )
+        # Allow cockpit jettison of the slipper; empty-tank auto-jettison for AI hygiene.
+        # Do not set OptRestrictJettison.
+        ip.add_task(OptJettisonEmptyTanks(True))
+
+        tgt_wp = group.add_waypoint(
+            target,
+            altitude=strike.altitude_m,
+            speed=_GA_SPEED_KMH,
+            name="Target",
+        )
+        tgt_wp.add_task(Bombing(Vector2(target.x, target.y), altitude=int(strike.altitude_m)))
+
+        for i, tgt in enumerate(spec.targets):
+            strike_unit = registry.get_strike_unit(tgt.unit)
+            country = self._ensure_country(mission, countries_mod, tgt.country, tgt.coalition.value)
+            # Slight lateral offset so multi-unit groups are not stacked on one point.
+            pos = target.point_from_heading(90.0 + i * 25.0, _GA_TARGET_SPREAD_M * (i + 1))
+            skill = _skill_from_name(tgt.skill)
+            if strike_unit.domain == "sea":
+                from dcs.ships import ship_map
+
+                ship_type = ship_map.get(tgt.unit)
+                if ship_type is None:
+                    raise ValueError(f"Unknown PyDCS ship id: {tgt.unit}")
+                sg = mission.ship_group(
+                    country=country,
+                    name=f"Target {tgt.unit}",
+                    _type=ship_type,
+                    position=pos,
+                    group_size=tgt.count,
+                )
+                for unit in sg.units:
+                    unit.skill = skill
+            else:
+                from dcs.vehicles import vehicle_map
+
+                vehicle_type = vehicle_map.get(tgt.unit)
+                if vehicle_type is None:
+                    raise ValueError(f"Unknown PyDCS vehicle id: {tgt.unit}")
+                vg = mission.vehicle_group(
+                    country=country,
+                    name=f"Target {tgt.unit}",
+                    _type=vehicle_type,
+                    position=pos,
+                    group_size=tgt.count,
+                )
+                for unit in vg.units:
+                    unit.skill = skill
 
     def _place_enemies(
         self, mission, countries_mod, registry, spec: MissionSpec, enemy_types

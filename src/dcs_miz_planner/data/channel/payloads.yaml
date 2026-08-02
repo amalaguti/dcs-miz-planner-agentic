@@ -1,3 +1,30 @@
-# Verified payload CLSID names only. Free-flight compile does not apply payloads;
-# do not harvest from a live DCS install (see LESSONS_LEARNED.md).
-payloads: {}
+# Named SpitfireLFMkIX loadout presets (verified PyDCS CLSIDs only).
+# Centreline pylon 2 is tank OR 500 lb bomb — never both.
+# Do not harvest from a live DCS install (see LESSONS_LEARNED.md).
+payloads:
+  spitfire_2x250_slipper:
+    aircraft: SpitfireLFMkIX
+    label: 2x250 lb wing bombs + 45 gal slipper (Channel crossing)
+    pylons:
+      - pylon: 1
+        clsid: British_GP_250LBS_Bomb_MK4_on_LH_Spitfire_Wing_Carrier
+      - pylon: 2
+        clsid: SPITFIRE_45GAL_SLIPPER_TANK
+      - pylon: 3
+        clsid: British_GP_250LBS_Bomb_MK4_on_RH_Spitfire_Wing_Carrier
+
+  spitfire_2x250:
+    aircraft: SpitfireLFMkIX
+    label: 2x250 lb wing bombs (no external tank)
+    pylons:
+      - pylon: 1
+        clsid: British_GP_250LBS_Bomb_MK4_on_LH_Spitfire_Wing_Carrier
+      - pylon: 3
+        clsid: British_GP_250LBS_Bomb_MK4_on_RH_Spitfire_Wing_Carrier
+
+  spitfire_1x500:
+    aircraft: SpitfireLFMkIX
+    label: 500 lb centreline bomb (no external tank; shorter radius)
+    pylons:
+      - pylon: 2
+        clsid: British_GP_500LBS_Bomb_MK4_on_British_UniversalBC_MK3

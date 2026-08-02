@@ -22,6 +22,14 @@ options:
     description: Patrol a station with orbit pattern and engagement rules; optional opposition.
     support: supported
 
+  - family: mission_type
+    id: ground_attack
+    label: Ground attack
+    description: >
+      Channel strike with enemy ground targets and a named Spitfire bomb payload
+      (prefer slipper tank for Channel crossings; jettison before attack).
+    support: supported
+
   - family: start_type
     id: cold_parking
     label: Cold parking
@@ -99,10 +107,28 @@ options:
       enemies_count: 4
 
   - family: payload_family
-    id: default_loadout
-    label: Default loadout
-    description: Placeholder until payloads.yaml grows curated families.
-    support: future
+    id: spitfire_2x250_slipper
+    label: Spitfire 2x250 + slipper
+    description: Channel-crossing loadout — wing 250 lb bombs and 45 gal slipper tank.
+    support: supported
+    meta:
+      payload: spitfire_2x250_slipper
+
+  - family: payload_family
+    id: spitfire_2x250
+    label: Spitfire 2x250
+    description: Wing 250 lb bombs only (no external tank; shorter radius).
+    support: supported
+    meta:
+      payload: spitfire_2x250
+
+  - family: payload_family
+    id: spitfire_1x500
+    label: Spitfire 1x500
+    description: Centreline 500 lb bomb (no external tank; shorter radius).
+    support: supported
+    meta:
+      payload: spitfire_1x500
 
   - family: roe_seed
     id: weapons_hold

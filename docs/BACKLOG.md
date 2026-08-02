@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote / in proposal:** (see M4 — prefer `mission-type-ground-attack`)
+**Next promote / in proposal:** (see M4 — prefer `mission-type-escort`)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -84,13 +84,13 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `mission-type-ground-attack`
+**Next promote / in proposal:** `mission-type-escort`
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 12 | `mission-type-intercept` | Dawn Manston intercept vs Bf-109K-4 (the concept doc's example) | `done` (accepted in-game 2026-07-26; ThirdReich/red) |
 | 13 | `mission-type-cap` | Patrol station, engagement rules | `done` (accepted in-game 2026-08-01) |
-| 14 | `mission-type-ground-attack` | Ground targets, payload selection | `idea` |
+| 14 | `mission-type-ground-attack` | Ground targets, payload selection | `done` (accepted in-game 2026-08-02; Dunkirk inland + slipper) |
 | 15 | `mission-type-escort` | Escort a friendly package | `idea` |
 
 ---

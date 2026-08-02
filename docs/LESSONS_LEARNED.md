@@ -7,6 +7,47 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Ground-attack: always verify strike position (land vs water, enemy vs practice)
+
+- **Date:** 2026-08-02
+- **Lesson:** Before accepting any ground-attack example or compile, **check target
+  geography in ME / against PyDCS airport math** — do not trust bearing/distance intuition.
+- **Checks (every GA Spec):**
+  1. Resolve strike Point from player airfield (`point_from_heading`); compare to known
+     Channel airports (e.g. Dunkirk ≈ 120° / 72 km from Manston).
+  2. **Land vehicles:** strike must be on land in enemy-held territory for combat (Axis
+     French/Belgian coast for Channel WWII blue). Stopping *short* of a coastal airfield
+     along a Channel crossing is usually **still water** (e.g. Manston→Dunkirk at 65 km).
+     Prefer at/past the coast or an inland offset (example: ≈125° / 76 km inland of Dunkirk).
+  3. **Water:** mid-Channel / offshore → `ships.yaml` sea-domain units only, never trucks.
+  4. **Practice** (`strike.practice: true`): same-coalition / UK-side land OK; still verify
+     the Point is actually on land, not the Strait.
+  5. Confirm ME mission planner Target / Bombing waypoint and placed units agree (same
+     land/sea domain).
+- **Code:** `examples/manston_ground_attack.yaml`, `compiler/pydcs_compiler.py`
+  (`_apply_ground_attack`), `docs/LESSONS_LEARNED.md`.
+
+## Ground-attack: registry CLSID loadout + Bombing (not install payload scan)
+
+- **Date:** 2026-08-02
+- **Symptom / constraint:** Spitfire bomb + slipper loadouts must appear in `.miz` without
+  re-enabling PyDCS `UnitPayloads` scanning (KeyError on some install files).
+- **Cause:** Centreline pylon is tank **or** 500 lb — not both. Channel-crossing needs
+  wing 250s + `SPITFIRE_45GAL_SLIPPER_TANK`. Player jettisons in cockpit; do not set
+  `OptRestrictJettison`. A short SE offset (e.g. 140°/40 km) from Manston lands **in the
+  sea** — land vehicles must use a bearing/distance that reaches enemy-held French/Belgian
+  coast (example: ≈125° / 76 km inland near Dunkirk — **not** 65 km short of the coast,
+  which is still water). Mid-Channel water strikes use `ships.yaml`
+  ids (`Schnellboot_type_S130`, etc.) via `ship_group`, never trucks. Same-coalition /
+  UK-side targets are allowed only when `strike.practice` is true (bombing-practice
+  narrative); DCS gladly places friendly units as ME targets.
+- **Fix:** Named presets in `payloads.yaml`; compiler `_disable_payload_scan` then
+  `group.load_pylon((pylon, {"clsid": ...}))`. Strike uses airfield-relative
+  bearing/distance; `get_strike_unit` chooses `vehicle_group` vs `ship_group` by domain;
+  enemy coalition only.
+- **Code:** `compiler/pydcs_compiler.py` (`_apply_ground_attack`), `data/channel/payloads.yaml`,
+  `ground_units.yaml`, `ships.yaml`, `examples/manston_ground_attack.yaml`.
+
 ## Live research: Instant Answer alone is not enough
 
 - **Date:** 2026-08-02

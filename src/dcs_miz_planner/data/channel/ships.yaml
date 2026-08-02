@@ -1,0 +1,13 @@
+# Exact DCS / PyDCS ship type ids for Channel strike targets over water.
+# Keys must match dcs.ships.ship_map / ShipType.id. domain is always sea.
+# Use these for mid-Channel / coastal water strikes — never place land vehicles at sea.
+ships:
+  Schnellboot_type_S130:
+    label: Schnellboot S-130 (E-boat)
+    domain: sea
+  Uboat_VIIC:
+    label: U-boat Type VII C
+    domain: sea
+  Dry-cargo ship-1:
+    label: Dry cargo ship
+    domain: sea

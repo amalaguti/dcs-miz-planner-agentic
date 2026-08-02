@@ -1,0 +1,23 @@
+# Exact DCS / PyDCS vehicle type ids for Channel ground-attack land targets.
+# Keys must match dcs.vehicles.vehicle_map ids. domain is always land.
+# Place only on enemy-held territory (Channel WWII: Axis-occupied French/Belgian coast —
+# not UK home ground, not mid-Channel water).
+ground_units:
+  Blitz_36-6700A:
+    label: Opel Blitz truck
+    domain: land
+  flak18:
+    label: Flak 18
+    domain: land
+  flak36:
+    label: Flak 36
+    domain: land
+  Kubelwagen_82:
+    label: Kubelwagen
+    domain: land
+  Pak40:
+    label: Pak 40 anti-tank gun
+    domain: land
+  Bedford_MWD:
+    label: Bedford MWD truck (Allied — practice ranges / UK-side)
+    domain: land

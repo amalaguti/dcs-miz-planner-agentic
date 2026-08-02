@@ -19,12 +19,15 @@ Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
 (refresh: `uv run python tests/refresh_manston_golden.py`). Intercept Spec
 (`examples/manston_dawn_intercept.yaml`) places Bf-109K-4s on a Hawkinge/Dover
 approach corridor. CAP Spec (`examples/manston_cap.yaml`) orbits a station SE of
-Manston with engagement/ROE (accepted in-game 2026-08-01). Interactive multi-turn
+Manston with engagement/ROE (accepted in-game 2026-08-01). Ground-attack Spec
+(`examples/manston_ground_attack.yaml`) crosses the Channel with 2×250 lb + slipper
+tank against enemy trucks inland near Dunkirk (accepted in-game 2026-08-02). Interactive
+multi-turn
 chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026-08-01).
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `mission-type-ground-attack`, then escort; `briefing-generation` after M4 types.
+**Next:** `mission-type-escort`; `briefing-generation` after M4 types.
 
 ## Stack
 
@@ -48,6 +51,10 @@ uv run dcs-miz examples/manston_dawn_intercept.yaml
 uv run dcs-miz validate examples/manston_cap.yaml
 uv run dcs-miz examples/manston_cap.yaml
 # -> out/manston_cap.miz
+
+uv run dcs-miz validate examples/manston_ground_attack.yaml
+uv run dcs-miz examples/manston_ground_attack.yaml
+# -> out/manston_ground_attack.miz
 ```
 
 Open the result in the DCS Mission Editor, or copy it into

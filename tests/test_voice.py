@@ -55,6 +55,7 @@ def test_compose_neutral_omits_commander_persona() -> None:
     assert "TheChannel" in prompt
     assert "research_guidance" in prompt
     assert "cap" in prompt
+    assert "ground_attack" in prompt
 
 
 def test_cap_brief_sections() -> None:
@@ -70,3 +71,18 @@ def test_cap_brief_sections() -> None:
     assert "weapons_free" in brief or "ROE" in brief
     assert "sunny_clear" in brief
     assert "WeatherPreset" not in brief
+
+
+def test_ground_attack_brief_mentions_slipper_jettison() -> None:
+    from pathlib import Path
+
+    from dcs_miz_planner.agent.voice import build_commander_brief
+    from dcs_miz_planner.loader import load_mission_spec
+
+    spec = load_mission_spec(
+        Path(__file__).resolve().parents[1] / "examples" / "manston_ground_attack.yaml"
+    )
+    brief = build_commander_brief(spec, VOICE_RAF)
+    assert "## Procedures" in brief
+    assert "jettison" in brief.lower()
+    assert "slipper" in brief.lower() or "tank" in brief.lower()

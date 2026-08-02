@@ -97,6 +97,7 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert "free_flight" in result["mission_types"]
     assert "intercept" in result["mission_types"]
     assert "cap" in result["mission_types"]
+    assert "ground_attack" in result["mission_types"]
     offerable_ids = {t["theatre_id"] for t in result["offerable_theatres"]}
     assert "TheChannel" in offerable_ids
     options = result["options"]
@@ -107,8 +108,17 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("time_of_day", "dawn")]["meta"]["start_time"] == "06:00"
     assert by_key[("roe_seed", "weapons_hold")]["support"] == "supported"
     assert by_key[("mission_type", "cap")]["support"] == "supported"
+    assert by_key[("mission_type", "ground_attack")]["support"] == "supported"
+    assert by_key[("payload_family", "spitfire_2x250_slipper")]["support"] == "supported"
+    assert by_key[("payload_family", "spitfire_2x250_slipper")]["meta"]["payload"] == (
+        "spitfire_2x250_slipper"
+    )
     supports = {o["support"] for o in options}
-    assert supports >= {"supported", "advisory", "future"}
+    assert supports >= {"supported", "advisory"}
+    assert "future" not in {
+        by_key[("payload_family", pid)]["support"]
+        for pid in ("spitfire_2x250_slipper", "spitfire_2x250", "spitfire_1x500")
+    }
 
 
 def test_validate_and_compile_manston(tmp_path: Path) -> None:

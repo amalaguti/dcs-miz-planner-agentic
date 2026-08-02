@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
-from .models import MissionSpec, MissionType, ObjectiveType
+from .models import MissionSpec, MissionType, ObjectiveType, opposing_coalition
 from .registry import ChannelRegistry, RegistryError, get_channel_registry
 
 
@@ -25,6 +25,136 @@ def _validate_enemy_aircraft(
                     path=f"enemies[{i}].aircraft",
                     message=f"Unknown aircraft '{enemy.aircraft}'",
                     hint=f"Known: {registry.list_aircraft()}",
+                )
+            )
+
+
+def _validate_ground_attack(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+) -> None:
+    if spec.strike is None:
+        errors.append(
+            ValidationError(
+                code="strike_required",
+                path="strike",
+                message="ground_attack missions require a nested strike block",
+            )
+        )
+    if not spec.targets:
+        errors.append(
+            ValidationError(
+                code="targets_required",
+                path="targets",
+                message="ground_attack missions require a non-empty targets list",
+            )
+        )
+    if spec.enemies:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="enemies",
+                message="air enemies not supported for ground_attack in schema_version 1",
+            )
+        )
+    if spec.cap is not None:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="cap",
+                message="cap not supported for ground_attack: omit the cap block",
+            )
+        )
+
+    payload_name = (spec.player.payload or "").strip()
+    if not payload_name:
+        errors.append(
+            ValidationError(
+                code="payload_required",
+                path="player.payload",
+                message="ground_attack missions require player.payload (named preset)",
+                hint=f"Known: {registry.list_payloads()}",
+            )
+        )
+    else:
+        try:
+            payload = registry.get_payload(payload_name)
+        except RegistryError:
+            errors.append(
+                ValidationError(
+                    code="unknown_payload",
+                    path="player.payload",
+                    message=f"Unknown payload '{payload_name}'",
+                    hint=f"Known: {registry.list_payloads()}",
+                )
+            )
+        else:
+            if payload.aircraft != spec.player.aircraft:
+                errors.append(
+                    ValidationError(
+                        code="payload_aircraft_mismatch",
+                        path="player.payload",
+                        message=(
+                            f"Payload '{payload_name}' is for {payload.aircraft!r}, "
+                            f"not player aircraft {spec.player.aircraft!r}"
+                        ),
+                    )
+                )
+
+    if not spec.objectives:
+        errors.append(
+            ValidationError(
+                code="objectives_required",
+                path="objectives",
+                message="ground_attack missions require a non-empty objectives list",
+            )
+        )
+    else:
+        if not any(o.type is ObjectiveType.ATTACK_GROUND for o in spec.objectives):
+            errors.append(
+                ValidationError(
+                    code="objectives_required",
+                    path="objectives",
+                    message="ground_attack missions require at least one attack_ground objective",
+                )
+            )
+        for i, obj in enumerate(spec.objectives):
+            if obj.type is not ObjectiveType.ATTACK_GROUND:
+                errors.append(
+                    ValidationError(
+                        code="unknown_objective",
+                        path=f"objectives[{i}].type",
+                        message=f"Unsupported objective type {obj.type.value!r} for ground_attack",
+                        hint="Supported: attack_ground",
+                    )
+                )
+
+    expected = opposing_coalition(spec.player.coalition)
+    practice = bool(spec.strike and spec.strike.practice)
+    for i, tgt in enumerate(spec.targets):
+        try:
+            registry.get_strike_unit(tgt.unit)
+        except RegistryError:
+            errors.append(
+                ValidationError(
+                    code="unknown_strike_unit",
+                    path=f"targets[{i}].unit",
+                    message=f"Unknown strike target '{tgt.unit}'",
+                    hint=f"Known: {registry.list_strike_units()}",
+                )
+            )
+        if not practice and tgt.coalition is not expected:
+            errors.append(
+                ValidationError(
+                    code="friendly_target",
+                    path=f"targets[{i}].coalition",
+                    message=(
+                        "Strike targets must be enemy (opposing coalition) only; "
+                        f"player is {spec.player.coalition.value}, "
+                        f"expected {expected.value}, got {tgt.coalition.value}. "
+                        "Set strike.practice true for allied bombing-practice targets."
+                    ),
                 )
             )
 
@@ -81,13 +211,14 @@ def validate_mission_spec(
         MissionType.FREE_FLIGHT,
         MissionType.INTERCEPT,
         MissionType.CAP,
+        MissionType.GROUND_ATTACK,
     ):
         errors.append(
             ValidationError(
                 code="unsupported_mission_type",
                 path="mission_type",
                 message=f"Unsupported mission_type {spec.mission_type.value!r}",
-                hint="Supported: free_flight, intercept, cap",
+                hint="Supported: free_flight, intercept, cap, ground_attack",
             )
         )
 
@@ -109,7 +240,23 @@ def validate_mission_spec(
                     message="cap not supported for free_flight: omit the cap block",
                 )
             )
-        for name in ("enemies", "objectives"):
+        if spec.strike is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="strike",
+                    message="strike not supported for free_flight: omit the strike block",
+                )
+            )
+        if spec.player.payload is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="player.payload",
+                    message="player.payload not supported for free_flight: omit payload",
+                )
+            )
+        for name in ("enemies", "objectives", "targets"):
             if getattr(spec, name):
                 errors.append(
                     ValidationError(
@@ -117,7 +264,7 @@ def validate_mission_spec(
                         path=name,
                         message=(
                             f"{name} not supported for free_flight: must be empty "
-                            "(use mission_type intercept or cap)"
+                            "(use mission_type intercept, cap, or ground_attack)"
                         ),
                     )
                 )
@@ -128,6 +275,14 @@ def validate_mission_spec(
                     code="extension_not_supported",
                     path="cap",
                     message="cap not supported for intercept: omit the cap block",
+                )
+            )
+        if spec.strike is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="strike",
+                    message="strike not supported for intercept: omit the strike block",
                 )
             )
         if not spec.enemies:
@@ -166,6 +321,14 @@ def validate_mission_spec(
                     message="cap missions require a nested cap block",
                 )
             )
+        if spec.strike is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="strike",
+                    message="strike not supported for cap: omit the strike block",
+                )
+            )
         if not spec.objectives:
             errors.append(
                 ValidationError(
@@ -194,6 +357,8 @@ def validate_mission_spec(
                         )
                     )
         _validate_enemy_aircraft(spec, registry, errors)
+    elif spec.mission_type is MissionType.GROUND_ATTACK:
+        _validate_ground_attack(spec, registry, errors)
 
     if not registry.has_theatre(spec.theatre):
         errors.append(

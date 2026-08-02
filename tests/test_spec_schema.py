@@ -37,7 +37,7 @@ def test_infer_mission_type_from_rejected_json() -> None:
 
 
 def test_get_mission_spec_schema_tool() -> None:
-    for mt in ("free_flight", "intercept", "cap"):
+    for mt in ("free_flight", "intercept", "cap", "ground_attack"):
         result = get_mission_spec_schema(mt)
         assert result["ok"] is True
         assert result["mission_type"] == mt

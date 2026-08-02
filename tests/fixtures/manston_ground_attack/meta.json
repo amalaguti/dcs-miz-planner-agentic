@@ -1,0 +1,25 @@
+{
+  "required_members": [
+    "mission",
+    "options",
+    "theatre",
+    "warehouses"
+  ],
+  "mission_must_contain": [
+    "SpitfireLFMkIX",
+    "[\"airdromeId\"]=5",
+    "[\"start_time\"]=32400",
+    "TakeOffParking",
+    "\"Player\"",
+    "[\"frequency\"]=124.0",
+    "Ground Attack",
+    "British_GP_250LBS_Bomb_MK4_on_LH_Spitfire_Wing_Carrier",
+    "SPITFIRE_45GAL_SLIPPER_TANK",
+    "Blitz_36-6700A",
+    "Bombing"
+  ],
+  "source_spec": "examples/manston_ground_attack.yaml",
+  "normalized_fields": [
+    "onboard_num"
+  ]
+}
