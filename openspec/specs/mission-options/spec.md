@@ -96,3 +96,13 @@ with support level `supported` (compile-backed), alongside existing `sunny_clear
 #### Scenario: List mission options includes new weather
 - **WHEN** `list_mission_options` (or equivalent) is invoked
 - **THEN** weather options MUST include `dawn_clear` and `marginal_vfr` as `supported`
+
+### Requirement: Seeded reroll planning option
+The packaged Channel planning options SHALL include a `randomization` family entry that
+describes seeded Spec rerolls (tool/CLI), with support level at least `advisory` once the
+randomize tool exists. The entry MUST NOT claim a Mission Spec field mapping for the seed
+itself (seed remains a transform argument).
+
+#### Scenario: List options includes randomization
+- **WHEN** `list_mission_options` is called after catalog sync
+- **THEN** the result MUST include a planning option with family `randomization`
