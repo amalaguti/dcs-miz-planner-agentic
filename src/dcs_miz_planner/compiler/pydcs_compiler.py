@@ -623,17 +623,37 @@ class PyDCSCompiler(CompilerInterface):
     @staticmethod
     def _apply_weather(mission, preset: WeatherPreset) -> None:
         # Existence already checked in _validate via the Channel registry.
-        if preset is WeatherPreset.SUNNY_CLEAR:
-            from dcs.weather import Weather
+        from dcs.weather import Weather
 
-            w = mission.weather
-            w.clouds_preset = None
+        w = mission.weather
+        w.clouds_preset = None
+        w.enable_dust = False
+        w.dust_density = 0
+        w.clouds_iprecptns = Weather.Preceptions.None_
+
+        if preset is WeatherPreset.SUNNY_CLEAR:
             w.clouds_density = 0
             w.clouds_thickness = 0
-            w.clouds_iprecptns = Weather.Preceptions.None_
+            w.clouds_base = 300
             w.enable_fog = False
-            w.enable_dust = False
-            w.dust_density = 0
+            w.fog_thickness = 0
             w.visibility_distance = 80000
-        else:  # pragma: no cover - single preset in v1
+        elif preset is WeatherPreset.DAWN_CLEAR:
+            # Light haze / first-light feel — still flyable Channel VFR.
+            w.clouds_density = 1
+            w.clouds_thickness = 200
+            w.clouds_base = 400
+            w.enable_fog = True
+            w.fog_thickness = 80
+            w.fog_visibility = 8000
+            w.visibility_distance = 45000
+        elif preset is WeatherPreset.MARGINAL_VFR:
+            # Broken/overcast + ~6 km visibility (marginal VFR band).
+            w.clouds_density = 8
+            w.clouds_thickness = 1500
+            w.clouds_base = 700
+            w.enable_fog = False
+            w.fog_thickness = 0
+            w.visibility_distance = 6000
+        else:  # pragma: no cover - enum exhaustiveness
             raise ValueError(f"Unsupported weather preset: {preset}")

@@ -84,7 +84,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `weather-time-presets` (M5)
+**Next promote / in proposal:** (building `weather-time-presets`)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -100,7 +100,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `done` (accepted in-game 2026-08-02; Sortie/Description/Task in ME) |
-| 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `idea` |
+| 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `building` |
 | 18 | `mission-randomization` | Seeded variation for replayability | `idea` |
 | 19 | `spitfire-radio-channel-presets` | Match ED stock Spitfire radio bank (A=124, B=40, C=41, D=42, E=108.9), not only group frequency | `idea` |
 

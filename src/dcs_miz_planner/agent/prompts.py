@@ -39,7 +39,8 @@ Rules:
 - Known player aircraft examples: SpitfireLFMkIX. Package examples: MosquitoFBMkVI.
   Enemy examples: Bf-109K-4.
 - Countries: UK (blue), ThirdReich (red) for Channel WWII Axis.
-- Weather preset must be a known catalog value (e.g. sunny_clear).
+- Weather preset must be a known catalog value (e.g. sunny_clear, dawn_clear,
+  marginal_vfr).
 - start_time is "HH:MM" 24h. schema_version must be "1".
 - Choose a mission date that fits the historical backdrop the user wants: for current
   Channel Spitfire / Axis content prefer WWII (about 1939–1945) when unspecified;

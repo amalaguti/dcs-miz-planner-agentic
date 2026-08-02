@@ -43,3 +43,13 @@ def test_known_wwii_aircraft(registry):
 def test_sunny_clear_weather_preset(registry):
     preset = registry.weather_preset("sunny_clear")
     assert preset.name == "sunny_clear"
+
+
+def test_dawn_and_marginal_weather_presets(registry):
+    assert registry.weather_preset("dawn_clear").name == "dawn_clear"
+    assert registry.weather_preset("marginal_vfr").name == "marginal_vfr"
+    assert set(registry.list_weather_presets()) >= {
+        "sunny_clear",
+        "dawn_clear",
+        "marginal_vfr",
+    }

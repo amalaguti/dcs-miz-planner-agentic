@@ -2,3 +2,11 @@
 presets:
   sunny_clear:
     description: Clear skies, no fog/dust, high visibility
+  dawn_clear:
+    description: >-
+      First-light Channel air — mostly clear with light haze and slightly reduced
+      visibility versus midday sunny (pair with start_time ~06:00)
+  marginal_vfr:
+    description: >-
+      Broken/overcast cloud and reduced visibility in the marginal VFR band
+      (~5–8 km) — harder Channel hops without heavy precip

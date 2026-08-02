@@ -1,0 +1,20 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Dawn Free Flight
+description: >-
+  Cold start at Manston at first light. Free flight over the Channel with
+  dawn_clear haze.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "06:00"
+weather: dawn_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking

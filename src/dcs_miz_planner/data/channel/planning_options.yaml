@@ -50,6 +50,21 @@ options:
     description: Clear skies, no fog/dust, high visibility.
     support: supported
 
+  - family: weather
+    id: dawn_clear
+    label: Dawn clear
+    description: >-
+      First light with light haze / slightly reduced visibility; pair with
+      time_of_day dawn (~06:00).
+    support: supported
+
+  - family: weather
+    id: marginal_vfr
+    label: Marginal VFR
+    description: >-
+      Broken/overcast cloud and ~5–8 km visibility (marginal VFR band).
+    support: supported
+
   - family: time_of_day
     id: dawn
     label: Dawn
