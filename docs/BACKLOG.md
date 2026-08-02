@@ -84,7 +84,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `trigger-compiler-native` (M6)
+**Next promote / in proposal:** (see M6 — prefer narrative events / snippets as needed)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `trigger-compiler-native`
+**Next promote / in proposal:** `script-snippet-library` / `mission-events-narrative` (M6; optional after native triggers)
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -123,7 +123,7 @@ the trigger/script text itself is human-authored, versioned, and tested.
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 20 | `trigger-model-spec` | Mission Spec gains a backend-agnostic condition → action model (zones, flags, time, unit state); no Lua in the Spec | `done` (2026-08-02; validate OK, compile deferred to `#21`) |
-| 21 | `trigger-compiler-native` | Compile the declared trigger model into native `.miz` trigger tables via PyDCS; golden-fixture asserts on emitted structure | `idea` |
+| 21 | `trigger-compiler-native` | Compile the declared trigger model into native `.miz` trigger tables via PyDCS; golden-fixture asserts on emitted structure | `done` (accepted in-game 2026-08-02; sample message ~T+120) |
 | 22 | `script-snippet-library` | Curated, parameterised Lua snippets (human-written, tested, version-pinned) that the compiler injects for behaviour PyDCS triggers can't express; agent may only select + fill declared params | `idea` |
 | 23 | `mission-events-narrative` | Use 20–22 for immersion: bandit callouts, tasking updates, RTB clearance, success/failure outcomes — in squadron-commander voice | `idea` |
 | 24 | `cockpit-state-triggers` | Optional interactive/training missions driven by Spitfire cockpit arguments (promotes research R4 once verified in-game) | `idea` |

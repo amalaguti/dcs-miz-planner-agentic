@@ -1,5 +1,5 @@
-# Validate-only example: typed triggers. Native .miz emit is not implemented yet
-# (trigger-compiler-native) — `dcs-miz compile` must refuse; `dcs-miz validate` OK.
+# Compileable sample: time→message native trigger (open in DCS Instant Action;
+# expect tower text ~T+120). Zones/triggers emit via trigger-compiler-native.
 schema_version: "1"
 mission_type: free_flight
 theatre: TheChannel

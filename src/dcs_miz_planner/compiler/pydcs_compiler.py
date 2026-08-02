@@ -113,7 +113,6 @@ class PyDCSCompiler(CompilerInterface):
         from dcs.terrain import TheChannel
 
         self._validate(spec)
-        self._refuse_uncompiled_triggers(spec)
 
         aircraft_type = plane_map.get(spec.player.aircraft)
         if aircraft_type is None:
@@ -182,19 +181,23 @@ class PyDCSCompiler(CompilerInterface):
         # frequency is enough — DCS tunes the first radio channel from it.
         group.frequency = radio_mhz
 
+        enemy_group_ids: list[int] = []
         if spec.mission_type is MissionType.INTERCEPT:
-            self._place_enemies(mission, countries, registry, spec, enemy_types)
+            enemy_group_ids = self._place_enemies(mission, countries, registry, spec, enemy_types)
         elif spec.mission_type is MissionType.CAP:
             self._apply_cap(mission, group, airport, spec)
             if spec.enemies:
-                self._place_cap_enemies(mission, countries, registry, spec, enemy_types, airport)
+                enemy_group_ids = self._place_cap_enemies(
+                    mission, countries, registry, spec, enemy_types, airport
+                )
         elif spec.mission_type is MissionType.GROUND_ATTACK:
             self._apply_ground_attack(mission, countries, registry, group, airport, spec)
         elif spec.mission_type is MissionType.ESCORT:
-            self._apply_escort(
+            enemy_group_ids = self._apply_escort(
                 mission, countries, registry, group, airport, spec, package_types, enemy_types
             )
 
+        self._apply_zones_and_triggers(mission, airport, spec, enemy_group_ids)
         self._apply_briefing(mission, spec, voice)
 
         out = Path(output_path)
@@ -202,6 +205,14 @@ class PyDCSCompiler(CompilerInterface):
         mission.save(str(out))
         self._ensure_theatre_member(out, spec.theatre)
         return out
+
+    @staticmethod
+    def _apply_zones_and_triggers(
+        mission, airport, spec: MissionSpec, enemy_group_ids: list[int]
+    ) -> None:
+        from .triggers_emit import apply_zones_and_triggers
+
+        apply_zones_and_triggers(mission, airport, spec, enemy_group_ids)
 
     @staticmethod
     def _apply_briefing(mission, spec: MissionSpec, voice: str | None) -> None:
@@ -400,7 +411,7 @@ class PyDCSCompiler(CompilerInterface):
         spec: MissionSpec,
         package_types,
         enemy_types,
-    ) -> None:
+    ) -> list[int]:
         from dcs.task import CAS, Escort, EscortTaskAction, OptROE
 
         assert spec.escort is not None
@@ -472,9 +483,10 @@ class PyDCSCompiler(CompilerInterface):
         )
 
         if spec.enemies:
-            self._place_escort_enemies(
+            return self._place_escort_enemies(
                 mission, countries_mod, registry, spec, enemy_types, destination, escort.altitude_m
             )
+        return []
 
     def _place_escort_enemies(
         self,
@@ -485,7 +497,7 @@ class PyDCSCompiler(CompilerInterface):
         enemy_types,
         destination,
         altitude_m: float,
-    ) -> None:
+    ) -> list[int]:
         from dcs.mapping import Point
 
         enemy_pos = Point(
@@ -495,6 +507,7 @@ class PyDCSCompiler(CompilerInterface):
         )
         altitude = max(altitude_m - 500.0, 500.0)
 
+        group_ids: list[int] = []
         for enemy, aircraft_type in zip(spec.enemies, enemy_types, strict=True):
             country = self._ensure_country(
                 mission, countries_mod, enemy.country, enemy.coalition.value
@@ -517,12 +530,15 @@ class PyDCSCompiler(CompilerInterface):
             for unit in eg.units:
                 unit.skill = skill
             eg.frequency = radio_mhz
+            group_ids.append(eg.id)
+        return group_ids
 
     def _place_enemies(
         self, mission, countries_mod, registry, spec: MissionSpec, enemy_types
-    ) -> None:
+    ) -> list[int]:
         from dcs.mapping import Point
 
+        group_ids: list[int] = []
         for enemy, aircraft_type in zip(spec.enemies, enemy_types, strict=True):
             country = self._ensure_country(
                 mission, countries_mod, enemy.country, enemy.coalition.value
@@ -550,6 +566,8 @@ class PyDCSCompiler(CompilerInterface):
             for unit in eg.units:
                 unit.skill = skill
             eg.frequency = radio_mhz
+            group_ids.append(eg.id)
+        return group_ids
 
     def _place_cap_enemies(
         self,
@@ -559,7 +577,7 @@ class PyDCSCompiler(CompilerInterface):
         spec: MissionSpec,
         enemy_types,
         airport,
-    ) -> None:
+    ) -> list[int]:
         from dcs.mapping import Point
 
         assert spec.cap is not None
@@ -576,6 +594,7 @@ class PyDCSCompiler(CompilerInterface):
         )
         altitude = max(spec.cap.altitude_m - 500.0, 500.0)
 
+        group_ids: list[int] = []
         for enemy, aircraft_type in zip(spec.enemies, enemy_types, strict=True):
             country = self._ensure_country(
                 mission, countries_mod, enemy.country, enemy.coalition.value
@@ -598,6 +617,8 @@ class PyDCSCompiler(CompilerInterface):
             for unit in eg.units:
                 unit.skill = skill
             eg.frequency = radio_mhz
+            group_ids.append(eg.id)
+        return group_ids
 
     @staticmethod
     def _ensure_theatre_member(miz_path: Path, theatre: str) -> None:
@@ -620,16 +641,6 @@ class PyDCSCompiler(CompilerInterface):
             result.raise_if_errors()
         except MissionValidationError as exc:
             raise ValueError(str(exc)) from exc
-
-    @staticmethod
-    def _refuse_uncompiled_triggers(spec: MissionSpec) -> None:
-        """Native trigger emit is trigger-compiler-native (#21); refuse until then."""
-        if spec.triggers or spec.zones:
-            raise ValueError(
-                "Mission Spec has zones/triggers, but native trigger compilation is not "
-                "implemented yet (OpenSpec change trigger-compiler-native). "
-                "Validate the Spec with dcs-miz validate; omit zones/triggers to compile."
-            )
 
     @staticmethod
     def _apply_weather(mission, preset: WeatherPreset) -> None:

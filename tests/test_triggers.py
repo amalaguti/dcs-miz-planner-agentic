@@ -1,7 +1,8 @@
-"""Typed zones / triggers on Mission Spec."""
+"""Typed zones / triggers on Mission Spec + native compile."""
 
 from __future__ import annotations
 
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -84,11 +85,15 @@ def test_enemy_index_out_of_range(tmp_path: Path):
     assert any(e.code == "enemy_index_out_of_range" for e in result.errors)
 
 
-def test_compile_refuses_triggers(tmp_path: Path):
+def test_compile_sample_emits_trig_predicates(tmp_path: Path):
     spec = load_mission_spec(SAMPLE)
-    with pytest.raises(ValueError, match="trigger"):
-        PyDCSCompiler().compile(spec, tmp_path / "nope.miz")
-    assert not (tmp_path / "nope.miz").exists()
+    out = PyDCSCompiler().compile(spec, tmp_path / "sample.miz")
+    assert out.is_file()
+    mission = zipfile.ZipFile(out).read("mission").decode("utf-8", "replace")
+    assert "c_time_after" in mission
+    assert "a_out_text_delay" in mission
+    assert "Manston Tower" in mission or "DictKey_Translation" in mission
+    assert '["airdromeId"]=5' in mission or "airdromeId" in mission
 
 
 def test_cli_validate_sample_ok():
@@ -99,3 +104,28 @@ def test_empty_triggers_still_compile(tmp_path: Path):
     spec = load_mission_spec(FREE)
     out = PyDCSCompiler().compile(spec, tmp_path / "ok.miz")
     assert out.is_file()
+
+
+def test_zone_and_flag_compile(tmp_path: Path):
+    data = _base()
+    data["zones"] = [{"name": "near", "bearing_deg": 90, "distance_km": 5, "radius_m": 2000}]
+    data["triggers"] = [
+        {
+            "name": "enter",
+            "once": True,
+            "when": [{"type": "coalition_in_zone", "zone": "near", "coalition": "blue"}],
+            "then": [
+                {"type": "set_flag", "flag": "entered", "value": True},
+                {"type": "message", "text": "Zone entered.", "duration_s": 5},
+            ],
+        }
+    ]
+    p = tmp_path / "zone_ok.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    spec = load_mission_spec(p)
+    assert validate_mission_spec(spec).ok
+    out = PyDCSCompiler().compile(spec, tmp_path / "zone.miz")
+    mission = zipfile.ZipFile(out).read("mission").decode("utf-8", "replace")
+    assert "c_part_of_coalition_in_zone" in mission
+    assert "a_set_flag" in mission
+    assert "near" in mission

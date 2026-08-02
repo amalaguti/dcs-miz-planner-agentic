@@ -7,16 +7,29 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Trigger Spec compiles to native ME tables
+
+- **Date:** 2026-08-02
+- **Lesson:** Validated Spec `zones`/`triggers` map via PyDCS:
+  `TimeAfter`, `FlagIsTrue`/`False`, `GroupDead`, `PartOfCoalitionInZone`,
+  `MessageToAll` (`mission.string`), `SetFlag`/`ClearFlag`, `EndMission` (winner =
+  player coalition for win, opposing for lose). Zones use
+  `airport.position.point_from_heading` + `triggers.add_triggerzone`. Append
+  `TriggerOnce`/`TriggerContinious` to `mission.triggerrules.triggers`. Spec string
+  flags map to ints in first-seen order starting at 1. Keep enemy group ids in Spec
+  `enemies[]` order for `unit_dead`.
+- **Code:** `compiler/triggers_emit.py`, `pydcs_compiler.py` (`_apply_zones_and_triggers`).
+
 ## Trigger Spec is typed; .miz emit is a separate change
 
 - **Date:** 2026-08-02
 - **Lesson:** `zones` / `triggers` on Mission Spec are discriminated Pydantic models (no
-  Lua). `dcs-miz validate` accepts well-formed graphs; `PyDCSCompiler` MUST refuse
-  non-empty zones/triggers until `trigger-compiler-native` emits native ME tables.
-  Do not silently drop declared behaviour. v1 conditions: time_more, flag_is, unit_dead,
-  coalition_in_zone; actions: message, set_flag, mission_end. Zones are airfield-relative.
-- **Code:** `models.py`, `validation.py`, `compiler/pydcs_compiler.py`
-  (`_refuse_uncompiled_triggers`), `examples/manston_freeflight_trigger_sample.yaml`.
+  Lua). Shared validation checks refs; the compiler emits native ME tables
+  (`trigger-compiler-native`). Do not invent Lua in the Spec. v1 conditions:
+  time_more, flag_is, unit_dead, coalition_in_zone; actions: message, set_flag,
+  mission_end. Zones are airfield-relative.
+- **Code:** `models.py`, `validation.py`, `compiler/triggers_emit.py`,
+  `examples/manston_freeflight_trigger_sample.yaml`.
 
 ## Mission randomization: seed is build-scoped, not forever-stable
 

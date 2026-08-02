@@ -84,8 +84,8 @@ _COMMON_NOTES: tuple[str, ...] = (
     ),
     (
         "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|unit_dead|"
-        "coalition_in_zone; actions message|set_flag|mission_end. Compiling non-empty "
-        "zones/triggers is not available yet (native emit comes later) — validate only."
+        "coalition_in_zone; actions message|set_flag|mission_end. Compiler emits native "
+        "ME trigger tables for validated graphs."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
