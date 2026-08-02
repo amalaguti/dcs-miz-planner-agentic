@@ -94,8 +94,8 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
 | `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options; theatre views join install inventory (`known` / `offerable`) | `registry`, `install`, stdlib `sqlite3` |
 | `memory/` | User prefs, generation history, satisfaction feedback (`user_*` tables; never wiped by catalog sync) | `install.default_db_path`, stdlib `sqlite3` |
-| `tools/` | Agent-facing callables: catalog lookups, validate/compile, prefs/history/feedback, research_guidance | `catalog`, `memory`, `validation`, `compiler`, `loader` |
-| `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
+| `tools/` | Agent-facing callables: catalog lookups, `get_mission_spec_schema`, validate/compile, prefs/history/feedback, research_guidance | `catalog`, `memory`, `validation`, `compiler`, `loader`, `agent/spec_schema` |
+| `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
 | `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, places player (intercept enemies / CAP orbit+ROE+optional enemies), writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |

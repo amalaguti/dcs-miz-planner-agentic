@@ -69,7 +69,7 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling (uses catalog + prefs/history tools) | `done` (stub Spec accepted 2026-08-01; live needs OPENAI_API_KEY) |
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
 | 10b | `agent-verbose-default-off` | After product polish: default agent `verbose` **off** (quiet CLI); keep `--verbose` / `/verbose on` for debugging | `idea` (final polish) |
-| 10c | `agent-spec-schema-tool` | Derived Mission Spec shape for the agent (tool + prompt fragment); stop hand-maintaining JSON skeletons as mission types grow | `idea` |
+| 10c | `agent-spec-schema-tool` | Derived Mission Spec shape for the agent (tool + prompt fragment); stop hand-maintaining JSON skeletons as mission types grow | `done` (CLI/API accepted 2026-08-01) |
 | 11 | `squadron-commander-voice` | Agent persona: USAAF or RAF squadron commander tone for questions, guidance, and briefings (configurable; may follow prefs); tactics/procedures/watch-outs brief + optional research | `done` (CLI/API accepted 2026-08-01) |
 
 **`#10c` `agent-spec-schema-tool` — notes (promote after `#10a`):**
@@ -100,8 +100,7 @@ the Spec contract.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** prefer M3 `#10c` `agent-spec-schema-tool` before
-growing more M4 types; then `mission-type-ground-attack`
+**Next promote / in proposal:** after `#10c` lands — `mission-type-ground-attack`
 
 | # | Item | Goal | Status |
 |---|------|------|--------|

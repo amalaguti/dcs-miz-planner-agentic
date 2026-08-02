@@ -189,7 +189,12 @@ def plan_mission(
             spec = MissionSpec.model_validate(raw)
         except (json.JSONDecodeError, ValueError, TypeError) as exc:
             last_parse_error = str(exc)
-            messages.append({"role": "user", "content": host_spec_repair_nudge(str(exc))})
+            messages.append(
+                {
+                    "role": "user",
+                    "content": host_spec_repair_nudge(str(exc), rejected_text=resp.content),
+                }
+            )
             continue
 
         vresult = validate_mission_spec(spec, inventory=inventory)
@@ -275,7 +280,8 @@ def plan_mission(
             {
                 "role": "user",
                 "content": host_spec_repair_nudge(
-                    "Validation failed:\n" + json.dumps(list(errors), indent=2)
+                    "Validation failed:\n" + json.dumps(list(errors), indent=2),
+                    mission_type=spec.mission_type.value,
                 ),
             }
         )

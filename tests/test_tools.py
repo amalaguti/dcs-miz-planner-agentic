@@ -14,6 +14,7 @@ from dcs_miz_planner.tools import (
     compile_mission,
     find_airfield,
     get_aircraft_details,
+    get_mission_spec_schema,
     get_user_prefs,
     list_generation_history,
     list_mission_options,
@@ -29,6 +30,7 @@ def test_tools_export_surface() -> None:
     assert callable(find_airfield)
     assert callable(get_aircraft_details)
     assert callable(list_mission_options)
+    assert callable(get_mission_spec_schema)
     assert callable(validate_mission_spec)
     assert callable(compile_mission)
     assert callable(get_user_prefs)

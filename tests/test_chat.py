@@ -101,20 +101,23 @@ def test_compose_chat_mode() -> None:
     prompt = compose_system_prompt("raf", mode="chat")
     assert "/accept" in prompt
     assert "Interactive chat" in prompt
-    assert '"player"' in prompt
-    assert '"date": {"year"' in prompt or '"date": {"year":' in prompt
-    assert "DO NOT emit" in prompt
-    assert "cap.objectives" in prompt
+    assert "get_mission_spec_schema" in prompt
+    assert "nested player" in prompt or "player{}" in prompt
+    assert "Anti-patterns" in prompt or "anti-pattern" in prompt.lower()
 
 
-def test_host_spec_repair_nudge_includes_shape() -> None:
+def test_host_spec_repair_nudge_includes_derived_example() -> None:
     from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
 
-    nudge = host_spec_repair_nudge("theatre Field required")
+    nudge = host_spec_repair_nudge(
+        "theatre Field required",
+        rejected_text='{"mission_type": "cap"}',
+    )
     assert "theatre Field required" in nudge
     assert "player" in nudge
     assert "TheChannel" in nudge
-    assert "Bf-109K-4" in nudge
+    assert '"mission_type": "cap"' in nudge or '"mission_type":"cap"' in nudge
+    assert "DO NOT emit" in nudge
 
 
 def test_invalid_embedded_spec_injects_shape_nudge(tmp_path: Path) -> None:
@@ -141,10 +144,10 @@ def test_invalid_embedded_spec_injects_shape_nudge(tmp_path: Path) -> None:
     assert "NOT captured" in r.output
     assert session.proposed_spec is None
     assert session.last_spec_error
-    # Host injected a repair nudge with the canonical shape into history.
+    # Host injected a repair nudge with the derived CAP example into history.
     assert any(
-        "Follow this shape exactly" in (m.get("content") or "")
-        or "Mission Spec JSON shape" in (m.get("content") or "")
+        "derived example" in (m.get("content") or "").lower()
+        or "Mission Spec example for mission_type='cap'" in (m.get("content") or "")
         for m in session.messages
         if m.get("role") == "user"
     )

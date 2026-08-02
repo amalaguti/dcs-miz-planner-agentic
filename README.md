@@ -24,8 +24,7 @@ chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `agent-spec-schema-tool`, then `mission-type-ground-attack` / escort;
-`briefing-generation` after M4 types.
+**Next:** `mission-type-ground-attack`, then escort; `briefing-generation` after M4 types.
 
 ## Stack
 
@@ -87,6 +86,7 @@ Normandy (or other maps) is not required for the planning-option catalog.
 Import from `dcs_miz_planner.tools` (no dedicated tools CLI — pytest is the acceptance path):
 
 - `find_airfield(query)` / `get_aircraft_details(aircraft_id)` — known catalog
+- `get_mission_spec_schema(mission_type)` — compact Spec example + notes (from `examples/`)
 - `list_mission_options()` — Spec enums + enriched planning options + offerable theatres
 - `get_user_prefs` / `set_user_prefs` / `list_generation_history` / `record_generation` /
   `record_feedback` — local user memory

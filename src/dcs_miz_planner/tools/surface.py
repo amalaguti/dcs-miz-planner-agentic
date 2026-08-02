@@ -126,6 +126,37 @@ def list_mission_options(
     )
 
 
+def get_mission_spec_schema(mission_type: str) -> dict[str, Any]:
+    """Return a compact derived Mission Spec example + notes for ``mission_type``."""
+    # Lazy import: avoid tools ↔ agent package init cycles.
+    from ..agent.spec_schema import build_spec_schema, supported_mission_types
+
+    key = (mission_type or "").strip()
+    if not key:
+        return err_result(
+            "mission_type must be a non-empty string",
+            code="invalid_mission_type",
+            supported=list(supported_mission_types()),
+        )
+    try:
+        view = build_spec_schema(key)
+    except ValueError as exc:
+        return err_result(
+            str(exc),
+            code="unsupported_mission_type",
+            mission_type=key,
+            supported=list(supported_mission_types()),
+        )
+    except FileNotFoundError as exc:
+        return err_result(str(exc), code="example_missing", mission_type=key)
+    return ok_result(
+        mission_type=view.mission_type,
+        example=view.example,
+        notes=list(view.notes),
+        anti_patterns=list(view.anti_patterns),
+    )
+
+
 def validate_mission_spec(
     spec_path: str | Path,
     *,

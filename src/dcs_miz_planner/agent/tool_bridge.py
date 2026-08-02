@@ -10,6 +10,7 @@ from ..tools import (
     compile_mission,
     find_airfield,
     get_aircraft_details,
+    get_mission_spec_schema,
     get_user_prefs,
     list_generation_history,
     list_mission_options,
@@ -58,6 +59,26 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "options with support levels (supported|advisory|future)."
             ),
             "parameters": {"type": "object", "properties": {}},
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_mission_spec_schema",
+            "description": (
+                "Get a compact Mission Spec JSON example plus notes/anti-patterns for a "
+                "mission_type (free_flight, intercept, or cap). Call before emitting Spec JSON."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "mission_type": {
+                        "type": "string",
+                        "description": "free_flight | intercept | cap",
+                    },
+                },
+                "required": ["mission_type"],
+            },
         },
     },
     {
@@ -226,6 +247,8 @@ def dispatch_tool(
         return get_aircraft_details(str(args.get("aircraft_id", "")), db_path=db_path)
     if name == "list_mission_options":
         return list_mission_options(db_path=db_path)
+    if name == "get_mission_spec_schema":
+        return get_mission_spec_schema(str(args.get("mission_type", "")))
     if name == "get_user_prefs":
         keys = args.get("keys")
         if keys is not None and not isinstance(keys, list):

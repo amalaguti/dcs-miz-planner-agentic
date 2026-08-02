@@ -153,7 +153,12 @@ class PlanSession:
                 "then /accept."
             )
             # Nudge the model with the full shape so the next turn can repair.
-            self.messages.append({"role": "user", "content": host_spec_repair_nudge(parse_err)})
+            self.messages.append(
+                {
+                    "role": "user",
+                    "content": host_spec_repair_nudge(parse_err, rejected_text=resp.content),
+                }
+            )
         return SlashResult(output=content)
 
     def _slash(self, cmd_line: str) -> SlashResult:

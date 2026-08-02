@@ -7,22 +7,22 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
-## Agent Spec JSON needs a concrete shape (not prose rules alone)
+## Agent Spec JSON needs a derived example (not hand skeletons)
 
 - **Date:** 2026-08-01
 - **Symptom:** Live chat emitted flat Spec JSON (`airfield`/`aircraft` top-level, ISO
   `date` string, wrong `enemies`, `cap.objectives`) that Pydantic rejected; `/accept`
   had nothing to write.
 - **Cause:** System prompt described rules in prose; models invent plausible shapes.
-- **Fix:** Put a validated CAP skeleton + DO-NOT list in the prompt; host repair nudge
-  repeats that shape after parse failure. Hand-maintained skeletons will drift —
-  backlog `#10c` `agent-spec-schema-tool` should derive examples from `MissionSpec` /
-  `examples/`. Commander brief must use enum `.value` (e.g. weather → `sunny_clear`,
-  not `WeatherPreset.SUNNY_CLEAR`). `gpt-5.6-luna` rejects function tools on Chat
-  Completions unless `reasoning_effort=none` or Responses API — stay on `gpt-4o-mini`
-  until the live client is upgraded.
-- **Code:** `agent/prompts.py` (`SPEC_JSON_SHAPE`, `host_spec_repair_nudge`),
-  `agent/session.py`, `agent/voice.py`, `agent/llm.py`.
+  Hand-maintained CAP skeletons in the prompt drift as mission types grow.
+- **Fix:** `get_mission_spec_schema(mission_type)` + `agent/spec_schema.py` load
+  validating examples from `examples/*.yaml`. Thin always-on anti-pattern reminder in
+  the prompt; host repair nudge injects the derived example (infer `mission_type` from
+  rejected JSON). Commander brief must use enum `.value` (weather → `sunny_clear`).
+  `gpt-5.6-luna` rejects function tools on Chat Completions unless `reasoning_effort=none`
+  or Responses API — stay on `gpt-4o-mini` until the live client is upgraded.
+- **Code:** `agent/spec_schema.py`, `tools/surface.py` (`get_mission_spec_schema`),
+  `agent/prompts.py`, `agent/session.py`, `agent/voice.py`.
 
 ## CAP station is airfield-relative; ROE is Spec-backed
 
