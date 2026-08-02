@@ -110,9 +110,9 @@ identifiers or Spec field authority. Live fetch queries MUST incorporate availab
 
 ### Requirement: Mission Spec schema tool
 The system SHALL expose `get_mission_spec_schema` that, given a supported
-`mission_type` (`free_flight`, `intercept`, or `cap`), returns a compact Mission Spec
-example JSON object plus human-readable notes and anti-patterns for that type. The
-example MUST validate as a `MissionSpec` under the shared schema. The payload MUST be
+`mission_type` (`free_flight`, `intercept`, `cap`, or `ground_attack`), returns a compact
+Mission Spec example JSON object plus human-readable notes and anti-patterns for that type.
+The example MUST validate as a `MissionSpec` under the shared schema. The payload MUST be
 derived from packaged examples and/or the Pydantic Spec model — not from a hand-edited
 SQLite schema as source of truth. Unsupported or unknown `mission_type` MUST return a
 structured error without inventing a Spec.
@@ -122,6 +122,12 @@ structured error without inventing a Spec.
   is registered
 - **THEN** the result MUST be ok and MUST include an `example` object that validates as
   Mission Spec `schema_version` `"1"` with `mission_type` `cap`
+
+#### Scenario: Ground-attack schema example validates
+- **WHEN** `get_mission_spec_schema` is called with `mission_type` `ground_attack` after the
+  tool is registered
+- **THEN** the result MUST be ok and MUST include an `example` object that validates as
+  Mission Spec `schema_version` `"1"` with `mission_type` `ground_attack`
 
 #### Scenario: Unknown mission type errors
 - **WHEN** `get_mission_spec_schema` is called with an unsupported `mission_type`
