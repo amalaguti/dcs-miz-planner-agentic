@@ -91,7 +91,9 @@ Import from `dcs_miz_planner.tools` (no dedicated tools CLI — pytest is the ac
 - `get_user_prefs` / `set_user_prefs` / `list_generation_history` / `record_generation` /
   `record_feedback` — local user memory
 - `research_guidance(query, …)` — tactics/procedures/history notes for commander briefs
-  (offline fixtures by default; set `DCS_MIZ_RESEARCH_LIVE=1` for best-effort web)
+  (offline fixtures by default; set `DCS_MIZ_RESEARCH_LIVE=1` or chat `/research` for
+  best-effort web: DuckDuckGo Instant Answer, then HTML results; soft-fail warns and
+  labels offline fixtures — research is never Spec/DCS-id authority)
 - `validate_mission_spec(path)` / `compile_mission(path, output)` — wrap existing engines
 
 Results are JSON-friendly dicts with an `ok` flag for later LLM tool calling.
@@ -131,8 +133,9 @@ uv run dcs-miz chat --stub --voice raf -o out/planned.yaml
 
 Slash commands: `/help`, `/quit`, `/show`, `/accept`, `/compile`, `/briefing`,
 `/research [query]`, `/catalog`, `/voice`, `/prefs`, `/clear`, `/verbose on|off`. Spec YAML
-is written only on `/accept` (not when the model merely prints JSON). `/research` tries a
-live web fetch first and soft-falls back to offline fixtures (sources shown on each note).
+is written only on `/accept` (not when the model merely prints JSON). `/research` prefers
+live web (Instant Answer, then DuckDuckGo HTML results); on empty/error it prints a clear
+warning and labels offline fixture fallback (sources still shown on each note).
 **Verbose is on by default** (LLM rounds + tool calls on stderr); use `--no-verbose` or
 `/verbose off` to quiet.
 

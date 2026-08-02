@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote / in proposal:** (see M3 / M4 — prefer `agent-spec-schema-tool`, then ground-attack)
+**Next promote / in proposal:** (see M4 — prefer `mission-type-ground-attack`)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -70,39 +70,21 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
 | 10b | `agent-verbose-default-off` | After product polish: default agent `verbose` **off** (quiet CLI); keep `--verbose` / `/verbose on` for debugging | `idea` (final polish) |
 | 10c | `agent-spec-schema-tool` | Derived Mission Spec shape for the agent (tool + prompt fragment); stop hand-maintaining JSON skeletons as mission types grow | `done` (CLI/API accepted 2026-08-01) |
-| 10d | `fix-chat-research-live` | Make `/research` (and `research_guidance`) actually return useful live web notes; today live often yields nothing and silently falls back to fixtures | `idea` |
+| 10d | `fix-chat-research-live` | Make `/research` (and `research_guidance`) actually return useful live web notes; today live often yields nothing and silently falls back to fixtures | `done` (pytest/API 2026-08-02; Instant Answer + HTML cascade; clear soft-fail label) |
 | 11 | `squadron-commander-voice` | Agent persona: USAAF or RAF squadron commander tone for questions, guidance, and briefings (configurable; may follow prefs); tactics/procedures/watch-outs brief + optional research | `done` (CLI/API accepted 2026-08-01) |
 
-**`#10d` `fix-chat-research-live` — notes:**
+**`#10d` `fix-chat-research-live` — notes (resolved 2026-08-02):**
 
-Live chat (2026-08-01): `/research Manston spitfire` with `live=True` printed
-`Warning: research live returned no snippets; using fixtures` and only fixture lines
-(`fixture:generic_fighter_brief`, `fixture:channel_free_flight`) — not query-relevant
-web results. Verbose shows the host intended live fetch.
-
-Likely causes to investigate in `tools/research.py` (`_duckduckgo_notes` /
-`gather_research_notes`): Instant Answer API often empty for multi-word queries;
-timeouts; User-Agent / HTML Instant Answer limits; soft-fail path hides failure detail.
-Chat `/research` defaults live on; soft-fail to fixtures is correct for offline, but
-when live is requested the user should get real snippets or a clear actionable error
-(not generic WWII fixture text that looks like success).
-
-Goal of a future change:
-
-- Diagnose empty DDG Instant Answer responses; consider a better provider/HTML path,
-  richer query enrichment, longer timeout, or structured error when live returns zero.
-- Surface fetch failure reason in verbose (and briefly to the pilot) when live was
-  requested.
-- Keep fixtures for stub/offline and as optional grounding — never treat research as
-  Spec/DCS-id authority.
-- Pytest: mock live fetch success + empty + exception paths for `/research` / tool.
+Live chat used to print fixture-only notes that looked like a successful web lookup when
+DuckDuckGo Instant Answer returned empty JSON for multi-word queries. Fixed by cascading
+to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
+`/research` output as offline fixture fallback whenever live returns empty/error.
 
 ---
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `mission-type-ground-attack` (or M3 `#10d` if research
-UX is blocking chat acceptance)
+**Next promote / in proposal:** `mission-type-ground-attack`
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -176,8 +158,8 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 - **Agent verbose default off** — M3 `#10b` `agent-verbose-default-off`: today `verbose`
   defaults **on** (tool traces on stderr) for development; flip default to off before a
   finalized release, keep `--verbose` / `/verbose on`.
-- **Chat research live fetch** — M3 `#10d` `fix-chat-research-live`: `/research` with
-  live on often returns no snippets and falls back to fixtures; fix provider/UX (see M3 notes).
+- **Chat research live fetch** — M3 `#10d` `fix-chat-research-live`: **done** (Instant
+  Answer + HTML cascade; clear soft-fail label). Revisit only if DDG HTML is blocked.
 - **Lua enrichment** — scheduled as **M6**; still never LLM-authored mission Lua.
 - **Lua IDE / MCP tooling** — see research **R5–R6**. Schema + LSP for writing snippets; VEAF MCP as a lab only. A future *project-owned* MCP that exposes *our* snippet catalog (`list` / `validate_params` / API docs) is optional once M6 `#22` exists. Native Lua compiler replacing PyDCS remains far-horizon.
 - **Normandy / multi-theatre** — after Channel registry pattern is solid; campaigns above are inspiration, not shipping content.

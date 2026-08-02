@@ -350,7 +350,8 @@ def research_guidance(
     """
     Gather short tactics/procedure/history notes for commander briefs.
 
-    Soft-fails: always returns ok with notes (fixtures on offline or live error).
+    Soft-fails: always returns ok with notes (fixtures on offline or live error/empty).
+    Live mode sets ``warning`` when web retrieval fails or returns nothing.
     Research is not Spec or DCS-id authority. ``db_path`` unused (tool signature parity).
     """
     del db_path

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from fixtures_support import channel_available_inventory
 
 from dcs_miz_planner.agent import PlanSession, stub_chat_clarify_then_spec
@@ -11,7 +12,12 @@ from dcs_miz_planner.agent.llm import MANSTON_FREE_FLIGHT_JSON, LLMResponse, Stu
 from dcs_miz_planner.catalog import CatalogService
 
 
-def test_chat_clarify_tool_accept(tmp_path: Path) -> None:
+def test_chat_clarify_tool_accept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from dcs_miz_planner.tools import research as research_mod
+
+    # Keep multi-turn chat offline-fast: soft-fail live with fixtures.
+    monkeypatch.setattr(research_mod, "_live_web_notes", lambda _q: [])
+
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
@@ -37,6 +43,8 @@ def test_chat_clarify_tool_accept(tmp_path: Path) -> None:
     research = session.handle_line("/research Channel Spitfire weather")
     assert "Research" in research.output
     assert "-" in research.output
+    assert "Offline fixture fallback" in research.output
+    assert "Warning:" in research.output
 
     catalog = session.handle_line("/catalog")
     assert "catalog" in catalog.output.lower() or "mission_types" in catalog.output
@@ -46,6 +54,24 @@ def test_chat_clarify_tool_accept(tmp_path: Path) -> None:
     assert out.is_file()
     assert "Wrote Spec" in accepted.output
     assert "## Tactics" in accepted.output
+
+
+def test_chat_research_labels_live_soft_fail(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from dcs_miz_planner.tools import research as research_mod
+
+    monkeypatch.setattr(research_mod, "_live_web_notes", lambda _q: [])
+    session = PlanSession(
+        llm=StubLLM(),
+        output_path=tmp_path / "x.yaml",
+        inventory=channel_available_inventory(),
+    )
+    session.start()
+    r = session.handle_line("/research Manston spitfire")
+    assert "Warning:" in r.output
+    assert "Offline fixture fallback" in r.output
+    assert "not Spec authority" in session.messages[-2]["content"]
 
 
 def test_chat_no_auto_write_without_accept(tmp_path: Path) -> None:

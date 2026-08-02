@@ -7,6 +7,24 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Live research: Instant Answer alone is not enough
+
+- **Date:** 2026-08-02
+- **Symptom:** `/research Manston spitfire` printed only `fixture:…` notes that looked
+  like a successful live lookup; Instant Answer JSON was often empty for multi-word
+  aviation queries.
+- **Cause:** DuckDuckGo Instant Answer is entity/definition oriented, not a full search
+  API; it also sometimes returns an empty HTTP body (JSON decode fails). Soft-fail used
+  to abort before any HTML fallback and returned fixtures with a warning chat did not
+  label clearly. DDG HTML also serves an anomaly/challenge page for non-browser
+  User-Agents (empty `result__a` parse).
+- **Fix:** Cascade Instant Answer → `html.duckduckgo.com` result parse (stdlib); treat
+  empty/invalid Instant Answer as continue-to-HTML; use a browser User-Agent for HTML;
+  detect anomaly pages; enrich query with mission_type/theatre/aircraft; on empty/error
+  always warn and label `/research` as offline fixture fallback. Research remains
+  non-authoritative for Spec ids.
+- **Code:** `tools/research.py`, `agent/session.py` (`/research`).
+
 ## Agent Spec JSON needs a derived example (not hand skeletons)
 
 - **Date:** 2026-08-01
@@ -43,8 +61,9 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 - **Lesson:** WWII Channel persona id is `usaaf` (Army Air Forces). `usaf` is post-1947 —
   do not rename the voice id. Default voice is `raf`. Commander briefs (tactics /
   procedures / watch-outs) are CLI/`PlanResult.brief` only — never write them into Spec
-  fields or `.miz` `l10n` in this layer. `research_guidance` soft-fails to fixtures; set
-  `DCS_MIZ_RESEARCH_LIVE=1` for best-effort web. Research is not DCS-id authority.
+  fields or `.miz` `l10n` in this layer. `research_guidance` soft-fails to fixtures with a
+  clear warning; chat `/research` labels offline fallback. Live uses Instant Answer then
+  HTML results (`DCS_MIZ_RESEARCH_LIVE=1` or chat). Research is not DCS-id authority.
 - **Code:** `agent/voice.py`, `agent/prompts.py`, `tools/research.py`, `agent/planner.py`.
 
 ## User memory tables are not catalog_*

@@ -257,7 +257,7 @@ class PlanSession:
             q = "Channel Spitfire WWII mission planning tactics weather history"
         print("Commander researching... (live web when available)", file=sys.stderr, flush=True)
         vlog(self.verbose, f"[verbose] /research live=True query={q!r}")
-        # Chat /research prefers live fetch; soft-fails to fixtures with a warning.
+        # Chat /research prefers live fetch; soft-fails to fixtures with a clear label.
         result = research_guidance(
             q,
             mission_type=mission_type,
@@ -267,9 +267,15 @@ class PlanSession:
             db_path=self.db_path,
         )
         notes = result.get("notes") or []
-        lines = [f"Research for: {q}"]
-        if result.get("warning"):
-            lines.append(f"Warning: {result['warning']}")
+        warning = (result.get("warning") or "").strip()
+        if warning:
+            lines = [
+                f"Research for: {q}",
+                f"Warning: {warning}",
+                "Offline fixture fallback (not live web results):",
+            ]
+        else:
+            lines = [f"Research for: {q} (live web notes)"]
         for note in notes:
             title = note.get("title") or "note"
             snippet = note.get("snippet") or ""
@@ -279,7 +285,7 @@ class PlanSession:
         if not notes:
             lines.append("(no notes)")
         summary = "\n".join(lines)
-        # Inject into session for later turns
+        # Inject into session for later turns — advisory only, never Spec authority.
         self.messages.append(
             {
                 "role": "user",

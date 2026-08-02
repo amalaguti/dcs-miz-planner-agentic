@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -168,6 +169,64 @@ def test_research_guidance_offline_notes() -> None:
     )
 
 
+def test_enrich_live_query_adds_context() -> None:
+    from dcs_miz_planner.tools.research import enrich_live_query
+
+    enriched = enrich_live_query(
+        "dawn patrol weather",
+        mission_type="cap",
+        theatre="TheChannel",
+        aircraft="SpitfireLFMkIX",
+    )
+    assert "dawn patrol weather" in enriched
+    assert "cap" in enriched.lower()
+    assert "TheChannel" in enriched
+    assert "SpitfireLFMkIX" in enriched
+    assert "WWII" in enriched
+
+
+def test_research_guidance_live_success_via_inject() -> None:
+    from dcs_miz_planner.tools import research as research_mod
+
+    def fake_fetch(_query: str) -> list[dict[str, str]]:
+        return [
+            {
+                "title": "RAF Manston",
+                "snippet": "Historic Channel airfield used by Fighter Command.",
+                "source": "https://example.test/manston",
+            }
+        ]
+
+    notes, warning = research_mod.gather_research_notes(
+        "Manston spitfire",
+        mission_type="free_flight",
+        theatre="TheChannel",
+        aircraft="SpitfireLFMkIX",
+        live=True,
+        web_fetch=fake_fetch,
+    )
+    assert warning is None
+    assert notes
+    assert any(not research_mod.is_fixture_source(n["source"]) for n in notes)
+    assert notes[0]["source"].startswith("https://")
+
+
+def test_research_guidance_live_empty_soft_fails() -> None:
+    from dcs_miz_planner.tools import research as research_mod
+
+    notes, warning = research_mod.gather_research_notes(
+        "tactics",
+        mission_type="free_flight",
+        live=True,
+        web_fetch=lambda _q: [],
+    )
+    assert notes
+    assert warning is not None
+    assert "no snippets" in warning.lower()
+    assert "offline fixtures" in warning.lower()
+    assert all(research_mod.is_fixture_source(n["source"]) for n in notes)
+
+
 def test_research_guidance_soft_fails_on_live_error(monkeypatch: pytest.MonkeyPatch) -> None:
     from dcs_miz_planner.tools import research as research_mod
 
@@ -183,10 +242,54 @@ def test_research_guidance_soft_fails_on_live_error(monkeypatch: pytest.MonkeyPa
     assert notes
     assert warning is not None
     assert "failed" in warning.lower()
+    assert "offline fixtures" in warning.lower()
     # Tool surface still ok.
     monkeypatch.setenv("DCS_MIZ_RESEARCH_LIVE", "0")
     tool = research_guidance("free flight procedures", mission_type="free_flight", live=False)
     assert tool["ok"] is True
+
+
+def test_live_cascade_tries_html_when_instant_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    from dcs_miz_planner.tools import research as research_mod
+
+    calls: list[str] = []
+
+    def boom_instant(_query: str, *, timeout_s: float = 4.0) -> list:
+        calls.append("instant")
+        raise json.JSONDecodeError("Expecting value", "", 0)
+
+    def html_ok(query: str, *, timeout_s: float = 6.0) -> list[dict[str, str]]:
+        calls.append("html")
+        return [
+            {
+                "title": "Manston",
+                "snippet": f"HTML hit for {query}",
+                "source": "https://example.test/manston",
+            }
+        ]
+
+    monkeypatch.setattr(research_mod, "_duckduckgo_instant_notes", boom_instant)
+    monkeypatch.setattr(research_mod, "_duckduckgo_html_notes", html_ok)
+    notes = research_mod._live_web_notes("Manston spitfire")
+    assert calls == ["instant", "html"]
+    assert notes and "HTML hit" in notes[0]["snippet"]
+
+
+def test_duckduckgo_html_parser_extracts_results() -> None:
+    from dcs_miz_planner.tools.research import _DuckDuckGoHtmlResultsParser
+
+    sample = """
+    <div class="result">
+      <a class="result__a" href="/l/?uddg=https%3A%2F%2Fexample.test%2Fspitfire">Spitfire LF Mk IX</a>
+      <a class="result__snippet">Supermarine Spitfire fighter used by the RAF.</a>
+    </div>
+    """
+    parser = _DuckDuckGoHtmlResultsParser()
+    parser.feed(sample)
+    assert parser.results
+    assert "Spitfire" in parser.results[0]["title"]
+    assert "RAF" in parser.results[0]["snippet"]
+    assert "example.test" in parser.results[0]["source"]
 
 
 def test_dispatch_research_guidance() -> None:
