@@ -66,10 +66,11 @@ When compiling a free-flight Mission Spec, the compiler SHALL treat absent or em
 
 ### Requirement: Non-empty extension points not compiled yet
 For free-flight Specs, the compiler (or loader, before compile) MUST NOT silently drop
-non-empty `enemies`, `objectives`, or `triggers`. Until a later change implements those
-capabilities for free flight, non-empty values MUST cause a clear failure. Intercept Specs
-MAY compile non-empty `enemies` / `objectives` per intercept requirements; non-empty
-`triggers` MUST still fail for all schema_version `"1"` types.
+non-empty `enemies` or `objectives`. Until a later change implements those capabilities for
+free flight, non-empty combat values MUST cause a clear failure. Intercept Specs MAY compile
+non-empty `enemies` / `objectives` per intercept requirements. Non-empty typed `triggers` /
+`zones` MUST fail compile until native trigger emit is implemented (clear error; no silent
+drop).
 
 #### Scenario: Free-flight non-empty enemies refused
 - **WHEN** a free-flight Mission Spec includes a non-empty `enemies` collection
@@ -275,3 +276,18 @@ weather values MUST fail before writing a `.miz`.
 #### Scenario: Sunny clear still compiles
 - **WHEN** the Manston cold free-flight Spec (`sunny_clear`) is compiled
 - **THEN** prior clear-weather behaviour MUST remain
+
+### Requirement: Compile refuses undeclared trigger emit
+Until native trigger compilation is implemented, the compiler MUST refuse to write a `.miz`
+when the Mission Spec has a non-empty `triggers` list or a non-empty `zones` list. The
+error MUST state that trigger/zone emit is not available yet. Specs with empty `triggers`
+and empty `zones` MUST continue to compile as today.
+
+#### Scenario: Empty triggers still compile
+- **WHEN** the checked-in Manston cold free-flight Spec (empty triggers/zones) is compiled
+- **THEN** the compiler MUST write a `.miz` successfully
+
+#### Scenario: Non-empty triggers blocked at compile
+- **WHEN** a Spec that validates with a non-empty `triggers` list is compiled
+- **THEN** the compiler MUST fail without writing a `.miz`, with a clear not-implemented
+  message

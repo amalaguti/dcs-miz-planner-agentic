@@ -28,23 +28,29 @@ The Mission Spec SHALL reject undeclared fields at every model level (no silent 
 
 ### Requirement: Reserved extension points for future combat and triggers
 The Mission Spec MAY include optional top-level keys `enemies`, `objectives`, `triggers`,
-`targets`, and `package`. For free-flight missions those combat keys MUST be absent or
-empty. For intercept missions, `enemies` and `objectives` MUST be non-empty per intercept
-rules. For CAP missions, `objectives` MUST be non-empty per CAP rules and `enemies` MAY be
-empty or non-empty; CAP Specs MUST also include the nested `cap` block. For ground-attack
-missions, `targets` and `objectives` MUST be non-empty per ground-attack rules, `enemies`
-MUST be empty, and the nested `strike` block MUST be present. For escort missions,
-`package` and `objectives` MUST be non-empty per escort rules, `enemies` MAY be empty or
-non-empty, the nested `escort` block MUST be present, and `targets` / `strike` /
-`player.payload` MUST be absent or unsupported. `triggers` MUST remain empty until a later
-change implements the trigger model. The system MUST NOT silently drop unsupported
-non-empty values.
+`targets`, `package`, and `zones`. For free-flight missions combat keys MUST be absent or
+empty per existing free-flight rules. For intercept missions, `enemies` and `objectives`
+MUST be non-empty per intercept rules. For CAP missions, `objectives` MUST be non-empty per
+CAP rules and `enemies` MAY be empty or non-empty; CAP Specs MUST also include the nested
+`cap` block. For ground-attack missions, `targets` and `objectives` MUST be non-empty per
+ground-attack rules, `enemies` MUST be empty, and the nested `strike` block MUST be present.
+For escort missions, `package` and `objectives` MUST be non-empty per escort rules,
+`enemies` MAY be empty or non-empty, the nested `escort` block MUST be present, and
+`targets` / `strike` / `player.payload` MUST be absent or unsupported. `triggers` and
+`zones` MAY be non-empty when they conform to the typed mission-triggers model. Free-form
+or Lua-bearing trigger payloads MUST be rejected. The system MUST NOT silently drop
+unsupported non-empty values.
 
 #### Scenario: Free flight with absent extensions compiles
 - **WHEN** a free-flight Mission Spec omits `enemies`, `objectives`, `triggers`,
-  `targets`, and `package`
+  `targets`, `package`, and `zones`
 - **THEN** the Spec SHALL be structurally valid and the compiler MUST proceed as for free
   flight
+
+#### Scenario: Typed triggers allowed on free flight
+- **WHEN** a free-flight Spec includes a well-typed `time_more` → `message` trigger and
+  empty combat extensions
+- **THEN** structural load and shared validation MUST succeed
 
 #### Scenario: Free flight refuses non-empty enemies
 - **WHEN** a free-flight Mission Spec sets `enemies` to a non-empty value
@@ -100,17 +106,18 @@ ids and a positive count. Free-flight Specs MUST continue to require empty `enem
 
 ### Requirement: Minimal intercept objective
 An intercept Mission Spec MUST declare a minimal objective indicating enemy interception
-(structured field agreed in design). Unknown objective types MUST be rejected. Non-empty
-`triggers` MUST still be rejected in this change.
+(structured field agreed in design). Unknown objective types MUST be rejected. Typed
+`triggers`/`zones` MAY be present per the mission-triggers model.
 
 #### Scenario: intercept_enemy objective accepted
 - **WHEN** an intercept Spec includes the supported intercept objective shape and empty
   `triggers`
 - **THEN** validation MUST accept the Spec (subject to other intercept rules)
 
-#### Scenario: Non-empty triggers still refused
-- **WHEN** an intercept Spec sets a non-empty `triggers` list
-- **THEN** validation MUST fail stating triggers are not supported yet
+#### Scenario: Well-typed triggers allowed on intercept
+- **WHEN** an intercept Spec sets a well-typed non-empty `triggers` list
+- **THEN** structural load and shared validation MUST succeed (compile may still refuse
+  until native trigger emit)
 
 ### Requirement: Checked-in intercept example Spec
 The repository SHALL include a checked-in example Mission Spec for the Manston dawn-style
@@ -172,8 +179,8 @@ optional `duration_min` (≥ 1). Unsupported pattern values MUST be rejected.
 ### Requirement: CAP objectives and optional enemies
 A CAP Mission Spec MUST declare a non-empty `objectives` list including objective type
 `patrol`. CAP Specs MAY include empty or non-empty `enemies` (empty = pure patrol).
-Non-empty `triggers` MUST still be rejected. Objective type `patrol` MUST be rejected on
-non-CAP mission types unless a later change explicitly allows it.
+Typed `triggers`/`zones` MAY be present per the mission-triggers model. Objective type
+`patrol` MUST be rejected on non-CAP mission types unless a later change explicitly allows it.
 
 #### Scenario: Pure patrol CAP accepted
 - **WHEN** a CAP Spec has `objectives` containing `patrol` and empty `enemies`
@@ -184,9 +191,10 @@ non-CAP mission types unless a later change explicitly allows it.
   a `patrol` objective
 - **THEN** the Spec MUST load as structurally valid for CAP compilation
 
-#### Scenario: Non-empty triggers still refused for CAP
-- **WHEN** a CAP Spec sets a non-empty `triggers` list
-- **THEN** validation MUST fail stating triggers are not supported yet
+#### Scenario: Well-typed triggers allowed on CAP
+- **WHEN** a CAP Spec sets a well-typed non-empty `triggers` list
+- **THEN** structural load and shared validation MUST succeed (compile may still refuse
+  until native trigger emit)
 
 ### Requirement: Checked-in CAP example Spec
 The repository SHALL include a checked-in example Mission Spec for a Manston Channel CAP
@@ -295,17 +303,18 @@ pylon).
 
 ### Requirement: Ground-attack objective
 A ground-attack Mission Spec MUST declare a non-empty `objectives` list including objective
-type `attack_ground`. Non-empty `triggers` MUST still be rejected. Objective type
-`attack_ground` MUST be rejected on non–ground_attack mission types unless a later change
-explicitly allows it.
+type `attack_ground`. Typed `triggers`/`zones` MAY be present per the mission-triggers
+model. Objective type `attack_ground` MUST be rejected on non–ground_attack mission types
+unless a later change explicitly allows it.
 
 #### Scenario: attack_ground objective accepted
 - **WHEN** a ground-attack Spec includes `attack_ground` and empty `triggers`
 - **THEN** validation MUST accept the Spec (subject to other ground-attack and registry rules)
 
-#### Scenario: Non-empty triggers still refused
-- **WHEN** a ground-attack Spec sets a non-empty `triggers` list
-- **THEN** validation MUST fail stating triggers are not supported yet
+#### Scenario: Well-typed triggers allowed on ground-attack
+- **WHEN** a ground-attack Spec sets a well-typed non-empty `triggers` list
+- **THEN** structural load and shared validation MUST succeed (compile may still refuse
+  until native trigger emit)
 
 ### Requirement: Checked-in ground-attack example Spec
 The repository SHALL include a checked-in example Mission Spec for a Manston Channel
@@ -388,17 +397,18 @@ be known Channel registry ids and MUST belong to the coalition opposing the play
 
 ### Requirement: Escort objective
 An escort Mission Spec MUST declare a non-empty `objectives` list including objective type
-`escort_package`. Non-empty `triggers` MUST still be rejected. Objective type
-`escort_package` MUST be rejected on non-escort mission types unless a later change
-explicitly allows it.
+`escort_package`. Typed `triggers`/`zones` MAY be present per the mission-triggers model.
+Objective type `escort_package` MUST be rejected on non-escort mission types unless a later
+change explicitly allows it.
 
 #### Scenario: escort_package objective accepted
 - **WHEN** an escort Spec includes `escort_package` and empty `triggers`
 - **THEN** validation MUST accept the Spec (subject to other escort and registry rules)
 
-#### Scenario: Non-empty triggers still refused
-- **WHEN** an escort Spec sets a non-empty `triggers` list
-- **THEN** validation MUST fail stating triggers are not supported yet
+#### Scenario: Well-typed triggers allowed on escort
+- **WHEN** an escort Spec sets a well-typed non-empty `triggers` list
+- **THEN** structural load and shared validation MUST succeed (compile may still refuse
+  until native trigger emit)
 
 ### Requirement: Checked-in escort example Spec
 The repository SHALL include a checked-in example Mission Spec for a Manston Channel escort

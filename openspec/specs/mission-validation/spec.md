@@ -76,8 +76,8 @@ JSON mode for machine consumers, and MUST use a non-zero exit code on load or va
 ### Requirement: Validate intercept Specs
 The shared validation engine SHALL accept intercept Mission Specs that satisfy intercept
 schema rules and registry/install checks, including non-empty `enemies` with known aircraft
-ids. It MUST still reject free-flight Specs with non-empty extension points and MUST reject
-non-empty `triggers` for all schema_version `"1"` types covered by this change.
+ids. It MUST still reject free-flight Specs with non-empty combat extension points. Typed
+`triggers`/`zones` MUST be validated per mission-triggers rules (not blanket-rejected).
 
 #### Scenario: Valid intercept example passes validate
 - **WHEN** the checked-in intercept example is validated with Channel available inventory
@@ -92,9 +92,9 @@ non-empty `triggers` for all schema_version `"1"` types covered by this change.
 The shared validation engine SHALL accept CAP Mission Specs that satisfy CAP schema rules
 and registry/install checks, including a valid `cap` block, `patrol` objective, and — when
 present — known enemy aircraft ids. It MUST still reject free-flight Specs with non-empty
-extension points, MUST reject CAP Specs missing required `cap` fields or using unknown
-engagement/pattern values, and MUST reject non-empty `triggers` for all schema_version `"1"`
-types covered by this change.
+combat extension points, MUST reject CAP Specs missing required `cap` fields or using
+unknown engagement/pattern values, and MUST validate typed `triggers`/`zones` per
+mission-triggers rules (not blanket-reject non-empty triggers).
 
 #### Scenario: Valid CAP example passes validate
 - **WHEN** the checked-in CAP example is validated with Channel available inventory
@@ -149,7 +149,8 @@ rules and registry checks, including a valid `escort` block, non-empty same-coal
 `package` with known aircraft ids, `escort_package` objective, and — when present — known
 opposing `enemies`. It MUST reject escort Specs with opposing-coalition package entries,
 unknown package/enemy aircraft, missing required `escort` fields, misuse of
-`strike`/`targets`/`payload` on escort, and non-empty `triggers` for schema_version `"1"`.
+`strike`/`targets`/`payload` on escort. Typed `triggers`/`zones` MUST be validated per
+mission-triggers rules (not blanket-rejected).
 
 #### Scenario: Valid escort example passes validate
 - **WHEN** the checked-in escort example is validated with Channel available inventory
@@ -186,3 +187,17 @@ path that skips validation solely because the Spec was randomized.
 #### Scenario: Invalid randomized output is refused
 - **WHEN** a randomized Spec would fail structural or semantic validation
 - **THEN** validate/compile MUST report the failure and MUST NOT write a `.miz`
+
+### Requirement: Validate typed triggers and zones
+The shared validation engine SHALL accept Specs whose `triggers` and `zones` conform to the
+mission-triggers vocabulary and reference rules, and MUST reject unknown types, duplicate
+zone names, out-of-range `enemy_index`, and missing zone references. Blanket refusal of any
+non-empty `triggers` list MUST NOT apply once the typed model is in force.
+
+#### Scenario: Out-of-range enemy_index fails
+- **WHEN** `unit_dead.enemy_index` is 0 but `enemies` is empty
+- **THEN** validation MUST fail
+
+#### Scenario: Well-formed trigger passes validate
+- **WHEN** a Spec with `time_more` → `message` trigger is validated
+- **THEN** `validate_mission_spec` MUST succeed for trigger rules
