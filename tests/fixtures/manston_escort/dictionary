@@ -1,0 +1,15 @@
+dictionary=
+{
+	["DictKey_Translation_1"]="Cold start at Manston. Escort a Mosquito package southeast across the Channel (bearing 120°, 55 km) at 4000 m, weapons free. Light Bf-109 bounce near the package destination.\
+\
+Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather sunny_clear, start cold_parking.\
+\
+Watch fighters diving on the package, fuel on a Channel transit, mid-air near the formation, and navigation over water; honour ROE and do not leave the package alone to chase.",
+	["DictKey_Translation_2"]="Escort 2× MosquitoFBMkVI to bearing 120°, 55 km, 4000 m, ROE weapons_free. Stay with the package — do not chase so far that you abandon them. Bounce briefed: 2× Bf-109K-4. Commit only with advantage and return to cover.\
+\
+Cold start as briefed; climb toward the package route; join and hold escort position; scan above and out-sun; cover to the destination; recover with the package or as briefed.\
+\
+Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
+	["DictKey_Translation_3"]="",
+	["DictKey_Translation_4"]="Manston Channel Escort"
+}

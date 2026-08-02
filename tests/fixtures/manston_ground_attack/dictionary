@@ -1,0 +1,15 @@
+dictionary=
+{
+	["DictKey_Translation_1"]="Cold start at Manston with 2x250 lb bombs and a 45 gal slipper tank. Cross the Channel to a strike area near the French coast (Dunkirk approach); jettison the tank before the attack. Soft enemy truck targets on land on the opposing (red) side.\
+\
+Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather sunny_clear, start cold_parking.\
+\
+Watch Channel weather and fuel with the slipper, flak around the target, navigation over water, and mid-air conflict near the coast; jettison the tank before combat and do not press a blind attack into cloud.",
+	["DictKey_Translation_2"]="Ground attack on bearing 125°, 76 km, ingress 2000 m. Targets: 3× Blitz_36-6700A (enemy only). Loadout: spitfire_2x250_slipper. Run in with a clear abort, release on the briefed aiming point, and do not linger in flak.\
+\
+Cold start as briefed; taxi and takeoff with the slipper tank fitted; climb toward the Channel strike bearing; jettison the external fuel tank in the cockpit before the attack run; then press the dive/level attack and recover to base.\
+\
+Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
+	["DictKey_Translation_3"]="",
+	["DictKey_Translation_4"]="Manston Channel Ground Attack"
+}

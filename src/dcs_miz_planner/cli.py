@@ -38,9 +38,15 @@ def _compile_cmd(args: argparse.Namespace) -> int:
         print(exc, file=sys.stderr)
         return 2
 
+    voice = None
+    if getattr(args, "voice", None):
+        from .agent.voice import resolve_voice
+
+        voice = resolve_voice(cli_voice=args.voice)
+
     output = Path(args.output) if args.output else DEFAULT_OUTPUT_DIR / f"{spec_path.stem}.miz"
     try:
-        written = PyDCSCompiler().compile(spec, output)
+        written = PyDCSCompiler().compile(spec, output, voice=voice)
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -419,6 +425,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "-o",
         "--output",
         help="Output .miz path (default: out/<spec-stem>.miz)",
+        default=None,
+    )
+    compile_p.add_argument(
+        "--voice",
+        help=("Squadron voice for .miz briefing text: raf | usaaf | neutral (default: raf)"),
         default=None,
     )
     compile_p.set_defaults(func=_compile_cmd)

@@ -1,0 +1,15 @@
+dictionary=
+{
+	["DictKey_Translation_1"]="Cold start at Manston. Climb to a CAP station southeast over the Channel (bearing 135°, 25 km), circle at 4000 m, weapons free. Light Bf-109 opposition near the station.\
+\
+Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather sunny_clear, start cold_parking.\
+\
+Watch bogeys diving from above or out of cloud, fuel state on a long CAP, navigation over the Channel, and mid-air conflict near the station; honour your ROE and do not press hopeless odds.",
+	["DictKey_Translation_2"]="CAP on station (bearing 135°, 25 km, 4000 m, pattern circle, ROE weapons_free). Hold the orbit, scan systematically, and commit only with advantage. Opposition briefed: 2× Bf-109K-4. Do not chase so far that you abandon the station or bingo fuel.\
+\
+Start and depart as briefed; climb toward the CAP bearing; establish the orbit at altitude; manage fuel and lookout cycles; recover to base when relieved or bingo.\
+\
+Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
+	["DictKey_Translation_3"]="",
+	["DictKey_Translation_4"]="Manston Channel CAP"
+}

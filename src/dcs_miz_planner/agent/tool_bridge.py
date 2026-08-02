@@ -217,12 +217,19 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "compile_mission",
-            "description": "Compile a Mission Spec YAML to a .miz file.",
+            "description": (
+                "Compile a Mission Spec YAML to a .miz file. "
+                "Optional voice (raf|usaaf|neutral) selects briefing l10n register."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "spec_path": {"type": "string"},
                     "output_path": {"type": "string"},
+                    "voice": {
+                        "type": "string",
+                        "description": "Optional: raf | usaaf | neutral for .miz briefing text",
+                    },
                 },
                 "required": ["spec_path", "output_path"],
             },
@@ -308,5 +315,6 @@ def dispatch_tool(
             str(args.get("spec_path", "")),
             str(args.get("output_path", "")),
             db_path=db_path,
+            voice=args.get("voice"),
         )
     return {"ok": False, "error": f"Unknown tool: {name}", "code": "unknown_tool"}

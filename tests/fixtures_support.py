@@ -24,7 +24,8 @@ CAP_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cap"
 GA_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_ground_attack"
 ESCORT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_escort"
 
-REQUIRED_MEMBERS = ("mission", "options", "theatre", "warehouses")
+REQUIRED_MEMBERS = ("mission", "options", "theatre", "warehouses", "l10n/DEFAULT/dictionary")
+DICTIONARY_MEMBER = "l10n/DEFAULT/dictionary"
 MISSION_CONTRACTS = (
     "SpitfireLFMkIX",
     '["airdromeId"]=5',
@@ -112,35 +113,46 @@ def channel_available_inventory() -> TheatreInventory:
 
 def compile_manston(output_path: Path) -> Path:
     spec = load_mission_spec(EXAMPLE_SPEC)
-    return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
 
 
 def compile_intercept(output_path: Path) -> Path:
     spec = load_mission_spec(INTERCEPT_SPEC)
-    return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
 
 
 def compile_cap(output_path: Path) -> Path:
     spec = load_mission_spec(CAP_SPEC)
-    return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
 
 
 def compile_ground_attack(output_path: Path) -> Path:
     spec = load_mission_spec(GROUND_ATTACK_SPEC)
-    return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
 
 
 def compile_escort(output_path: Path) -> Path:
     spec = load_mission_spec(ESCORT_SPEC)
-    return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
 
 
-def extract_structural(miz_path: Path) -> tuple[set[str], str, str]:
+def extract_structural(miz_path: Path) -> tuple[set[str], str, str, str]:
     with zipfile.ZipFile(miz_path) as z:
         members = set(z.namelist())
         theatre = z.read("theatre").decode("utf-8")
         mission = z.read("mission").decode("utf-8")
-    return members, theatre, mission
+        dictionary = z.read(DICTIONARY_MEMBER).decode("utf-8")
+    return members, theatre, mission, dictionary
 
 
 def write_golden(
@@ -150,7 +162,7 @@ def write_golden(
     source_spec: str,
     mission_contracts: tuple[str, ...],
 ) -> None:
-    members, theatre, mission = extract_structural(miz_path)
+    members, theatre, mission, dictionary = extract_structural(miz_path)
     missing = set(REQUIRED_MEMBERS) - members
     if missing:
         raise RuntimeError(f"Compiled .miz missing required members: {sorted(missing)}")
@@ -158,11 +170,13 @@ def write_golden(
     fixture_dir.mkdir(parents=True, exist_ok=True)
     (fixture_dir / "theatre").write_text(theatre, encoding="utf-8", newline="\n")
     (fixture_dir / "mission").write_text(normalize_mission(mission), encoding="utf-8", newline="\n")
+    (fixture_dir / "dictionary").write_text(dictionary, encoding="utf-8", newline="\n")
     meta = {
         "required_members": list(REQUIRED_MEMBERS),
         "mission_must_contain": list(mission_contracts),
         "source_spec": source_spec,
         "normalized_fields": ["onboard_num"],
+        "briefing_voice": "raf",
     }
     (fixture_dir / "meta.json").write_text(
         json.dumps(meta, indent=2) + "\n", encoding="utf-8", newline="\n"
@@ -217,7 +231,7 @@ def write_escort_golden(miz_path: Path, fixture_dir: Path = ESCORT_FIXTURE_DIR) 
 def assert_matches_golden(miz_path: Path, fixture_dir: Path = FIXTURE_DIR) -> None:
     meta = json.loads((fixture_dir / "meta.json").read_text(encoding="utf-8"))
     required = set(meta["required_members"])
-    members, theatre, mission = extract_structural(miz_path)
+    members, theatre, mission, dictionary = extract_structural(miz_path)
 
     missing = required - members
     assert not missing, f"missing zip members: {sorted(missing)}"
@@ -229,6 +243,15 @@ def assert_matches_golden(miz_path: Path, fixture_dir: Path = FIXTURE_DIR) -> No
     assert normalize_mission(mission).rstrip("\n") == expected_mission, (
         "mission member diverges from golden (after normalizing volatile fields)"
     )
+
+    expected_dictionary = (fixture_dir / "dictionary").read_text(encoding="utf-8").rstrip("\n")
+    assert dictionary.rstrip("\n") == expected_dictionary, "l10n dictionary diverges from golden"
+    for key in (
+        "DictKey_Translation_1",
+        "DictKey_Translation_2",
+        "DictKey_Translation_4",
+    ):
+        assert f'["{key}"]=""' not in dictionary, f"empty briefing entry: {key}"
 
     for needle in meta["mission_must_contain"]:
         assert needle in mission, f"mission missing contracted content: {needle!r}"

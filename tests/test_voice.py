@@ -103,3 +103,42 @@ def test_escort_brief_mentions_package() -> None:
     assert "Mosquito" in brief or "package" in brief.lower()
     assert "escort" in brief.lower()
     assert "weapons_free" in brief or "ROE" in brief
+
+
+def test_mission_briefing_texts_free_flight() -> None:
+    from pathlib import Path
+
+    from dcs_miz_planner.briefing import build_mission_briefing_texts
+    from dcs_miz_planner.loader import load_mission_spec
+
+    spec = load_mission_spec(
+        Path(__file__).resolve().parents[1] / "examples" / "manston_cold_freeflight.yaml"
+    )
+    texts = build_mission_briefing_texts(spec, VOICE_RAF)
+    assert texts.sortie == spec.name
+    assert texts.description
+    assert spec.description.strip() in texts.description
+    assert texts.blue_task
+    assert texts.red_task == ""
+    assert "#" not in texts.description
+    assert "#" not in texts.blue_task
+    assert "familiarisation" in texts.blue_task.lower() or "free flight" in texts.blue_task.lower()
+
+
+def test_mission_briefing_texts_intercept_voice_differs() -> None:
+    from pathlib import Path
+
+    from dcs_miz_planner.briefing import build_mission_briefing_texts
+    from dcs_miz_planner.loader import load_mission_spec
+
+    spec = load_mission_spec(
+        Path(__file__).resolve().parents[1] / "examples" / "manston_dawn_intercept.yaml"
+    )
+    raf = build_mission_briefing_texts(spec, VOICE_RAF)
+    usaaf = build_mission_briefing_texts(spec, VOICE_USAAF)
+    assert raf.sortie == spec.name == usaaf.sortie
+    assert raf.blue_task and usaaf.blue_task
+    assert raf.red_task == "" and usaaf.red_task == ""
+    assert raf.description != usaaf.description or raf.blue_task != usaaf.blue_task
+    assert "Right." in raf.description or "You're away" in raf.description
+    assert "Listen up" in usaaf.description

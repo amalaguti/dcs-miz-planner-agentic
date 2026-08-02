@@ -58,10 +58,12 @@ the mission type and plan. Mission Spec field names and machine values MUST rema
 After a successful plan that yields an accepted Mission Spec, the planner host SHALL attach
 a commander operational brief suitable for CLI display. The brief MUST include, at minimum,
 sections covering Situation/sortie, Tactics, Procedures, and Watch-outs appropriate to the
-mission type (including CAP when `mission_type` is `cap`, and ground-attack when
-`mission_type` is `ground_attack`). When a non-neutral voice is selected, the brief SHOULD
-use that commander register. The brief MUST NOT replace validation or Spec content and MUST
-NOT be written into `.miz` `l10n` by this capability.
+mission type (including CAP when `mission_type` is `cap`, ground-attack when
+`mission_type` is `ground_attack`, and escort when `mission_type` is `escort`). When a
+non-neutral voice is selected, the brief SHOULD use that commander register. The brief
+MUST NOT replace validation or Spec content. Writing briefing text into `.miz` `l10n` is
+owned by the `mission-briefing` / compiler path, which MUST reuse this same brief builder;
+the squadron-voice host layer itself is not required to perform that write.
 
 #### Scenario: Successful stub plan exposes a structured brief
 - **WHEN** a stub plan succeeds with voice `raf` for a free-flight, intercept, CAP, or
@@ -108,8 +110,8 @@ results MUST NOT be treated as a source of DCS type ids or Spec field authority.
 ### Requirement: Escort commander brief notes
 When squadron-commander voice is enabled and the planned Spec is escort, the commander brief
 SHALL include escort-specific tactics, procedures, and watch-outs (stay with the package,
-engagement posture, bounce awareness). Briefs MUST remain host/CLI output only — not Spec
-fields or `.miz` `l10n`.
+engagement posture, bounce awareness). Host/CLI briefs remain display output; `.miz` `l10n`
+population is performed at compile time via the shared brief builder (`mission-briefing`).
 
 #### Scenario: Escort brief branch
 - **WHEN** `build_commander_brief` is invoked for a valid escort Spec with voice enabled

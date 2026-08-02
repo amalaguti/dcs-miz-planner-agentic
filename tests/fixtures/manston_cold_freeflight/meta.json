@@ -3,7 +3,8 @@
     "mission",
     "options",
     "theatre",
-    "warehouses"
+    "warehouses",
+    "l10n/DEFAULT/dictionary"
   ],
   "mission_must_contain": [
     "SpitfireLFMkIX",
@@ -16,5 +17,6 @@
   "source_spec": "examples/manston_cold_freeflight.yaml",
   "normalized_fields": [
     "onboard_num"
-  ]
+  ],
+  "briefing_voice": "raf"
 }
