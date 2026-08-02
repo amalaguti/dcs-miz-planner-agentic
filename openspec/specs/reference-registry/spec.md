@@ -110,3 +110,12 @@ radio default. Keys MUST match PyDCS plane ids; the registry MUST NOT invent spe
 - **WHEN** a caller requests aircraft `MosquitoFBMkVI` from the Channel registry
 - **THEN** the registry MUST return the aircraft reference including a radio frequency in
   the Allied VHF band
+
+### Requirement: Channel registry lists dawn and marginal weather
+The Channel reference registry SHALL expose weather preset ids `dawn_clear` and
+`marginal_vfr` (in addition to `sunny_clear`) from packaged YAML, with descriptions
+suitable for catalog/agent listing and pilot-facing briefs.
+
+#### Scenario: Registry lists new presets
+- **WHEN** a caller lists Channel weather presets
+- **THEN** the result MUST include `sunny_clear`, `dawn_clear`, and `marginal_vfr`

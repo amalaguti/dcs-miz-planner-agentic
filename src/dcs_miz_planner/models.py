@@ -39,6 +39,8 @@ class StartType(str, Enum):
 
 class WeatherPreset(str, Enum):
     SUNNY_CLEAR = "sunny_clear"
+    DAWN_CLEAR = "dawn_clear"
+    MARGINAL_VFR = "marginal_vfr"
 
 
 class ObjectiveType(str, Enum):

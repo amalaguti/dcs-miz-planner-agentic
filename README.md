@@ -25,12 +25,14 @@ tank against enemy trucks inland near Dunkirk (accepted in-game 2026-08-02). Esc
 (`examples/manston_escort.yaml`) covers a Mosquito package SE of Manston with optional
 Bf-109 bounce (accepted in-game 2026-08-02). Compile writes squadron-commander briefing text
 into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; accepted in-game
-2026-08-02). Interactive multi-turn
+2026-08-02). Weather presets: `sunny_clear`, `dawn_clear`, `marginal_vfr` (examples under
+`examples/manston_dawn_freeflight.yaml` / `manston_marginal_vfr.yaml`; accepted in-game
+2026-08-02 with meteo briefing phrasing). Interactive multi-turn
 chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026-08-01).
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `weather-time-presets` (M5); research R7/R8 as hygiene.
+**Next:** `mission-randomization` (M5); research R7/R8 as hygiene.
 
 ## Stack
 

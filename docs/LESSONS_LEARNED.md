@@ -7,6 +7,20 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Weather presets: dawn_clear / marginal_vfr mappings
+
+- **Date:** 2026-08-02
+- **Lesson:** Beyond `sunny_clear` (80 km, no fog): `dawn_clear` uses density 1, light fog
+  (`enable_fog`, thickness 80, fog_visibility 8000) and visibility 45 km — pair with
+  `start_time` ~06:00. `marginal_vfr` uses density 8, base 700, thickness 1500, visibility
+  6000 m, no fog. Always set `clouds_iprecptns` via `Weather.Preceptions` enum. Catalog
+  schema bumped to 3 so `ensure_synced` rebuilds planning options after YAML adds.
+  Commander briefs and `.miz` l10n MUST use registry weather **descriptions** (meteo
+  English), never raw Spec ids like `marginal_vfr`.
+- **Code:** `compiler/pydcs_compiler.py` (`_apply_weather`), `weather_presets.yaml`,
+  `agent/voice.py` (`_weather_phrase`), `examples/manston_dawn_freeflight.yaml`,
+  `examples/manston_marginal_vfr.yaml`.
+
 ## Briefing l10n: PyDCS setters + lazy import (no compiler↔agent cycle)
 
 - **Date:** 2026-08-02

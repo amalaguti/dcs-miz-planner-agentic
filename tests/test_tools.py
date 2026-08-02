@@ -105,6 +105,8 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert options
     by_key = {(o["family"], o["id"]): o for o in options}
     assert by_key[("weather", "sunny_clear")]["support"] == "supported"
+    assert by_key[("weather", "dawn_clear")]["support"] == "supported"
+    assert by_key[("weather", "marginal_vfr")]["support"] == "supported"
     assert by_key[("time_of_day", "dawn")]["support"] == "advisory"
     assert by_key[("time_of_day", "dawn")]["meta"]["start_time"] == "06:00"
     assert by_key[("roe_seed", "weapons_hold")]["support"] == "supported"

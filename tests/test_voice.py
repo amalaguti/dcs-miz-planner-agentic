@@ -70,7 +70,8 @@ def test_cap_brief_sections() -> None:
     assert "## Tactics" in brief
     assert "CAP" in brief or "orbit" in brief.lower()
     assert "weapons_free" in brief or "ROE" in brief
-    assert "sunny_clear" in brief
+    assert "Clear skies" in brief or "excellent visibility" in brief
+    assert "sunny_clear" not in brief
     assert "WeatherPreset" not in brief
 
 
@@ -103,6 +104,26 @@ def test_escort_brief_mentions_package() -> None:
     assert "Mosquito" in brief or "package" in brief.lower()
     assert "escort" in brief.lower()
     assert "weapons_free" in brief or "ROE" in brief
+
+
+def test_brief_uses_meteo_weather_not_enum_id() -> None:
+    from pathlib import Path
+
+    from dcs_miz_planner.agent.voice import build_commander_brief
+    from dcs_miz_planner.loader import load_mission_spec
+
+    dawn = load_mission_spec(
+        Path(__file__).resolve().parents[1] / "examples" / "manston_dawn_freeflight.yaml"
+    )
+    marg = load_mission_spec(
+        Path(__file__).resolve().parents[1] / "examples" / "manston_marginal_vfr.yaml"
+    )
+    dawn_brief = build_commander_brief(dawn, VOICE_RAF)
+    marg_brief = build_commander_brief(marg, VOICE_RAF)
+    assert "dawn_clear" not in dawn_brief
+    assert "haze" in dawn_brief.lower() or "first light" in dawn_brief.lower()
+    assert "marginal_vfr" not in marg_brief
+    assert "overcast" in marg_brief.lower() or "5–8" in marg_brief or "5-8" in marg_brief
 
 
 def test_mission_briefing_texts_free_flight() -> None:

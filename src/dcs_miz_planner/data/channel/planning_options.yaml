@@ -47,7 +47,21 @@ options:
   - family: weather
     id: sunny_clear
     label: Sunny clear
-    description: Clear skies, no fog/dust, high visibility.
+    description: Clear skies, excellent visibility.
+    support: supported
+
+  - family: weather
+    id: dawn_clear
+    label: Dawn clear
+    description: >-
+      Mostly clear with light haze; good visibility at first light (pair with
+      time_of_day dawn ~06:00).
+    support: supported
+
+  - family: weather
+    id: marginal_vfr
+    label: Marginal VFR
+    description: Broken to overcast cloud; visibility about 5–8 km (marginal VFR).
     support: supported
 
   - family: time_of_day

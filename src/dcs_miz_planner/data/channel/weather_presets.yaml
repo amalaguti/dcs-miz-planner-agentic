@@ -1,4 +1,9 @@
 # Named weather presets used by Mission Spec (schema_version "1").
+# Descriptions are pilot-facing meteorological language (briefs / catalog).
 presets:
   sunny_clear:
-    description: Clear skies, no fog/dust, high visibility
+    description: Clear skies, excellent visibility
+  dawn_clear:
+    description: Mostly clear with light haze; good visibility at first light
+  marginal_vfr:
+    description: Broken to overcast cloud; visibility about 5–8 km (marginal VFR)

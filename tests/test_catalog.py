@@ -158,8 +158,12 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert "Manston" in {a.name for a in snap.airfields}
     assert "SpitfireLFMkIX" in {a.aircraft_id for a in snap.aircraft}
     assert "sunny_clear" in {w.name for w in snap.weather_presets}
+    assert "dawn_clear" in {w.name for w in snap.weather_presets}
+    assert "marginal_vfr" in {w.name for w in snap.weather_presets}
     by_key = {(o.family, o.id): o for o in snap.planning_options}
     assert by_key[("weather", "sunny_clear")].support == "supported"
+    assert by_key[("weather", "dawn_clear")].support == "supported"
+    assert by_key[("weather", "marginal_vfr")].support == "supported"
     assert by_key[("start_type", "cold_parking")].support == "supported"
     assert by_key[("time_of_day", "dawn")].support == "advisory"
     assert by_key[("roe_seed", "weapons_free")].support == "supported"
@@ -200,7 +204,7 @@ def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
 
     service = CatalogService(db_path=db)
     weather = service.list_rows("planning_options", family="weather", support="supported")
-    assert {r["id"] for r in weather} == {"sunny_clear"}
+    assert {r["id"] for r in weather} == {"sunny_clear", "dawn_clear", "marginal_vfr"}
 
     buf = io.StringIO()
     with redirect_stdout(buf):
@@ -223,7 +227,7 @@ def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
             == 0
         )
     payload = json.loads(buf.getvalue())
-    assert {r["id"] for r in payload["rows"]} == {"sunny_clear"}
+    assert {r["id"] for r in payload["rows"]} == {"sunny_clear", "dawn_clear", "marginal_vfr"}
     assert all(r["support"] == "supported" for r in payload["rows"])
 
     first = CatalogService(db_path=db).sync()
