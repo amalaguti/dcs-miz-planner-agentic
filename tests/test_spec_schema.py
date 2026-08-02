@@ -24,7 +24,7 @@ def test_supported_types_have_validating_examples() -> None:
 
 def test_unknown_mission_type_raises() -> None:
     try:
-        build_spec_schema("escort")
+        build_spec_schema("not_a_real_mission_type")
     except ValueError as exc:
         assert "Unsupported" in str(exc)
     else:
@@ -37,7 +37,7 @@ def test_infer_mission_type_from_rejected_json() -> None:
 
 
 def test_get_mission_spec_schema_tool() -> None:
-    for mt in ("free_flight", "intercept", "cap", "ground_attack"):
+    for mt in ("free_flight", "intercept", "cap", "ground_attack", "escort"):
         result = get_mission_spec_schema(mt)
         assert result["ok"] is True
         assert result["mission_type"] == mt

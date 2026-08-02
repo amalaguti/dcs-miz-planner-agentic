@@ -87,7 +87,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 |--------|----------------|------------|
 | `cli.py` | `validate` / `compile` / `theatres` / `catalog` / `prefs` / `feedback` / `plan`; legacy spec path | `loader`, `validation`, `compiler`, `install`, `catalog`, `memory`, `agent` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
-| `models.py` | The public contract: `MissionSpec` + enums. Free flight, intercept, CAP, ground-attack; reserves `triggers` | `pydantic` |
+| `models.py` | The public contract: `MissionSpec` + enums. Free flight, intercept, CAP, ground-attack, escort; reserves `triggers` | `pydantic` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules); multi-error result | `models`, `registry`, `install` |
 | `data/channel/` | Committed Channel YAML SoT (airdromeIds, aircraft+radio, theatres, weather, payloads, planning_options) | shipped in wheel via hatch force-include |
 | `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
@@ -98,7 +98,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
-| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles), writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |
+| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), writes `.miz` | `models`, `validation`, `registry`, `dcs.*` |
 
 Three stores stay separate on purpose (four table namespaces, one DB file):
 
@@ -135,7 +135,7 @@ Two boundaries worth respecting:
 | Path | What lives there |
 |------|------------------|
 | `src/dcs_miz_planner/` | Product code (the modules above) |
-| `examples/` | Checked-in Mission Specs; free-flight, intercept, CAP, and ground-attack Manston examples |
+| `examples/` | Checked-in Mission Specs; free-flight, intercept, CAP, ground-attack, and escort Manston examples |
 | `tests/` | pytest: schema, registry, install, catalog, memory, tools, agent, validation, goldens |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |

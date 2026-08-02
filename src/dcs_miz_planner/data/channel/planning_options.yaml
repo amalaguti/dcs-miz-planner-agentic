@@ -30,6 +30,14 @@ options:
       (prefer slipper tank for Channel crossings; jettison before attack).
     support: supported
 
+  - family: mission_type
+    id: escort
+    label: Escort
+    description: >
+      Escort a friendly air package along an airfield-relative Channel route with
+      engagement rules; optional enemy bounce.
+    support: supported
+
   - family: start_type
     id: cold_parking
     label: Cold parking

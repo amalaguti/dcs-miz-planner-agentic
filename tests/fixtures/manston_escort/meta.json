@@ -1,0 +1,25 @@
+{
+  "required_members": [
+    "mission",
+    "options",
+    "theatre",
+    "warehouses"
+  ],
+  "mission_must_contain": [
+    "SpitfireLFMkIX",
+    "MosquitoFBMkVI",
+    "Bf-109K-4",
+    "[\"airdromeId\"]=5",
+    "[\"start_time\"]=32400",
+    "TakeOffParking",
+    "\"Player\"",
+    "[\"frequency\"]=124.0",
+    "[\"task\"]=\"Escort\"",
+    "groupId",
+    "[\"value\"]=0"
+  ],
+  "source_spec": "examples/manston_escort.yaml",
+  "normalized_fields": [
+    "onboard_num"
+  ]
+}

@@ -98,6 +98,7 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert "intercept" in result["mission_types"]
     assert "cap" in result["mission_types"]
     assert "ground_attack" in result["mission_types"]
+    assert "escort" in result["mission_types"]
     offerable_ids = {t["theatre_id"] for t in result["offerable_theatres"]}
     assert "TheChannel" in offerable_ids
     options = result["options"]
@@ -109,6 +110,7 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("roe_seed", "weapons_hold")]["support"] == "supported"
     assert by_key[("mission_type", "cap")]["support"] == "supported"
     assert by_key[("mission_type", "ground_attack")]["support"] == "supported"
+    assert by_key[("mission_type", "escort")]["support"] == "supported"
     assert by_key[("payload_family", "spitfire_2x250_slipper")]["support"] == "supported"
     assert by_key[("payload_family", "spitfire_2x250_slipper")]["meta"]["payload"] == (
         "spitfire_2x250_slipper"

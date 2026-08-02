@@ -5,6 +5,8 @@ aircraft:
     radio_mhz: 124.0
   SpitfireLFMkIXCW:
     radio_mhz: 124.0
+  MosquitoFBMkVI:
+    radio_mhz: 124.0
   Bf-109K-4:
     radio_mhz: 40.0
   FW-190A8:

@@ -1,0 +1,42 @@
+schema_version: "1"
+mission_type: escort
+theatre: TheChannel
+name: Manston Channel Escort
+description: >
+  Cold start at Manston. Escort a Mosquito package southeast across the Channel
+  (bearing 120°, 55 km) at 4000 m, weapons free. Light Bf-109 bounce near the
+  package destination.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+escort:
+  # Airfield-relative package destination from Manston toward the French coast /
+  # mid-Channel approach (package transit — not ground-target placement).
+  bearing_deg: 120
+  distance_km: 55
+  altitude_m: 4000
+  engagement: weapons_free
+package:
+  - aircraft: MosquitoFBMkVI
+    count: 2
+    skill: Average
+    country: UK
+    coalition: blue
+enemies:
+  - aircraft: Bf-109K-4
+    count: 2
+    skill: Average
+    country: ThirdReich
+    coalition: red
+objectives:
+  - type: escort_package

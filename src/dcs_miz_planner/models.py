@@ -1,7 +1,7 @@
 """Mission Spec models — the AI/compiler contract.
 
 Public, backend-agnostic domain model. Never contains PyDCS types.
-Scope: free-flight, intercept, CAP, and ground-attack (schema_version \"1\").
+Scope: free-flight, intercept, CAP, ground-attack, and escort (schema_version \"1\").
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ class MissionType(str, Enum):
     INTERCEPT = "intercept"
     CAP = "cap"
     GROUND_ATTACK = "ground_attack"
+    ESCORT = "escort"
 
 
 class Coalition(str, Enum):
@@ -44,6 +45,7 @@ class ObjectiveType(str, Enum):
     INTERCEPT_ENEMY = "intercept_enemy"
     PATROL = "patrol"
     ATTACK_GROUND = "attack_ground"
+    ESCORT_PACKAGE = "escort_package"
 
 
 class CapPattern(str, Enum):
@@ -120,6 +122,25 @@ class Strike(SpecModel):
     practice: bool = False
 
 
+class PackageFlight(SpecModel):
+    """One friendly flight in an escort package (same coalition as the player)."""
+
+    aircraft: str  # exact DCS type id, e.g. MosquitoFBMkVI
+    count: int = Field(ge=1, le=16)
+    skill: str = "Average"
+    country: str = "UK"
+    coalition: Coalition = Coalition.BLUE
+
+
+class Escort(SpecModel):
+    """Escort package destination relative to the player departure airfield."""
+
+    bearing_deg: float = Field(ge=0, le=360)
+    distance_km: float = Field(gt=0)
+    altitude_m: float = Field(gt=0)
+    engagement: Engagement
+
+
 class Objective(SpecModel):
     type: ObjectiveType
 
@@ -129,11 +150,10 @@ def opposing_coalition(coalition: Coalition) -> Coalition:
 
 
 class MissionSpec(SpecModel):
-    """Declarative mission specification (free flight, intercept, CAP, ground-attack).
+    """Declarative mission specification (free flight through escort).
 
     ``triggers`` remain reserved for M6 and MUST stay empty in this schema version.
-    ``enemies`` / ``objectives`` / ``targets`` / ``cap`` / ``strike`` rules depend on
-    ``mission_type``.
+    Combat extension rules depend on ``mission_type``.
     """
 
     schema_version: str = Field(description='Mission Spec schema version. Only "1" is supported.')
@@ -150,8 +170,10 @@ class MissionSpec(SpecModel):
     objectives: list[Objective] = Field(default_factory=list)
     triggers: list[dict] = Field(default_factory=list)
     targets: list[GroundTarget] = Field(default_factory=list)
+    package: list[PackageFlight] = Field(default_factory=list)
     cap: Cap | None = None
     strike: Strike | None = None
+    escort: Escort | None = None
 
     @field_validator("schema_version")
     @classmethod
@@ -186,14 +208,20 @@ class MissionSpec(SpecModel):
                 raise ValueError("cap not supported for free_flight: omit the cap block")
             if self.strike is not None:
                 raise ValueError("strike not supported for free_flight: omit the strike block")
+            if self.escort is not None:
+                raise ValueError("escort not supported for free_flight: omit the escort block")
             if self.player.payload is not None:
                 raise ValueError("player.payload not supported for free_flight: omit payload")
-            used = [name for name in ("enemies", "objectives", "targets") if getattr(self, name)]
+            used = [
+                name
+                for name in ("enemies", "objectives", "targets", "package")
+                if getattr(self, name)
+            ]
             if used:
                 raise ValueError(
                     f"{', '.join(used)} not supported for free_flight: "
                     "combat extension points must be empty "
-                    "(use mission_type intercept, cap, or ground_attack)"
+                    "(use mission_type intercept, cap, ground_attack, or escort)"
                 )
             return self
 
@@ -202,12 +230,16 @@ class MissionSpec(SpecModel):
                 raise ValueError("cap not supported for intercept: omit the cap block")
             if self.strike is not None:
                 raise ValueError("strike not supported for intercept: omit the strike block")
+            if self.escort is not None:
+                raise ValueError("escort not supported for intercept: omit the escort block")
             if self.player.payload is not None:
                 raise ValueError("player.payload not supported for intercept: omit payload")
             if self.targets:
                 raise ValueError(
                     "targets not supported for intercept: use mission_type ground_attack"
                 )
+            if self.package:
+                raise ValueError("package not supported for intercept: use mission_type escort")
             if not self.enemies:
                 raise ValueError("intercept missions require a non-empty enemies list")
             if not self.objectives:
@@ -217,10 +249,14 @@ class MissionSpec(SpecModel):
         if self.mission_type is MissionType.CAP:
             if self.strike is not None:
                 raise ValueError("strike not supported for cap: omit the strike block")
+            if self.escort is not None:
+                raise ValueError("escort not supported for cap: omit the escort block")
             if self.player.payload is not None:
                 raise ValueError("player.payload not supported for cap: omit payload")
             if self.targets:
                 raise ValueError("targets not supported for cap: use mission_type ground_attack")
+            if self.package:
+                raise ValueError("package not supported for cap: use mission_type escort")
             if self.cap is None:
                 raise ValueError("cap missions require a nested cap block")
             if not self.objectives:
@@ -232,6 +268,10 @@ class MissionSpec(SpecModel):
         if self.mission_type is MissionType.GROUND_ATTACK:
             if self.cap is not None:
                 raise ValueError("cap not supported for ground_attack: omit the cap block")
+            if self.escort is not None:
+                raise ValueError("escort not supported for ground_attack: omit the escort block")
+            if self.package:
+                raise ValueError("package not supported for ground_attack: use mission_type escort")
             if self.strike is None:
                 raise ValueError("ground_attack missions require a nested strike block")
             if not self.targets:
@@ -260,6 +300,32 @@ class MissionSpec(SpecModel):
                             f"expected {expected.value!r}, got {tgt.coalition.value!r}). "
                             f"Set strike.practice true for allied bombing-practice targets."
                         )
+            return self
+
+        if self.mission_type is MissionType.ESCORT:
+            if self.cap is not None:
+                raise ValueError("cap not supported for escort: omit the cap block")
+            if self.strike is not None:
+                raise ValueError("strike not supported for escort: omit the strike block")
+            if self.escort is None:
+                raise ValueError("escort missions require a nested escort block")
+            if self.player.payload is not None:
+                raise ValueError("player.payload not supported for escort: omit payload")
+            if self.targets:
+                raise ValueError("targets not supported for escort: use mission_type ground_attack")
+            if not self.package:
+                raise ValueError("escort missions require a non-empty package list")
+            if not self.objectives:
+                raise ValueError("escort missions require a non-empty objectives list")
+            if not any(o.type is ObjectiveType.ESCORT_PACKAGE for o in self.objectives):
+                raise ValueError("escort missions require at least one escort_package objective")
+            for i, flight in enumerate(self.package):
+                if flight.coalition is not self.player.coalition:
+                    raise ValueError(
+                        f"package[{i}].coalition must match player coalition "
+                        f"({self.player.coalition.value!r}); got {flight.coalition.value!r} "
+                        "(escort package must be friendly)"
+                    )
             return self
 
         raise ValueError(f"Unsupported mission_type {self.mission_type!r}")  # pragma: no cover

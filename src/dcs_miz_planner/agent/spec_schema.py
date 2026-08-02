@@ -20,6 +20,7 @@ _EXAMPLE_FILES: dict[str, str] = {
     MissionType.INTERCEPT.value: "manston_dawn_intercept.yaml",
     MissionType.CAP.value: "manston_cap.yaml",
     MissionType.GROUND_ATTACK.value: "manston_ground_attack.yaml",
+    MissionType.ESCORT.value: "manston_escort.yaml",
 }
 
 ANTI_PATTERNS: tuple[str, ...] = (
@@ -62,6 +63,16 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         ),
         'objectives must include {"type":"attack_ground"}; enemies must be empty.',
         "omit the cap block. Pilot jettisons the slipper tank in the cockpit before attack.",
+    ),
+    MissionType.ESCORT.value: (
+        "nested escort is required (bearing_deg, distance_km, altitude_m, engagement).",
+        (
+            "package must be non-empty and same coalition as the player (friendly only); "
+            "e.g. MosquitoFBMkVI."
+        ),
+        'objectives must include {"type":"escort_package"}; enemies optional (bounce).',
+        "destination is airfield-relative bearing/distance — never invent raw map x/y.",
+        "omit strike, targets, cap, and player.payload.",
     ),
 }
 
@@ -147,7 +158,7 @@ def format_spec_schema_fragment(view: SpecSchemaView) -> str:
 SPEC_SHAPE_REMINDER = """\
 Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
-(free_flight | intercept | cap | ground_attack) and copy that example's structure.
+(free_flight | intercept | cap | ground_attack | escort) and copy that example's structure.
 
 Always required envelope:
   schema_version, mission_type, theatre, date, start_time, weather, player,

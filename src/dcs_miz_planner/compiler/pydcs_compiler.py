@@ -1,4 +1,4 @@
-"""PyDCS-backed compiler for free-flight, intercept, CAP, and ground-attack missions.
+"""PyDCS-backed compiler for free-flight through escort missions.
 
 Boundary rule: this module is the only place allowed to import PyDCS.
 The rest of the app depends on `MissionSpec` and `CompilerInterface`.
@@ -43,6 +43,12 @@ _CAP_ORBIT_SPEED_KMH = 400
 _GA_SPEED_KMH = 400
 # Spread soft targets slightly around the strike point (metres).
 _GA_TARGET_SPREAD_M = 80.0
+
+# Escort package / bounce (metres and km/h).
+_ESCORT_SPEED_KMH = 400
+_ESCORT_PACKAGE_START_M = 8000.0
+_ESCORT_BOUNCE_OFFSET_M_X = 2500.0
+_ESCORT_BOUNCE_OFFSET_M_Y = -1500.0
 
 
 def _disable_payload_scan(*unit_types) -> None:
@@ -113,7 +119,14 @@ class PyDCSCompiler(CompilerInterface):
                 raise ValueError(f"Unknown PyDCS plane id: {enemy.aircraft}")
             enemy_types.append(et)
 
-        _disable_payload_scan(aircraft_type, *enemy_types)
+        package_types = []
+        for flight in spec.package:
+            pt = plane_map.get(flight.aircraft)
+            if pt is None:
+                raise ValueError(f"Unknown PyDCS plane id: {flight.aircraft}")
+            package_types.append(pt)
+
+        _disable_payload_scan(aircraft_type, *enemy_types, *package_types)
 
         mission = Mission(terrain=TheChannel())
 
@@ -170,6 +183,10 @@ class PyDCSCompiler(CompilerInterface):
                 self._place_cap_enemies(mission, countries, registry, spec, enemy_types, airport)
         elif spec.mission_type is MissionType.GROUND_ATTACK:
             self._apply_ground_attack(mission, countries, registry, group, airport, spec)
+        elif spec.mission_type is MissionType.ESCORT:
+            self._apply_escort(
+                mission, countries, registry, group, airport, spec, package_types, enemy_types
+            )
 
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -352,6 +369,134 @@ class PyDCSCompiler(CompilerInterface):
                 )
                 for unit in vg.units:
                     unit.skill = skill
+
+    def _apply_escort(
+        self,
+        mission,
+        countries_mod,
+        registry,
+        group,
+        airport,
+        spec: MissionSpec,
+        package_types,
+        enemy_types,
+    ) -> None:
+        from dcs.task import CAS, Escort, EscortTaskAction, OptROE
+
+        assert spec.escort is not None
+        escort = spec.escort
+        destination = airport.position.point_from_heading(
+            escort.bearing_deg, escort.distance_km * 1000.0
+        )
+        package_start = airport.position.point_from_heading(
+            escort.bearing_deg, _ESCORT_PACKAGE_START_M
+        )
+
+        # Place package first so EscortTaskAction can reference its group id.
+        primary_package = None
+        for i, (flight, aircraft_type) in enumerate(zip(spec.package, package_types, strict=True)):
+            country = self._ensure_country(
+                mission, countries_mod, flight.country, flight.coalition.value
+            )
+            try:
+                radio_mhz = registry.radio_mhz(flight.aircraft)
+            except RegistryError as exc:
+                raise ValueError(str(exc)) from exc
+
+            start = package_start.point_from_heading(90.0 + i * 15.0, 400.0 * (i + 1))
+            pkg = mission.flight_group_inflight(
+                country=country,
+                name=f"Package {flight.aircraft}",
+                aircraft_type=aircraft_type,
+                position=start,
+                altitude=escort.altitude_m,
+                speed=_ESCORT_SPEED_KMH,
+                group_size=flight.count,
+            )
+            skill = _skill_from_name(flight.skill)
+            for unit in pkg.units:
+                unit.skill = skill
+            pkg.frequency = radio_mhz
+            # Mosquito / fighter-bomber package transit — CAS main task is ME-standard.
+            pkg.task = CAS.name
+            pkg.add_waypoint(
+                destination,
+                altitude=escort.altitude_m,
+                speed=_ESCORT_SPEED_KMH,
+                name="Package destination",
+            )
+            if primary_package is None:
+                primary_package = pkg
+
+        assert primary_package is not None
+        group.task = Escort.name
+        group.add_waypoint(
+            airport.position.point_from_heading(escort.bearing_deg, 5000.0),
+            altitude=min(escort.altitude_m, 1500.0),
+            speed=_ESCORT_SPEED_KMH,
+            name="Climb",
+        )
+        escort_wp = group.add_waypoint(
+            package_start,
+            altitude=escort.altitude_m,
+            speed=_ESCORT_SPEED_KMH,
+            name="Escort",
+        )
+        escort_wp.add_task(EscortTaskAction(group_id=primary_package.id))
+        escort_wp.add_task(OptROE(_opt_roe_value(escort.engagement)))
+        group.add_waypoint(
+            destination,
+            altitude=escort.altitude_m,
+            speed=_ESCORT_SPEED_KMH,
+            name="Cover",
+        )
+
+        if spec.enemies:
+            self._place_escort_enemies(
+                mission, countries_mod, registry, spec, enemy_types, destination, escort.altitude_m
+            )
+
+    def _place_escort_enemies(
+        self,
+        mission,
+        countries_mod,
+        registry,
+        spec: MissionSpec,
+        enemy_types,
+        destination,
+        altitude_m: float,
+    ) -> None:
+        from dcs.mapping import Point
+
+        enemy_pos = Point(
+            destination.x + _ESCORT_BOUNCE_OFFSET_M_X,
+            destination.y + _ESCORT_BOUNCE_OFFSET_M_Y,
+            mission.terrain,
+        )
+        altitude = max(altitude_m - 500.0, 500.0)
+
+        for enemy, aircraft_type in zip(spec.enemies, enemy_types, strict=True):
+            country = self._ensure_country(
+                mission, countries_mod, enemy.country, enemy.coalition.value
+            )
+            try:
+                radio_mhz = registry.radio_mhz(enemy.aircraft)
+            except RegistryError as exc:
+                raise ValueError(str(exc)) from exc
+
+            eg = mission.flight_group_inflight(
+                country=country,
+                name=f"Enemy {enemy.aircraft}",
+                aircraft_type=aircraft_type,
+                position=enemy_pos,
+                altitude=altitude,
+                speed=_ENEMY_SPEED_KMH,
+                group_size=enemy.count,
+            )
+            skill = _skill_from_name(enemy.skill)
+            for unit in eg.units:
+                unit.skill = skill
+            eg.frequency = radio_mhz
 
     def _place_enemies(
         self, mission, countries_mod, registry, spec: MissionSpec, enemy_types

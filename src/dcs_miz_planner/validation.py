@@ -159,6 +159,129 @@ def _validate_ground_attack(
             )
 
 
+def _validate_escort(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+) -> None:
+    if spec.escort is None:
+        errors.append(
+            ValidationError(
+                code="escort_required",
+                path="escort",
+                message="escort missions require a nested escort block",
+            )
+        )
+    if not spec.package:
+        errors.append(
+            ValidationError(
+                code="package_required",
+                path="package",
+                message="escort missions require a non-empty package list",
+            )
+        )
+    if spec.cap is not None:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="cap",
+                message="cap not supported for escort: omit the cap block",
+            )
+        )
+    if spec.strike is not None:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="strike",
+                message="strike not supported for escort: omit the strike block",
+            )
+        )
+    if spec.targets:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="targets",
+                message="targets not supported for escort: use mission_type ground_attack",
+            )
+        )
+    if spec.player.payload is not None:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="player.payload",
+                message="player.payload not supported for escort: omit payload",
+            )
+        )
+
+    if not spec.objectives:
+        errors.append(
+            ValidationError(
+                code="objectives_required",
+                path="objectives",
+                message="escort missions require a non-empty objectives list",
+            )
+        )
+    else:
+        if not any(o.type is ObjectiveType.ESCORT_PACKAGE for o in spec.objectives):
+            errors.append(
+                ValidationError(
+                    code="objectives_required",
+                    path="objectives",
+                    message="escort missions require at least one escort_package objective",
+                )
+            )
+        for i, obj in enumerate(spec.objectives):
+            if obj.type is not ObjectiveType.ESCORT_PACKAGE:
+                errors.append(
+                    ValidationError(
+                        code="unknown_objective",
+                        path=f"objectives[{i}].type",
+                        message=f"Unsupported objective type {obj.type.value!r} for escort",
+                        hint="Supported: escort_package",
+                    )
+                )
+
+    for i, flight in enumerate(spec.package):
+        try:
+            registry.get_aircraft(flight.aircraft)
+        except RegistryError:
+            errors.append(
+                ValidationError(
+                    code="unknown_aircraft",
+                    path=f"package[{i}].aircraft",
+                    message=f"Unknown aircraft '{flight.aircraft}'",
+                    hint=f"Known: {registry.list_aircraft()}",
+                )
+            )
+        if flight.coalition is not spec.player.coalition:
+            errors.append(
+                ValidationError(
+                    code="hostile_package",
+                    path=f"package[{i}].coalition",
+                    message=(
+                        "Escort package must be friendly (same coalition as player); "
+                        f"player is {spec.player.coalition.value}, "
+                        f"got {flight.coalition.value}"
+                    ),
+                )
+            )
+
+    expected_enemy = opposing_coalition(spec.player.coalition)
+    for i, enemy in enumerate(spec.enemies):
+        if enemy.coalition is not expected_enemy:
+            errors.append(
+                ValidationError(
+                    code="friendly_enemy",
+                    path=f"enemies[{i}].coalition",
+                    message=(
+                        "Escort bounce enemies must oppose the player; "
+                        f"expected {expected_enemy.value}, got {enemy.coalition.value}"
+                    ),
+                )
+            )
+    _validate_enemy_aircraft(spec, registry, errors)
+
+
 @dataclass(frozen=True)
 class ValidationError:
     """One validation finding."""
@@ -212,13 +335,14 @@ def validate_mission_spec(
         MissionType.INTERCEPT,
         MissionType.CAP,
         MissionType.GROUND_ATTACK,
+        MissionType.ESCORT,
     ):
         errors.append(
             ValidationError(
                 code="unsupported_mission_type",
                 path="mission_type",
                 message=f"Unsupported mission_type {spec.mission_type.value!r}",
-                hint="Supported: free_flight, intercept, cap, ground_attack",
+                hint="Supported: free_flight, intercept, cap, ground_attack, escort",
             )
         )
 
@@ -256,7 +380,15 @@ def validate_mission_spec(
                     message="player.payload not supported for free_flight: omit payload",
                 )
             )
-        for name in ("enemies", "objectives", "targets"):
+        if spec.escort is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="escort",
+                    message="escort not supported for free_flight: omit the escort block",
+                )
+            )
+        for name in ("enemies", "objectives", "targets", "package"):
             if getattr(spec, name):
                 errors.append(
                     ValidationError(
@@ -264,7 +396,7 @@ def validate_mission_spec(
                         path=name,
                         message=(
                             f"{name} not supported for free_flight: must be empty "
-                            "(use mission_type intercept, cap, or ground_attack)"
+                            "(use mission_type intercept, cap, ground_attack, or escort)"
                         ),
                     )
                 )
@@ -283,6 +415,22 @@ def validate_mission_spec(
                     code="extension_not_supported",
                     path="strike",
                     message="strike not supported for intercept: omit the strike block",
+                )
+            )
+        if spec.escort is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="escort",
+                    message="escort not supported for intercept: omit the escort block",
+                )
+            )
+        if spec.package:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="package",
+                    message="package not supported for intercept: use mission_type escort",
                 )
             )
         if not spec.enemies:
@@ -329,6 +477,22 @@ def validate_mission_spec(
                     message="strike not supported for cap: omit the strike block",
                 )
             )
+        if spec.escort is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="escort",
+                    message="escort not supported for cap: omit the escort block",
+                )
+            )
+        if spec.package:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="package",
+                    message="package not supported for cap: use mission_type escort",
+                )
+            )
         if not spec.objectives:
             errors.append(
                 ValidationError(
@@ -358,7 +522,25 @@ def validate_mission_spec(
                     )
         _validate_enemy_aircraft(spec, registry, errors)
     elif spec.mission_type is MissionType.GROUND_ATTACK:
+        if spec.escort is not None:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="escort",
+                    message="escort not supported for ground_attack: omit the escort block",
+                )
+            )
+        if spec.package:
+            errors.append(
+                ValidationError(
+                    code="extension_not_supported",
+                    path="package",
+                    message="package not supported for ground_attack: use mission_type escort",
+                )
+            )
         _validate_ground_attack(spec, registry, errors)
+    elif spec.mission_type is MissionType.ESCORT:
+        _validate_escort(spec, registry, errors)
 
     if not registry.has_theatre(spec.theatre):
         errors.append(

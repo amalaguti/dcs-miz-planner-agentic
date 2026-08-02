@@ -36,7 +36,13 @@ def test_build_snapshot_includes_enums_and_registry() -> None:
     assert [t.theatre_id for t in snap.theatres] == ["TheChannel"]
     assert snap.airfields[0].name == "Manston"
     assert snap.airfields[0].theatre_id == "TheChannel"
-    assert {m.value for m in snap.mission_types} >= {"free_flight", "intercept", "cap"}
+    assert {m.value for m in snap.mission_types} >= {
+        "free_flight",
+        "intercept",
+        "cap",
+        "ground_attack",
+        "escort",
+    }
     assert {c.value for c in snap.countries} == {"ThirdReich", "UK"}
     assert snap.source == "channel_yaml+spec_enums"
 

@@ -212,6 +212,33 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
                 "navigation, and mid-air conflict; abort early if you lose the target or "
                 "the weather closes in."
             )
+    elif mt == "escort":
+        escort = spec.escort
+        dest = (
+            f"bearing {escort.bearing_deg:g}°, {escort.distance_km:g} km, "
+            f"{escort.altitude_m:g} m, ROE {escort.engagement.value}"
+            if escort is not None
+            else "assigned package route"
+        )
+        pkg_bits = [f"{p.count}× {p.aircraft}" for p in spec.package]
+        package = ", ".join(pkg_bits) or "friendly package"
+        enemy_bits = [f"{e.count}× {e.aircraft}" for e in spec.enemies]
+        opposition = ", ".join(enemy_bits) if enemy_bits else "no planned bounce"
+        tactics = (
+            f"Escort {package} to {dest}. Stay with the package — do not chase so far "
+            f"that you abandon them. Bounce briefed: {opposition}. Commit only with "
+            "advantage and return to cover."
+        )
+        procedures = (
+            "Cold start as briefed; climb toward the package route; join and hold "
+            "escort position; scan above and out-sun; cover to the destination; "
+            "recover with the package or as briefed."
+        )
+        watch = (
+            "Watch fighters diving on the package, fuel on a Channel transit, "
+            "mid-air near the formation, and navigation over water; honour ROE and "
+            "do not leave the package alone to chase."
+        )
     else:
         tactics = (
             "Free flight: treat this as a familiarisation / local area hop. "

@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote / in proposal:** (see M4 — prefer `mission-type-escort`)
+**Next promote / in proposal:** (see M5 — prefer `briefing-generation`)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -84,14 +84,14 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `mission-type-escort`
+**Next promote / in proposal:** `briefing-generation` (M5)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 12 | `mission-type-intercept` | Dawn Manston intercept vs Bf-109K-4 (the concept doc's example) | `done` (accepted in-game 2026-07-26; ThirdReich/red) |
 | 13 | `mission-type-cap` | Patrol station, engagement rules | `done` (accepted in-game 2026-08-01) |
 | 14 | `mission-type-ground-attack` | Ground targets, payload selection | `done` (accepted in-game 2026-08-02; Dunkirk inland + slipper) |
-| 15 | `mission-type-escort` | Escort a friendly package | `idea` |
+| 15 | `mission-type-escort` | Escort a friendly package | `done` (accepted in-game 2026-08-02; Mosquito package + bounce) |
 
 ---
 
@@ -143,6 +143,8 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R4 | `research-spitfire-cockpit-args` | Keep [cockpit args list](https://files.digitalcombatsimulator.com/en/files/3349460/) as trigger/training reference only (see `LESSONS_LEARNED.md`); re-verify on DCS version bumps; promote only when an interactive-mission change needs it | `idea` |
 | R5 | `research-lua-usage-patterns` | Stock Channel Spitfire IA + Training + Beware campaign audited; findings in `research/lua-usage-patterns.md` | `done` (2026-07-26; revise after R1–R2) |
 | R6 | `research-lua-ide-tooling` | Recipe in `research/lua-ide-tooling.md`: pin dcs-world-schema EmmyLua + LuaLS lab; VEAF MCP only at first `#22` snippet work | `done` (notes only; lab vendor not installed) |
+| R7 | `research-pydcs-issues` | Review open issues on [pydcs/dcs](https://github.com/pydcs/dcs/issues); assess impact on our compiler / Channel Specs; promote durable notes into `LESSONS_LEARNED.md` or specs when they affect us | `idea` |
+| R8 | `deps-upgrade-review` | Periodically check latest PyDCS and other project-related libraries; decide whether an upgrade is recommended (pin notes in LESSONS / pyproject when we bump) | `idea` |
 
 Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 
@@ -164,13 +166,15 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 - **Lua IDE / MCP tooling** — see research **R5–R6**. Schema + LSP for writing snippets; VEAF MCP as a lab only. A future *project-owned* MCP that exposes *our* snippet catalog (`list` / `validate_params` / API docs) is optional once M6 `#22` exists. Native Lua compiler replacing PyDCS remains far-horizon.
 - **Normandy / multi-theatre** — after Channel registry pattern is solid; campaigns above are inspiration, not shipping content.
 - **Historical validation engine** — date → plausible aircraft/opposition (productized form of R3).
+- **PyDCS issue watch** — research **R7**: triage [pydcs/dcs issues](https://github.com/pydcs/dcs/issues) into LESSONS / Spec risk notes.
+- **Dependency upgrade cadence** — research **R8**: check PyDCS + related libs; bump only when recommended.
 - Multiplayer, dynamic campaign, radio VO generation.
 
 ---
 
 ## Ideas → backlog map
 
-Source: `ideas-concepts.txt` (2026-07-26).
+Source: `ideas-concepts.txt` (updated 2026-08-02).
 
 | Raw idea | Disposition |
 |----------|-------------|
@@ -188,6 +192,8 @@ Source: `ideas-concepts.txt` (2026-07-26).
 | Download Spitfire campaigns / singles as inspiration | **Research** R1–R2 (+ Lua/trigger audit) → **R5** synthesis for M6 |
 | Lua IDE / MCP for developing scripts | **Research** R6 (`dcs-world-schema` + LuaLS; optional VEAF MCP lab) |
 | Historical Spitfire missions from the web | **Research** R3 → later historical validation |
+| Review [pydcs/dcs issues](https://github.com/pydcs/dcs/issues); assess impact for LESSONS / specs | **Research** R7 `research-pydcs-issues` |
+| Check latest PyDCS / project libs; recommend upgrades | **Research** R8 `deps-upgrade-review` |
 
 ---
 

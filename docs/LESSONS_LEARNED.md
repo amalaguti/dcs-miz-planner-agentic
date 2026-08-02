@@ -7,6 +7,21 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Escort: package first, then EscortTaskAction + ROE
+
+- **Date:** 2026-08-02
+- **Lesson:** Escort compile must place the friendly `package` group **before** attaching
+  `EscortTaskAction(group_id=…)` on the player. Destination is airfield-relative
+  (`bearing_deg` / `distance_km`) like CAP/strike. Package starts inflight near the
+  airfield along the escort bearing (`~8 km`), task `CAS`, waypoint to destination.
+  Player task `Escort` + climb / Escort / Cover waypoints; `OptROE` from
+  `escort.engagement`. Optional bounce spawns near the destination neighbourhood
+  (`+2500`, `-1500` m), not the intercept Hawkinge corridor. Package coalition MUST match
+  the player; enemies oppose. Example: Manston → 120° / 55 km, 2× `MosquitoFBMkVI`,
+  2× `Bf-109K-4`.
+- **Code:** `compiler/pydcs_compiler.py` (`_apply_escort`, `_place_escort_enemies`),
+  `examples/manston_escort.yaml`, `models.Escort` / `PackageFlight`.
+
 ## Ground-attack: always verify strike position (land vs water, enemy vs practice)
 
 - **Date:** 2026-08-02

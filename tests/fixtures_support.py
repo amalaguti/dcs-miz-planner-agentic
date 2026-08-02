@@ -17,10 +17,12 @@ EXAMPLE_SPEC = REPO_ROOT / "examples" / "manston_cold_freeflight.yaml"
 INTERCEPT_SPEC = REPO_ROOT / "examples" / "manston_dawn_intercept.yaml"
 CAP_SPEC = REPO_ROOT / "examples" / "manston_cap.yaml"
 GROUND_ATTACK_SPEC = REPO_ROOT / "examples" / "manston_ground_attack.yaml"
+ESCORT_SPEC = REPO_ROOT / "examples" / "manston_escort.yaml"
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cold_freeflight"
 INTERCEPT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_dawn_intercept"
 CAP_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cap"
 GA_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_ground_attack"
+ESCORT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_escort"
 
 REQUIRED_MEMBERS = ("mission", "options", "theatre", "warehouses")
 MISSION_CONTRACTS = (
@@ -69,6 +71,19 @@ GA_MISSION_CONTRACTS = (
     "Blitz_36-6700A",
     "Bombing",
 )
+ESCORT_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    "MosquitoFBMkVI",
+    "Bf-109K-4",
+    '["airdromeId"]=5',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+    '["task"]="Escort"',
+    "groupId",
+    '["value"]=0',  # OptROE WeaponFree
+)
 
 # PyDCS assigns a random board number each process; pin it for stable goldens.
 _ONBOARD_NUM_RE = re.compile(r'\["onboard_num"\]="\d+"')
@@ -112,6 +127,11 @@ def compile_cap(output_path: Path) -> Path:
 
 def compile_ground_attack(output_path: Path) -> Path:
     spec = load_mission_spec(GROUND_ATTACK_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
+
+
+def compile_escort(output_path: Path) -> Path:
+    spec = load_mission_spec(ESCORT_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, output_path)
 
 
@@ -182,6 +202,15 @@ def write_ground_attack_golden(miz_path: Path, fixture_dir: Path = GA_FIXTURE_DI
         fixture_dir,
         source_spec="examples/manston_ground_attack.yaml",
         mission_contracts=GA_MISSION_CONTRACTS,
+    )
+
+
+def write_escort_golden(miz_path: Path, fixture_dir: Path = ESCORT_FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_escort.yaml",
+        mission_contracts=ESCORT_MISSION_CONTRACTS,
     )
 
 
