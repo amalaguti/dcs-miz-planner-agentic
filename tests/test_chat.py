@@ -1,0 +1,170 @@
+"""Interactive plan chat / REPL tests."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from fixtures_support import channel_available_inventory
+
+from dcs_miz_planner.agent import PlanSession, stub_chat_clarify_then_spec
+from dcs_miz_planner.agent.llm import MANSTON_FREE_FLIGHT_JSON, LLMResponse, StubLLM
+from dcs_miz_planner.catalog import CatalogService
+
+
+def test_chat_clarify_tool_accept(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    session = PlanSession(
+        llm=stub_chat_clarify_then_spec(),
+        output_path=out,
+        db_path=db,
+        inventory=channel_available_inventory(),
+        voice="raf",
+    )
+    session.start()
+
+    r1 = session.handle_line("I'd like something from Manston")
+    assert "Manston" in r1.output or "Free flight" in r1.output or "CAP" in r1.output
+
+    r2 = session.handle_line("free flight please")
+    assert "schema_version" in r2.output or "Draft Spec" in r2.output
+    assert session.proposed_spec is not None
+
+    brief_empty_ok = session.handle_line("/briefing")
+    assert "## Tactics" in brief_empty_ok.output or "Free flight" in brief_empty_ok.output
+
+    research = session.handle_line("/research Channel Spitfire weather")
+    assert "Research" in research.output
+    assert "-" in research.output
+
+    catalog = session.handle_line("/catalog")
+    assert "catalog" in catalog.output.lower() or "mission_types" in catalog.output
+    assert "SpitfireLFMkIX" in catalog.output or "sunny_clear" in catalog.output
+
+    accepted = session.handle_line("/accept")
+    assert out.is_file()
+    assert "Wrote Spec" in accepted.output
+    assert "## Tactics" in accepted.output
+
+
+def test_chat_no_auto_write_without_accept(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=MANSTON_FREE_FLIGHT_JSON)]),
+        output_path=out,
+        db_path=db,
+        inventory=channel_available_inventory(),
+    )
+    session.start()
+    session.handle_line("give me the Spec")
+    assert session.proposed_spec is not None
+    assert not out.exists()
+
+
+def test_briefing_without_draft(tmp_path: Path) -> None:
+    session = PlanSession(
+        llm=StubLLM(),
+        output_path=tmp_path / "x.yaml",
+        inventory=channel_available_inventory(),
+    )
+    session.start()
+    r = session.handle_line("/briefing")
+    assert "No draft" in r.output
+
+
+def test_help_lists_new_commands(tmp_path: Path) -> None:
+    session = PlanSession(llm=StubLLM(), output_path=tmp_path / "x.yaml")
+    session.start()
+    r = session.handle_line("/help")
+    assert "/briefing" in r.output
+    assert "/research" in r.output
+    assert "/catalog" in r.output
+
+
+def test_verbose_slash_toggle(tmp_path: Path) -> None:
+    session = PlanSession(llm=StubLLM(), output_path=tmp_path / "x.yaml", verbose=True)
+    banner = session.start()
+    assert "verbose=on" in banner
+    r = session.handle_line("/verbose off")
+    assert session.verbose is False
+    assert "off" in r.output
+    session.handle_line("/verbose on")
+    assert session.verbose is True
+
+
+def test_compose_chat_mode() -> None:
+    from dcs_miz_planner.agent.prompts import compose_system_prompt
+
+    prompt = compose_system_prompt("raf", mode="chat")
+    assert "/accept" in prompt
+    assert "Interactive chat" in prompt
+    assert '"player"' in prompt
+    assert '"date": {"year"' in prompt or '"date": {"year":' in prompt
+    assert "DO NOT emit" in prompt
+    assert "cap.objectives" in prompt
+
+
+def test_host_spec_repair_nudge_includes_shape() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    nudge = host_spec_repair_nudge("theatre Field required")
+    assert "theatre Field required" in nudge
+    assert "player" in nudge
+    assert "TheChannel" in nudge
+    assert "Bf-109K-4" in nudge
+
+
+def test_invalid_embedded_spec_injects_shape_nudge(tmp_path: Path) -> None:
+    bad = """Here is the Spec:
+{
+  "schema_version": "1",
+  "mission_type": "cap",
+  "date": "1944-06-06",
+  "airfield": "Manston",
+  "aircraft": "SpitfireLFMkIX",
+  "enemies": [{"type": "intercept_enemy", "id": "Bf-109K-4"}],
+  "cap": {"bearing_deg": 270, "distance_km": 30, "altitude_m": 5000,
+          "pattern": "circle", "engagement": "weapons_free",
+          "objectives": [{"type": "patrol"}]}
+}
+"""
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=bad)]),
+        output_path=tmp_path / "planned.yaml",
+        inventory=channel_available_inventory(),
+    )
+    session.start()
+    r = session.handle_line("ready")
+    assert "NOT captured" in r.output
+    assert session.proposed_spec is None
+    assert session.last_spec_error
+    # Host injected a repair nudge with the canonical shape into history.
+    assert any(
+        "Follow this shape exactly" in (m.get("content") or "")
+        or "Mission Spec JSON shape" in (m.get("content") or "")
+        for m in session.messages
+        if m.get("role") == "user"
+    )
+
+
+def test_valid_embedded_spec_captured(tmp_path: Path) -> None:
+    wrapped = (
+        "Here is the finalized Spec:\n\n"
+        + MANSTON_FREE_FLIGHT_JSON
+        + "\n\nType /accept when ready."
+    )
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=wrapped)]),
+        output_path=tmp_path / "planned.yaml",
+        inventory=channel_available_inventory(),
+    )
+    session.start()
+    r = session.handle_line("lock it in")
+    assert "Draft Spec captured" in r.output
+    assert session.proposed_spec is not None
+    accepted = session.handle_line("/accept")
+    assert "Wrote Spec" in accepted.output
+    assert (tmp_path / "planned.yaml").is_file()

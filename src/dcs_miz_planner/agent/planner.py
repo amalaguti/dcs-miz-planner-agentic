@@ -21,10 +21,11 @@ from ..memory import (
 )
 from ..models import MissionSpec
 from ..validation import validate_mission_spec
-from .llm import LLMClient, LLMResponse, default_tools
-from .prompts import compose_system_prompt
+from .llm import LLMClient, default_tools
+from .prompts import compose_system_prompt, host_spec_repair_nudge
 from .realism import channel_date_realism_warnings
-from .tool_bridge import dispatch_tool
+from .turn import complete_with_tools
+from .verbose import DEFAULT_VERBOSE, vlog
 from .voice import build_commander_brief, resolve_voice
 
 _JSON_FENCE = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
@@ -45,29 +46,57 @@ class PlanResult:
     brief: str | None = None
 
 
-def _extract_json_object(text: str) -> dict[str, Any]:
+def extract_json_object(text: str) -> dict[str, Any]:
+    """Parse a JSON object from text (whole string, fenced block, or first {...})."""
     text = text.strip()
     fence = _JSON_FENCE.search(text)
     if fence:
         text = fence.group(1).strip()
-    return json.loads(text)
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("{")
+        end = text.rfind("}")
+        if start < 0 or end <= start:
+            raise
+        data = json.loads(text[start : end + 1])
+    if not isinstance(data, dict):
+        raise TypeError("Mission Spec JSON must be an object")
+    return data
 
 
-def _assistant_message(resp: LLMResponse) -> dict[str, Any]:
-    msg: dict[str, Any] = {"role": "assistant", "content": resp.content}
-    if resp.tool_calls:
-        msg["tool_calls"] = [
-            {
-                "id": tc.id,
-                "type": "function",
-                "function": {"name": tc.name, "arguments": tc.arguments},
-            }
-            for tc in resp.tool_calls
-        ]
-    return msg
+def try_parse_mission_spec(text: str | None) -> MissionSpec | None:
+    """Best-effort Spec parse from assistant text; None if not Spec JSON."""
+    spec, _err = diagnose_mission_spec_parse(text)
+    return spec
 
 
-def _write_spec_yaml(spec: MissionSpec, path: Path) -> None:
+def diagnose_mission_spec_parse(text: str | None) -> tuple[MissionSpec | None, str | None]:
+    """
+    Try to parse a Mission Spec from assistant text.
+
+    Returns ``(spec, None)`` on success, ``(None, None)`` if no JSON object looks present,
+    or ``(None, error)`` if JSON was found but invalid as a Mission Spec.
+    """
+    if not text or not text.strip():
+        return None, None
+    stripped = text.strip()
+    looks_like_json = (
+        stripped.startswith("{")
+        or "```" in stripped
+        or ("{" in stripped and "}" in stripped and "schema_version" in stripped)
+        or ("{" in stripped and "}" in stripped and "mission_type" in stripped)
+    )
+    if not looks_like_json:
+        return None, None
+    try:
+        raw = extract_json_object(text)
+        return MissionSpec.model_validate(raw), None
+    except (json.JSONDecodeError, ValueError) as exc:
+        return None, str(exc)
+
+
+def write_spec_yaml(spec: MissionSpec, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = spec.model_dump(mode="json")
     path.write_text(
@@ -76,7 +105,7 @@ def _write_spec_yaml(spec: MissionSpec, path: Path) -> None:
     )
 
 
-def _record_plan(
+def record_plan(
     *,
     db_path: Path | str | None,
     prompt: str,
@@ -100,7 +129,7 @@ def _record_plan(
         return None
 
 
-def _load_prefs(db_path: Path | str | None) -> dict[str, Any]:
+def load_prefs(db_path: Path | str | None) -> dict[str, Any]:
     try:
         return UserMemoryService(db_path=db_path).get_prefs()
     except OSError:
@@ -118,12 +147,13 @@ def plan_mission(
     db_path: Path | str | None = None,
     voice: str | None = None,
     max_turns: int = 8,
+    verbose: bool = DEFAULT_VERBOSE,
 ) -> PlanResult:
     """Run the tool-using planner and write a validated Mission Spec YAML."""
     out = Path(output_path)
-    prefs = _load_prefs(db_path)
+    prefs = load_prefs(db_path)
     resolved_voice = resolve_voice(cli_voice=voice, prefs=prefs)
-    system_prompt = compose_system_prompt(resolved_voice)
+    system_prompt = compose_system_prompt(resolved_voice, mode="oneshot")
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": prompt},
@@ -131,22 +161,18 @@ def plan_mission(
     tools = default_tools()
     repair_used = False
     last_parse_error: str | None = None
+    outer_rounds = max(1, max_turns)
+    vlog(verbose, f"[verbose] plan_mission start voice={resolved_voice}")
 
-    for _ in range(max_turns):
-        resp = llm.complete(messages, tools=tools)
-        messages.append(_assistant_message(resp))
-
-        if resp.tool_calls:
-            for tc in resp.tool_calls:
-                result = dispatch_tool(tc.name, tc.arguments, db_path=db_path)
-                messages.append(
-                    {
-                        "role": "tool",
-                        "tool_call_id": tc.id,
-                        "content": json.dumps(result),
-                    }
-                )
-            continue
+    for _ in range(outer_rounds):
+        resp = complete_with_tools(
+            llm,
+            messages,
+            tools=tools,
+            db_path=db_path,
+            max_rounds=max_turns,
+            verbose=verbose,
+        )
 
         if not resp.content or not resp.content.strip():
             last_parse_error = "Model returned empty content without tool calls"
@@ -159,30 +185,23 @@ def plan_mission(
             continue
 
         try:
-            raw = _extract_json_object(resp.content)
+            raw = extract_json_object(resp.content)
             spec = MissionSpec.model_validate(raw)
-        except (json.JSONDecodeError, ValueError) as exc:
+        except (json.JSONDecodeError, ValueError, TypeError) as exc:
             last_parse_error = str(exc)
-            messages.append(
-                {
-                    "role": "user",
-                    "content": (
-                        f"Could not parse Mission Spec JSON: {exc}. Reply with corrected JSON only."
-                    ),
-                }
-            )
+            messages.append({"role": "user", "content": host_spec_repair_nudge(str(exc))})
             continue
 
         vresult = validate_mission_spec(spec, inventory=inventory)
         if vresult.ok:
-            _write_spec_yaml(spec, out)
+            write_spec_yaml(spec, out)
             compiled: Path | None = None
             if compile_output:
                 dest = Path(miz_path) if miz_path else out.with_suffix(".miz")
                 try:
                     compiled = PyDCSCompiler(inventory=inventory).compile(spec, dest)
                 except ValueError as exc:
-                    gid = _record_plan(
+                    gid = record_plan(
                         db_path=db_path,
                         prompt=prompt,
                         outcome=OUTCOME_COMPILE_FAILED,
@@ -200,7 +219,7 @@ def plan_mission(
                         system_prompt=system_prompt,
                     )
             brief = build_commander_brief(spec, resolved_voice)
-            gid = _record_plan(
+            gid = record_plan(
                 db_path=db_path,
                 prompt=prompt,
                 outcome=OUTCOME_SUCCESS,
@@ -235,7 +254,7 @@ def plan_mission(
             for e in vresult.errors
         )
         if repair_used:
-            gid = _record_plan(
+            gid = record_plan(
                 db_path=db_path,
                 prompt=prompt,
                 outcome=OUTCOME_VALIDATION_FAILED,
@@ -255,15 +274,13 @@ def plan_mission(
         messages.append(
             {
                 "role": "user",
-                "content": (
-                    "Validation failed:\n"
-                    + json.dumps(list(errors), indent=2)
-                    + "\nReply with corrected Mission Spec JSON only."
+                "content": host_spec_repair_nudge(
+                    "Validation failed:\n" + json.dumps(list(errors), indent=2)
                 ),
             }
         )
 
-    gid = _record_plan(
+    gid = record_plan(
         db_path=db_path,
         prompt=prompt,
         outcome=OUTCOME_FAILED,

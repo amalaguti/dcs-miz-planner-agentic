@@ -148,6 +148,30 @@ def stub_with_research_guidance_then_spec() -> StubLLM:
     )
 
 
+def stub_chat_clarify_then_spec() -> StubLLM:
+    """Multi-turn chat stub: clarify, optional tool, then Spec JSON."""
+    return StubLLM(
+        script=[
+            LLMResponse(
+                content=(
+                    "Right. Free flight or CAP from Manston? "
+                    "Say the word and I'll draft the Spec for /accept."
+                )
+            ),
+            LLMResponse(
+                tool_calls=(
+                    ToolCall(
+                        id="call_af",
+                        name="find_airfield",
+                        arguments=json.dumps({"query": "Manston"}),
+                    ),
+                )
+            ),
+            LLMResponse(content=MANSTON_FREE_FLIGHT_JSON),
+        ]
+    )
+
+
 @dataclass
 class OpenAILLM:
     """Live OpenAI-compatible chat client."""

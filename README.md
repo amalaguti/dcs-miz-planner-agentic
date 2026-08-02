@@ -19,11 +19,13 @@ Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
 (refresh: `uv run python tests/refresh_manston_golden.py`). Intercept Spec
 (`examples/manston_dawn_intercept.yaml`) places Bf-109K-4s on a Hawkinge/Dover
 approach corridor. CAP Spec (`examples/manston_cap.yaml`) orbits a station SE of
-Manston with engagement/ROE (accepted in-game 2026-08-01). Module map:
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Manston with engagement/ROE (accepted in-game 2026-08-01). Interactive multi-turn
+chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026-08-01).
+Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `mission-type-ground-attack`, then escort; `briefing-generation` after M4 types.
+**Next:** `agent-spec-schema-tool`, then `mission-type-ground-attack` / escort;
+`briefing-generation` after M4 types.
 
 ## Stack
 
@@ -117,6 +119,22 @@ Offline stub (no API key — canned Manston free flight):
 uv run dcs-miz plan "cold Spitfire free flight at Manston" --stub -o out/planned.yaml
 uv run dcs-miz plan "..." --stub --voice usaaf --compile -o out/planned.yaml
 ```
+
+### Interactive chat (multi-turn REPL)
+
+```bash
+uv run dcs-miz chat --stub --voice raf -o out/planned.yaml
+# live:
+# $env:OPENAI_API_KEY = "sk-..."
+# uv run dcs-miz chat --voice raf -o out/planned.yaml --compile
+```
+
+Slash commands: `/help`, `/quit`, `/show`, `/accept`, `/compile`, `/briefing`,
+`/research [query]`, `/catalog`, `/voice`, `/prefs`, `/clear`, `/verbose on|off`. Spec YAML
+is written only on `/accept` (not when the model merely prints JSON). `/research` tries a
+live web fetch first and soft-falls back to offline fixtures (sources shown on each note).
+**Verbose is on by default** (LLM rounds + tool calls on stderr); use `--no-verbose` or
+`/verbose off` to quiet.
 
 The planner speaks as a squadron commander (default **raf**; override with `--voice` or
 pref `squadron_voice`). On success it prints a short commander brief: situation, tactics,

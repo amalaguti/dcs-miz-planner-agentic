@@ -1,4 +1,4 @@
-"""Command-line entrypoint: compile, validate, theatres, catalog, prefs, and NL plan."""
+"""Command-line entrypoint: compile, validate, theatres, catalog, prefs, plan, and chat."""
 
 from __future__ import annotations
 
@@ -7,7 +7,15 @@ import json
 import sys
 from pathlib import Path
 
-from .agent import AgentConfigError, StubLLM, live_llm_from_env, plan_mission
+from .agent import (
+    AgentConfigError,
+    PlanSession,
+    StubLLM,
+    live_llm_from_env,
+    plan_mission,
+    run_chat_repl,
+    stub_chat_clarify_then_spec,
+)
 from .catalog import AIRCRAFT_DISCOVERY_DEFERRED, LIST_TYPES, CatalogService
 from .compiler import PyDCSCompiler
 from .install import InventoryService, default_db_path
@@ -262,6 +270,7 @@ def _plan_cmd(args: argparse.Namespace) -> int:
         miz_path=miz,
         db_path=args.db if getattr(args, "db", None) else None,
         voice=args.voice if getattr(args, "voice", None) else None,
+        verbose=bool(args.verbose),
     )
     if not result.ok:
         print(result.error or "Planning failed", file=sys.stderr)
@@ -279,6 +288,29 @@ def _plan_cmd(args: argparse.Namespace) -> int:
     for warning in result.warnings:
         print(f"Warning: {warning}", file=sys.stderr)
     return 0
+
+
+def _chat_cmd(args: argparse.Namespace) -> int:
+    output = Path(args.output) if args.output else DEFAULT_OUTPUT_DIR / "planned.yaml"
+    if args.stub:
+        llm = stub_chat_clarify_then_spec()
+    else:
+        try:
+            llm = live_llm_from_env()
+        except AgentConfigError as exc:
+            print(exc, file=sys.stderr)
+            return 2
+
+    session = PlanSession(
+        llm=llm,
+        output_path=output,
+        db_path=args.db if getattr(args, "db", None) else None,
+        voice=args.voice if getattr(args, "voice", None) else None,
+        compile_on_accept=bool(args.compile),
+        miz_path=Path(args.miz) if getattr(args, "miz", None) else None,
+        verbose=bool(args.verbose),
+    )
+    return run_chat_repl(session)
 
 
 def _prefs_cmd(args: argparse.Namespace) -> int:
@@ -503,7 +535,55 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
         default=None,
     )
+    plan_p.add_argument(
+        "--verbose",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Trace LLM rounds and tool calls on stderr (default: on; --no-verbose to quiet)",
+    )
     plan_p.set_defaults(func=_plan_cmd)
+
+    chat_p = sub.add_parser(
+        "chat",
+        help="Interactive multi-turn plan chat (REPL); /accept writes Spec",
+    )
+    chat_p.add_argument(
+        "-o",
+        "--output",
+        help="Output Mission Spec YAML on /accept (default: out/planned.yaml)",
+        default=None,
+    )
+    chat_p.add_argument(
+        "--stub",
+        action="store_true",
+        help="Offline stub LLM (scripted clarify → Spec; no API key)",
+    )
+    chat_p.add_argument(
+        "--compile",
+        action="store_true",
+        help="Also compile to .miz when accepting (/accept or /compile)",
+    )
+    chat_p.add_argument(
+        "--miz",
+        help="Output .miz path when compiling (default: same stem as Spec)",
+        default=None,
+    )
+    chat_p.add_argument(
+        "--db",
+        help=f"SQLite path for user memory / catalog (default: {default_db_path()})",
+    )
+    chat_p.add_argument(
+        "--voice",
+        help="Squadron voice: raf | usaaf | neutral",
+        default=None,
+    )
+    chat_p.add_argument(
+        "--verbose",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Trace LLM rounds and tool calls on stderr (default: on; --no-verbose to quiet)",
+    )
+    chat_p.set_defaults(func=_chat_cmd)
 
     prefs_p = sub.add_parser(
         "prefs",
@@ -586,6 +666,7 @@ def main(argv: list[str] | None = None) -> int:
             "theatres",
             "catalog",
             "plan",
+            "chat",
             "prefs",
             "feedback",
         }

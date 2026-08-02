@@ -68,3 +68,5 @@ def test_cap_brief_sections() -> None:
     assert "## Tactics" in brief
     assert "CAP" in brief or "orbit" in brief.lower()
     assert "weapons_free" in brief or "ROE" in brief
+    assert "sunny_clear" in brief
+    assert "WeatherPreset" not in brief

@@ -104,7 +104,7 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
     mt = spec.mission_type.value
     airfield = spec.player.airfield
     aircraft = spec.player.aircraft
-    weather = spec.weather
+    weather = spec.weather.value
     start = spec.start_time
     start_type = spec.player.start.value
 
