@@ -97,7 +97,13 @@ class PyDCSCompiler(CompilerInterface):
         # Optional inject for tests; production uses the SQLite install cache.
         self._inventory = inventory
 
-    def compile(self, spec: MissionSpec, output_path: str | Path) -> Path:
+    def compile(
+        self,
+        spec: MissionSpec,
+        output_path: str | Path,
+        *,
+        voice: str | None = None,
+    ) -> Path:
         # Imports are local so the boundary is explicit and importing our
         # package never eagerly pulls PyDCS.
         from dcs import countries
@@ -188,11 +194,24 @@ class PyDCSCompiler(CompilerInterface):
                 mission, countries, registry, group, airport, spec, package_types, enemy_types
             )
 
+        self._apply_briefing(mission, spec, voice)
+
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)
         mission.save(str(out))
         self._ensure_theatre_member(out, spec.theatre)
         return out
+
+    @staticmethod
+    def _apply_briefing(mission, spec: MissionSpec, voice: str | None) -> None:
+        """Write Sortie / Description / Task strings into mission ``l10n``."""
+        from ..briefing import build_mission_briefing_texts
+
+        texts = build_mission_briefing_texts(spec, voice)
+        mission.set_sortie_text(texts.sortie)
+        mission.set_description_text(texts.description)
+        mission.set_description_bluetask_text(texts.blue_task)
+        mission.set_description_redtask_text(texts.red_task)
 
     @staticmethod
     def _ensure_country(mission, countries_mod, country_name: str, coalition: str):

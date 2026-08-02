@@ -204,6 +204,7 @@ def compile_mission(
     *,
     db_path: Path | str | None = None,
     inventory: TheatreInventory | None = None,
+    voice: str | None = None,
 ) -> dict[str, Any]:
     """Compile a Mission Spec YAML to a ``.miz`` via PyDCSCompiler."""
     path = Path(spec_path)
@@ -224,9 +225,15 @@ def compile_mission(
     if not pre.get("ok"):
         return pre
 
+    resolved_voice = voice
+    if voice is not None:
+        from ..agent.voice import resolve_voice
+
+        resolved_voice = resolve_voice(cli_voice=voice)
+
     out = Path(output_path)
     try:
-        written = PyDCSCompiler(inventory=inventory).compile(spec, out)
+        written = PyDCSCompiler(inventory=inventory).compile(spec, out, voice=resolved_voice)
     except ValueError as exc:
         return err_result(str(exc), code="compile_failed", path=str(path))
     return ok_result(path=str(path), output=str(written))

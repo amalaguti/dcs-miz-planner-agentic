@@ -15,6 +15,16 @@ from ..models import MissionSpec
 
 class CompilerInterface(ABC):
     @abstractmethod
-    def compile(self, spec: MissionSpec, output_path: str | Path) -> Path:
-        """Compile a Mission Spec into a .miz file. Returns the written path."""
+    def compile(
+        self,
+        spec: MissionSpec,
+        output_path: str | Path,
+        *,
+        voice: str | None = None,
+    ) -> Path:
+        """Compile a Mission Spec into a .miz file. Returns the written path.
+
+        ``voice`` selects squadron-commander register for briefing ``l10n`` text;
+        when omitted the implementation uses the default voice (``raf``).
+        """
         raise NotImplementedError

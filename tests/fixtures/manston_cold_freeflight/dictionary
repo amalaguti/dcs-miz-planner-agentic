@@ -1,0 +1,15 @@
+dictionary=
+{
+	["DictKey_Translation_1"]="Cold start at Manston. Free flight over the Channel. Clear morning.\
+\
+Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather sunny_clear, start cold_parking.\
+\
+Watch weather deterioration and cloud base, mid-air conflict near the field, fuel state on the way home, and Channel ditching risk if you wander offshore.",
+	["DictKey_Translation_2"]="Free flight: treat this as a familiarisation / local area hop. Build situational awareness, practise gentle handling, and keep clear of known flak belts and crowded corridors unless tasked.\
+\
+Complete start checks, taxi and takeoff as briefed, climb to a safe working altitude, fly a disciplined local pattern or area tour, then recover for a stable approach and landing.\
+\
+Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
+	["DictKey_Translation_3"]="",
+	["DictKey_Translation_4"]="Manston Free Flight"
+}

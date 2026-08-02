@@ -7,6 +7,22 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Briefing l10n: PyDCS setters + lazy import (no compiler↔agent cycle)
+
+- **Date:** 2026-08-02
+- **Lesson:** Populate Sortie / Description / Blue|Red Task via
+  `Mission.set_sortie_text` / `set_description_*` (writes `l10n/DEFAULT/dictionary`).
+  Dictionary strings use Lua line-continuation `\` for newlines, not `\n` escapes — prefer
+  substring asserts over naive regex parsers. Do **not** import `agent.voice` at
+  `compiler` module top-level (or via a top-level `briefing`→`agent` import): that pulls
+  `agent` → `tools` → `compiler` and raises a circular `ImportError`. Lazy-import
+  `build_mission_briefing_texts` inside `_apply_briefing`. Sortie = `spec.name`; Description
+  = Spec description + Situation + Watch-outs; player coalition task = Tactics + Procedures
+  + closing; opposing task empty in v1. Pin goldens to `voice="raf"`. Free-flight groups still
+  show ME main task `CAP` (PyDCS default) — unrelated to briefing Sortie title.
+- **Code:** `briefing.py`, `compiler/pydcs_compiler.py` (`_apply_briefing`),
+  `tests/fixtures_support.py` (dictionary golden member).
+
 ## Escort: package first, then EscortTaskAction + ROE
 
 - **Date:** 2026-08-02
@@ -111,16 +127,18 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 - **Code:** `models.Cap`, `compiler/pydcs_compiler.py` (`_apply_cap`, `_place_cap_enemies`);
   example `examples/manston_cap.yaml`.
 
-## Squadron voice is USAAF (not USAF); brief is not Spec
+## Squadron voice is USAAF (not USAF); CLI brief vs `.miz` l10n
 
-- **Date:** 2026-08-01
+- **Date:** 2026-08-01 (updated 2026-08-02)
 - **Lesson:** WWII Channel persona id is `usaaf` (Army Air Forces). `usaf` is post-1947 —
   do not rename the voice id. Default voice is `raf`. Commander briefs (tactics /
-  procedures / watch-outs) are CLI/`PlanResult.brief` only — never write them into Spec
-  fields or `.miz` `l10n` in this layer. `research_guidance` soft-fails to fixtures with a
+  procedures / watch-outs) are CLI/`PlanResult.brief` **and**, since `briefing-generation`,
+  the same builder feeds compile-time `.miz` `l10n` — Spec fields still stay plain.
+  `research_guidance` soft-fails to fixtures with a
   clear warning; chat `/research` labels offline fallback. Live uses Instant Answer then
   HTML results (`DCS_MIZ_RESEARCH_LIVE=1` or chat). Research is not DCS-id authority.
-- **Code:** `agent/voice.py`, `agent/prompts.py`, `tools/research.py`, `agent/planner.py`.
+- **Code:** `agent/voice.py`, `agent/prompts.py`, `tools/research.py`, `agent/planner.py`,
+  `briefing.py`, `compiler/pydcs_compiler.py`.
 
 ## User memory tables are not catalog_*
 
