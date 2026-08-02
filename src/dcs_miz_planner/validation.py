@@ -6,7 +6,14 @@ from dataclasses import dataclass
 
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
-from .models import MissionSpec, MissionType, ObjectiveType, opposing_coalition
+from .models import (
+    CoalitionInZoneCondition,
+    MissionSpec,
+    MissionType,
+    ObjectiveType,
+    UnitDeadCondition,
+    opposing_coalition,
+)
 from .registry import ChannelRegistry, RegistryError, get_channel_registry
 
 
@@ -320,6 +327,46 @@ class MissionValidationError(ValueError):
         super().__init__("\n".join(lines) if lines else "Mission Spec validation failed")
 
 
+def _validate_triggers_and_zones(
+    spec: MissionSpec,
+    errors: list[ValidationError],
+) -> None:
+    zone_names = {z.name for z in spec.zones}
+    if len(zone_names) != len(spec.zones):
+        errors.append(
+            ValidationError(
+                code="duplicate_zone_name",
+                path="zones",
+                message="zones must have unique names",
+            )
+        )
+
+    for ti, rule in enumerate(spec.triggers):
+        for ci, cond in enumerate(rule.when):
+            path = f"triggers[{ti}].when[{ci}]"
+            if isinstance(cond, CoalitionInZoneCondition):
+                if cond.zone not in zone_names:
+                    errors.append(
+                        ValidationError(
+                            code="unknown_zone",
+                            path=f"{path}.zone",
+                            message=f"Unknown zone {cond.zone!r}",
+                            hint=f"Known zones: {sorted(zone_names) or '(none)'}",
+                        )
+                    )
+            elif isinstance(cond, UnitDeadCondition) and cond.enemy_index >= len(spec.enemies):
+                errors.append(
+                    ValidationError(
+                        code="enemy_index_out_of_range",
+                        path=f"{path}.enemy_index",
+                        message=(
+                            f"enemy_index {cond.enemy_index} out of range "
+                            f"(enemies has {len(spec.enemies)} entries)"
+                        ),
+                    )
+                )
+
+
 def validate_mission_spec(
     spec: MissionSpec,
     *,
@@ -346,14 +393,7 @@ def validate_mission_spec(
             )
         )
 
-    if spec.triggers:
-        errors.append(
-            ValidationError(
-                code="extension_not_supported",
-                path="triggers",
-                message="triggers not supported yet: must be empty in schema_version 1",
-            )
-        )
+    _validate_triggers_and_zones(spec, errors)
 
     if spec.mission_type is MissionType.FREE_FLIGHT:
         if spec.cap is not None:

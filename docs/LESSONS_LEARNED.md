@@ -7,6 +7,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Trigger Spec is typed; .miz emit is a separate change
+
+- **Date:** 2026-08-02
+- **Lesson:** `zones` / `triggers` on Mission Spec are discriminated Pydantic models (no
+  Lua). `dcs-miz validate` accepts well-formed graphs; `PyDCSCompiler` MUST refuse
+  non-empty zones/triggers until `trigger-compiler-native` emits native ME tables.
+  Do not silently drop declared behaviour. v1 conditions: time_more, flag_is, unit_dead,
+  coalition_in_zone; actions: message, set_flag, mission_end. Zones are airfield-relative.
+- **Code:** `models.py`, `validation.py`, `compiler/pydcs_compiler.py`
+  (`_refuse_uncompiled_triggers`), `examples/manston_freeflight_trigger_sample.yaml`.
+
 ## Mission randomization: seed is build-scoped, not forever-stable
 
 - **Date:** 2026-08-02

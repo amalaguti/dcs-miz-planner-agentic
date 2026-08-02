@@ -1,0 +1,33 @@
+# Validate-only example: typed triggers. Native .miz emit is not implemented yet
+# (trigger-compiler-native) — `dcs-miz compile` must refuse; `dcs-miz validate` OK.
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Free Flight (trigger sample)
+description: >
+  Same Manston cold free flight as the acceptance example, plus a sample
+  time→message trigger for Spec/validation coverage.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+zones: []
+triggers:
+  - name: push_call
+    once: true
+    when:
+      - type: time_more
+        seconds: 120
+    then:
+      - type: message
+        text: "Manston Tower — you are clear to taxi when ready."
+        duration_s: 10

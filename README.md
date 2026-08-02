@@ -34,7 +34,7 @@ chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `trigger-model-spec` (M6); optional parked M5 polish / research R7/R8.
+**Next:** `trigger-compiler-native` (M6 #21); research R7/R8 as hygiene.
 
 ## Stack
 
@@ -70,6 +70,9 @@ uv run dcs-miz examples/manston_escort.yaml
 # Seeded reroll (same seed → same Spec), then compile:
 uv run dcs-miz randomize examples/manston_cap.yaml --seed 42
 uv run dcs-miz compile out/manston_cap_seed42.yaml -o out/manston_cap_seed42.miz
+
+# Typed triggers (validate OK; compile blocked until trigger-compiler-native):
+uv run dcs-miz validate examples/manston_freeflight_trigger_sample.yaml
 ```
 
 Open the result in the DCS Mission Editor, or copy it into

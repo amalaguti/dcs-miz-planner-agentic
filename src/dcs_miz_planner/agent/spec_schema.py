@@ -28,7 +28,7 @@ ANTI_PATTERNS: tuple[str, ...] = (
     '"date" as an ISO string like "1944-06-06" (use {"year","month","day"})',
     'enemies like {"type":"intercept_enemy","id":"..."} (use aircraft + count)',
     "objectives nested under cap or strike (objectives is top-level only)",
-    "omitting theatre, player, or triggers (triggers must be [])",
+    "Lua / script / Mist fields inside triggers (typed when/then only; no free-form script)",
     "friendly / same-coalition targets without strike.practice true",
     "inventing bomb CLSIDs (use named player.payload presets from the catalog)",
 )
@@ -80,7 +80,12 @@ _COMMON_NOTES: tuple[str, ...] = (
     'schema_version must be "1"; theatre for v1 is TheChannel.',
     (
         "Required envelope: schema_version, mission_type, theatre, date, start_time, "
-        "weather, player, enemies, objectives, triggers."
+        "weather, player; enemies/objectives/triggers/zones default to empty lists."
+    ),
+    (
+        "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|unit_dead|"
+        "coalition_in_zone; actions message|set_flag|mission_end. Compiling non-empty "
+        "zones/triggers is not available yet (native emit comes later) — validate only."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",

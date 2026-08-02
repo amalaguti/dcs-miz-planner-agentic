@@ -7,6 +7,7 @@ Scope: free-flight, intercept, CAP, ground-attack, and escort (schema_version \"
 from __future__ import annotations
 
 from enum import Enum
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -147,6 +148,81 @@ class Objective(SpecModel):
     type: ObjectiveType
 
 
+class MissionEndResult(str, Enum):
+    WIN = "win"
+    LOSE = "lose"
+
+
+class TriggerZone(SpecModel):
+    """Airfield-relative trigger zone (same convention as cap/strike/escort)."""
+
+    name: str = Field(min_length=1)
+    bearing_deg: float = Field(ge=0, le=360)
+    distance_km: float = Field(gt=0)
+    radius_m: float = Field(gt=0)
+
+
+class TimeMoreCondition(SpecModel):
+    type: Literal["time_more"] = "time_more"
+    seconds: float = Field(ge=0)
+
+
+class FlagIsCondition(SpecModel):
+    type: Literal["flag_is"] = "flag_is"
+    flag: str = Field(min_length=1)
+    value: bool
+
+
+class UnitDeadCondition(SpecModel):
+    type: Literal["unit_dead"] = "unit_dead"
+    enemy_index: int = Field(ge=0, description="0-based index into Spec enemies[]")
+
+
+class CoalitionInZoneCondition(SpecModel):
+    type: Literal["coalition_in_zone"] = "coalition_in_zone"
+    zone: str = Field(min_length=1)
+    coalition: Coalition
+
+
+TriggerCondition = Annotated[
+    TimeMoreCondition | FlagIsCondition | UnitDeadCondition | CoalitionInZoneCondition,
+    Field(discriminator="type"),
+]
+
+
+class MessageAction(SpecModel):
+    type: Literal["message"] = "message"
+    text: str = Field(min_length=1)
+    delay_s: float = Field(default=0, ge=0)
+    duration_s: float | None = Field(default=None, gt=0)
+
+
+class SetFlagAction(SpecModel):
+    type: Literal["set_flag"] = "set_flag"
+    flag: str = Field(min_length=1)
+    value: bool
+
+
+class MissionEndAction(SpecModel):
+    type: Literal["mission_end"] = "mission_end"
+    result: MissionEndResult
+
+
+TriggerAction = Annotated[
+    MessageAction | SetFlagAction | MissionEndAction,
+    Field(discriminator="type"),
+]
+
+
+class TriggerRule(SpecModel):
+    """One condition→action rule (AND of ``when``, ordered ``then``). No Lua."""
+
+    name: str | None = None
+    once: bool = True
+    when: list[TriggerCondition] = Field(min_length=1)
+    then: list[TriggerAction] = Field(min_length=1)
+
+
 def opposing_coalition(coalition: Coalition) -> Coalition:
     return Coalition.RED if coalition is Coalition.BLUE else Coalition.BLUE
 
@@ -154,7 +230,8 @@ def opposing_coalition(coalition: Coalition) -> Coalition:
 class MissionSpec(SpecModel):
     """Declarative mission specification (free flight through escort).
 
-    ``triggers`` remain reserved for M6 and MUST stay empty in this schema version.
+    Optional ``zones`` / ``triggers`` use the typed mission-triggers model (no Lua).
+    Native ``.miz`` emit for non-empty triggers is deferred to trigger-compiler-native.
     Combat extension rules depend on ``mission_type``.
     """
 
@@ -170,7 +247,8 @@ class MissionSpec(SpecModel):
 
     enemies: list[EnemyFlight] = Field(default_factory=list)
     objectives: list[Objective] = Field(default_factory=list)
-    triggers: list[dict] = Field(default_factory=list)
+    zones: list[TriggerZone] = Field(default_factory=list)
+    triggers: list[TriggerRule] = Field(default_factory=list)
     targets: list[GroundTarget] = Field(default_factory=list)
     package: list[PackageFlight] = Field(default_factory=list)
     cap: Cap | None = None
@@ -199,11 +277,9 @@ class MissionSpec(SpecModel):
 
     @model_validator(mode="after")
     def _mission_type_extension_rules(self) -> MissionSpec:
-        if self.triggers:
-            raise ValueError(
-                "triggers not supported yet: must be empty in schema_version 1 "
-                "(reserved for a future trigger model)"
-            )
+        names = [z.name for z in self.zones]
+        if len(names) != len(set(names)):
+            raise ValueError("zones must have unique names")
 
         if self.mission_type is MissionType.FREE_FLIGHT:
             if self.cap is not None:

@@ -50,7 +50,8 @@ Rules:
   other eras (e.g. Cold War) or any modern date are fine when the user asks for them.
   The host may warn if the date looks mismatched for the content.
 - free_flight: enemies, objectives, targets, and package must be empty; omit cap,
-  strike, and escort; omit player.payload.
+  strike, and escort; omit player.payload. Optional typed zones/triggers allowed
+  (validate-only until native trigger compile exists); never put Lua in the Spec.
 - intercept: non-empty enemies and objectives (type intercept_enemy); omit cap, strike,
   escort, targets, package, and player.payload.
 - cap: nested cap object required (bearing_deg 0–360 from player airfield,

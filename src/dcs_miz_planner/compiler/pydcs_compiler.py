@@ -113,6 +113,7 @@ class PyDCSCompiler(CompilerInterface):
         from dcs.terrain import TheChannel
 
         self._validate(spec)
+        self._refuse_uncompiled_triggers(spec)
 
         aircraft_type = plane_map.get(spec.player.aircraft)
         if aircraft_type is None:
@@ -619,6 +620,16 @@ class PyDCSCompiler(CompilerInterface):
             result.raise_if_errors()
         except MissionValidationError as exc:
             raise ValueError(str(exc)) from exc
+
+    @staticmethod
+    def _refuse_uncompiled_triggers(spec: MissionSpec) -> None:
+        """Native trigger emit is trigger-compiler-native (#21); refuse until then."""
+        if spec.triggers or spec.zones:
+            raise ValueError(
+                "Mission Spec has zones/triggers, but native trigger compilation is not "
+                "implemented yet (OpenSpec change trigger-compiler-native). "
+                "Validate the Spec with dcs-miz validate; omit zones/triggers to compile."
+            )
 
     @staticmethod
     def _apply_weather(mission, preset: WeatherPreset) -> None:
