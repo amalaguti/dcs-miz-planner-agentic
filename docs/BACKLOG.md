@@ -70,37 +70,39 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
 | 10b | `agent-verbose-default-off` | After product polish: default agent `verbose` **off** (quiet CLI); keep `--verbose` / `/verbose on` for debugging | `idea` (final polish) |
 | 10c | `agent-spec-schema-tool` | Derived Mission Spec shape for the agent (tool + prompt fragment); stop hand-maintaining JSON skeletons as mission types grow | `done` (CLI/API accepted 2026-08-01) |
+| 10d | `fix-chat-research-live` | Make `/research` (and `research_guidance`) actually return useful live web notes; today live often yields nothing and silently falls back to fixtures | `idea` |
 | 11 | `squadron-commander-voice` | Agent persona: USAAF or RAF squadron commander tone for questions, guidance, and briefings (configurable; may follow prefs); tactics/procedures/watch-outs brief + optional research | `done` (CLI/API accepted 2026-08-01) |
 
-**`#10c` `agent-spec-schema-tool` — notes (promote after `#10a`):**
+**`#10d` `fix-chat-research-live` — notes:**
 
-Live chat showed the model inventing flat Spec JSON (`airfield`/`aircraft` top-level,
-ISO `date` string, wrong `enemies` shape, `cap.objectives`). A hand-written CAP skeleton
-in the system prompt fixed the immediate gap, but that text will drift as M4 adds
-ground-attack / escort / new options.
+Live chat (2026-08-01): `/research Manston spitfire` with `live=True` printed
+`Warning: research live returned no snippets; using fixtures` and only fixture lines
+(`fixture:generic_fighter_brief`, `fixture:channel_free_flight`) — not query-relevant
+web results. Verbose shows the host intended live fetch.
 
-Goal of this change:
+Likely causes to investigate in `tools/research.py` (`_duckduckgo_notes` /
+`gather_research_notes`): Instant Answer API often empty for multi-word queries;
+timeouts; User-Agent / HTML Instant Answer limits; soft-fail path hides failure detail.
+Chat `/research` defaults live on; soft-fail to fixtures is correct for offline, but
+when live is requested the user should get real snippets or a clear actionable error
+(not generic WWII fixture text that looks like success).
 
-- **SoT stays `models.py` (Pydantic `MissionSpec`)** — same contract validate/compile use.
-  Optional: seed compact examples from `examples/*.yaml`.
-- Add tool e.g. `get_mission_spec_schema(mission_type)` returning a **compact example JSON
-  + field notes / anti-patterns** for that type (not raw noisy `model_json_schema()` alone).
-- Shrink the always-on system prompt to stable rules + a tiny anti-pattern reminder;
-  inject or fetch the full type-specific example when locking Spec / on parse failure
-  (host repair nudge already exists — point it at the derived example).
-- Catalog SQLite may **cache a derived projection** (same pattern as `planning_options`),
-  but must **not** become a hand-edited second schema SoT.
-- Out of scope / later: provider structured-output / constrained decoding for the Spec-emit
-  turn (stronger guarantee; can follow once the derived schema exists).
+Goal of a future change:
 
-Do **not**: author N full skeletons only in the prompt forever, or treat DB JSON blobs as
-the Spec contract.
+- Diagnose empty DDG Instant Answer responses; consider a better provider/HTML path,
+  richer query enrichment, longer timeout, or structured error when live returns zero.
+- Surface fetch failure reason in verbose (and briefly to the pilot) when live was
+  requested.
+- Keep fixtures for stub/offline and as optional grounding — never treat research as
+  Spec/DCS-id authority.
+- Pytest: mock live fetch success + empty + exception paths for `/research` / tool.
 
 ---
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** after `#10c` lands — `mission-type-ground-attack`
+**Next promote / in proposal:** `mission-type-ground-attack` (or M3 `#10d` if research
+UX is blocking chat acceptance)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -174,9 +176,8 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 - **Agent verbose default off** — M3 `#10b` `agent-verbose-default-off`: today `verbose`
   defaults **on** (tool traces on stderr) for development; flip default to off before a
   finalized release, keep `--verbose` / `/verbose on`.
-- **Agent Spec schema tool** — M3 `#10c` `agent-spec-schema-tool`: replace hand-maintained
-  prompt JSON skeletons with examples derived from Pydantic / `examples/`; tool + host
-  repair nudge; catalog cache optional; see M3 notes above.
+- **Chat research live fetch** — M3 `#10d` `fix-chat-research-live`: `/research` with
+  live on often returns no snippets and falls back to fixtures; fix provider/UX (see M3 notes).
 - **Lua enrichment** — scheduled as **M6**; still never LLM-authored mission Lua.
 - **Lua IDE / MCP tooling** — see research **R5–R6**. Schema + LSP for writing snippets; VEAF MCP as a lab only. A future *project-owned* MCP that exposes *our* snippet catalog (`list` / `validate_params` / API docs) is optional once M6 `#22` exists. Native Lua compiler replacing PyDCS remains far-horizon.
 - **Normandy / multi-theatre** — after Channel registry pattern is solid; campaigns above are inspiration, not shipping content.
@@ -199,6 +200,7 @@ Source: `ideas-concepts.txt` (2026-07-26).
 | Agent narrates as US/RAF Squadron Commander | **M3** `#11` `squadron-commander-voice` (+ M5 briefings) |
 | Agent knows / offers all planning options | **M3** `#9` `mission-option-catalog` + tools on `#8` |
 | Agent knows Mission Spec JSON shape per mission type | **M3** `#10c` `agent-spec-schema-tool` (derived from Pydantic; not SQLite SoT) |
+| Chat `/research` should fetch real web notes | **M3** `#10d` `fix-chat-research-live` |
 | Lua integration? | **M6** `#20`–`#23` — enrich missions with triggers/scripts as compiler output; LLM still never authors mission Lua |
 | Spitfire cockpit arguments (User Files 3349460) | **Research** R4 → **M6** `#24` once verified in-game |
 | Download Spitfire campaigns / singles as inspiration | **Research** R1–R2 (+ Lua/trigger audit) → **R5** synthesis for M6 |
