@@ -21,5 +21,7 @@
 ## 4. Docs and accept
 
 - [x] 4.1 Update README / ARCHITECTURE / BACKLOG; LESSONS with final weather numbers
-- [ ] 4.2 In-game accept: sunny (existing), dawn, and marginal VFR `.miz` look correct in
+- [x] 4.2 In-game accept: sunny (existing), dawn, and marginal VFR `.miz` look correct in
       ME / Instant Action; note in tasks
+  - Accepted 2026-08-02: dawn + marginal briefs use meteo descriptions (not Spec ids);
+    weather conditions read well in DCS briefing panel
