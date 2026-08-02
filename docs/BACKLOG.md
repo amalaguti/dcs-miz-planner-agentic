@@ -101,6 +101,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 |---|------|------|--------|
 | 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `done` (accepted in-game 2026-08-02; Sortie/Description/Task in ME) |
 | 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `done` (accepted in-game 2026-08-02; meteo brief phrasing) |
+| 17a | `weather-presets-expand` | Optional later: more Channel weather (rain, thunderstorm, IFR / low cloud, stronger wind); keep Spec ids + meteo brief descriptions; not needed for M5 core | `idea` (after M5; only if play shows a gap) |
 | 18 | `mission-randomization` | Seeded variation for replayability | `idea` |
 | 19 | `spitfire-radio-channel-presets` | Match ED stock Spitfire radio bank (A=124, B=40, C=41, D=42, E=108.9), not only group frequency | `idea` |
 
@@ -194,6 +195,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Historical Spitfire missions from the web | **Research** R3 → later historical validation |
 | Review [pydcs/dcs issues](https://github.com/pydcs/dcs/issues); assess impact for LESSONS / specs | **Research** R7 `research-pydcs-issues` |
 | Check latest PyDCS / project libs; recommend upgrades | **Research** R8 `deps-upgrade-review` |
+| More weather beyond sunny / dawn / marginal VFR | **M5** `#17a` `weather-presets-expand` — deferred; core trio is enough for now |
 
 ---
 
