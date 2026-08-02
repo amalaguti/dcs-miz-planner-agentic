@@ -169,6 +169,7 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert by_key[("roe_seed", "weapons_free")].support == "supported"
     assert by_key[("roe_seed", "weapons_hold")].support == "supported"
     assert by_key[("mission_type", "cap")].support == "supported"
+    assert by_key[("randomization", "seeded_reroll")].support == "advisory"
 
 
 def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:

@@ -94,8 +94,9 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
 | `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options; theatre views join install inventory (`known` / `offerable`) | `registry`, `install`, stdlib `sqlite3` |
 | `memory/` | User prefs, generation history, satisfaction feedback (`user_*` tables; never wiped by catalog sync) | `install.default_db_path`, stdlib `sqlite3` |
-| `tools/` | Agent-facing callables: catalog lookups, `get_mission_spec_schema`, validate/compile, prefs/history/feedback, research_guidance | `catalog`, `memory`, `validation`, `compiler`, `loader`, `agent/spec_schema` |
+| `tools/` | Agent-facing callables: catalog lookups, `get_mission_spec_schema`, validate/compile, `randomize_mission`, prefs/history/feedback, research_guidance | `catalog`, `memory`, `validation`, `compiler`, `loader`, `randomize`, `agent/spec_schema` |
 | `briefing.py` | Spec → plain-text Sortie / Description / Blue|Red Task for `.miz` `l10n` (splits commander brief; lazy-imports voice) | `models`, `agent.voice` |
+| `randomize.py` | Seeded Spec→Spec variation (weather/time/geometry/opposition); compiler stays deterministic | `models`, `registry` |
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |

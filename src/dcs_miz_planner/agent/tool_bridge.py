@@ -14,6 +14,7 @@ from ..tools import (
     get_user_prefs,
     list_generation_history,
     list_mission_options,
+    randomize_mission,
     record_feedback,
     record_generation,
     research_guidance,
@@ -235,6 +236,40 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "randomize_mission",
+            "description": (
+                "Seeded Spec→Spec reroll for replayability (weather/time/geometry/"
+                "opposition). Returns a concrete Spec dict; validate/compile separately. "
+                "Same seed + axes → same Spec."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "seed": {
+                        "type": "integer",
+                        "description": "Non-negative integer seed",
+                    },
+                    "spec_path": {
+                        "type": "string",
+                        "description": "Path to base Mission Spec YAML",
+                    },
+                    "axes": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional: weather, time, geometry, opposition",
+                    },
+                    "annotate": {
+                        "type": "boolean",
+                        "description": "Append (seed N) to description",
+                    },
+                },
+                "required": ["seed", "spec_path"],
+            },
+        },
+    },
 ]
 
 
@@ -316,5 +351,15 @@ def dispatch_tool(
             str(args.get("output_path", "")),
             db_path=db_path,
             voice=args.get("voice"),
+        )
+    if name == "randomize_mission":
+        axes = args.get("axes")
+        return randomize_mission(
+            seed=int(args.get("seed", -1)),
+            spec_path=args.get("spec_path"),
+            spec=args.get("spec") if isinstance(args.get("spec"), dict) else None,
+            axes=axes if isinstance(axes, (list, str)) or axes is None else None,
+            annotate=bool(args.get("annotate", False)),
+            db_path=db_path,
         )
     return {"ok": False, "error": f"Unknown tool: {name}", "code": "unknown_tool"}

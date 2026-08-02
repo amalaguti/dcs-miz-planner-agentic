@@ -183,3 +183,11 @@ options:
     support: supported
     meta:
       engagement: return_fire
+
+  - family: randomization
+    id: seeded_reroll
+    label: Seeded reroll
+    description: >
+      Reroll weather, clock, geometry, and/or opposition on an existing Spec via
+      dcs-miz randomize / randomize_mission tool (seed argument; not a Spec field).
+    support: advisory

@@ -37,7 +37,7 @@ Editor and is flyable, reproducibly, from a single command.
 
 ## M2 — Harden the contract and data
 
-**Next promote / in proposal:** (see M5 — prefer `mission-randomization`)
+**Next promote / in proposal:** (see M5 — prefer `spitfire-radio-channel-presets`)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -84,7 +84,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `mission-randomization` (M5)
+**Next promote / in proposal:** `spitfire-radio-channel-presets` (M5)
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -102,7 +102,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 | 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `done` (accepted in-game 2026-08-02; Sortie/Description/Task in ME) |
 | 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `done` (accepted in-game 2026-08-02; meteo brief phrasing) |
 | 17a | `weather-presets-expand` | Optional later: more Channel weather (rain, thunderstorm, IFR / low cloud, stronger wind); keep Spec ids + meteo brief descriptions; not needed for M5 core | `idea` (after M5; only if play shows a gap) |
-| 18 | `mission-randomization` | Seeded variation for replayability | `idea` |
+| 18 | `mission-randomization` | Seeded Spec→Spec variation for replayability (CLI + tool; compiler stays deterministic) | `done` (accepted 2026-08-02; seed42 vs seed99 CAP) |
 | 19 | `spitfire-radio-channel-presets` | Match ED stock Spitfire radio bank (A=124, B=40, C=41, D=42, E=108.9), not only group frequency | `idea` |
 
 ---

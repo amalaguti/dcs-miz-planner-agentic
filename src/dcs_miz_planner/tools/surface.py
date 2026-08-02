@@ -6,11 +6,15 @@ import json
 from pathlib import Path
 from typing import Any
 
+from pydantic import ValidationError
+
 from ..catalog import CatalogService
 from ..compiler import PyDCSCompiler
 from ..install.models import TheatreInventory
 from ..loader import SpecLoadError, load_mission_spec
 from ..memory import UserMemoryService
+from ..models import MissionSpec
+from ..randomize import RandomizeError, parse_axes, randomize_mission_spec
 from ..validation import validate_mission_spec as _validate_mission_spec
 from .research import gather_research_notes
 from .results import err_result, ok_result
@@ -237,6 +241,81 @@ def compile_mission(
     except ValueError as exc:
         return err_result(str(exc), code="compile_failed", path=str(path))
     return ok_result(path=str(path), output=str(written))
+
+
+def randomize_mission(
+    *,
+    seed: int,
+    spec_path: str | Path | None = None,
+    spec: dict[str, Any] | None = None,
+    axes: list[str] | str | None = None,
+    annotate: bool = False,
+    validate: bool = True,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Seeded Spec→Spec variation; returns Spec dict (does not compile)."""
+    del db_path
+    base: MissionSpec
+    source_path: str | None = None
+    if spec_path is not None:
+        path = Path(spec_path)
+        if not path.is_file():
+            return err_result(f"Spec not found: {path}", code="not_found", path=str(path))
+        try:
+            base = load_mission_spec(path)
+        except SpecLoadError as exc:
+            return err_result(str(exc), code="spec_load_error", path=str(path))
+        source_path = str(path)
+    elif spec is not None:
+        try:
+            base = MissionSpec.model_validate(spec)
+        except ValidationError as exc:
+            return err_result(str(exc), code="spec_load_error")
+    else:
+        return err_result(
+            "Provide spec_path or spec",
+            code="invalid_query",
+        )
+
+    try:
+        seed_i = int(seed)
+    except (TypeError, ValueError):
+        return err_result("seed must be a non-negative integer", code="invalid_query")
+
+    try:
+        applied = parse_axes(axes)
+        out = randomize_mission_spec(base, seed_i, axes=applied, annotate=annotate)
+    except RandomizeError as exc:
+        return err_result(str(exc), code="randomize_error")
+
+    if validate:
+        result = _validate_mission_spec(out)
+        if not result.ok:
+            errors = [
+                {
+                    "code": e.code,
+                    "path": e.path,
+                    "message": e.message,
+                    "hint": e.hint,
+                }
+                for e in result.errors
+            ]
+            return err_result(
+                "Randomized Spec failed validation",
+                code="validation_failed",
+                errors=errors,
+                seed=seed_i,
+                axes=list(applied),
+            )
+
+    payload: dict[str, Any] = {
+        "spec": out.model_dump(mode="json"),
+        "seed": seed_i,
+        "axes": list(applied),
+    }
+    if source_path is not None:
+        payload["path"] = source_path
+    return ok_result(**payload)
 
 
 def get_user_prefs(

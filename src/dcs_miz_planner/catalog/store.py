@@ -17,7 +17,7 @@ from .models import (
     CatalogWeatherPreset,
 )
 
-CATALOG_SCHEMA_VERSION = 3
+CATALOG_SCHEMA_VERSION = 4
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS catalog_meta (

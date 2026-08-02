@@ -7,6 +7,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Mission randomization: seed is build-scoped, not forever-stable
+
+- **Date:** 2026-08-02
+- **Lesson:** `randomize_mission_spec` uses `random.Random(seed)` with a fixed draw order
+  (weather → time → geometry → opposition). Same seed is reproducible **only for the
+  current axis set and choice pools**. Adding WeatherPreset values, opposition fighters,
+  new default axes, or changing jitter math will change Specs for old seeds. Lock a
+  sortie by keeping the randomized YAML / `.miz`, not the seed alone. Never put RNG in
+  the compiler — goldens stay on concrete Specs.
+- **Code:** `randomize.py`, `dcs-miz randomize`, tools `randomize_mission`.
+
 ## Weather presets: dawn_clear / marginal_vfr mappings
 
 - **Date:** 2026-08-02

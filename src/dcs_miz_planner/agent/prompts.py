@@ -36,6 +36,9 @@ Rules:
   example's structure (derived from packaged Specs — not invented shapes).
 - Call research_guidance when you need tactics, procedures, or historical context for
   the commander brief; never treat research as Spec or DCS-id authority.
+- To reroll weather/time/geometry/opposition on an accepted Spec, call
+  randomize_mission with a seed (once), then validate/compile the returned Spec —
+  do not invent random fields by hand.
 - Known player aircraft examples: SpitfireLFMkIX. Package examples: MosquitoFBMkVI.
   Enemy examples: Bf-109K-4.
 - Countries: UK (blue), ThirdReich (red) for Channel WWII Axis.

@@ -27,12 +27,14 @@ Bf-109 bounce (accepted in-game 2026-08-02). Compile writes squadron-commander b
 into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; accepted in-game
 2026-08-02). Weather presets: `sunny_clear`, `dawn_clear`, `marginal_vfr` (examples under
 `examples/manston_dawn_freeflight.yaml` / `manston_marginal_vfr.yaml`; accepted in-game
-2026-08-02 with meteo briefing phrasing). Interactive multi-turn
+2026-08-02 with meteo briefing phrasing). Seeded Spec rerolls:
+`dcs-miz randomize <spec> --seed N` (weather/time/geometry/opposition; same seed → same Spec).
+Interactive multi-turn
 chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026-08-01).
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `mission-randomization` (M5); research R7/R8 as hygiene.
+**Next:** `spitfire-radio-channel-presets` (M5); research R7/R8 as hygiene.
 
 ## Stack
 
@@ -64,6 +66,10 @@ uv run dcs-miz examples/manston_ground_attack.yaml
 uv run dcs-miz validate examples/manston_escort.yaml
 uv run dcs-miz examples/manston_escort.yaml
 # -> out/manston_escort.miz
+
+# Seeded reroll (same seed → same Spec), then compile:
+uv run dcs-miz randomize examples/manston_cap.yaml --seed 42
+uv run dcs-miz compile out/manston_cap_seed42.yaml -o out/manston_cap_seed42.miz
 ```
 
 Open the result in the DCS Mission Editor, or copy it into

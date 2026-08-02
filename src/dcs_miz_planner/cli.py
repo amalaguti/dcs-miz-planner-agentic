@@ -21,9 +21,16 @@ from .compiler import PyDCSCompiler
 from .install import InventoryService, default_db_path
 from .loader import SpecLoadError, load_mission_spec
 from .memory import UserMemoryService
+from .randomize import RandomizeError, randomize_mission_spec
 from .validation import validate_mission_spec
 
 DEFAULT_OUTPUT_DIR = Path("out")
+
+
+def _dump_spec_yaml(spec) -> str:
+    import yaml
+
+    return yaml.safe_dump(spec.model_dump(mode="json"), sort_keys=False, allow_unicode=True)
 
 
 def _compile_cmd(args: argparse.Namespace) -> int:
@@ -51,6 +58,49 @@ def _compile_cmd(args: argparse.Namespace) -> int:
         print(exc, file=sys.stderr)
         return 2
     print(f"Wrote {written}")
+    return 0
+
+
+def _randomize_cmd(args: argparse.Namespace) -> int:
+    spec_path = Path(args.spec)
+    if not spec_path.exists():
+        print(f"Spec not found: {spec_path}", file=sys.stderr)
+        return 2
+
+    try:
+        spec = load_mission_spec(spec_path)
+    except SpecLoadError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+
+    try:
+        out_spec = randomize_mission_spec(
+            spec,
+            args.seed,
+            axes=args.axes,
+            annotate=args.annotate,
+        )
+    except RandomizeError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+
+    if not args.no_validate:
+        result = validate_mission_spec(out_spec)
+        if not result.ok:
+            print("Randomized Spec failed validation:", file=sys.stderr)
+            for err in result.errors:
+                loc = f"{err.path}: " if err.path else ""
+                print(f"  [{err.code}] {loc}{err.message}", file=sys.stderr)
+            return 2
+
+    output = (
+        Path(args.output)
+        if args.output
+        else DEFAULT_OUTPUT_DIR / f"{spec_path.stem}_seed{args.seed}.yaml"
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(_dump_spec_yaml(out_spec), encoding="utf-8")
+    print(f"Wrote {output}")
     return 0
 
 
@@ -442,6 +492,40 @@ def _build_parser() -> argparse.ArgumentParser:
     validate_p.add_argument("--json", action="store_true", help="Machine-readable JSON output")
     validate_p.set_defaults(func=_validate_cmd)
 
+    randomize_p = sub.add_parser(
+        "randomize",
+        help="Seeded Spec→Spec variation for replayability (writes YAML)",
+    )
+    randomize_p.add_argument("spec", help="Path to a base Mission Spec YAML file")
+    randomize_p.add_argument(
+        "--seed",
+        type=int,
+        required=True,
+        help="Non-negative integer seed (same seed → same Spec)",
+    )
+    randomize_p.add_argument(
+        "--axes",
+        default=None,
+        help="Comma-separated axes: weather,time,geometry,opposition (default: all)",
+    )
+    randomize_p.add_argument(
+        "-o",
+        "--output",
+        default=None,
+        help="Output YAML path (default: out/<stem>_seed<N>.yaml)",
+    )
+    randomize_p.add_argument(
+        "--annotate",
+        action="store_true",
+        help='Append "(seed N)" to description',
+    )
+    randomize_p.add_argument(
+        "--no-validate",
+        action="store_true",
+        help="Skip validation before write (debug only)",
+    )
+    randomize_p.set_defaults(func=_randomize_cmd)
+
     theatres_p = sub.add_parser(
         "theatres",
         help="List local DCS theatres from SQLite cache (use --refresh to rescan)",
@@ -674,6 +758,7 @@ def main(argv: list[str] | None = None) -> int:
         not in {
             "compile",
             "validate",
+            "randomize",
             "theatres",
             "catalog",
             "plan",
