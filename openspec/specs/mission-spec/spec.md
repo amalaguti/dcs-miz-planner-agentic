@@ -442,3 +442,16 @@ Channel free-flight (or equivalent minimal) sorties usable as validate/compile i
 #### Scenario: Marginal VFR example present
 - **WHEN** a developer lists Channel weather examples
 - **THEN** a marginal VFR example Spec MUST be present and compile under Channel inventory
+
+### Requirement: Optional narrative on Mission Spec
+The Mission Spec MAY include a `narrative` object with `enabled` (boolean, default
+false). When omitted, behaviour MUST match Specs with no narrative. Enabling narrative
+MUST NOT introduce Lua or script fields on the Spec.
+
+#### Scenario: Narrative field loads
+- **WHEN** a Spec YAML includes `narrative: { enabled: true }` with an otherwise valid CAP
+- **THEN** structural load MUST succeed (subject to narrative expansion/validation rules)
+
+#### Scenario: Unknown narrative fields rejected
+- **WHEN** `narrative` includes an undeclared field
+- **THEN** loading MUST fail (unknown field)
