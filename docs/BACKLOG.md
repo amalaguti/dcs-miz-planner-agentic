@@ -150,7 +150,7 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R6 | `research-lua-ide-tooling` | Recipe in `research/lua-ide-tooling.md`: pin dcs-world-schema EmmyLua + LuaLS lab; VEAF MCP only at first `#22` snippet work | `done` (notes only; lab vendor not installed) |
 | R7 | `research-pydcs-issues` | Review open issues on [pydcs/dcs](https://github.com/pydcs/dcs/issues); assess impact on our compiler / Channel Specs; promote durable notes into `LESSONS_LEARNED.md` or specs when they affect us | `idea` |
 | R8 | `deps-upgrade-review` | Periodically check latest PyDCS and other project-related libraries; decide whether an upgrade is recommended (pin notes in LESSONS / pyproject when we bump) | `idea` |
-| R9 | `research-dcs-user-manual-me` | Read local `docs/DCS_User_Manual_EN_2020.pdf` (gitignored; [official EN download](https://www.digitalcombatsimulator.com/en/downloads/documentation/dcs-user_manual_en/) is still this 2020 file — documents DCS World **2.5**, so treat ME details as a baseline and cross-check post-2020 ME changes via ED changelogs). Focus Mission Editor chapter (ToC ~p.83 / Set Rules for Triggers + related ME tools); inventory features we could map into Spec/compiler/agent; notes under `research/`; promote durable gaps into backlog / LESSONS | `idea` |
+| R9 | `research-dcs-user-manual-me` | Inventory ME features we could map into Spec/compiler/agent; notes under `research/`; promote durable gaps into backlog / LESSONS. **Sources (use together):** (1) local `docs/DCS_User_Manual_EN_2020.pdf` (gitignored; [official EN download](https://www.digitalcombatsimulator.com/en/downloads/documentation/dcs-user_manual_en/) — still the 2020 file for DCS **2.5**; ME chapter ToC ~p.83 / Set Rules for Triggers — *baseline only*); (2) community [TEMPEST.114 Mission Editor Manual](https://forum.dcs.world/topic/347082-mission-editor-manual-most-of-all-me-how-do-i-do-this-are-solvable-with-this-little-pdf-it-has-lots-of-info-not-clear-in-the-ui-hope-it-helps/) (ED Forums, 2024 — clearer ME how-tos than the UI/ED PDF); (3) [Hoggit ME wiki](https://wiki.hoggitworld.com/view/DCS_editor_triggerBasics) ([conditions](https://wiki.hoggitworld.com/view/DCS_editor_conditions), actions, [AI tasking](https://wiki.hoggitworld.com/view/DCS_editor_AITasking)); (4) [Hoggit Scripting Engine docs](https://wiki.hoggitworld.com/view/Simulator_Scripting_Engine_Documentation) (for M6 `#22` Lua, not day-to-day Spec compile); (5) [ED changelogs](https://www.digitalcombatsimulator.com/en/news/changelog/) + newsletters for post-2020 ME features; (6) in-game ME + stock Channel IA/Training (cross-check with R5) | `idea` |
 
 Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 
@@ -177,7 +177,7 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 - **Historical validation engine** — date → plausible aircraft/opposition (productized form of R3).
 - **PyDCS issue watch** — research **R7**: triage [pydcs/dcs issues](https://github.com/pydcs/dcs/issues) into LESSONS / Spec risk notes.
 - **Dependency upgrade cadence** — research **R8**: check PyDCS + related libs; bump only when recommended.
-- **ED User Manual ME pass** — research **R9**: Mission Editor chapter in local `docs/DCS_User_Manual_EN_2020.pdf` → candidate Spec/compiler features.
+- **ED / ME docs pass** — research **R9**: 2020 User Manual ME chapter + TEMPEST ME manual + Hoggit ME/scripting wiki + ED changelogs → candidate Spec/compiler features.
 - Multiplayer, dynamic campaign, radio VO generation.
 
 ---
@@ -204,7 +204,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Historical Spitfire missions from the web | **Research** R3 → later historical validation |
 | Review [pydcs/dcs issues](https://github.com/pydcs/dcs/issues); assess impact for LESSONS / specs | **Research** R7 `research-pydcs-issues` |
 | Check latest PyDCS / project libs; recommend upgrades | **Research** R8 `deps-upgrade-review` |
-| Mine ED User Manual ME chapter for richer mission content | **Research** R9 `research-dcs-user-manual-me` (local PDF gitignored) |
+| Mine ED User Manual ME chapter for richer mission content | **Research** R9 `research-dcs-user-manual-me` (2020 PDF + TEMPEST ME manual + Hoggit + changelogs) |
 | More weather beyond sunny / dawn / marginal VFR | **M5** `#17a` `weather-presets-expand` — deferred; core trio is enough for now |
 
 ---
