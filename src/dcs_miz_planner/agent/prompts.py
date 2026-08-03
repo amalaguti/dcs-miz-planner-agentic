@@ -58,8 +58,11 @@ Rules:
   distance_km > 0, altitude_m > 0, pattern circle|race_track, engagement
   weapons_free|open_fire|return_fire|weapons_hold, optional duration_min).
   Top-level objectives must include {"type":"patrol"}. enemies optional
-  (empty = pure patrol). Do NOT invent raw map x/y or WGS84 — only bearing/distance
-  from the airfield. Omit strike, escort, targets, package, and player.payload.
+  (empty = pure patrol). Optional narrative.enabled true expands curated CAP
+  immersion (zones/triggers) when zones/triggers are empty and enemies non-empty —
+  never with hand-written triggers. Do NOT invent raw map x/y or WGS84 — only
+  bearing/distance from the airfield. Omit strike, escort, targets, package, and
+  player.payload.
 - ground_attack: nested strike required (bearing_deg, distance_km, altitude_m from
   player airfield; optional practice bool). player.payload required (named preset).
   targets non-empty. Combat (practice false/default): opposing coalition only; land

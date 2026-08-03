@@ -112,6 +112,13 @@ class PyDCSCompiler(CompilerInterface):
         from dcs.planes import plane_map
         from dcs.terrain import TheChannel
 
+        from ..narrative import NarrativeError, expand_narrative_if_needed
+
+        try:
+            spec = expand_narrative_if_needed(spec, voice=voice)
+        except NarrativeError as exc:
+            raise ValueError(f"{exc.path}: {exc.message}") from exc
+
         self._validate(spec)
 
         aircraft_type = plane_map.get(spec.player.aircraft)

@@ -63,7 +63,10 @@ flowchart TD
 ASCII fallback:
 
 ```text
-YAML spec -> cli -> loader -> MissionSpec -> validate_mission_spec
+YAML spec -> cli -> loader -> MissionSpec -> narrative expand (if enabled)
+                                                  |
+                                                  v
+                                          validate_mission_spec
                                                   |     ^
                                                   |     | (same engine)
                                                   v     |
@@ -87,7 +90,8 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 |--------|----------------|------------|
 | `cli.py` | `validate` / `compile` / `theatres` / `catalog` / `prefs` / `feedback` / `plan`; legacy spec path | `loader`, `validation`, `compiler`, `install`, `catalog`, `memory`, `agent` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
-| `models.py` | The public contract: `MissionSpec` + enums. Free flight through escort; weather trio; typed `zones`/`triggers` (no Lua; native emit deferred) | `pydantic` |
+| `models.py` | The public contract: `MissionSpec` + enums. Free flight through escort; weather trio; typed `zones`/`triggers` (no Lua; native emit); optional `narrative.enabled` | `pydantic` |
+| `narrative.py` | Opt-in CAP pack → materialise zones/triggers (squadron-voice message text); runs before validate/compile | `models`, `agent.voice` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules); multi-error result | `models`, `registry`, `install` |
 | `data/channel/` | Committed Channel YAML SoT (airdromeIds, aircraft+radio, theatres, weather, payloads, planning_options) | shipped in wheel via hatch force-include |
 | `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
@@ -100,7 +104,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; classify available/disabled/incomplete/unknown; SQLite cache | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
-| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), emits native zones/triggers, writes briefing `l10n` + `.miz` | `models`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `dcs.*` |
+| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Expands narrative if needed, validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), emits native zones/triggers, writes briefing `l10n` + `.miz` | `models`, `narrative`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `dcs.*` |
 | `compiler/triggers_emit.py` | Spec zones/triggers → PyDCS `add_triggerzone` + `TriggerOnce`/`Continious` rules | `models`, `dcs.condition`/`action`/`triggers` |
 
 Three stores stay separate on purpose (four table namespaces, one DB file):

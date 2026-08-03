@@ -372,8 +372,25 @@ def validate_mission_spec(
     *,
     registry: ChannelRegistry | None = None,
     inventory: TheatreInventory | None = None,
+    voice: str | None = None,
 ) -> ValidationResult:
     """Validate a loaded Mission Spec; collect independent errors in one pass."""
+    from .narrative import NarrativeError, expand_narrative_if_needed
+
+    try:
+        spec = expand_narrative_if_needed(spec, voice=voice)
+    except NarrativeError as exc:
+        return ValidationResult(
+            errors=(
+                ValidationError(
+                    code=exc.code,
+                    path=exc.path,
+                    message=exc.message,
+                    hint=exc.hint,
+                ),
+            ),
+        )
+
     registry = registry if registry is not None else get_channel_registry()
     errors: list[ValidationError] = []
 

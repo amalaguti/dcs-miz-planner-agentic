@@ -49,6 +49,11 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         'top-level objectives must include {"type":"patrol"}; enemies are optional.',
         "station is airfield-relative bearing/distance — never invent raw map x/y.",
         "omit strike, targets, and player.payload.",
+        (
+            "optional narrative.enabled true (CAP only): expands to typed zones/triggers "
+            "(push / on-station / bandits-down win). Requires empty zones/triggers and "
+            "at least one enemy; conflicts with hand-authored triggers."
+        ),
     ),
     MissionType.GROUND_ATTACK.value: (
         "nested strike is required (bearing_deg, distance_km, altitude_m).",
@@ -85,7 +90,8 @@ _COMMON_NOTES: tuple[str, ...] = (
     (
         "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|unit_dead|"
         "coalition_in_zone; actions message|set_flag|mission_end. Compiler emits native "
-        "ME trigger tables for validated graphs."
+        "ME trigger tables for validated graphs. Optional narrative.enabled (CAP) expands "
+        "a curated pack into that vocabulary when zones/triggers are empty."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",

@@ -7,7 +7,18 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Opt-in CAP narrative expands before validate/compile
+
+- **Date:** 2026-08-03
+- **Lesson:** `narrative.enabled: true` (CAP only) materialises curated zones/triggers
+  via `apply_narrative`, then clears the flag so a second expand is a no-op. Conflicts
+  with non-empty hand-written zones/triggers; requires `cap` + ≥1 enemy. Message copy
+  follows briefing voices (`raf`/`usaaf`/`neutral`). ME: view rules under **Set Rules
+  for Triggers**, not group Triggered Actions.
+- **Code:** `narrative.py`, `validation.py`, `examples/manston_cap_narrative.yaml`.
+
 ## Trigger Spec compiles to native ME tables
+
 
 - **Date:** 2026-08-02
 - **Lesson:** Validated Spec `zones`/`triggers` map via PyDCS:

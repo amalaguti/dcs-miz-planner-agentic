@@ -223,6 +223,12 @@ class TriggerRule(SpecModel):
     then: list[TriggerAction] = Field(min_length=1)
 
 
+class NarrativeSpec(SpecModel):
+    """Opt-in immersion pack that expands into typed zones/triggers (no Lua)."""
+
+    enabled: bool = False
+
+
 def opposing_coalition(coalition: Coalition) -> Coalition:
     return Coalition.RED if coalition is Coalition.BLUE else Coalition.BLUE
 
@@ -230,8 +236,9 @@ def opposing_coalition(coalition: Coalition) -> Coalition:
 class MissionSpec(SpecModel):
     """Declarative mission specification (free flight through escort).
 
-    Optional ``zones`` / ``triggers`` use the typed mission-triggers model (no Lua).
-    Native ``.miz`` emit for non-empty triggers is deferred to trigger-compiler-native.
+    Optional ``zones`` / ``triggers`` use the typed mission-triggers model (no Lua);
+    validated graphs emit as native ME trigger tables. Optional ``narrative.enabled``
+    expands a curated pack into zones/triggers before validate/compile.
     Combat extension rules depend on ``mission_type``.
     """
 
@@ -254,6 +261,7 @@ class MissionSpec(SpecModel):
     cap: Cap | None = None
     strike: Strike | None = None
     escort: Escort | None = None
+    narrative: NarrativeSpec | None = None
 
     @field_validator("schema_version")
     @classmethod
