@@ -11,6 +11,7 @@ from .models import (
     MissionSpec,
     MissionType,
     NarrativeSpec,
+    TargetDeadCondition,
     TimeMoreCondition,
     TriggerRule,
     TriggerZone,
@@ -91,6 +92,34 @@ _ESCORT_COPY: dict[str, dict[str, str]] = {
     },
 }
 
+STRIKE_AREA_ZONE = "strike_area"
+STRIKE_AREA_RADIUS_M = 5000.0
+GA_PUSH_SECONDS = 120.0
+
+_GA_COPY: dict[str, dict[str, str]] = {
+    "raf": {
+        "push": (
+            "Ops — climb for the Channel strike. Jettison the tank before the attack run. "
+            "Bombs on the briefed targets."
+        ),
+        "ingress": ("Ingress — strike area. Put your bombs on the targets. Watch for flak."),
+        "win": "Targets destroyed. Well done. You are cleared to RTB.",
+    },
+    "usaaf": {
+        "push": (
+            "Ops — climb for the strike. Drop the tank before the run. "
+            "Bombs on the briefed targets."
+        ),
+        "ingress": ("Ingress — target area. Put bombs on target. Watch for flak."),
+        "win": "Targets down. Good work. Cleared to RTB.",
+    },
+    "neutral": {
+        "push": "Climb to the briefed strike area. Attack the assigned ground targets.",
+        "ingress": "At the strike area. Engage the targets.",
+        "win": "Targets destroyed. Mission success. Return to base.",
+    },
+}
+
 
 class NarrativeError(Exception):
     """Narrative pack cannot be applied; maps to a validation-style error."""
@@ -142,15 +171,19 @@ def apply_narrative(spec: MissionSpec, *, voice: str | None = None) -> MissionSp
         zones, triggers = _apply_intercept_pack(spec, resolved)
     elif spec.mission_type is MissionType.ESCORT:
         zones, triggers = _apply_escort_pack(spec, resolved)
+    elif spec.mission_type is MissionType.GROUND_ATTACK:
+        zones, triggers = _apply_ground_attack_pack(spec, resolved)
     else:
         raise NarrativeError(
             "narrative_unsupported_mission_type",
             "narrative",
             (
                 f"narrative.enabled is only supported for mission_type cap, intercept, "
-                f"or escort (got {spec.mission_type.value!r})"
+                f"escort, or ground_attack (got {spec.mission_type.value!r})"
             ),
-            hint="Disable narrative, or use mission_type cap, intercept, or escort",
+            hint=(
+                "Disable narrative, or use mission_type cap, intercept, escort, or ground_attack"
+            ),
         )
 
     return spec.model_copy(
@@ -303,6 +336,60 @@ def _apply_escort_pack(
             name="narrative_bandits_down",
             once=True,
             when=[UnitDeadCondition(enemy_index=0)],
+            then=[
+                MessageAction(text=copy["win"], duration_s=15),
+                MissionEndAction(result=MissionEndResult.WIN),
+            ],
+        ),
+    ]
+    return [zone], triggers
+
+
+def _apply_ground_attack_pack(
+    spec: MissionSpec, voice: str
+) -> tuple[list[TriggerZone], list[TriggerRule]]:
+    if spec.strike is None:
+        raise NarrativeError(
+            "narrative_strike_required",
+            "strike",
+            "Ground-attack narrative requires a nested strike block",
+        )
+    if not spec.targets:
+        raise NarrativeError(
+            "narrative_targets_required",
+            "targets",
+            "Ground-attack narrative requires at least one target for the win condition",
+        )
+
+    copy = _GA_COPY.get(voice, _GA_COPY[DEFAULT_VOICE])
+    zone = TriggerZone(
+        name=STRIKE_AREA_ZONE,
+        bearing_deg=spec.strike.bearing_deg,
+        distance_km=spec.strike.distance_km,
+        radius_m=STRIKE_AREA_RADIUS_M,
+    )
+    triggers = [
+        TriggerRule(
+            name="narrative_push",
+            once=True,
+            when=[TimeMoreCondition(seconds=GA_PUSH_SECONDS)],
+            then=[MessageAction(text=copy["push"], duration_s=12)],
+        ),
+        TriggerRule(
+            name="narrative_ingress",
+            once=True,
+            when=[
+                CoalitionInZoneCondition(
+                    zone=STRIKE_AREA_ZONE,
+                    coalition=spec.player.coalition,
+                )
+            ],
+            then=[MessageAction(text=copy["ingress"], duration_s=12)],
+        ),
+        TriggerRule(
+            name="narrative_targets_down",
+            once=True,
+            when=[TargetDeadCondition(target_index=0)],
             then=[
                 MessageAction(text=copy["win"], duration_s=15),
                 MissionEndAction(result=MissionEndResult.WIN),

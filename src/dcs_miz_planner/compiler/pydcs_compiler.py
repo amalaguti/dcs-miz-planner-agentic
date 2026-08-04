@@ -189,6 +189,7 @@ class PyDCSCompiler(CompilerInterface):
         group.frequency = radio_mhz
 
         enemy_group_ids: list[int] = []
+        target_group_ids: list[int] = []
         if spec.mission_type is MissionType.INTERCEPT:
             enemy_group_ids = self._place_enemies(mission, countries, registry, spec, enemy_types)
         elif spec.mission_type is MissionType.CAP:
@@ -198,13 +199,15 @@ class PyDCSCompiler(CompilerInterface):
                     mission, countries, registry, spec, enemy_types, airport
                 )
         elif spec.mission_type is MissionType.GROUND_ATTACK:
-            self._apply_ground_attack(mission, countries, registry, group, airport, spec)
+            target_group_ids = self._apply_ground_attack(
+                mission, countries, registry, group, airport, spec
+            )
         elif spec.mission_type is MissionType.ESCORT:
             enemy_group_ids = self._apply_escort(
                 mission, countries, registry, group, airport, spec, package_types, enemy_types
             )
 
-        self._apply_zones_and_triggers(mission, airport, spec, enemy_group_ids)
+        self._apply_zones_and_triggers(mission, airport, spec, enemy_group_ids, target_group_ids)
         self._apply_briefing(mission, spec, voice)
 
         out = Path(output_path)
@@ -215,11 +218,21 @@ class PyDCSCompiler(CompilerInterface):
 
     @staticmethod
     def _apply_zones_and_triggers(
-        mission, airport, spec: MissionSpec, enemy_group_ids: list[int]
+        mission,
+        airport,
+        spec: MissionSpec,
+        enemy_group_ids: list[int],
+        target_group_ids: list[int] | None = None,
     ) -> None:
         from .triggers_emit import apply_zones_and_triggers
 
-        apply_zones_and_triggers(mission, airport, spec, enemy_group_ids)
+        apply_zones_and_triggers(
+            mission,
+            airport,
+            spec,
+            enemy_group_ids,
+            target_group_ids=target_group_ids,
+        )
 
     @staticmethod
     def _apply_briefing(mission, spec: MissionSpec, voice: str | None) -> None:
@@ -325,7 +338,7 @@ class PyDCSCompiler(CompilerInterface):
         group,
         airport,
         spec: MissionSpec,
-    ) -> None:
+    ) -> list[int]:
         from dcs.mapping import Vector2
         from dcs.task import Bombing, GroundAttack, OptJettisonEmptyTanks
 
@@ -371,6 +384,7 @@ class PyDCSCompiler(CompilerInterface):
         )
         tgt_wp.add_task(Bombing(Vector2(target.x, target.y), altitude=int(strike.altitude_m)))
 
+        group_ids: list[int] = []
         for i, tgt in enumerate(spec.targets):
             strike_unit = registry.get_strike_unit(tgt.unit)
             country = self._ensure_country(mission, countries_mod, tgt.country, tgt.coalition.value)
@@ -392,6 +406,7 @@ class PyDCSCompiler(CompilerInterface):
                 )
                 for unit in sg.units:
                     unit.skill = skill
+                group_ids.append(sg.id)
             else:
                 from dcs.vehicles import vehicle_map
 
@@ -407,6 +422,8 @@ class PyDCSCompiler(CompilerInterface):
                 )
                 for unit in vg.units:
                     unit.skill = skill
+                group_ids.append(vg.id)
+        return group_ids
 
     def _apply_escort(
         self,

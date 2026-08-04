@@ -178,6 +178,11 @@ class UnitDeadCondition(SpecModel):
     enemy_index: int = Field(ge=0, description="0-based index into Spec enemies[]")
 
 
+class TargetDeadCondition(SpecModel):
+    type: Literal["target_dead"] = "target_dead"
+    target_index: int = Field(ge=0, description="0-based index into Spec targets[]")
+
+
 class CoalitionInZoneCondition(SpecModel):
     type: Literal["coalition_in_zone"] = "coalition_in_zone"
     zone: str = Field(min_length=1)
@@ -185,7 +190,11 @@ class CoalitionInZoneCondition(SpecModel):
 
 
 TriggerCondition = Annotated[
-    TimeMoreCondition | FlagIsCondition | UnitDeadCondition | CoalitionInZoneCondition,
+    TimeMoreCondition
+    | FlagIsCondition
+    | UnitDeadCondition
+    | TargetDeadCondition
+    | CoalitionInZoneCondition,
     Field(discriminator="type"),
 ]
 

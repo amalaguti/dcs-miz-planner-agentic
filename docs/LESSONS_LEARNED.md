@@ -10,10 +10,11 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 ## Opt-in CAP narrative expands before validate/compile
 
 - **Date:** 2026-08-03
-- **Lesson:** `narrative.enabled: true` (CAP / intercept / escort) materialises curated
-  zones/triggers via `apply_narrative`, then clears the flag so a second expand is a
-  no-op. Conflicts with non-empty hand-written zones/triggers; requires enemies (CAP
-  also needs `cap`; escort needs `escort` + package). Message copy follows briefing
+- **Lesson:** `narrative.enabled: true` (CAP / intercept / escort / ground_attack)
+  materialises curated zones/triggers via `apply_narrative`, then clears the flag so a
+  second expand is a no-op. Conflicts with non-empty hand-written zones/triggers; requires
+  enemies (CAP also needs `cap`; escort needs `escort` + package; GA needs `strike` +
+  targets and uses `target_dead`, not air `unit_dead`). Message copy follows briefing
   voices (`raf`/`usaaf`/`neutral`). ME: view rules under **Set Rules for Triggers**,
   not group Triggered Actions.
 - **Code:** `narrative.py`, `validation.py`, `examples/manston_*_narrative.yaml`.

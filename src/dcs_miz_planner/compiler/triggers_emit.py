@@ -12,6 +12,7 @@ from ..models import (
     MissionEndResult,
     MissionSpec,
     SetFlagAction,
+    TargetDeadCondition,
     TimeMoreCondition,
     TriggerRule,
     UnitDeadCondition,
@@ -24,16 +25,20 @@ def apply_zones_and_triggers(
     airport: Any,
     spec: MissionSpec,
     enemy_group_ids: list[int],
+    target_group_ids: list[int] | None = None,
 ) -> None:
     """Emit Spec zones/triggers into ``mission.triggers`` / ``triggerrules``.
 
     ``enemy_group_ids`` must align with ``spec.enemies`` order (PyDCS group ids).
+    ``target_group_ids`` must align with ``spec.targets`` order when present.
     """
     if not spec.zones and not spec.triggers:
         return
 
     from dcs import action, condition
     from dcs.triggers import TriggerContinious, TriggerOnce
+
+    target_ids = target_group_ids if target_group_ids is not None else []
 
     zone_ids: dict[str, int] = {}
     for zone in spec.zones:
@@ -60,13 +65,15 @@ def apply_zones_and_triggers(
             else TriggerContinious(comment=rule.name or "")
         )
         for cond in rule.when:
-            trig.add_condition(_map_condition(cond, zone_ids, enemy_group_ids, flag_id, condition))
+            trig.add_condition(
+                _map_condition(cond, zone_ids, enemy_group_ids, target_ids, flag_id, condition)
+            )
         for act in rule.then:
             trig.add_action(_map_action(act, mission, spec, flag_id, action))
         mission.triggerrules.triggers.append(trig)
 
 
-def _map_condition(cond, zone_ids, enemy_group_ids, flag_id, condition_mod):
+def _map_condition(cond, zone_ids, enemy_group_ids, target_group_ids, flag_id, condition_mod):
     if isinstance(cond, TimeMoreCondition):
         return condition_mod.TimeAfter(int(cond.seconds))
     if isinstance(cond, FlagIsCondition):
@@ -79,6 +86,13 @@ def _map_condition(cond, zone_ids, enemy_group_ids, flag_id, condition_mod):
                 f"(have {len(enemy_group_ids)})"
             )
         return condition_mod.GroupDead(enemy_group_ids[cond.enemy_index])
+    if isinstance(cond, TargetDeadCondition):
+        if cond.target_index >= len(target_group_ids):
+            raise ValueError(
+                f"target_dead target_index {cond.target_index} has no compiled target group "
+                f"(have {len(target_group_ids)})"
+            )
+        return condition_mod.GroupDead(target_group_ids[cond.target_index])
     if isinstance(cond, CoalitionInZoneCondition):
         zid = zone_ids.get(cond.zone)
         if zid is None:

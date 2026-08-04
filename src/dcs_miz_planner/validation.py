@@ -11,6 +11,7 @@ from .models import (
     MissionSpec,
     MissionType,
     ObjectiveType,
+    TargetDeadCondition,
     UnitDeadCondition,
     opposing_coalition,
 )
@@ -362,6 +363,17 @@ def _validate_triggers_and_zones(
                         message=(
                             f"enemy_index {cond.enemy_index} out of range "
                             f"(enemies has {len(spec.enemies)} entries)"
+                        ),
+                    )
+                )
+            elif isinstance(cond, TargetDeadCondition) and cond.target_index >= len(spec.targets):
+                errors.append(
+                    ValidationError(
+                        code="target_index_out_of_range",
+                        path=f"{path}.target_index",
+                        message=(
+                            f"target_index {cond.target_index} out of range "
+                            f"(targets has {len(spec.targets)} entries)"
                         ),
                     )
                 )

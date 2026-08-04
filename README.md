@@ -31,14 +31,14 @@ into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; acce
 `dcs-miz randomize <spec> --seed N` (weather/time/geometry/opposition; same seed → same Spec).
 Interactive multi-turn
 chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026-08-01).
-Opt-in CAP / intercept / escort narrative (`narrative.enabled`;
+Opt-in CAP / intercept / escort / ground-attack narrative (`narrative.enabled`;
 `examples/manston_cap_narrative.yaml`, `manston_dawn_intercept_narrative.yaml`,
-`manston_escort_narrative.yaml`) expands to native ME triggers (accepted CAP 2026-08-03;
-intercept 2026-08-04; escort 2026-08-04).
+`manston_escort_narrative.yaml`, `manston_ground_attack_narrative.yaml`) expands to
+native ME triggers (accepted through GA 2026-08-04).
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** ground-attack narrative as needed; `script-snippet-library` only if native triggers are insufficient; research R7/R8/R9 as hygiene.
+**Next:** `script-snippet-library` only if native triggers are insufficient; research R7/R8/R9 as hygiene.
 
 ## Stack
 
@@ -94,6 +94,11 @@ uv run dcs-miz compile examples/manston_dawn_intercept_narrative.yaml --voice ra
 uv run dcs-miz validate examples/manston_escort_narrative.yaml
 uv run dcs-miz compile examples/manston_escort_narrative.yaml --voice raf
 # -> out/manston_escort_narrative.miz
+
+# Ground attack with opt-in narrative (push / ingress / targets-down→win):
+uv run dcs-miz validate examples/manston_ground_attack_narrative.yaml
+uv run dcs-miz compile examples/manston_ground_attack_narrative.yaml --voice raf
+# -> out/manston_ground_attack_narrative.miz
 ```
 
 Open the result in the DCS Mission Editor, or copy it into

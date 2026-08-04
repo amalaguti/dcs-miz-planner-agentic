@@ -1,4 +1,4 @@
-"""Opt-in CAP / intercept narrative → typed zones/triggers."""
+"""Opt-in CAP / intercept / escort / ground-attack narrative → typed zones/triggers."""
 
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ CAP = ROOT / "examples" / "manston_cap.yaml"
 CAP_NARRATIVE = ROOT / "examples" / "manston_cap_narrative.yaml"
 INTERCEPT_NARRATIVE = ROOT / "examples" / "manston_dawn_intercept_narrative.yaml"
 ESCORT_NARRATIVE = ROOT / "examples" / "manston_escort_narrative.yaml"
+GA_NARRATIVE = ROOT / "examples" / "manston_ground_attack_narrative.yaml"
 FREE = ROOT / "examples" / "manston_cold_freeflight.yaml"
 
 
@@ -79,6 +80,25 @@ def test_expand_escort_narrative_adds_rules():
     assert expanded.triggers[2].then[-1].type == "mission_end"
 
 
+def test_expand_ground_attack_narrative_adds_rules():
+    spec = load_mission_spec(GA_NARRATIVE)
+    expanded = apply_narrative(spec, voice="raf")
+    assert expanded.narrative is not None
+    assert expanded.narrative.enabled is False
+    assert len(expanded.zones) == 1
+    assert expanded.zones[0].name == "strike_area"
+    assert len(expanded.triggers) == 3
+    names = [t.name for t in expanded.triggers]
+    assert names == [
+        "narrative_push",
+        "narrative_ingress",
+        "narrative_targets_down",
+    ]
+    assert "strike" in expanded.triggers[0].then[0].text.lower()
+    assert expanded.triggers[2].when[0].type == "target_dead"
+    assert expanded.triggers[2].then[-1].type == "mission_end"
+
+
 def test_validate_and_compile_narrative_cap(tmp_path: Path):
     spec = load_mission_spec(CAP_NARRATIVE)
     assert validate_mission_spec(spec, voice="raf").ok
@@ -105,6 +125,17 @@ def test_validate_and_compile_narrative_escort(tmp_path: Path):
     spec = load_mission_spec(ESCORT_NARRATIVE)
     assert validate_mission_spec(spec, voice="raf").ok
     out = PyDCSCompiler().compile(spec, tmp_path / "esc_narr.miz", voice="raf")
+    mission = zipfile.ZipFile(out).read("mission").decode("utf-8", "replace")
+    assert "c_time_after" in mission
+    assert "a_out_text_delay" in mission
+    assert "c_group_dead" in mission
+    assert "a_end_mission" in mission
+
+
+def test_validate_and_compile_narrative_ground_attack(tmp_path: Path):
+    spec = load_mission_spec(GA_NARRATIVE)
+    assert validate_mission_spec(spec, voice="raf").ok
+    out = PyDCSCompiler().compile(spec, tmp_path / "ga_narr.miz", voice="raf")
     mission = zipfile.ZipFile(out).read("mission").decode("utf-8", "replace")
     assert "c_time_after" in mission
     assert "a_out_text_delay" in mission
@@ -151,6 +182,36 @@ def test_intercept_narrative_requires_enemies():
     assert any(e.code == "narrative_enemies_required" for e in result.errors)
 
 
+def test_ground_attack_narrative_requires_targets():
+    from dcs_miz_planner.models import NarrativeSpec
+
+    spec = load_mission_spec(GA_NARRATIVE).model_copy(
+        update={"targets": [], "narrative": NarrativeSpec(enabled=True)}
+    )
+    result = validate_mission_spec(spec)
+    assert not result.ok
+    assert any(e.code == "narrative_targets_required" for e in result.errors)
+
+
+def test_target_dead_out_of_range_fails():
+    from dcs_miz_planner.models import MessageAction, TargetDeadCondition, TriggerRule
+
+    base = load_mission_spec(ROOT / "examples" / "manston_ground_attack.yaml")
+    bad = base.model_copy(
+        update={
+            "triggers": [
+                TriggerRule(
+                    when=[TargetDeadCondition(target_index=5)],
+                    then=[MessageAction(text="Nope")],
+                )
+            ]
+        }
+    )
+    result = validate_mission_spec(bad)
+    assert not result.ok
+    assert any(e.code == "target_index_out_of_range" for e in result.errors)
+
+
 def test_disabled_narrative_noop():
     spec = load_mission_spec(CAP)
     assert expand_narrative_if_needed(spec).triggers == []
@@ -161,10 +222,11 @@ def test_cli_validate_narrative_ok():
     assert main(["validate", str(CAP_NARRATIVE)]) == 0
     assert main(["validate", str(INTERCEPT_NARRATIVE)]) == 0
     assert main(["validate", str(ESCORT_NARRATIVE)]) == 0
+    assert main(["validate", str(GA_NARRATIVE)]) == 0
 
 
 def test_schema_notes_mention_narrative():
-    for mt in ("cap", "intercept", "escort"):
+    for mt in ("cap", "intercept", "escort", "ground_attack"):
         view = build_spec_schema(mt)
         blob = " ".join(view.notes).lower()
         assert "narrative" in blob

@@ -71,7 +71,10 @@ Rules:
   vehicles on enemy-held territory (Channel WWII: Axis French/Belgian coast). Mid-Channel
   water MUST use ship/boat registry ids. Practice (strike.practice true): same-coalition
   / home-territory targets allowed for bombing practice (e.g. UK-side range). objectives
-  include {"type":"attack_ground"}. enemies must be empty. Omit cap, escort, and package.
+  include {"type":"attack_ground"}. enemies must be empty. Optional narrative.enabled
+  true expands curated GA immersion (push / ingress / targets-down win) when
+  zones/triggers are empty and strike+targets are set — never with hand-written triggers.
+  Omit cap, escort, and package.
 - escort: nested escort required (bearing_deg, distance_km, altitude_m from player
   airfield, engagement ROE). package non-empty and same coalition as player (friendly
   only). objectives include {"type":"escort_package"}. enemies optional (bounce).

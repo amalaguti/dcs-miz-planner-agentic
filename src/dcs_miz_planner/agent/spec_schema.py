@@ -73,6 +73,11 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         ),
         'objectives must include {"type":"attack_ground"}; enemies must be empty.',
         "omit the cap block. Pilot jettisons the slipper tank in the cockpit before attack.",
+        (
+            "optional narrative.enabled true: expands to typed zones/triggers (push / "
+            "ingress / targets-down win via target_dead). Requires empty zones/triggers, "
+            "strike, and targets; conflicts with hand-authored triggers."
+        ),
     ),
     MissionType.ESCORT.value: (
         "nested escort is required (bearing_deg, distance_km, altitude_m, engagement).",
@@ -99,10 +104,10 @@ _COMMON_NOTES: tuple[str, ...] = (
     ),
     (
         "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|unit_dead|"
-        "coalition_in_zone; actions message|set_flag|mission_end. Compiler emits native "
-        "ME trigger tables for validated graphs. Optional narrative.enabled "
-        "(cap|intercept|escort) expands a curated pack into that vocabulary when "
-        "zones/triggers are empty."
+        "target_dead|coalition_in_zone; actions message|set_flag|mission_end. Compiler "
+        "emits native ME trigger tables for validated graphs. Optional narrative.enabled "
+        "(cap|intercept|escort|ground_attack) expands a curated pack into that vocabulary "
+        "when zones/triggers are empty."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
