@@ -186,11 +186,21 @@ script fields, and MUST note that validated non-empty triggers compile to native
 
 ### Requirement: Spec schema notes include narrative
 When `get_mission_spec_schema` (or equivalent prompt fragment) describes combat mission
-types, it MUST mention optional opt-in `narrative.enabled` for CAP (expands to typed
-zones/triggers), MUST NOT encourage Lua, and MUST note that narrative conflicts with
-hand-authored non-empty zones/triggers.
+types, it MUST mention optional opt-in `narrative.enabled` for CAP and intercept (expands
+to typed zones/triggers), MUST NOT encourage Lua, and MUST note that narrative conflicts
+with hand-authored non-empty zones/triggers.
 
 #### Scenario: Schema notes mention narrative
-- **WHEN** an agent requests the Spec schema for `cap`
+- **WHEN** an agent requests the Spec schema for `cap` or `intercept`
+- **THEN** the notes MUST reference optional narrative without inventing unsupported
+  trigger types
+
+### Requirement: Spec schema notes include intercept narrative
+When `get_mission_spec_schema` describes `intercept`, it MUST mention optional
+`narrative.enabled` (expands to typed triggers; conflicts with hand-authored
+zones/triggers; requires enemies).
+
+#### Scenario: Intercept schema notes mention narrative
+- **WHEN** an agent requests the Spec schema for `intercept`
 - **THEN** the notes MUST reference optional narrative without inventing unsupported
   trigger types
