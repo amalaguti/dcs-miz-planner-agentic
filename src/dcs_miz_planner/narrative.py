@@ -20,6 +20,7 @@ from .models import (
 CAP_STATION_ZONE = "cap_station"
 CAP_STATION_RADIUS_M = 5000.0
 CAP_PUSH_SECONDS = 120.0
+INTERCEPT_SCRAMBLE_SECONDS = 120.0
 
 _CAP_COPY: dict[str, dict[str, str]] = {
     "raf": {
@@ -35,6 +36,27 @@ _CAP_COPY: dict[str, dict[str, str]] = {
     "neutral": {
         "push": "Climb and establish CAP at the briefed station.",
         "on_station": "On station. CAP established. Engage per ROE.",
+        "win": "Hostiles destroyed. Mission success. Return to base.",
+    },
+}
+
+_INTERCEPT_COPY: dict[str, dict[str, str]] = {
+    "raf": {
+        "scramble": (
+            "Ops — scramble. Bandits inbound on the Dover approaches. "
+            "Climb and intercept. Weapons free."
+        ),
+        "win": "Splash — bandits destroyed. Well done. You are cleared to RTB.",
+    },
+    "usaaf": {
+        "scramble": (
+            "Ops — scramble. Bogeys inbound toward the Channel approaches. "
+            "Climb and intercept. Weapons free."
+        ),
+        "win": "Bandits down. Good work. Cleared to RTB.",
+    },
+    "neutral": {
+        "scramble": "Scramble. Hostile aircraft inbound. Climb and intercept.",
         "win": "Hostiles destroyed. Mission success. Return to base.",
     },
 }
@@ -63,7 +85,7 @@ def expand_narrative_if_needed(
     *,
     voice: str | None = None,
 ) -> MissionSpec:
-    """Return Spec unchanged, or with CAP narrative materialised into zones/triggers."""
+    """Return Spec unchanged, or with narrative materialised into zones/triggers."""
     if spec.narrative is None or not spec.narrative.enabled:
         return spec
     return apply_narrative(spec, voice=voice)
@@ -82,24 +104,46 @@ def apply_narrative(spec: MissionSpec, *, voice: str | None = None) -> MissionSp
             hint="Clear zones/triggers, or set narrative.enabled false and keep hand-written rules",
         )
 
-    if spec.mission_type is not MissionType.CAP:
+    resolved = _resolved_voice(voice)
+
+    if spec.mission_type is MissionType.CAP:
+        zones, triggers = _apply_cap_pack(spec, resolved)
+    elif spec.mission_type is MissionType.INTERCEPT:
+        zones, triggers = _apply_intercept_pack(spec, resolved)
+    else:
         raise NarrativeError(
             "narrative_unsupported_mission_type",
             "narrative",
             (
-                f"narrative.enabled is only supported for mission_type cap "
+                f"narrative.enabled is only supported for mission_type cap or intercept "
                 f"(got {spec.mission_type.value!r})"
             ),
-            hint="Disable narrative, or use mission_type cap",
+            hint="Disable narrative, or use mission_type cap or intercept",
         )
 
+    return spec.model_copy(
+        update={
+            "zones": zones,
+            "triggers": triggers,
+            "narrative": NarrativeSpec(enabled=False),
+        }
+    )
+
+
+def _resolved_voice(voice: str | None) -> str:
+    resolved = resolve_voice(cli_voice=voice) if voice else DEFAULT_VOICE
+    if resolved not in _CAP_COPY:
+        return DEFAULT_VOICE
+    return resolved
+
+
+def _apply_cap_pack(spec: MissionSpec, voice: str) -> tuple[list[TriggerZone], list[TriggerRule]]:
     if spec.cap is None:
         raise NarrativeError(
             "narrative_cap_required",
             "cap",
             "CAP narrative requires a nested cap block",
         )
-
     if not spec.enemies:
         raise NarrativeError(
             "narrative_enemies_required",
@@ -107,18 +151,13 @@ def apply_narrative(spec: MissionSpec, *, voice: str | None = None) -> MissionSp
             "CAP narrative requires at least one enemy flight for the win condition",
         )
 
-    resolved = resolve_voice(cli_voice=voice) if voice else DEFAULT_VOICE
-    if resolved not in _CAP_COPY:
-        resolved = DEFAULT_VOICE
-    copy = _CAP_COPY[resolved]
-
+    copy = _CAP_COPY[voice]
     zone = TriggerZone(
         name=CAP_STATION_ZONE,
         bearing_deg=spec.cap.bearing_deg,
         distance_km=spec.cap.distance_km,
         radius_m=CAP_STATION_RADIUS_M,
     )
-
     triggers = [
         TriggerRule(
             name="narrative_push",
@@ -147,11 +186,35 @@ def apply_narrative(spec: MissionSpec, *, voice: str | None = None) -> MissionSp
             ],
         ),
     ]
+    return [zone], triggers
 
-    return spec.model_copy(
-        update={
-            "zones": [zone],
-            "triggers": triggers,
-            "narrative": NarrativeSpec(enabled=False),
-        }
-    )
+
+def _apply_intercept_pack(
+    spec: MissionSpec, voice: str
+) -> tuple[list[TriggerZone], list[TriggerRule]]:
+    if not spec.enemies:
+        raise NarrativeError(
+            "narrative_enemies_required",
+            "enemies",
+            "Intercept narrative requires at least one enemy flight for the win condition",
+        )
+
+    copy = _INTERCEPT_COPY.get(voice, _INTERCEPT_COPY[DEFAULT_VOICE])
+    triggers = [
+        TriggerRule(
+            name="narrative_scramble",
+            once=True,
+            when=[TimeMoreCondition(seconds=INTERCEPT_SCRAMBLE_SECONDS)],
+            then=[MessageAction(text=copy["scramble"], duration_s=12)],
+        ),
+        TriggerRule(
+            name="narrative_bandits_down",
+            once=True,
+            when=[UnitDeadCondition(enemy_index=0)],
+            then=[
+                MessageAction(text=copy["win"], duration_s=15),
+                MissionEndAction(result=MissionEndResult.WIN),
+            ],
+        ),
+    ]
+    return [], triggers

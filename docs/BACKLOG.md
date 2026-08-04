@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** expand narrative packs / `script-snippet-library` as needed
+**Next promote / in proposal:** escort/GA narrative packs / `script-snippet-library` as needed
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and

@@ -31,12 +31,14 @@ into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; acce
 `dcs-miz randomize <spec> --seed N` (weather/time/geometry/opposition; same seed → same Spec).
 Interactive multi-turn
 chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026-08-01).
-Opt-in CAP narrative (`narrative.enabled`; `examples/manston_cap_narrative.yaml`) expands to
-native ME triggers (push / on-station / bandits-down→win; accepted in ME 2026-08-03).
+Opt-in CAP / intercept narrative (`narrative.enabled`;
+`examples/manston_cap_narrative.yaml`, `manston_dawn_intercept_narrative.yaml`) expands to
+native ME triggers (accepted CAP 2026-08-03; intercept scramble + bandits-down in ME
+2026-08-04).
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** narrative packs for other mission types as needed; `script-snippet-library` only if native triggers are insufficient; research R7/R8/R9 as hygiene.
+**Next:** escort/GA narrative packs as needed; `script-snippet-library` only if native triggers are insufficient; research R7/R8/R9 as hygiene.
 
 ## Stack
 
@@ -82,6 +84,11 @@ uv run dcs-miz compile examples/manston_freeflight_trigger_sample.yaml
 uv run dcs-miz validate examples/manston_cap_narrative.yaml
 uv run dcs-miz compile examples/manston_cap_narrative.yaml --voice raf
 # -> out/manston_cap_narrative.miz
+
+# Intercept with opt-in narrative (scramble / bandits-down→win):
+uv run dcs-miz validate examples/manston_dawn_intercept_narrative.yaml
+uv run dcs-miz compile examples/manston_dawn_intercept_narrative.yaml --voice raf
+# -> out/manston_dawn_intercept_narrative.miz
 ```
 
 Open the result in the DCS Mission Editor, or copy it into

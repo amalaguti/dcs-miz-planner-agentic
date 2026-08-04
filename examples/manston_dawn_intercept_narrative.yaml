@@ -1,0 +1,33 @@
+# Dawn intercept with opt-in narrative: scramble message + bandits-down→win
+# (native ME triggers). Open compiled .miz in Mission Editor → Set Rules for Triggers.
+schema_version: "1"
+mission_type: intercept
+theatre: TheChannel
+name: Manston Dawn Intercept (narrative)
+description: >
+  Cold start at Manston at dawn. Intercept Bf-109K-4s approaching from the
+  Dover/Hawkinge corridor over The Channel. Opt-in narrative adds scramble
+  callout and a win when the enemy flight is destroyed.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "06:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+enemies:
+  - aircraft: Bf-109K-4
+    count: 2
+    skill: Average
+    country: ThirdReich
+    coalition: red
+objectives:
+  - type: intercept_enemy
+narrative:
+  enabled: true
