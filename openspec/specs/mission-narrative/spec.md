@@ -3,14 +3,14 @@
 ## Purpose
 
 Opt-in curated immersion packs that expand into typed Mission Spec `zones`/`triggers`
-(no Lua). CAP and intercept packs; messages use squadron-commander voice templates.
+(no Lua). CAP, intercept, and escort packs; messages use squadron-commander voice templates.
 
 ## Requirements
 
 ### Requirement: Opt-in narrative expands to typed triggers
 The system SHALL support an optional Mission Spec `narrative` object with
-`enabled` (boolean, default false). When `enabled` is true for `mission_type: cap` or
-`mission_type: intercept`, the system MUST expand the matching curated narrative pack
+`enabled` (boolean, default false). When `enabled` is true for `mission_type: cap`,
+`intercept`, or `escort`, the system MUST expand the matching curated narrative pack
 into typed `zones` and/or `triggers` using only the existing v1 condition/action
 vocabulary (no Lua). Expansion MUST run before shared validation and compile so the
 emitted `.miz` contains the resulting rules.
@@ -42,18 +42,39 @@ MUST run before validate/compile. Preconditions: empty `zones`/`triggers`, non-e
 - **WHEN** intercept narrative is enabled and `enemies` is empty
 - **THEN** expansion or validation MUST fail with a clear error
 
+### Requirement: Escort narrative pack
+When `narrative.enabled` is true and `mission_type` is `escort`, the system MUST expand
+an escort narrative pack into typed zones/triggers using only the v1 vocabulary (no Lua).
+The pack MUST include a time-based push/join-package message, a destination zone derived
+from the Spec `escort` block with a coalition-in-zone callout, and a `unit_dead` (first
+enemy) path that messages and ends the mission as a win. Expansion MUST run before
+validate/compile. Preconditions: empty `zones`/`triggers`, nested `escort`, non-empty
+`package`, non-empty `enemies`.
+
+#### Scenario: Escort narrative expands
+- **WHEN** a valid escort Spec has `narrative.enabled: true`, empty zones/triggers,
+  escort + package + enemies
+- **THEN** expansion MUST add a destination zone and trigger rules for push, with-package,
+  and bandits-down win
+
+#### Scenario: Escort narrative without enemies fails
+- **WHEN** escort narrative is enabled and `enemies` is empty
+- **THEN** expansion or validation MUST fail with a clear error
+
 ### Requirement: Narrative conflicts and unsupported types fail clearly
 When `narrative.enabled` is true, the system MUST reject Specs that already have
 non-empty `zones` or `triggers`. It MUST reject `enabled: true` for mission types other
-than `cap` and `intercept` in this capability revision. It MUST reject CAP narrative when
-`cap` is missing or `enemies` is empty, and intercept narrative when `enemies` is empty.
+than `cap`, `intercept`, and `escort` in this capability revision. Pack-specific
+preconditions (CAP: `cap` + enemies; intercept: enemies; escort: `escort` + package +
+enemies) MUST fail clearly when missing.
 
 #### Scenario: Hand-written triggers block narrative
 - **WHEN** `narrative.enabled` is true and `triggers` is non-empty
 - **THEN** validation or expansion MUST fail with a clear conflict error
 
 #### Scenario: Unsupported mission type narrative rejected
-- **WHEN** `mission_type` is not `cap` or `intercept` and `narrative.enabled` is true
+- **WHEN** `mission_type` is not `cap`, `intercept`, or `escort` and
+  `narrative.enabled` is true
 - **THEN** validation or expansion MUST fail identifying unsupported mission type
 
 ### Requirement: Narrative messages use squadron voice
