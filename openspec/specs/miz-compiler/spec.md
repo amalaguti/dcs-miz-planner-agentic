@@ -296,14 +296,16 @@ The compiler SHALL map v1 Spec conditions/actions to native predicates: `time_mo
 time-after, `flag_is` to flag true/false, `flag_equals` / `flag_more` / `flag_less` to
 numeric flag compare, `time_since_flag` to time-since-flag, `unit_dead` to group-dead for
 the referenced enemy flight, `target_dead` to group-dead for the referenced ground/sea
-target group, `coalition_in_zone` to part-of-coalition-in-zone; `message` to delayed
-out-text, `set_flag` to set/clear flag, `set_flag_value` / `inc_flag` to set-flag-value /
-increase-flag, `mission_end` to end-mission with win/lose for the player coalition,
-`sound` to sound-to-all with the resolved registry file embedded in the `.miz`
-mapResource, `radio_item_add` / `radio_item_remove` to F10 radio item add/remove (flag on
-for add), `activate_group` / `deactivate_group` to activate/deactivate the referenced
-placed group. Groups with Spec `late_activation: true` MUST be written with ME late
-activation enabled. Unsupported types MUST fail clearly before writing a `.miz`.
+target group, `group_life_less` to group-life-less for the referenced enemy or target
+group at the Spec percent threshold, `coalition_in_zone` to part-of-coalition-in-zone;
+`message` to delayed out-text, `set_flag` to set/clear flag, `set_flag_value` /
+`inc_flag` to set-flag-value / increase-flag, `mission_end` to end-mission with win/lose
+for the player coalition, `sound` to sound-to-all with the resolved registry file
+embedded in the `.miz` mapResource, `radio_item_add` / `radio_item_remove` to F10 radio
+item add/remove (flag on for add), `activate_group` / `deactivate_group` to
+activate/deactivate the referenced placed group. Groups with Spec `late_activation: true`
+MUST be written with ME late activation enabled. Unsupported types MUST fail clearly
+before writing a `.miz`.
 
 #### Scenario: Unknown mapping fails
 - **WHEN** a future/unsupported condition type somehow reaches compile
@@ -331,3 +333,8 @@ activation enabled. Unsupported types MUST fail clearly before writing a `.miz`.
 - **WHEN** a Spec with `flag_more` and `inc_flag` (or `set_flag_value`) is compiled
 - **THEN** the `.miz` MUST include corresponding numeric flag condition and action
   predicates
+
+#### Scenario: group_life_less emit
+- **WHEN** a Spec with a valid `group_life_less` condition is compiled
+- **THEN** the `.miz` MUST include a group-life-less condition for the corresponding
+  placed group at the Spec percent
