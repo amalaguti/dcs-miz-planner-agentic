@@ -110,13 +110,14 @@ _COMMON_NOTES: tuple[str, ...] = (
     (
         "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|"
         "flag_equals|flag_more|flag_less|time_since_flag|unit_dead|target_dead|"
-        "coalition_in_zone; actions message|set_flag|set_flag_value|inc_flag|sound|"
-        "mission_end|radio_item_add|radio_item_remove|activate_group|deactivate_group. "
-        "sound uses curated asset_id only (no paths). enemies/targets may set "
-        "late_activation true (dormant until activate_group). Compiler emits native ME "
-        "trigger tables for validated graphs. Optional narrative.enabled "
-        "(cap|intercept|escort|ground_attack) expands a curated pack into that "
-        "vocabulary when zones/triggers are empty."
+        "group_life_less|coalition_in_zone; actions message|set_flag|set_flag_value|"
+        "inc_flag|sound|mission_end|radio_item_add|radio_item_remove|activate_group|"
+        "deactivate_group. group_life_less uses enemy_index or target_index plus "
+        "percent 1–100 (remaining group life). sound uses curated asset_id only "
+        "(no paths). enemies/targets may set late_activation true (dormant until "
+        "activate_group). Compiler emits native ME trigger tables for validated "
+        "graphs. Optional narrative.enabled (cap|intercept|escort|ground_attack) "
+        "expands a curated pack into that vocabulary when zones/triggers are empty."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",

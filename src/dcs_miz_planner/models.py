@@ -209,6 +209,23 @@ class TargetDeadCondition(SpecModel):
     target_index: int = Field(ge=0, description="0-based index into Spec targets[]")
 
 
+class GroupLifeLessCondition(SpecModel):
+    """True when remaining group life is below ``percent`` (ME Group Life Less)."""
+
+    type: Literal["group_life_less"] = "group_life_less"
+    enemy_index: int | None = Field(default=None, ge=0)
+    target_index: int | None = Field(default=None, ge=0)
+    percent: int = Field(ge=1, le=100)
+
+    @model_validator(mode="after")
+    def _exactly_one_index(self) -> GroupLifeLessCondition:
+        has_e = self.enemy_index is not None
+        has_t = self.target_index is not None
+        if has_e == has_t:
+            raise ValueError("group_life_less requires exactly one of enemy_index or target_index")
+        return self
+
+
 class CoalitionInZoneCondition(SpecModel):
     type: Literal["coalition_in_zone"] = "coalition_in_zone"
     zone: str = Field(min_length=1)
@@ -224,6 +241,7 @@ TriggerCondition = Annotated[
     | TimeSinceFlagCondition
     | UnitDeadCondition
     | TargetDeadCondition
+    | GroupLifeLessCondition
     | CoalitionInZoneCondition,
     Field(discriminator="type"),
 ]

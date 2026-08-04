@@ -7,6 +7,16 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Group life less (partial damage)
+
+- **Date:** 2026-08-04
+- **Lesson:** Spec `group_life_less` uses exactly one of `enemy_index` /
+  `target_index` plus `percent` 1–100 (remaining group life). Emit via PyDCS
+  `GroupLifeLess` → `c_group_life_less`. Additive beside `unit_dead` /
+  `target_dead` (full GroupDead). Example:
+  `manston_ground_attack_life_less.yaml`.
+- **Code:** `models.py`, `validation.py`, `compiler/triggers_emit.py`.
+
 ## F10 radio items + late activation emit
 
 - **Date:** 2026-08-04
@@ -37,8 +47,8 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   `ActivateGroup`/`DeactivateGroup`, sounds, `GroupLifeLess`, altitude/speed gates — Spec
   vocab is the bottleneck. Prefer native emit over `#22` unless world-event Lua is required.
   Ranked list: `research/me-enrichment-candidates.md` (gitignored).
-- **Next product slice:** `group_life_less` / markers / altitude gates (sound + richer
-  flags shipped as `#26`).
+- **Next product slice:** markers / altitude gates after `#27` `group-life-less`
+  (sound + richer flags shipped as `#26`).
 
 ## R7 PyDCS open-issue triage (2026-08-04)
 

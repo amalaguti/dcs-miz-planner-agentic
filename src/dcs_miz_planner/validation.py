@@ -14,6 +14,7 @@ from .models import (
     FlagIsCondition,
     FlagLessCondition,
     FlagMoreCondition,
+    GroupLifeLessCondition,
     IncFlagAction,
     MissionSpec,
     MissionType,
@@ -391,6 +392,29 @@ def _validate_triggers_and_zones(
                         ),
                     )
                 )
+            elif isinstance(cond, GroupLifeLessCondition):
+                if cond.enemy_index is not None and cond.enemy_index >= len(spec.enemies):
+                    errors.append(
+                        ValidationError(
+                            code="enemy_index_out_of_range",
+                            path=f"{path}.enemy_index",
+                            message=(
+                                f"enemy_index {cond.enemy_index} out of range "
+                                f"(enemies has {len(spec.enemies)} entries)"
+                            ),
+                        )
+                    )
+                if cond.target_index is not None and cond.target_index >= len(spec.targets):
+                    errors.append(
+                        ValidationError(
+                            code="target_index_out_of_range",
+                            path=f"{path}.target_index",
+                            message=(
+                                f"target_index {cond.target_index} out of range "
+                                f"(targets has {len(spec.targets)} entries)"
+                            ),
+                        )
+                    )
             elif (
                 isinstance(
                     cond,

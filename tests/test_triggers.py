@@ -267,3 +267,86 @@ def test_schema_notes_mention_sound_and_numeric_flags():
     blob = " ".join(build_spec_schema("free_flight").notes).lower()
     assert "sound" in blob and "asset_id" in blob
     assert "flag_more" in blob or "inc_flag" in blob
+
+
+LIFE_LESS = ROOT / "examples" / "manston_ground_attack_life_less.yaml"
+
+
+def test_group_life_less_example_loads():
+    spec = load_mission_spec(LIFE_LESS)
+    assert any(c.type == "group_life_less" for t in spec.triggers for c in t.when)
+    cond = next(c for t in spec.triggers for c in t.when if c.type == "group_life_less")
+    assert cond.target_index == 0
+    assert cond.percent == 50
+    assert validate_mission_spec(spec).ok
+
+
+def test_compile_group_life_less(tmp_path: Path):
+    spec = load_mission_spec(LIFE_LESS)
+    out = PyDCSCompiler().compile(spec, tmp_path / "life_less.miz")
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8", "replace")
+    assert "c_group_life_less" in mission
+    assert "a_out_text_delay" in mission or "MessageToAll" in mission or "out_text" in mission
+
+
+def test_group_life_less_out_of_range_fails(tmp_path: Path):
+    data = yaml.safe_load(LIFE_LESS.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "group_life_less", "target_index": 99, "percent": 50}],
+            "then": [{"type": "message", "text": "x"}],
+        }
+    ]
+    p = tmp_path / "oor.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    spec = load_mission_spec(p)
+    result = validate_mission_spec(spec)
+    assert not result.ok
+    assert any(e.code == "target_index_out_of_range" for e in result.errors)
+
+
+def test_group_life_less_both_indices_rejected(tmp_path: Path):
+    data = yaml.safe_load(LIFE_LESS.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [
+                {
+                    "type": "group_life_less",
+                    "enemy_index": 0,
+                    "target_index": 0,
+                    "percent": 50,
+                }
+            ],
+            "then": [{"type": "message", "text": "x"}],
+        }
+    ]
+    p = tmp_path / "both.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_group_life_less_invalid_percent_rejected(tmp_path: Path):
+    data = yaml.safe_load(LIFE_LESS.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "group_life_less", "target_index": 0, "percent": 0}],
+            "then": [{"type": "message", "text": "x"}],
+        }
+    ]
+    p = tmp_path / "pct.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_cli_validate_group_life_less_ok():
+    assert main(["validate", str(LIFE_LESS)]) == 0
+
+
+def test_schema_notes_mention_group_life_less():
+    from dcs_miz_planner.agent.spec_schema import build_spec_schema
+
+    blob = " ".join(build_spec_schema("ground_attack").notes).lower()
+    assert "group_life_less" in blob

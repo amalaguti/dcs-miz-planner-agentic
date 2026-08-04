@@ -38,10 +38,12 @@ native ME triggers (accepted through GA 2026-08-04). F10 radio + late activation
 (`examples/manston_dawn_intercept_radio.yaml`) for difficulty spawn options (accepted
 in ME 2026-08-04). Curated `sound` + numeric flags
 (`examples/manston_freeflight_sound_flags.yaml`; accepted in-game 2026-08-04).
+`group_life_less` partial-damage beats
+(`examples/manston_ground_attack_life_less.yaml`; accepted in ME 2026-08-04).
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `group_life_less` / markers / altitude gates as needed; `script-snippet-library` only if native triggers are insufficient; R8 when bumping deps.
+**Next:** markers / altitude gates as needed; `script-snippet-library` only if native triggers are insufficient; R8 when bumping deps.
 
 ## Stack
 
@@ -87,6 +89,11 @@ uv run dcs-miz compile examples/manston_freeflight_trigger_sample.yaml
 uv run dcs-miz validate examples/manston_freeflight_sound_flags.yaml
 uv run dcs-miz compile examples/manston_freeflight_sound_flags.yaml
 # -> out/manston_freeflight_sound_flags.miz
+
+# Group life less (partial-damage beat on ground targets):
+uv run dcs-miz validate examples/manston_ground_attack_life_less.yaml
+uv run dcs-miz compile examples/manston_ground_attack_life_less.yaml
+# -> out/manston_ground_attack_life_less.miz
 
 # CAP with opt-in narrative (push / on-station / bandits-down→win):
 uv run dcs-miz validate examples/manston_cap_narrative.yaml

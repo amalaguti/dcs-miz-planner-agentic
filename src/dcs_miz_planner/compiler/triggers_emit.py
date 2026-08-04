@@ -12,6 +12,7 @@ from ..models import (
     FlagIsCondition,
     FlagLessCondition,
     FlagMoreCondition,
+    GroupLifeLessCondition,
     IncFlagAction,
     MessageAction,
     MissionEndAction,
@@ -123,6 +124,9 @@ def _map_condition(cond, zone_ids, enemy_group_ids, target_group_ids, flag_id, c
                 f"(have {len(target_group_ids)})"
             )
         return condition_mod.GroupDead(target_group_ids[cond.target_index])
+    if isinstance(cond, GroupLifeLessCondition):
+        group_id = _resolve_group_id(cond, enemy_group_ids, target_group_ids)
+        return condition_mod.GroupLifeLess(group_id, percent=cond.percent)
     if isinstance(cond, CoalitionInZoneCondition):
         zid = zone_ids.get(cond.zone)
         if zid is None:
@@ -135,14 +139,14 @@ def _resolve_group_id(act, enemy_group_ids: list[int], target_group_ids: list[in
     if act.enemy_index is not None:
         if act.enemy_index >= len(enemy_group_ids):
             raise ValueError(
-                f"activate/deactivate enemy_index {act.enemy_index} has no compiled enemy "
+                f"enemy_index {act.enemy_index} has no compiled enemy "
                 f"group (have {len(enemy_group_ids)})"
             )
         return enemy_group_ids[act.enemy_index]
     assert act.target_index is not None
     if act.target_index >= len(target_group_ids):
         raise ValueError(
-            f"activate/deactivate target_index {act.target_index} has no compiled target "
+            f"target_index {act.target_index} has no compiled target "
             f"group (have {len(target_group_ids)})"
         )
     return target_group_ids[act.target_index]
