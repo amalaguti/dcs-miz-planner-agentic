@@ -61,6 +61,36 @@ _INTERCEPT_COPY: dict[str, dict[str, str]] = {
     },
 }
 
+ESCORT_DEST_ZONE = "escort_destination"
+ESCORT_DEST_RADIUS_M = 5000.0
+ESCORT_PUSH_SECONDS = 120.0
+
+_ESCORT_COPY: dict[str, dict[str, str]] = {
+    "raf": {
+        "push": (
+            "Ops — join the package and escort to the briefed destination. "
+            "Watch for bounce. Weapons as briefed."
+        ),
+        "with_package": (
+            "With the package at the destination. Stay sharp — bounce may still be about."
+        ),
+        "win": "Bounce destroyed. Package covered. Well done. You are cleared to RTB.",
+    },
+    "usaaf": {
+        "push": (
+            "Ops — join the package and escort to the briefed destination. "
+            "Watch for a bounce. Weapons per ROE."
+        ),
+        "with_package": ("With the package at destination. Keep eyes out for bogeys."),
+        "win": "Bounce down. Package covered. Good work. Cleared to RTB.",
+    },
+    "neutral": {
+        "push": "Join the package and escort to the briefed destination.",
+        "with_package": "At the package destination. Remain alert.",
+        "win": "Hostiles destroyed. Escort success. Return to base.",
+    },
+}
+
 
 class NarrativeError(Exception):
     """Narrative pack cannot be applied; maps to a validation-style error."""
@@ -110,15 +140,17 @@ def apply_narrative(spec: MissionSpec, *, voice: str | None = None) -> MissionSp
         zones, triggers = _apply_cap_pack(spec, resolved)
     elif spec.mission_type is MissionType.INTERCEPT:
         zones, triggers = _apply_intercept_pack(spec, resolved)
+    elif spec.mission_type is MissionType.ESCORT:
+        zones, triggers = _apply_escort_pack(spec, resolved)
     else:
         raise NarrativeError(
             "narrative_unsupported_mission_type",
             "narrative",
             (
-                f"narrative.enabled is only supported for mission_type cap or intercept "
-                f"(got {spec.mission_type.value!r})"
+                f"narrative.enabled is only supported for mission_type cap, intercept, "
+                f"or escort (got {spec.mission_type.value!r})"
             ),
-            hint="Disable narrative, or use mission_type cap or intercept",
+            hint="Disable narrative, or use mission_type cap, intercept, or escort",
         )
 
     return spec.model_copy(
@@ -218,3 +250,63 @@ def _apply_intercept_pack(
         ),
     ]
     return [], triggers
+
+
+def _apply_escort_pack(
+    spec: MissionSpec, voice: str
+) -> tuple[list[TriggerZone], list[TriggerRule]]:
+    if spec.escort is None:
+        raise NarrativeError(
+            "narrative_escort_required",
+            "escort",
+            "Escort narrative requires a nested escort block",
+        )
+    if not spec.package:
+        raise NarrativeError(
+            "narrative_package_required",
+            "package",
+            "Escort narrative requires a non-empty package list",
+        )
+    if not spec.enemies:
+        raise NarrativeError(
+            "narrative_enemies_required",
+            "enemies",
+            "Escort narrative requires at least one enemy flight for the win condition",
+        )
+
+    copy = _ESCORT_COPY.get(voice, _ESCORT_COPY[DEFAULT_VOICE])
+    zone = TriggerZone(
+        name=ESCORT_DEST_ZONE,
+        bearing_deg=spec.escort.bearing_deg,
+        distance_km=spec.escort.distance_km,
+        radius_m=ESCORT_DEST_RADIUS_M,
+    )
+    triggers = [
+        TriggerRule(
+            name="narrative_push",
+            once=True,
+            when=[TimeMoreCondition(seconds=ESCORT_PUSH_SECONDS)],
+            then=[MessageAction(text=copy["push"], duration_s=12)],
+        ),
+        TriggerRule(
+            name="narrative_with_package",
+            once=True,
+            when=[
+                CoalitionInZoneCondition(
+                    zone=ESCORT_DEST_ZONE,
+                    coalition=spec.player.coalition,
+                )
+            ],
+            then=[MessageAction(text=copy["with_package"], duration_s=12)],
+        ),
+        TriggerRule(
+            name="narrative_bandits_down",
+            once=True,
+            when=[UnitDeadCondition(enemy_index=0)],
+            then=[
+                MessageAction(text=copy["win"], duration_s=15),
+                MissionEndAction(result=MissionEndResult.WIN),
+            ],
+        ),
+    ]
+    return [zone], triggers

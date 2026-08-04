@@ -83,6 +83,11 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         'objectives must include {"type":"escort_package"}; enemies optional (bounce).',
         "destination is airfield-relative bearing/distance — never invent raw map x/y.",
         "omit strike, targets, cap, and player.payload.",
+        (
+            "optional narrative.enabled true: expands to typed zones/triggers (push / "
+            "with-package / bounce-down win). Requires empty zones/triggers, escort, "
+            "package, and enemies; conflicts with hand-authored triggers."
+        ),
     ),
 }
 
@@ -95,8 +100,9 @@ _COMMON_NOTES: tuple[str, ...] = (
     (
         "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|unit_dead|"
         "coalition_in_zone; actions message|set_flag|mission_end. Compiler emits native "
-        "ME trigger tables for validated graphs. Optional narrative.enabled (cap|intercept) "
-        "expands a curated pack into that vocabulary when zones/triggers are empty."
+        "ME trigger tables for validated graphs. Optional narrative.enabled "
+        "(cap|intercept|escort) expands a curated pack into that vocabulary when "
+        "zones/triggers are empty."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",

@@ -75,8 +75,10 @@ Rules:
 - escort: nested escort required (bearing_deg, distance_km, altitude_m from player
   airfield, engagement ROE). package non-empty and same coalition as player (friendly
   only). objectives include {"type":"escort_package"}. enemies optional (bounce).
-  Omit strike, targets, cap, and player.payload. Destination is airfield-relative —
-  never invent WGS84.
+  Optional narrative.enabled true expands curated escort immersion (push / with-package /
+  bounce-down win) when zones/triggers are empty and escort+package+enemies are set —
+  never with hand-written triggers. Omit strike, targets, cap, and player.payload.
+  Destination is airfield-relative — never invent WGS84.
 """
 
 ONESHOT_CLOSING = """\

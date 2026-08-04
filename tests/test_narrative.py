@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CAP = ROOT / "examples" / "manston_cap.yaml"
 CAP_NARRATIVE = ROOT / "examples" / "manston_cap_narrative.yaml"
 INTERCEPT_NARRATIVE = ROOT / "examples" / "manston_dawn_intercept_narrative.yaml"
+ESCORT_NARRATIVE = ROOT / "examples" / "manston_escort_narrative.yaml"
 FREE = ROOT / "examples" / "manston_cold_freeflight.yaml"
 
 
@@ -60,6 +61,24 @@ def test_expand_intercept_narrative_adds_rules():
     assert expanded.triggers[1].then[-1].type == "mission_end"
 
 
+def test_expand_escort_narrative_adds_rules():
+    spec = load_mission_spec(ESCORT_NARRATIVE)
+    expanded = apply_narrative(spec, voice="raf")
+    assert expanded.narrative is not None
+    assert expanded.narrative.enabled is False
+    assert len(expanded.zones) == 1
+    assert expanded.zones[0].name == "escort_destination"
+    assert len(expanded.triggers) == 3
+    names = [t.name for t in expanded.triggers]
+    assert names == [
+        "narrative_push",
+        "narrative_with_package",
+        "narrative_bandits_down",
+    ]
+    assert "package" in expanded.triggers[0].then[0].text.lower()
+    assert expanded.triggers[2].then[-1].type == "mission_end"
+
+
 def test_validate_and_compile_narrative_cap(tmp_path: Path):
     spec = load_mission_spec(CAP_NARRATIVE)
     assert validate_mission_spec(spec, voice="raf").ok
@@ -75,6 +94,17 @@ def test_validate_and_compile_narrative_intercept(tmp_path: Path):
     spec = load_mission_spec(INTERCEPT_NARRATIVE)
     assert validate_mission_spec(spec, voice="raf").ok
     out = PyDCSCompiler().compile(spec, tmp_path / "int_narr.miz", voice="raf")
+    mission = zipfile.ZipFile(out).read("mission").decode("utf-8", "replace")
+    assert "c_time_after" in mission
+    assert "a_out_text_delay" in mission
+    assert "c_group_dead" in mission
+    assert "a_end_mission" in mission
+
+
+def test_validate_and_compile_narrative_escort(tmp_path: Path):
+    spec = load_mission_spec(ESCORT_NARRATIVE)
+    assert validate_mission_spec(spec, voice="raf").ok
+    out = PyDCSCompiler().compile(spec, tmp_path / "esc_narr.miz", voice="raf")
     mission = zipfile.ZipFile(out).read("mission").decode("utf-8", "replace")
     assert "c_time_after" in mission
     assert "a_out_text_delay" in mission
@@ -130,10 +160,11 @@ def test_disabled_narrative_noop():
 def test_cli_validate_narrative_ok():
     assert main(["validate", str(CAP_NARRATIVE)]) == 0
     assert main(["validate", str(INTERCEPT_NARRATIVE)]) == 0
+    assert main(["validate", str(ESCORT_NARRATIVE)]) == 0
 
 
 def test_schema_notes_mention_narrative():
-    for mt in ("cap", "intercept"):
+    for mt in ("cap", "intercept", "escort"):
         view = build_spec_schema(mt)
         blob = " ".join(view.notes).lower()
         assert "narrative" in blob
