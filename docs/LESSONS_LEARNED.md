@@ -7,6 +7,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## R9 ME enrichment candidates (radio / late-act first)
+
+- **Date:** 2026-08-04
+- **Lesson:** After narrative packs, the biggest Channel richness gap vs stock IA is
+  **layer 3 interactivity**: F10 radio menus + late-activated groups (Dawn Raid pattern),
+  not more message-only narrative. PyDCS already exposes `AddRadioItem*`,
+  `ActivateGroup`/`DeactivateGroup`, sounds, `GroupLifeLess`, altitude/speed gates — Spec
+  vocab is the bottleneck. Prefer native emit over `#22` unless world-event Lua is required.
+  Ranked list: `research/me-enrichment-candidates.md` (gitignored).
+- **Next product slice:** radio options + late activation (then sound / richer flags).
+
 ## R7 PyDCS open-issue triage (2026-08-04)
 
 - **Date:** 2026-08-04
