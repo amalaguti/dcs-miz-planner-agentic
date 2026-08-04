@@ -7,6 +7,19 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## R7 PyDCS open-issue triage (2026-08-04)
+
+- **Date:** 2026-08-04
+- **Lesson:** Open [pydcs/dcs](https://github.com/pydcs/dcs/issues) triage vs Channel compiler:
+  nothing blocks current combat emit beyond workarounds we already keep
+  (`_disable_payload_scan`, `_ensure_theatre_member`, explicit waypoint speeds,
+  plain `group.frequency`). Payload KeyError fix is on upstream **master**
+  (#439/#440, Jun 2026) but **not** in PyPI `0.15.0` — do not remove the disable
+  until a released wheel includes `.get(payload_path)`. Trigger vocab gaps (#62)
+  and DoScript DictKey quirks (#179) matter for R9 / `#22`. Load→save action
+  reordering (#369) matters only if we rewrite foreign `.miz` files.
+- **Notes:** `research/pydcs-issues.md` (gitignored). Revisit on R8 bumps.
+
 ## Opt-in CAP narrative expands before validate/compile
 
 - **Date:** 2026-08-03
@@ -326,12 +339,13 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ## PyDCS: payload loader KeyError when DCS install is present
 
-- **Date:** 2026-07-25
+- **Date:** 2026-07-25 (updated 2026-08-04)
 - **Symptom:** `KeyError` on a path under `S:/DCS World/.../UnitPayloads/*.lua` while creating aircraft via `Mission.flight_group_from_airport` / `Plane.__init__` → `FlyingType.load_payloads`.
 - **Cause:** With a real DCS install detected, PyDCS scans payload dirs. `scan_payload_dir` skips files with no `["unitType"]` line (never caches them). `load_payloads` then does `_payload_cache[payload_path]` → KeyError. Upstream bug in PyDCS `unittype.py`; free-flight missions do not need payloads.
 - **Fix / workaround:** In our compiler only, call `_disable_payload_scan(...)` before creating units: seed `_payload_cache` so the install is not scanned, and set `aircraft_type.payloads = {}` so `load_payloads` returns early. Do **not** edit files under `.venv`.
 - **Code:** `src/dcs_miz_planner/compiler/pydcs_compiler.py` (`_disable_payload_scan`).
 - **Do not:** Re-enable full install payload scanning without fixing the KeyError path (`.get` / skip missing keys) or pinning a fixed PyDCS.
+- **Upstream (R7):** `.get()` fix merged on pydcs `master` (#439/#440, 2026-06); **not** in PyPI `0.15.0`. Keep the monkeypatch until R8 bumps to a release that includes it, then re-test with scan on.
 
 ## PyDCS: no standalone `theatre` zip member
 
