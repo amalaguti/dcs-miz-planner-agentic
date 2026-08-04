@@ -17,6 +17,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   checkbox; F10 Other menu is in-flight only. Example: `manston_dawn_intercept_radio.yaml`.
 - **Code:** `models.py`, `compiler/triggers_emit.py`, `pydcs_compiler.py`.
 
+## Sound assets + numeric flags
+
+- **Date:** 2026-08-04
+- **Lesson:** Spec `sound` uses curated `asset_id` only (`data/sounds/` registry); compile
+  materializes the file and embeds via `mission.map_resource` + `SoundToAll` (`a_out_sound`).
+  Numeric flags are additive beside bool `flag_is`/`set_flag`: `flag_equals` /
+  `flag_more`/`flag_less`/`time_since_flag`, `inc_flag`/`set_flag_value`. PyDCS predicates:
+  `c_flag_more`, `c_flag_less`, `c_time_since_flag`, `a_inc_flag`, `a_set_flag_value`.
+  Example: `manston_freeflight_sound_flags.yaml`.
+- **Code:** `sounds.py`, `models.py`, `compiler/triggers_emit.py`.
+
 ## R9 ME enrichment candidates (radio / late-act first)
 
 - **Date:** 2026-08-04
@@ -26,7 +37,8 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   `ActivateGroup`/`DeactivateGroup`, sounds, `GroupLifeLess`, altitude/speed gates — Spec
   vocab is the bottleneck. Prefer native emit over `#22` unless world-event Lua is required.
   Ranked list: `research/me-enrichment-candidates.md` (gitignored).
-- **Next product slice:** sound / richer flags (radio + late activation shipped as `#25`).
+- **Next product slice:** `group_life_less` / markers / altitude gates (sound + richer
+  flags shipped as `#26`).
 
 ## R7 PyDCS open-issue triage (2026-08-04)
 

@@ -10,16 +10,26 @@ from .models import (
     ActivateGroupAction,
     CoalitionInZoneCondition,
     DeactivateGroupAction,
+    FlagEqualsCondition,
+    FlagIsCondition,
+    FlagLessCondition,
+    FlagMoreCondition,
+    IncFlagAction,
     MissionSpec,
     MissionType,
     ObjectiveType,
     RadioItemAddAction,
     RadioItemRemoveAction,
+    SetFlagAction,
+    SetFlagValueAction,
+    SoundAction,
     TargetDeadCondition,
+    TimeSinceFlagCondition,
     UnitDeadCondition,
     opposing_coalition,
 )
 from .registry import ChannelRegistry, RegistryError, get_channel_registry
+from .sounds import get_sound_asset, list_sound_assets
 
 
 def _validate_enemy_aircraft(
@@ -381,6 +391,26 @@ def _validate_triggers_and_zones(
                         ),
                     )
                 )
+            elif (
+                isinstance(
+                    cond,
+                    (
+                        FlagIsCondition,
+                        FlagEqualsCondition,
+                        FlagMoreCondition,
+                        FlagLessCondition,
+                        TimeSinceFlagCondition,
+                    ),
+                )
+                and not cond.flag.strip()
+            ):
+                errors.append(
+                    ValidationError(
+                        code="empty_flag_name",
+                        path=f"{path}.flag",
+                        message="flag name must be non-empty",
+                    )
+                )
 
         for ai, act in enumerate(rule.then):
             path = f"triggers[{ti}].then[{ai}]"
@@ -430,6 +460,37 @@ def _validate_triggers_and_zones(
                         code="empty_radio_label",
                         path=f"{path}.label",
                         message="radio_item_remove label must be non-empty",
+                    )
+                )
+            elif isinstance(act, SoundAction):
+                if not act.asset_id.strip():
+                    errors.append(
+                        ValidationError(
+                            code="empty_sound_asset_id",
+                            path=f"{path}.asset_id",
+                            message="sound asset_id must be non-empty",
+                        )
+                    )
+                else:
+                    try:
+                        get_sound_asset(act.asset_id)
+                    except RegistryError:
+                        errors.append(
+                            ValidationError(
+                                code="unknown_sound_asset",
+                                path=f"{path}.asset_id",
+                                message=f"Unknown sound asset_id {act.asset_id!r}",
+                                hint=f"Known: {list_sound_assets() or '(none)'}",
+                            )
+                        )
+            elif isinstance(act, (SetFlagAction, SetFlagValueAction, IncFlagAction)) and not (
+                act.flag.strip()
+            ):
+                errors.append(
+                    ValidationError(
+                        code="empty_flag_name",
+                        path=f"{path}.flag",
+                        message="flag name must be non-empty",
                     )
                 )
 

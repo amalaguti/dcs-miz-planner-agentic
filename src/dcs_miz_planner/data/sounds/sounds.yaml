@@ -1,0 +1,5 @@
+# Curated Mission Spec sound assets (asset_id → file). No arbitrary paths in Specs.
+assets:
+  beep:
+    file: beep.wav
+    description: Short tone for trigger / ME fixture (not stock VO)

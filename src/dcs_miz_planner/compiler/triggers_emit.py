@@ -8,7 +8,11 @@ from ..models import (
     ActivateGroupAction,
     CoalitionInZoneCondition,
     DeactivateGroupAction,
+    FlagEqualsCondition,
     FlagIsCondition,
+    FlagLessCondition,
+    FlagMoreCondition,
+    IncFlagAction,
     MessageAction,
     MissionEndAction,
     MissionEndResult,
@@ -16,12 +20,16 @@ from ..models import (
     RadioItemAddAction,
     RadioItemRemoveAction,
     SetFlagAction,
+    SetFlagValueAction,
+    SoundAction,
     TargetDeadCondition,
     TimeMoreCondition,
+    TimeSinceFlagCondition,
     TriggerRule,
     UnitDeadCondition,
     opposing_coalition,
 )
+from ..sounds import resolve_sound_path
 
 
 def apply_zones_and_triggers(
@@ -93,6 +101,14 @@ def _map_condition(cond, zone_ids, enemy_group_ids, target_group_ids, flag_id, c
     if isinstance(cond, FlagIsCondition):
         fid = flag_id(cond.flag)
         return condition_mod.FlagIsTrue(fid) if cond.value else condition_mod.FlagIsFalse(fid)
+    if isinstance(cond, FlagEqualsCondition):
+        return condition_mod.FlagEquals(flag_id(cond.flag), value=cond.value)
+    if isinstance(cond, FlagMoreCondition):
+        return condition_mod.FlagIsMore(flag_id(cond.flag), value=cond.value)
+    if isinstance(cond, FlagLessCondition):
+        return condition_mod.FlagIsLess(flag_id(cond.flag), value=cond.value)
+    if isinstance(cond, TimeSinceFlagCondition):
+        return condition_mod.TimeSinceFlag(flag_id(cond.flag), seconds=int(cond.seconds))
     if isinstance(cond, UnitDeadCondition):
         if cond.enemy_index >= len(enemy_group_ids):
             raise ValueError(
@@ -149,6 +165,14 @@ def _map_action(
     if isinstance(act, SetFlagAction):
         fid = flag_id(act.flag)
         return action_mod.SetFlag(fid) if act.value else action_mod.ClearFlag(fid)
+    if isinstance(act, SetFlagValueAction):
+        return action_mod.SetFlagValue(flag_id(act.flag), value=act.value)
+    if isinstance(act, IncFlagAction):
+        return action_mod.IncreaseFlag(flag_id(act.flag), value=act.by)
+    if isinstance(act, SoundAction):
+        path = resolve_sound_path(act.asset_id)
+        res_key = mission.map_resource.add_resource_file(path)
+        return action_mod.SoundToAll(file_res_key=res_key)
     if isinstance(act, MissionEndAction):
         if act.result is MissionEndResult.WIN:
             winner = spec.player.coalition.value
@@ -182,16 +206,28 @@ def _map_action(
 def collect_flag_names(rules: list[TriggerRule]) -> list[str]:
     """Ordered unique flag names (test helper)."""
     seen: list[str] = []
+
+    def _add(name: str) -> None:
+        if name not in seen:
+            seen.append(name)
+
     for rule in rules:
         for cond in rule.when:
-            if isinstance(cond, FlagIsCondition) and cond.flag not in seen:
-                seen.append(cond.flag)
-        for act in rule.then:
-            if (
-                isinstance(act, SetFlagAction)
-                and act.flag not in seen
-                or isinstance(act, RadioItemAddAction)
-                and act.flag not in seen
+            if isinstance(
+                cond,
+                (
+                    FlagIsCondition,
+                    FlagEqualsCondition,
+                    FlagMoreCondition,
+                    FlagLessCondition,
+                    TimeSinceFlagCondition,
+                ),
             ):
-                seen.append(act.flag)
+                _add(cond.flag)
+        for act in rule.then:
+            if isinstance(
+                act,
+                (SetFlagAction, SetFlagValueAction, IncFlagAction, RadioItemAddAction),
+            ):
+                _add(act.flag)
     return seen

@@ -1,0 +1,61 @@
+# Compileable sample: curated sound + numeric/timed flag chain (open in ME;
+# expect SOUND TO ALL + flag rules under Set Rules for Triggers).
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Free Flight (sound + flags sample)
+description: >
+  Same Manston cold free flight as the acceptance example, plus a curated sound
+  callout and a small numeric flag chain for Spec/validation/ME coverage.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+zones: []
+triggers:
+  - name: tone_and_arm
+    once: true
+    when:
+      - type: time_more
+        seconds: 10
+    then:
+      - type: sound
+        asset_id: beep
+      - type: message
+        text: "Manston Tower — radio check (sound fixture)."
+        duration_s: 10
+      - type: set_flag_value
+        flag: beats
+        value: 1
+  - name: after_flag
+    once: true
+    when:
+      - type: time_since_flag
+        flag: beats
+        seconds: 5
+    then:
+      - type: inc_flag
+        flag: beats
+        by: 1
+      - type: message
+        text: "Flag chain advanced — beats incremented."
+        duration_s: 8
+  - name: beats_ready
+    once: true
+    when:
+      - type: flag_more
+        flag: beats
+        value: 1
+    then:
+      - type: message
+        text: "Numeric flag beat complete."
+        duration_s: 8

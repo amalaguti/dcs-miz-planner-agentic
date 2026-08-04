@@ -175,6 +175,30 @@ class FlagIsCondition(SpecModel):
     value: bool
 
 
+class FlagEqualsCondition(SpecModel):
+    type: Literal["flag_equals"] = "flag_equals"
+    flag: str = Field(min_length=1)
+    value: int
+
+
+class FlagMoreCondition(SpecModel):
+    type: Literal["flag_more"] = "flag_more"
+    flag: str = Field(min_length=1)
+    value: int
+
+
+class FlagLessCondition(SpecModel):
+    type: Literal["flag_less"] = "flag_less"
+    flag: str = Field(min_length=1)
+    value: int
+
+
+class TimeSinceFlagCondition(SpecModel):
+    type: Literal["time_since_flag"] = "time_since_flag"
+    flag: str = Field(min_length=1)
+    seconds: float = Field(gt=0)
+
+
 class UnitDeadCondition(SpecModel):
     type: Literal["unit_dead"] = "unit_dead"
     enemy_index: int = Field(ge=0, description="0-based index into Spec enemies[]")
@@ -194,6 +218,10 @@ class CoalitionInZoneCondition(SpecModel):
 TriggerCondition = Annotated[
     TimeMoreCondition
     | FlagIsCondition
+    | FlagEqualsCondition
+    | FlagMoreCondition
+    | FlagLessCondition
+    | TimeSinceFlagCondition
     | UnitDeadCondition
     | TargetDeadCondition
     | CoalitionInZoneCondition,
@@ -212,6 +240,25 @@ class SetFlagAction(SpecModel):
     type: Literal["set_flag"] = "set_flag"
     flag: str = Field(min_length=1)
     value: bool
+
+
+class SetFlagValueAction(SpecModel):
+    type: Literal["set_flag_value"] = "set_flag_value"
+    flag: str = Field(min_length=1)
+    value: int
+
+
+class IncFlagAction(SpecModel):
+    type: Literal["inc_flag"] = "inc_flag"
+    flag: str = Field(min_length=1)
+    by: int = Field(default=1)
+
+
+class SoundAction(SpecModel):
+    """Play a curated sound asset to all (no arbitrary paths)."""
+
+    type: Literal["sound"] = "sound"
+    asset_id: str = Field(min_length=1)
 
 
 class MissionEndAction(SpecModel):
@@ -266,6 +313,9 @@ class DeactivateGroupAction(SpecModel):
 TriggerAction = Annotated[
     MessageAction
     | SetFlagAction
+    | SetFlagValueAction
+    | IncFlagAction
+    | SoundAction
     | MissionEndAction
     | RadioItemAddAction
     | RadioItemRemoveAction

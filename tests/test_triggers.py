@@ -193,3 +193,77 @@ def test_schema_notes_mention_radio_or_late():
     for mt in ("cap", "intercept"):
         blob = " ".join(build_spec_schema(mt).notes).lower()
         assert "late_activation" in blob or "radio" in blob
+
+
+SOUND_FLAGS = ROOT / "examples" / "manston_freeflight_sound_flags.yaml"
+
+
+def test_sound_flags_example_loads():
+    from dcs_miz_planner.sounds import list_sound_assets
+
+    spec = load_mission_spec(SOUND_FLAGS)
+    assert any(a.type == "sound" for t in spec.triggers for a in t.then)
+    assert any(c.type == "flag_more" for t in spec.triggers for c in t.when)
+    assert any(c.type == "time_since_flag" for t in spec.triggers for c in t.when)
+    assert any(a.type == "inc_flag" for t in spec.triggers for a in t.then)
+    assert "beep" in list_sound_assets()
+    assert validate_mission_spec(spec).ok
+
+
+def test_compile_sound_flags(tmp_path: Path):
+    spec = load_mission_spec(SOUND_FLAGS)
+    out = PyDCSCompiler().compile(spec, tmp_path / "sound_flags.miz")
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8", "replace")
+        names = zf.namelist()
+    assert "a_out_sound" in mission
+    assert "c_flag_more" in mission
+    assert "a_inc_flag" in mission
+    assert "a_set_flag_value" in mission
+    assert "c_time_since_flag" in mission
+    assert any("beep" in n.lower() or n.endswith(".wav") for n in names) or any(
+        "l10n/" in n and not n.endswith("mapResource") and not n.endswith("dictionary")
+        for n in names
+    )
+
+
+def test_unknown_sound_asset_fails(tmp_path: Path):
+    data = _base()
+    data["triggers"] = [
+        {
+            "when": [{"type": "time_more", "seconds": 1}],
+            "then": [{"type": "sound", "asset_id": "not_a_real_asset"}],
+        }
+    ]
+    p = tmp_path / "bad_sound.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    spec = load_mission_spec(p)
+    result = validate_mission_spec(spec)
+    assert not result.ok
+    assert any(e.code == "unknown_sound_asset" for e in result.errors)
+
+
+def test_sound_path_field_rejected(tmp_path: Path):
+    data = _base()
+    data["triggers"] = [
+        {
+            "when": [{"type": "time_more", "seconds": 1}],
+            "then": [{"type": "sound", "asset_id": "beep", "path": "C:/evil.wav"}],
+        }
+    ]
+    p = tmp_path / "path_sound.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_cli_validate_sound_flags_ok():
+    assert main(["validate", str(SOUND_FLAGS)]) == 0
+
+
+def test_schema_notes_mention_sound_and_numeric_flags():
+    from dcs_miz_planner.agent.spec_schema import build_spec_schema
+
+    blob = " ".join(build_spec_schema("free_flight").notes).lower()
+    assert "sound" in blob and "asset_id" in blob
+    assert "flag_more" in blob or "inc_flag" in blob

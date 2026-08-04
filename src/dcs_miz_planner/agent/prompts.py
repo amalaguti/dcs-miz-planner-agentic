@@ -51,7 +51,9 @@ Rules:
   The host may warn if the date looks mismatched for the content.
 - free_flight: enemies, objectives, targets, and package must be empty; omit cap,
   strike, and escort; omit player.payload. Optional typed zones/triggers allowed
-  (compiler emits native ME tables; never put Lua in the Spec).
+  (compiler emits native ME tables; never put Lua in the Spec). Prefer curated
+  sound asset_id (no paths) and numeric flags (flag_equals/more/less,
+  time_since_flag, inc_flag, set_flag_value) when authoring hand triggers.
 - intercept: non-empty enemies and objectives (type intercept_enemy); omit cap, strike,
   escort, targets, package, and player.payload. Optional narrative.enabled true expands
   curated intercept immersion (scramble + bandits-down win) when zones/triggers are empty
