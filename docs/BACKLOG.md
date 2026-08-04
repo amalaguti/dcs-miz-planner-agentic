@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `trigger-radio-late-activation` (F10 radio options + late-activated groups); then sound/flags; `#22` only if native insufficient; R8 when bumping pydcs
+**Next promote / in proposal:** sound/flags enrichment as needed; `#22` only if native insufficient; R8 when bumping pydcs
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -127,7 +127,7 @@ the trigger/script text itself is human-authored, versioned, and tested.
 | 22 | `script-snippet-library` | Curated, parameterised Lua snippets (human-written, tested, version-pinned) that the compiler injects for behaviour PyDCS triggers can't express; agent may only select + fill declared params | `idea` |
 | 23 | `mission-events-narrative` | Use 20–22 for immersion: bandit callouts, tasking updates, RTB clearance, success/failure outcomes — in squadron-commander voice | `done` (accepted in-game 2026-08-03; ME shows three CAP narrative rules) |
 | 23a | `narrative-pack-ground-attack` | Opt-in GA narrative (push / ingress / targets-down via `target_dead`) | `done` (accepted in-game 2026-08-04; ME shows three GA narrative rules) |
-| 25 | `trigger-radio-late-activation` | F10 radio menu items + late-activated enemy/target groups (Dawn Raid–style difficulty / spawn options); native ME only | `idea` (promoted by R9 2026-08-04) |
+| 25 | `trigger-radio-late-activation` | F10 radio menu items + late-activated enemy/target groups (Dawn Raid–style difficulty / spawn options); native ME only | `done` (accepted in-game 2026-08-04; ME radio + late activation) |
 | 24 | `cockpit-state-triggers` | Optional interactive/training missions driven by Spitfire cockpit arguments (promotes research R4 once verified in-game) | `idea` |
 
 Sequencing note: 20–21 need `mission-spec-schema` (M2 `#2`), `validation-engine` (M2 `#5`) and

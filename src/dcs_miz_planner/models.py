@@ -87,6 +87,7 @@ class EnemyFlight(SpecModel):
     skill: str = "Average"
     country: str = "ThirdReich"
     coalition: Coalition = Coalition.RED
+    late_activation: bool = False
 
 
 class GroundTarget(SpecModel):
@@ -102,6 +103,7 @@ class GroundTarget(SpecModel):
     skill: str = "Average"
     country: str = "ThirdReich"
     coalition: Coalition = Coalition.RED
+    late_activation: bool = False
 
 
 class Cap(SpecModel):
@@ -217,8 +219,58 @@ class MissionEndAction(SpecModel):
     result: MissionEndResult
 
 
+class RadioItemAddAction(SpecModel):
+    """Add an F10 radio menu item that sets a named flag on (ME value 1)."""
+
+    type: Literal["radio_item_add"] = "radio_item_add"
+    label: str = Field(min_length=1)
+    flag: str = Field(min_length=1)
+    coalition: Coalition | None = None
+
+
+class RadioItemRemoveAction(SpecModel):
+    type: Literal["radio_item_remove"] = "radio_item_remove"
+    label: str = Field(min_length=1)
+
+
+class ActivateGroupAction(SpecModel):
+    """Activate a late-activated enemy or ground-target group by Spec index."""
+
+    type: Literal["activate_group"] = "activate_group"
+    enemy_index: int | None = Field(default=None, ge=0)
+    target_index: int | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def _exactly_one_index(self) -> ActivateGroupAction:
+        has_e = self.enemy_index is not None
+        has_t = self.target_index is not None
+        if has_e == has_t:
+            raise ValueError("activate_group requires exactly one of enemy_index or target_index")
+        return self
+
+
+class DeactivateGroupAction(SpecModel):
+    type: Literal["deactivate_group"] = "deactivate_group"
+    enemy_index: int | None = Field(default=None, ge=0)
+    target_index: int | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def _exactly_one_index(self) -> DeactivateGroupAction:
+        has_e = self.enemy_index is not None
+        has_t = self.target_index is not None
+        if has_e == has_t:
+            raise ValueError("deactivate_group requires exactly one of enemy_index or target_index")
+        return self
+
+
 TriggerAction = Annotated[
-    MessageAction | SetFlagAction | MissionEndAction,
+    MessageAction
+    | SetFlagAction
+    | MissionEndAction
+    | RadioItemAddAction
+    | RadioItemRemoveAction
+    | ActivateGroupAction
+    | DeactivateGroupAction,
     Field(discriminator="type"),
 ]
 

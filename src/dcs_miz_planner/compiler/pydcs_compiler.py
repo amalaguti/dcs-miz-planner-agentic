@@ -406,6 +406,8 @@ class PyDCSCompiler(CompilerInterface):
                 )
                 for unit in sg.units:
                     unit.skill = skill
+                if tgt.late_activation:
+                    sg.late_activation = True
                 group_ids.append(sg.id)
             else:
                 from dcs.vehicles import vehicle_map
@@ -422,6 +424,8 @@ class PyDCSCompiler(CompilerInterface):
                 )
                 for unit in vg.units:
                     unit.skill = skill
+                if tgt.late_activation:
+                    vg.late_activation = True
                 group_ids.append(vg.id)
         return group_ids
 
@@ -554,6 +558,8 @@ class PyDCSCompiler(CompilerInterface):
             for unit in eg.units:
                 unit.skill = skill
             eg.frequency = radio_mhz
+            if enemy.late_activation:
+                eg.late_activation = True
             group_ids.append(eg.id)
         return group_ids
 
@@ -590,6 +596,8 @@ class PyDCSCompiler(CompilerInterface):
             for unit in eg.units:
                 unit.skill = skill
             eg.frequency = radio_mhz
+            if enemy.late_activation:
+                eg.late_activation = True
             group_ids.append(eg.id)
         return group_ids
 
@@ -641,6 +649,8 @@ class PyDCSCompiler(CompilerInterface):
             for unit in eg.units:
                 unit.skill = skill
             eg.frequency = radio_mhz
+            if enemy.late_activation:
+                eg.late_activation = True
             group_ids.append(eg.id)
         return group_ids
 

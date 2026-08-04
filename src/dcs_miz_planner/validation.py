@@ -7,10 +7,14 @@ from dataclasses import dataclass
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
 from .models import (
+    ActivateGroupAction,
     CoalitionInZoneCondition,
+    DeactivateGroupAction,
     MissionSpec,
     MissionType,
     ObjectiveType,
+    RadioItemAddAction,
+    RadioItemRemoveAction,
     TargetDeadCondition,
     UnitDeadCondition,
     opposing_coalition,
@@ -375,6 +379,57 @@ def _validate_triggers_and_zones(
                             f"target_index {cond.target_index} out of range "
                             f"(targets has {len(spec.targets)} entries)"
                         ),
+                    )
+                )
+
+        for ai, act in enumerate(rule.then):
+            path = f"triggers[{ti}].then[{ai}]"
+            if isinstance(act, (ActivateGroupAction, DeactivateGroupAction)):
+                if act.enemy_index is not None and act.enemy_index >= len(spec.enemies):
+                    errors.append(
+                        ValidationError(
+                            code="enemy_index_out_of_range",
+                            path=f"{path}.enemy_index",
+                            message=(
+                                f"enemy_index {act.enemy_index} out of range "
+                                f"(enemies has {len(spec.enemies)} entries)"
+                            ),
+                        )
+                    )
+                if act.target_index is not None and act.target_index >= len(spec.targets):
+                    errors.append(
+                        ValidationError(
+                            code="target_index_out_of_range",
+                            path=f"{path}.target_index",
+                            message=(
+                                f"target_index {act.target_index} out of range "
+                                f"(targets has {len(spec.targets)} entries)"
+                            ),
+                        )
+                    )
+            elif isinstance(act, RadioItemAddAction):
+                if not act.label.strip():
+                    errors.append(
+                        ValidationError(
+                            code="empty_radio_label",
+                            path=f"{path}.label",
+                            message="radio_item_add label must be non-empty",
+                        )
+                    )
+                if not act.flag.strip():
+                    errors.append(
+                        ValidationError(
+                            code="empty_flag_name",
+                            path=f"{path}.flag",
+                            message="radio_item_add flag must be non-empty",
+                        )
+                    )
+            elif isinstance(act, RadioItemRemoveAction) and not act.label.strip():
+                errors.append(
+                    ValidationError(
+                        code="empty_radio_label",
+                        path=f"{path}.label",
+                        message="radio_item_remove label must be non-empty",
                     )
                 )
 

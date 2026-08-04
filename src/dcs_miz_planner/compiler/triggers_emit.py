@@ -5,12 +5,16 @@ from __future__ import annotations
 from typing import Any
 
 from ..models import (
+    ActivateGroupAction,
     CoalitionInZoneCondition,
+    DeactivateGroupAction,
     FlagIsCondition,
     MessageAction,
     MissionEndAction,
     MissionEndResult,
     MissionSpec,
+    RadioItemAddAction,
+    RadioItemRemoveAction,
     SetFlagAction,
     TargetDeadCondition,
     TimeMoreCondition,
@@ -69,7 +73,17 @@ def apply_zones_and_triggers(
                 _map_condition(cond, zone_ids, enemy_group_ids, target_ids, flag_id, condition)
             )
         for act in rule.then:
-            trig.add_action(_map_action(act, mission, spec, flag_id, action))
+            trig.add_action(
+                _map_action(
+                    act,
+                    mission,
+                    spec,
+                    flag_id,
+                    action,
+                    enemy_group_ids,
+                    target_ids,
+                )
+            )
         mission.triggerrules.triggers.append(trig)
 
 
@@ -101,7 +115,32 @@ def _map_condition(cond, zone_ids, enemy_group_ids, target_group_ids, flag_id, c
     raise ValueError(f"Unsupported trigger condition type: {type(cond)!r}")
 
 
-def _map_action(act, mission, spec: MissionSpec, flag_id, action_mod):
+def _resolve_group_id(act, enemy_group_ids: list[int], target_group_ids: list[int]) -> int:
+    if act.enemy_index is not None:
+        if act.enemy_index >= len(enemy_group_ids):
+            raise ValueError(
+                f"activate/deactivate enemy_index {act.enemy_index} has no compiled enemy "
+                f"group (have {len(enemy_group_ids)})"
+            )
+        return enemy_group_ids[act.enemy_index]
+    assert act.target_index is not None
+    if act.target_index >= len(target_group_ids):
+        raise ValueError(
+            f"activate/deactivate target_index {act.target_index} has no compiled target "
+            f"group (have {len(target_group_ids)})"
+        )
+    return target_group_ids[act.target_index]
+
+
+def _map_action(
+    act,
+    mission,
+    spec: MissionSpec,
+    flag_id,
+    action_mod,
+    enemy_group_ids: list[int],
+    target_group_ids: list[int],
+):
     if isinstance(act, MessageAction):
         seconds = int(act.duration_s) if act.duration_s is not None else 10
         # delay_s is Spec-level; ME out-text uses display duration. Spec delay is
@@ -116,6 +155,27 @@ def _map_action(act, mission, spec: MissionSpec, flag_id, action_mod):
         else:
             winner = opposing_coalition(spec.player.coalition).value
         return action_mod.EndMission(winner=winner, text=mission.string(""))
+    if isinstance(act, RadioItemAddAction):
+        fid = flag_id(act.flag)
+        text = mission.string(act.label)
+        if act.coalition is not None:
+            return action_mod.AddRadioItemForCoalition(
+                coalitionlist=act.coalition.value,
+                radiotext=text,
+                flag=fid,
+                value=1,
+            )
+        return action_mod.AddRadioItem(radiotext=text, flag=fid, value=1)
+    if isinstance(act, RadioItemRemoveAction):
+        return action_mod.RemoveRadioItem(radiotext=mission.string(act.label))
+    if isinstance(act, ActivateGroupAction):
+        return action_mod.ActivateGroup(
+            group=_resolve_group_id(act, enemy_group_ids, target_group_ids)
+        )
+    if isinstance(act, DeactivateGroupAction):
+        return action_mod.DeactivateGroup(
+            group=_resolve_group_id(act, enemy_group_ids, target_group_ids)
+        )
     raise ValueError(f"Unsupported trigger action type: {type(act)!r}")
 
 
@@ -127,6 +187,11 @@ def collect_flag_names(rules: list[TriggerRule]) -> list[str]:
             if isinstance(cond, FlagIsCondition) and cond.flag not in seen:
                 seen.append(cond.flag)
         for act in rule.then:
-            if isinstance(act, SetFlagAction) and act.flag not in seen:
+            if (
+                isinstance(act, SetFlagAction)
+                and act.flag not in seen
+                or isinstance(act, RadioItemAddAction)
+                and act.flag not in seen
+            ):
                 seen.append(act.flag)
     return seen

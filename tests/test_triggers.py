@@ -129,3 +129,67 @@ def test_zone_and_flag_compile(tmp_path: Path):
     assert "c_part_of_coalition_in_zone" in mission
     assert "a_set_flag" in mission
     assert "near" in mission
+
+
+RADIO = ROOT / "examples" / "manston_dawn_intercept_radio.yaml"
+
+
+def test_radio_late_activation_example_loads():
+    spec = load_mission_spec(RADIO)
+    assert len(spec.enemies) == 3
+    assert all(e.late_activation for e in spec.enemies)
+    assert any(a.type == "radio_item_add" for t in spec.triggers for a in t.then)
+    assert any(a.type == "activate_group" for t in spec.triggers for a in t.then)
+    assert validate_mission_spec(spec).ok
+
+
+def test_compile_radio_late_activation(tmp_path: Path):
+    spec = load_mission_spec(RADIO)
+    out = PyDCSCompiler().compile(spec, tmp_path / "radio.miz")
+    mission = zipfile.ZipFile(out).read("mission").decode("utf-8", "replace")
+    assert "a_add_radio_item_for_coalition" in mission or "a_add_radio_item" in mission
+    assert "a_activate_group" in mission
+    assert "lateActivation" in mission
+    assert "c_flag_is_true" in mission
+
+
+def test_activate_group_requires_one_index(tmp_path: Path):
+    data = yaml.safe_load(RADIO.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "time_more", "seconds": 1}],
+            "then": [{"type": "activate_group"}],
+        }
+    ]
+    p = tmp_path / "bad_act.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_activate_enemy_index_out_of_range(tmp_path: Path):
+    data = yaml.safe_load(RADIO.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "time_more", "seconds": 1}],
+            "then": [{"type": "activate_group", "enemy_index": 99}],
+        }
+    ]
+    p = tmp_path / "bad_idx.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    spec = load_mission_spec(p)
+    result = validate_mission_spec(spec)
+    assert not result.ok
+    assert any(e.code == "enemy_index_out_of_range" for e in result.errors)
+
+
+def test_cli_validate_radio_example_ok():
+    assert main(["validate", str(RADIO)]) == 0
+
+
+def test_schema_notes_mention_radio_or_late():
+    from dcs_miz_planner.agent.spec_schema import build_spec_schema
+
+    for mt in ("cap", "intercept"):
+        blob = " ".join(build_spec_schema(mt).notes).lower()
+        assert "late_activation" in blob or "radio" in blob

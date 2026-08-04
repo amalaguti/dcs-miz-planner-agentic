@@ -34,11 +34,13 @@ chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026
 Opt-in CAP / intercept / escort / ground-attack narrative (`narrative.enabled`;
 `examples/manston_cap_narrative.yaml`, `manston_dawn_intercept_narrative.yaml`,
 `manston_escort_narrative.yaml`, `manston_ground_attack_narrative.yaml`) expands to
-native ME triggers (accepted through GA 2026-08-04).
+native ME triggers (accepted through GA 2026-08-04). F10 radio + late activation
+(`examples/manston_dawn_intercept_radio.yaml`) for difficulty spawn options (accepted
+in ME 2026-08-04).
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `script-snippet-library` only if native triggers are insufficient; research R7/R8/R9 as hygiene.
+**Next:** sound/flags enrichment as needed; `script-snippet-library` only if native triggers are insufficient; R8 when bumping deps.
 
 ## Stack
 

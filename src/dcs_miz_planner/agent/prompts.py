@@ -55,7 +55,8 @@ Rules:
 - intercept: non-empty enemies and objectives (type intercept_enemy); omit cap, strike,
   escort, targets, package, and player.payload. Optional narrative.enabled true expands
   curated intercept immersion (scramble + bandits-down win) when zones/triggers are empty
-  and enemies non-empty — never with hand-written triggers.
+  and enemies non-empty — never with hand-written triggers. Optional late_activation on
+  enemies plus radio_item_add / activate_group triggers for F10 difficulty menus.
 - cap: nested cap object required (bearing_deg 0–360 from player airfield,
   distance_km > 0, altitude_m > 0, pattern circle|race_track, engagement
   weapons_free|open_fire|return_fire|weapons_hold, optional duration_min).

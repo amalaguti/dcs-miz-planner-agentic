@@ -7,6 +7,16 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## F10 radio items + late activation emit
+
+- **Date:** 2026-08-04
+- **Lesson:** Spec `radio_item_add` / `radio_item_remove` + `activate_group` /
+  `deactivate_group` map via PyDCS to F10 radio and group activate. Enemy/target
+  `late_activation: true` must be set on the placed group or Activate does nothing useful.
+  ME: Set Rules for Triggers for radio/activate actions; group panel **Late Activation**
+  checkbox; F10 Other menu is in-flight only. Example: `manston_dawn_intercept_radio.yaml`.
+- **Code:** `models.py`, `compiler/triggers_emit.py`, `pydcs_compiler.py`.
+
 ## R9 ME enrichment candidates (radio / late-act first)
 
 - **Date:** 2026-08-04
@@ -16,7 +26,7 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   `ActivateGroup`/`DeactivateGroup`, sounds, `GroupLifeLess`, altitude/speed gates — Spec
   vocab is the bottleneck. Prefer native emit over `#22` unless world-event Lua is required.
   Ranked list: `research/me-enrichment-candidates.md` (gitignored).
-- **Next product slice:** radio options + late activation (then sound / richer flags).
+- **Next product slice:** sound / richer flags (radio + late activation shipped as `#25`).
 
 ## R7 PyDCS open-issue triage (2026-08-04)
 

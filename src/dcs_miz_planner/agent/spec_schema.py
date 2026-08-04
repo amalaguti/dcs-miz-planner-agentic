@@ -48,6 +48,10 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "bandits-down win). Requires empty zones/triggers and enemies; conflicts with "
             "hand-authored triggers."
         ),
+        (
+            "optional late_activation on enemies; trigger actions radio_item_add / "
+            "activate_group for F10 difficulty menus (see manston_dawn_intercept_radio)."
+        ),
     ),
     MissionType.CAP.value: (
         "nested cap is required (bearing_deg, distance_km, altitude_m, pattern, engagement).",
@@ -59,6 +63,7 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "(push / on-station / bandits-down win). Requires empty zones/triggers and "
             "at least one enemy; conflicts with hand-authored triggers."
         ),
+        "optional late_activation on enemies; radio_item_add / activate_group as for intercept.",
     ),
     MissionType.GROUND_ATTACK.value: (
         "nested strike is required (bearing_deg, distance_km, altitude_m).",
@@ -104,10 +109,12 @@ _COMMON_NOTES: tuple[str, ...] = (
     ),
     (
         "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|unit_dead|"
-        "target_dead|coalition_in_zone; actions message|set_flag|mission_end. Compiler "
-        "emits native ME trigger tables for validated graphs. Optional narrative.enabled "
-        "(cap|intercept|escort|ground_attack) expands a curated pack into that vocabulary "
-        "when zones/triggers are empty."
+        "target_dead|coalition_in_zone; actions message|set_flag|mission_end|"
+        "radio_item_add|radio_item_remove|activate_group|deactivate_group. "
+        "enemies/targets may set late_activation true (dormant until activate_group). "
+        "Compiler emits native ME trigger tables for validated graphs. Optional "
+        "narrative.enabled (cap|intercept|escort|ground_attack) expands a curated pack "
+        "into that vocabulary when zones/triggers are empty."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
