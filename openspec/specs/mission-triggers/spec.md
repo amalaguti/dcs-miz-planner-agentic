@@ -79,9 +79,9 @@ Supported condition types MUST include `time_more`, `flag_is`, `flag_equals`,
 `flag_more`, `flag_less`, `time_since_flag`, `unit_dead`, `coalition_in_zone`,
 `target_dead`, `group_life_less`, `unit_altitude_higher`, `unit_altitude_lower`,
 `unit_speed_higher`, and `unit_speed_lower`. Supported action types MUST include `message`,
-`set_flag`, `set_flag_value`, `inc_flag`, `mission_end`, `sound`, `radio_item_add`,
-`radio_item_remove`, `activate_group`, `deactivate_group`, `mark`, and `smoke`. Unknown
-`type` values MUST be rejected.
+`set_flag`, `set_flag_value`, `inc_flag`, `set_flag_random`, `mission_end`, `sound`,
+`radio_item_add`, `radio_item_remove`, `activate_group`, `deactivate_group`, `mark`, and
+`smoke`. Unknown `type` values MUST be rejected.
 
 #### Scenario: Unknown condition type fails
 - **WHEN** a condition uses `type: something_else`
@@ -102,6 +102,18 @@ Supported condition types MUST include `time_more`, `flag_is`, `flag_equals`,
 #### Scenario: sound accepted in vocabulary
 - **WHEN** an action uses `type: sound` with `asset_id`
 - **THEN** structural load MUST succeed when the rest of the Spec is valid
+
+### Requirement: Spec set_flag_random action
+The Mission Spec MUST support a trigger action `set_flag_random` with a named
+`flag` and integer `min` / `max` bounds. Validation MUST reject `min > max`.
+
+#### Scenario: Valid random flag action loads
+- **WHEN** a Spec trigger `then` includes `set_flag_random` with `min` ≤ `max`
+- **THEN** the Spec MUST load and validate successfully
+
+#### Scenario: Inverted range rejected
+- **WHEN** `min` is greater than `max`
+- **THEN** validation MUST fail with a clear error
 
 #### Scenario: group_life_less accepted in vocabulary
 - **WHEN** a condition uses `type: group_life_less` with a valid index and `percent`

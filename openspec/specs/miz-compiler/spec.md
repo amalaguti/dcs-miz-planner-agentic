@@ -316,7 +316,8 @@ group at the Spec percent threshold, `coalition_in_zone` to part-of-coalition-in
 per Spec `agl`) for the player unit, `unit_speed_higher` / `unit_speed_lower` to
 unit-speed higher/lower for the player unit with Spec `speed_kmh` converted to m/s;
 `message` to delayed out-text, `set_flag` to set/clear flag, `set_flag_value` /
-`inc_flag` to set-flag-value / increase-flag, `mission_end` to end-mission with win/lose
+`inc_flag` to set-flag-value / increase-flag, `set_flag_random` to set-flag-random
+(Spec `min`/`max` → ME min_value/max_value), `mission_end` to end-mission with win/lose
 for the player coalition, `sound` to sound-to-all with the resolved registry file
 embedded in the `.miz` mapResource, `radio_item_add` / `radio_item_remove` to F10 radio
 item add/remove (flag on for add), `activate_group` / `deactivate_group` to
@@ -347,6 +348,10 @@ writing a `.miz`.
 - **WHEN** a Spec with a valid `sound` action is compiled
 - **THEN** the `.miz` MUST include a sound-to-all action and MUST embed the resolved
   asset file in mission resources
+
+#### Scenario: set_flag_random emits
+- **WHEN** a Spec with `set_flag_random` is compiled
+- **THEN** the `.miz` MUST include `a_set_flag_random` for the mapped flag id
 
 #### Scenario: Numeric flag emit
 - **WHEN** a Spec with `flag_more` and `inc_flag` (or `set_flag_value`) is compiled
