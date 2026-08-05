@@ -7,6 +7,19 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Live eval: assertive creativity still weak (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** First `eval-agent-creativity` live run showed catalog tools are *consulted*
+  but immersion often not *emitted*: vague free_flight stayed bare; “keeps me honest”
+  skipped altitude/speed gates; “choose difficulty” set `late_activation` + narrative
+  without F10/`activate_group` (dormant bandits); “Big Show” never called
+  `list_installed_campaigns`. Track as BACKLOG `#30c` — prefer prompt/tool/validation
+  hardenings over new Spec predicates. Half-recipes (late-act without activate) are
+  worse than narrative-only.
+- **Code / process:** `.cursor/skills/eval-agent-creativity/`; prompts / validation /
+  agent tools when `#30c` is implemented.
+
 ## Creative decision memory (`detail.creative`)
 
 - **Date:** 2026-08-04

@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep audits vs live snippets / local campaign Doc listing
+**Next promote / in proposal:** `#30c` agent assertive behaviours (eval gaps); `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep audits vs live snippets / local campaign Doc listing
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -135,6 +135,7 @@ the trigger/script text itself is human-authored, versioned, and tested.
 | 30 | `agent-capability-catalog` | Packaged `mission_behaviour` / `mission_inspiration` cards; mission-design `research_guidance`; local `Mods/campaigns` + Doc index for assertive creative planning | `done` (2026-08-04; catalog + tools + prompts) |
 | 30a | `creative-decision-memory` | Record inspiration/behaviour choices in generation `detail` + feedback → prompt bias over time | `done` (2026-08-04; detail.creative + bias helper) |
 | 30b | `eval-agent-creativity` | Periodic live vague-ask harness (Cursor skill) to regression creative agent behaviour → LESSONS / OpenSpec | `done` (skill + prompt catalog; re-run after agent changes) |
+| 30c | `agent-assertive-behaviours` | Close live-eval gaps: vague free_flight must apply 1–2 behaviours (e.g. gates); complete radio+late-act recipes (no dormant enemies without activate); prefer campaigns/Docs when ask names a campaign; discourage randomize-as-authoring | `idea` (from 2026-08-05 eval-agent-creativity run) |
 | 24 | `cockpit-state-triggers` | Optional interactive/training missions driven by Spitfire cockpit arguments (promotes research R4 once verified in-game) | `idea` |
 
 Sequencing note: 20–21 need `mission-spec-schema` (M2 `#2`), `validation-engine` (M2 `#5`) and

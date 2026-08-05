@@ -51,7 +51,7 @@ persist in generation `detail.creative`; feedback + history bias later invents.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path beyond live snippets / local listing.
+**Next:** `#30c` agent assertive behaviours (from live creativity eval); then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path beyond live snippets / local listing.
 
 ## Stack
 
