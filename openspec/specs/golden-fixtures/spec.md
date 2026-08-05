@@ -172,25 +172,33 @@ tests MUST assert expansion validates and compiles with native trigger structure
 
 ### Requirement: Radio late-activation example is covered
 The repository MUST include a checked-in Spec that uses F10 radio items and late-activated
-enemy (or target) groups, and tests MUST assert validation and compile emit radio-item and
-activate-group structure (and late activation on the group where applicable).
+enemy (or target) groups, and MUST include a hermetic structural golden fixture for that
+Spec’s compile path (required zip members, theatre, normalized `mission`, dictionary, and
+`meta.json` contracts). Tests MUST compile with an injected Channel inventory and match
+that golden. Ordinary pytest MUST NOT rewrite the fixture; refresh MUST be explicit.
+Contracts MUST include radio-item, activate-group, and late-activation markers consistent
+with the Spec.
 
-#### Scenario: Radio late-activation compile structure
-- **WHEN** the radio / late-activation example is compiled in tests
-- **THEN** the resulting `.miz` MUST include radio-item and activate-group markers
-  consistent with the Spec
+#### Scenario: Radio late-activation compile matches golden
+- **WHEN** the radio / late-activation example is compiled under the golden harness
+- **THEN** the test MUST pass if and only if output matches the checked-in structural
+  golden (including radio-item, activate-group, and late-activation contracts)
+
 
 ### Requirement: Sound and numeric-flag example is covered
 The repository MUST include a checked-in Spec that uses a `sound` action with a curated
 `asset_id` and at least one numeric or timed flag rule (`flag_equals` / `flag_more` /
-`flag_less` / `time_since_flag` and/or `inc_flag` / `set_flag_value`). Tests MUST assert
-validation and compile emit sound-to-all (with embedded resource) and numeric flag
-structure.
+`flag_less` / `time_since_flag` and/or `inc_flag` / `set_flag_value`), and MUST include a
+hermetic structural golden fixture for that Spec’s compile path. Tests MUST compile with
+injected Channel inventory and match that golden. Ordinary pytest MUST NOT rewrite the
+fixture; refresh MUST be explicit. Contracts MUST include sound-to-all and numeric/timed
+flag markers consistent with the Spec.
 
-#### Scenario: Sound and flag compile structure
-- **WHEN** the sound / numeric-flag example is compiled in tests
-- **THEN** the resulting `.miz` MUST include sound-to-all and numeric flag markers
-  consistent with the Spec
+#### Scenario: Sound and flag compile matches golden
+- **WHEN** the sound / numeric-flag example is compiled under the golden harness
+- **THEN** the test MUST pass if and only if output matches the checked-in structural
+  golden (including sound-to-all and numeric/timed flag contracts)
+
 
 ### Requirement: Group life less example is covered
 The repository MUST include a checked-in Spec that uses a `group_life_less` condition
@@ -205,26 +213,32 @@ placed group.
 
 ### Requirement: Mark and smoke example is covered
 The repository MUST include a checked-in Spec that uses `mark` and/or `smoke` actions
-referencing a Spec zone, with at least one observable companion action (e.g. `message`).
-Tests MUST assert validation and compile emit mark-to-all and/or smoke-marker structure
-for the referenced zone.
+referencing a Spec zone, with at least one observable companion action (e.g. `message`),
+and MUST include a hermetic structural golden fixture for that Spec’s compile path. Tests
+MUST compile with injected Channel inventory and match that golden. Ordinary pytest MUST
+NOT rewrite the fixture; refresh MUST be explicit. Contracts MUST include mark-to-all
+and/or smoke-marker markers consistent with the Spec.
 
-#### Scenario: Mark/smoke compile structure
-- **WHEN** the mark/smoke example is compiled in tests
-- **THEN** the resulting `.miz` MUST include mark-to-all and/or smoke-marker predicates
-  consistent with the Spec
+#### Scenario: Mark/smoke compile matches golden
+- **WHEN** the mark/smoke example is compiled under the golden harness
+- **THEN** the test MUST pass if and only if output matches the checked-in structural
+  golden (including mark-to-all and/or smoke-marker contracts)
+
 
 ### Requirement: Altitude and speed gate example is covered
 The repository MUST include a checked-in Spec that uses at least one of
 `unit_altitude_higher`, `unit_altitude_lower`, `unit_speed_higher`, or
-`unit_speed_lower`, with at least one observable companion action (e.g. `message`).
-Tests MUST assert validation and compile emit of the corresponding unit-altitude and/or
-unit-speed predicates for the player unit.
+`unit_speed_lower`, with at least one observable companion action (e.g. `message`), and
+MUST include a hermetic structural golden fixture for that Spec’s compile path. Tests MUST
+compile with injected Channel inventory and match that golden. Ordinary pytest MUST NOT
+rewrite the fixture; refresh MUST be explicit. Contracts MUST include the corresponding
+unit-altitude and/or unit-speed predicates for the player unit.
 
-#### Scenario: Gate compile structure
-- **WHEN** the altitude/speed gate example is compiled in tests
-- **THEN** the resulting `.miz` MUST include unit-altitude and/or unit-speed predicates
-  consistent with the Spec
+#### Scenario: Gate compile matches golden
+- **WHEN** the altitude/speed gate example is compiled under the golden harness
+- **THEN** the test MUST pass if and only if output matches the checked-in structural
+  golden (including unit-altitude and/or unit-speed contracts)
+
 
 ### Requirement: Mission behaviour and inspiration options are covered
 Tests MUST assert that after catalog sync (or registry load), packaged
