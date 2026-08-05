@@ -60,7 +60,7 @@ hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 **Next:** Adversarial review track in [`docs/BACKLOG.md`](docs/BACKLOG.md)
-(`#36` CI next); notes in
+(`#37`+ remaining); notes in
 [`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
 Then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path
 beyond live snippets / local listing.
@@ -70,6 +70,8 @@ beyond live snippets / local listing.
 - Python 3.12 + uv
 - Mission Spec (Pydantic) → shared validation → compiler via PyDCS (behind `CompilerInterface`)
 - OpenSpec (`npx openspec`) for SDD
+- GitHub Actions CI: ruff + hermetic pytest on PRs/pushes to `master`/`main`
+- Local pre-commit: ruff + branch/hygiene hooks (`pre-commit install`)
 - pre-commit (blocks commits on `master`/`main`; runs Ruff lint + format on Python)
 
 ## Validate and compile examples
