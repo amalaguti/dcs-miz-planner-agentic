@@ -220,9 +220,12 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ## Ground-attack: always verify strike position (land vs water, enemy vs practice)
 
-- **Date:** 2026-08-02
+- **Date:** 2026-08-02 (validate enforced 2026-08-05)
 - **Lesson:** Before accepting any ground-attack example or compile, **check target
   geography in ME / against PyDCS airport math** — do not trust bearing/distance intuition.
+  Shared validation now fails `strike_domain_mismatch` when the compile-equivalent strike
+  Point’s Channel land/sea class disagrees with target unit domain (`channel_domain.py`
+  UK–FR airport chord heuristic). `randomize` geometry redraws strike until domain matches.
 - **Checks (every GA Spec):**
   1. Resolve strike Point from player airfield (`point_from_heading`); compare to known
      Channel airports (e.g. Dunkirk ≈ 120° / 72 km from Manston).
@@ -235,8 +238,9 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
      the Point is actually on land, not the Strait.
   5. Confirm ME mission planner Target / Bombing waypoint and placed units agree (same
      land/sea domain).
-- **Code:** `examples/manston_ground_attack.yaml`, `compiler/pydcs_compiler.py`
-  (`_apply_ground_attack`), `docs/LESSONS_LEARNED.md`.
+- **Code:** `channel_domain.py`, `validation.py`, `randomize.py`,
+  `examples/manston_ground_attack.yaml`, `compiler/pydcs_compiler.py`
+  (`_apply_ground_attack`).
 
 ## Ground-attack: registry CLSID loadout + Bombing (not install payload scan)
 

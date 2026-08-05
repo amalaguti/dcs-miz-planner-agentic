@@ -21,7 +21,7 @@ from .models import (
     Strike,
     WeatherPreset,
 )
-from .registry import get_channel_registry
+from .registry import RegistryError, get_channel_registry
 
 AXES: tuple[str, ...] = ("weather", "time", "geometry", "opposition")
 
@@ -109,10 +109,46 @@ def _jitter_geometry(rng: random.Random, spec: MissionSpec) -> MissionSpec:
     if spec.cap is not None:
         updates["cap"] = _jitter_cap_like(rng, spec.cap)
     if spec.strike is not None:
-        updates["strike"] = _jitter_cap_like(rng, spec.strike)
+        updates["strike"] = _jitter_strike(rng, spec)
     if spec.escort is not None:
         updates["escort"] = _jitter_cap_like(rng, spec.escort)
     return spec.model_copy(update=updates) if updates else spec
+
+
+def _target_domains(spec: MissionSpec) -> set[str]:
+    registry = get_channel_registry()
+    domains: set[str] = set()
+    for tgt in spec.targets:
+        try:
+            domains.add(registry.get_strike_unit(tgt.unit).domain)
+        except RegistryError:
+            continue
+    return domains
+
+
+def _strike_domains_ok(spec: MissionSpec, strike: Strike) -> bool:
+    from .channel_domain import strike_domain_for_spec
+
+    domains = _target_domains(spec)
+    if not domains:
+        return True
+    candidate = spec.model_copy(update={"strike": strike})
+    try:
+        point_domain = strike_domain_for_spec(candidate)
+    except (ValueError, RegistryError):
+        return False
+    return domains <= {point_domain}
+
+
+def _jitter_strike(rng: random.Random, spec: MissionSpec) -> Strike:
+    assert spec.strike is not None
+    original = spec.strike
+    for _ in range(24):
+        candidate = _jitter_cap_like(rng, original)
+        assert isinstance(candidate, Strike)
+        if _strike_domains_ok(spec, candidate):
+            return candidate
+    return original
 
 
 def _jitter_cap_like(rng: random.Random, block: Cap | Strike | Escort) -> Cap | Strike | Escort:

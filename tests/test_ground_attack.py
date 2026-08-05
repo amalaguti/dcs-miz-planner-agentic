@@ -203,6 +203,33 @@ def test_ground_attack_example_validates() -> None:
     assert result.ok, result.errors
 
 
+def test_land_target_over_water_fails_domain(tmp_path: Path) -> None:
+    data = _ga_dict()
+    # LESSONS: 140° / 40 km from Manston is mid-Channel water — trucks invalid.
+    data["strike"] = {"bearing_deg": 140, "distance_km": 40, "altitude_m": 2000}
+    spec = load_mission_spec(_write(tmp_path, data))
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert not result.ok
+    assert any(e.code == "strike_domain_mismatch" for e in result.errors)
+
+
+def test_ship_target_over_water_passes_domain(tmp_path: Path) -> None:
+    data = _ga_dict()
+    data["strike"] = {"bearing_deg": 140, "distance_km": 40, "altitude_m": 2000}
+    data["targets"] = [
+        {
+            "unit": "Schnellboot_type_S130",
+            "count": 2,
+            "skill": "Average",
+            "country": "ThirdReich",
+            "coalition": "red",
+        }
+    ]
+    spec = load_mission_spec(_write(tmp_path, data))
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
 def test_ground_attack_compiles(tmp_path: Path) -> None:
     spec = load_mission_spec(GA_EXAMPLE)
     out = PyDCSCompiler(inventory=channel_available_inventory()).compile(spec, tmp_path / "ga.miz")

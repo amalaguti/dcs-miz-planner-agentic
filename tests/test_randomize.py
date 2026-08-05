@@ -107,3 +107,16 @@ def test_cli_randomize_writes_valid(tmp_path: Path):
     assert validate_mission_spec(spec).ok
     data = yaml.safe_load(out.read_text(encoding="utf-8"))
     assert data["player"]["airfield"] == "Manston"
+
+
+def test_ga_geometry_randomize_preserves_strike_domain() -> None:
+    from fixtures_support import channel_available_inventory
+
+    ga = ROOT / "examples" / "manston_ground_attack.yaml"
+    base = load_mission_spec(ga)
+    inv = channel_available_inventory()
+    assert validate_mission_spec(base, inventory=inv).ok
+    for seed in range(20):
+        out = randomize_mission_spec(base, seed, axes=["geometry"])
+        result = validate_mission_spec(out, inventory=inv)
+        assert result.ok, f"seed={seed}: {result.errors}"
