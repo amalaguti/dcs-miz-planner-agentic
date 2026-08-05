@@ -232,6 +232,36 @@ class CoalitionInZoneCondition(SpecModel):
     coalition: Coalition
 
 
+class UnitAltitudeHigherCondition(SpecModel):
+    """True when player unit altitude is above ``altitude_m`` (ME Unit Altitude Higher)."""
+
+    type: Literal["unit_altitude_higher"] = "unit_altitude_higher"
+    altitude_m: float = Field(gt=0)
+    agl: bool = True
+
+
+class UnitAltitudeLowerCondition(SpecModel):
+    """True when player unit altitude is below ``altitude_m`` (ME Unit Altitude Lower)."""
+
+    type: Literal["unit_altitude_lower"] = "unit_altitude_lower"
+    altitude_m: float = Field(gt=0)
+    agl: bool = True
+
+
+class UnitSpeedHigherCondition(SpecModel):
+    """True when player unit speed is above ``speed_kmh`` (ME Unit Speed Higher)."""
+
+    type: Literal["unit_speed_higher"] = "unit_speed_higher"
+    speed_kmh: float = Field(gt=0)
+
+
+class UnitSpeedLowerCondition(SpecModel):
+    """True when player unit speed is below ``speed_kmh`` (ME Unit Speed Lower)."""
+
+    type: Literal["unit_speed_lower"] = "unit_speed_lower"
+    speed_kmh: float = Field(gt=0)
+
+
 TriggerCondition = Annotated[
     TimeMoreCondition
     | FlagIsCondition
@@ -242,7 +272,11 @@ TriggerCondition = Annotated[
     | UnitDeadCondition
     | TargetDeadCondition
     | GroupLifeLessCondition
-    | CoalitionInZoneCondition,
+    | CoalitionInZoneCondition
+    | UnitAltitudeHigherCondition
+    | UnitAltitudeLowerCondition
+    | UnitSpeedHigherCondition
+    | UnitSpeedLowerCondition,
     Field(discriminator="type"),
 ]
 

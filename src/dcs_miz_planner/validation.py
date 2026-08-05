@@ -28,7 +28,11 @@ from .models import (
     SoundAction,
     TargetDeadCondition,
     TimeSinceFlagCondition,
+    UnitAltitudeHigherCondition,
+    UnitAltitudeLowerCondition,
     UnitDeadCondition,
+    UnitSpeedHigherCondition,
+    UnitSpeedLowerCondition,
     opposing_coalition,
 )
 from .registry import ChannelRegistry, RegistryError, get_channel_registry
@@ -415,6 +419,24 @@ def _validate_triggers_and_zones(
                                 f"target_index {cond.target_index} out of range "
                                 f"(targets has {len(spec.targets)} entries)"
                             ),
+                        )
+                    )
+            elif isinstance(cond, (UnitAltitudeHigherCondition, UnitAltitudeLowerCondition)):
+                if cond.altitude_m <= 0:
+                    errors.append(
+                        ValidationError(
+                            code="non_positive_altitude",
+                            path=f"{path}.altitude_m",
+                            message="altitude_m must be greater than 0",
+                        )
+                    )
+            elif isinstance(cond, (UnitSpeedHigherCondition, UnitSpeedLowerCondition)):
+                if cond.speed_kmh <= 0:
+                    errors.append(
+                        ValidationError(
+                            code="non_positive_speed",
+                            path=f"{path}.speed_kmh",
+                            message="speed_kmh must be greater than 0",
                         )
                     )
             elif (

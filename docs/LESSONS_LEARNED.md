@@ -7,6 +7,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Player altitude / speed gates
+
+- **Date:** 2026-08-04
+- **Lesson:** Spec `unit_altitude_higher|lower` (`altitude_m`, `agl` default true →
+  PyDCS `UnitAltitude*AGL` or MSL) and `unit_speed_higher|lower` (`speed_kmh` → m/s
+  at emit). Always bind to the player unit id from `pydcs_compiler` (no Spec unit
+  ids). Prefer `once: false` + `time_more` so continuous warnings do not spam on
+  cold parking. Example: `manston_freeflight_altitude_speed_gates.yaml`.
+- **Code:** `models.py`, `validation.py`, `compiler/triggers_emit.py`,
+  `pydcs_compiler.py`.
+
 ## Mark + smoke zone markers
 
 - **Date:** 2026-08-04
@@ -57,8 +68,8 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   `ActivateGroup`/`DeactivateGroup`, sounds, `GroupLifeLess`, altitude/speed gates — Spec
   vocab is the bottleneck. Prefer native emit over `#22` unless world-event Lua is required.
   Ranked list: `research/me-enrichment-candidates.md` (gitignored).
-- **Next product slice:** altitude/speed gates after `#28` `trigger-markers`
-  (sound + richer flags `#26`; `group-life-less` `#27`).
+- **Next product slice:** TBD after `#29` `altitude-speed-gates` (prefer native ME
+  over `#22` unless world-event Lua is required).
 
 ## R7 PyDCS open-issue triage (2026-08-04)
 

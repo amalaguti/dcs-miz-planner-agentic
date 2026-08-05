@@ -42,10 +42,12 @@ in ME 2026-08-04). Curated `sound` + numeric flags
 (`examples/manston_ground_attack_life_less.yaml`; accepted in ME 2026-08-04).
 `mark` / `smoke` zone markers
 (`examples/manston_ground_attack_markers.yaml`; accepted in ME 2026-08-04).
+Player altitude/speed gates
+(`examples/manston_freeflight_altitude_speed_gates.yaml`; accepted in ME 2026-08-04).
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** altitude/speed gates; `script-snippet-library` only if native triggers are insufficient; R8 when bumping deps.
+**Next:** `script-snippet-library` only if native triggers are insufficient; R8 when bumping deps; more ME enrichment as needed.
 
 ## Stack
 
@@ -101,6 +103,11 @@ uv run dcs-miz compile examples/manston_ground_attack_life_less.yaml
 uv run dcs-miz validate examples/manston_ground_attack_markers.yaml
 uv run dcs-miz compile examples/manston_ground_attack_markers.yaml
 # -> out/manston_ground_attack_markers.miz
+
+# Altitude + speed gates (continuous after T+30s; AGL + km/h):
+uv run dcs-miz validate examples/manston_freeflight_altitude_speed_gates.yaml
+uv run dcs-miz compile examples/manston_freeflight_altitude_speed_gates.yaml
+# -> out/manston_freeflight_altitude_speed_gates.miz
 
 # CAP with opt-in narrative (push / on-station / bandits-down→win):
 uv run dcs-miz validate examples/manston_cap_narrative.yaml

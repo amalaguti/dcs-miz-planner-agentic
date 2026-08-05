@@ -207,7 +207,14 @@ class PyDCSCompiler(CompilerInterface):
                 mission, countries, registry, group, airport, spec, package_types, enemy_types
             )
 
-        self._apply_zones_and_triggers(mission, airport, spec, enemy_group_ids, target_group_ids)
+        self._apply_zones_and_triggers(
+            mission,
+            airport,
+            spec,
+            enemy_group_ids,
+            target_group_ids,
+            player_unit_id=group.units[0].id,
+        )
         self._apply_briefing(mission, spec, voice)
 
         out = Path(output_path)
@@ -223,6 +230,7 @@ class PyDCSCompiler(CompilerInterface):
         spec: MissionSpec,
         enemy_group_ids: list[int],
         target_group_ids: list[int] | None = None,
+        player_unit_id: int | None = None,
     ) -> None:
         from .triggers_emit import apply_zones_and_triggers
 
@@ -232,6 +240,7 @@ class PyDCSCompiler(CompilerInterface):
             spec,
             enemy_group_ids,
             target_group_ids=target_group_ids,
+            player_unit_id=player_unit_id,
         )
 
     @staticmethod

@@ -30,7 +30,11 @@ from ..models import (
     TimeMoreCondition,
     TimeSinceFlagCondition,
     TriggerRule,
+    UnitAltitudeHigherCondition,
+    UnitAltitudeLowerCondition,
     UnitDeadCondition,
+    UnitSpeedHigherCondition,
+    UnitSpeedLowerCondition,
     opposing_coalition,
 )
 from ..sounds import resolve_sound_path
@@ -43,6 +47,8 @@ _SMOKE_COLOR_TO_ME: dict[SmokeColor, int] = {
     SmokeColor.BLUE: 4,
 }
 
+_KMH_TO_MPS = 1.0 / 3.6
+
 
 def apply_zones_and_triggers(
     mission: Any,
@@ -50,11 +56,13 @@ def apply_zones_and_triggers(
     spec: MissionSpec,
     enemy_group_ids: list[int],
     target_group_ids: list[int] | None = None,
+    player_unit_id: int | None = None,
 ) -> None:
     """Emit Spec zones/triggers into ``mission.triggers`` / ``triggerrules``.
 
     ``enemy_group_ids`` must align with ``spec.enemies`` order (PyDCS group ids).
     ``target_group_ids`` must align with ``spec.targets`` order when present.
+    ``player_unit_id`` is required when altitude/speed gate conditions are present.
     """
     if not spec.zones and not spec.triggers:
         return
@@ -92,7 +100,15 @@ def apply_zones_and_triggers(
         )
         for cond in rule.when:
             trig.add_condition(
-                _map_condition(cond, zone_ids, enemy_group_ids, target_ids, flag_id, condition)
+                _map_condition(
+                    cond,
+                    zone_ids,
+                    enemy_group_ids,
+                    target_ids,
+                    flag_id,
+                    condition,
+                    player_unit_id,
+                )
             )
         for act in rule.then:
             mapped, next_mark_id = _map_action(
@@ -110,7 +126,21 @@ def apply_zones_and_triggers(
         mission.triggerrules.triggers.append(trig)
 
 
-def _map_condition(cond, zone_ids, enemy_group_ids, target_group_ids, flag_id, condition_mod):
+def _require_player_unit_id(player_unit_id: int | None, cond_type: str) -> int:
+    if player_unit_id is None:
+        raise ValueError(f"{cond_type} requires player_unit_id at compile time")
+    return player_unit_id
+
+
+def _map_condition(
+    cond,
+    zone_ids,
+    enemy_group_ids,
+    target_group_ids,
+    flag_id,
+    condition_mod,
+    player_unit_id: int | None,
+):
     if isinstance(cond, TimeMoreCondition):
         return condition_mod.TimeAfter(int(cond.seconds))
     if isinstance(cond, FlagIsCondition):
@@ -146,6 +176,24 @@ def _map_condition(cond, zone_ids, enemy_group_ids, target_group_ids, flag_id, c
         if zid is None:
             raise ValueError(f"Unknown zone {cond.zone!r} at compile time")
         return condition_mod.PartOfCoalitionInZone(cond.coalition.value, zid)
+    if isinstance(cond, UnitAltitudeHigherCondition):
+        uid = _require_player_unit_id(player_unit_id, "unit_altitude_higher")
+        alt = int(cond.altitude_m)
+        if cond.agl:
+            return condition_mod.UnitAltitudeHigherAGL(uid, altitude=alt)
+        return condition_mod.UnitAltitudeHigher(uid, altitude=alt)
+    if isinstance(cond, UnitAltitudeLowerCondition):
+        uid = _require_player_unit_id(player_unit_id, "unit_altitude_lower")
+        alt = int(cond.altitude_m)
+        if cond.agl:
+            return condition_mod.UnitAltitudeLowerAGL(uid, altitude=alt)
+        return condition_mod.UnitAltitudeLower(uid, altitude=alt)
+    if isinstance(cond, UnitSpeedHigherCondition):
+        uid = _require_player_unit_id(player_unit_id, "unit_speed_higher")
+        return condition_mod.UnitSpeedHigher(uid, speed=cond.speed_kmh * _KMH_TO_MPS)
+    if isinstance(cond, UnitSpeedLowerCondition):
+        uid = _require_player_unit_id(player_unit_id, "unit_speed_lower")
+        return condition_mod.UnitSpeedLower(uid, speed=cond.speed_kmh * _KMH_TO_MPS)
     raise ValueError(f"Unsupported trigger condition type: {type(cond)!r}")
 
 

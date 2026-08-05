@@ -431,3 +431,93 @@ def test_schema_notes_mention_mark_and_smoke():
 
     blob = " ".join(build_spec_schema("ground_attack").notes).lower()
     assert "mark" in blob and "smoke" in blob
+
+
+GATES = ROOT / "examples" / "manston_freeflight_altitude_speed_gates.yaml"
+
+
+def test_altitude_speed_gates_example_loads():
+    spec = load_mission_spec(GATES)
+    conds = [c for t in spec.triggers for c in t.when]
+    assert any(c.type == "unit_altitude_higher" for c in conds)
+    assert any(c.type == "unit_speed_higher" for c in conds)
+    alt = next(c for c in conds if c.type == "unit_altitude_higher")
+    spd = next(c for c in conds if c.type == "unit_speed_higher")
+    assert alt.altitude_m == 300 and alt.agl is True
+    assert spd.speed_kmh == 450
+    assert all(t.once is False for t in spec.triggers)
+    assert validate_mission_spec(spec).ok
+
+
+def test_compile_altitude_speed_gates(tmp_path: Path):
+    spec = load_mission_spec(GATES)
+    out = PyDCSCompiler().compile(spec, tmp_path / "gates.miz")
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8", "replace")
+    assert "c_unit_altitude_higher_AGL" in mission
+    assert "c_unit_speed_higher" in mission
+    assert "a_out_text_delay" in mission or "out_text" in mission
+
+
+def test_altitude_non_positive_rejected(tmp_path: Path):
+    data = yaml.safe_load(GATES.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "unit_altitude_higher", "altitude_m": 0}],
+            "then": [{"type": "message", "text": "x"}],
+        }
+    ]
+    p = tmp_path / "badalt.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_speed_non_positive_rejected(tmp_path: Path):
+    data = yaml.safe_load(GATES.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "unit_speed_lower", "speed_kmh": -1}],
+            "then": [{"type": "message", "text": "x"}],
+        }
+    ]
+    p = tmp_path / "badspd.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_altitude_msl_emit(tmp_path: Path):
+    data = yaml.safe_load(GATES.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "name": "msl_gate",
+            "once": True,
+            "when": [
+                {"type": "time_more", "seconds": 1},
+                {"type": "unit_altitude_lower", "altitude_m": 500, "agl": False},
+            ],
+            "then": [{"type": "message", "text": "low MSL"}],
+        }
+    ]
+    p = tmp_path / "msl.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    spec = load_mission_spec(p)
+    assert validate_mission_spec(spec).ok
+    out = PyDCSCompiler().compile(spec, tmp_path / "msl.miz")
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8", "replace")
+    assert "c_unit_altitude_lower" in mission
+    assert "c_unit_altitude_lower_AGL" not in mission
+
+
+def test_cli_validate_gates_ok():
+    assert main(["validate", str(GATES)]) == 0
+
+
+def test_schema_notes_mention_altitude_and_speed_gates():
+    from dcs_miz_planner.agent.spec_schema import build_spec_schema
+
+    blob = " ".join(build_spec_schema("free_flight").notes).lower()
+    assert "unit_altitude_higher" in blob and "unit_speed_higher" in blob
+    assert "speed_kmh" in blob
