@@ -219,8 +219,9 @@ campaign names, `.miz` filenames, `.cmp` short text when present, and **`Doc/` P
 filenames/titles** (not extracted briefing body text)—when local DCS campaigns can inspire
 structure or naming—while treating research notes, `.cmp` playlists, Doc filenames, and
 campaign listings as non-authoritative for Spec fields. The agent MUST NOT invent Lua or
-unsupported Spec types, MUST NOT download or emit third-party `.miz` as Spec, and MUST NOT
-force narrative packs when zones/triggers are already non-empty.
+unsupported Spec types, MUST NOT download or emit third-party `.miz` as Spec, MUST NOT
+force narrative packs when zones/triggers are already non-empty, and MUST NOT use
+`randomize_mission` as a substitute for choosing behaviour recipes on a fresh vague ask.
 
 #### Scenario: Prompt guidance mentions assertive creative selection
 - **WHEN** the planning or chat system prompt is built
@@ -237,6 +238,21 @@ force narrative packs when zones/triggers are already non-empty.
 - **WHEN** the planning or chat system prompt mentions local campaigns or `Doc/`
 - **THEN** it MUST refer to Doc PDF filenames/titles (or equivalent listing) and MUST NOT
   instruct the agent to prefer extracted Doc briefing themes or PDF body text
+
+#### Scenario: Randomize not used as authoring
+- **WHEN** the planning or chat system prompt describes `randomize_mission`
+- **THEN** it MUST state that randomize is for rerolling an accepted Spec, not for inventing
+  immersion on a vague first ask
+
+### Requirement: Spec shape reminder allows immersion triggers
+The always-on Spec shape reminder injected into planning prompts MUST NOT require
+`triggers` to be an empty list. It MUST state that `triggers` (and `zones` when needed)
+may be populated for supported immersion behaviours, and that `[]` is used when unused.
+
+#### Scenario: Reminder does not force empty triggers
+- **WHEN** the Spec shape reminder text is composed into the system prompt
+- **THEN** it MUST NOT contain the phrase that triggers must be empty, and MUST allow
+  non-empty triggers for behaviours
 
 ### Requirement: Planner biases creative choices from memory
 Planning and chat system guidance MUST instruct the agent, when inventing immersion on

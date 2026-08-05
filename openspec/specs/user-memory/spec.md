@@ -82,8 +82,12 @@ When a mission generation succeeds (or is accepted) and the planner applied pack
 creative immersion, the generation history `detail` JSON SHOULD include a `creative`
 object with `behaviours` (list of `mission_behaviour` ids) and MAY include
 `inspirations` (list of `mission_inspiration` ids) and `sources` (e.g. catalog,
-campaign_doc, research, user_request). Detail MUST remain valid JSON and MUST NOT
-replace unrelated detail keys. Absence of `creative` MUST NOT break history readback.
+campaign_doc, research, user_request, spec_infer). Detail MUST remain valid JSON and MUST
+NOT replace unrelated detail keys. Absence of `creative` MUST NOT break history readback.
+When hosts infer creative detail from a Spec, `radio_late_activation` MUST be recorded
+only when the Spec has both `late_activation` on a referenced group and at least one
+`activate_group` action (complete recipe). Late activation alone MUST NOT credit that
+behaviour id.
 
 #### Scenario: Successful generation can store creative detail
 - **WHEN** a generation is recorded with detail containing `creative.behaviours`
@@ -92,6 +96,10 @@ replace unrelated detail keys. Absence of `creative` MUST NOT break history read
 #### Scenario: Missing creative detail is allowed
 - **WHEN** a generation is recorded without a `creative` key in detail
 - **THEN** history readback MUST still succeed
+
+#### Scenario: Infer requires complete late-act recipe
+- **WHEN** `infer_creative_from_spec` sees `late_activation` without `activate_group`
+- **THEN** it MUST NOT include `radio_late_activation` in inferred behaviours
 
 ### Requirement: Feedback informs creative taste
 Satisfaction feedback linked to a generation MAY use tags or notes that name behaviour
