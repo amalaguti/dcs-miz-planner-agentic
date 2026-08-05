@@ -20,10 +20,10 @@ flowchart TD
     pydcs["compiler/pydcs_compiler.py<br/>PyDCSCompiler"]
     registry["registry.py<br/>ChannelRegistry API"]
     data["data/channel/*.yaml<br/>airfields, aircraft, theatres,<br/>weather, payloads, planning_options"]
-    catalog["catalog/<br/>known catalog_* sync + theatre join"]
+    catalog["catalog/<br/>known catalog_* sync + theatre/aircraft join"]
     tools["tools/<br/>agent tool surface"]
     agent["agent/<br/>NL→Spec planner + LLM"]
-    install["install/<br/>probe + SQLite inventory"]
+    install["install/<br/>probe theatres + aircraft folders + SQLite"]
     memory["memory/<br/>prefs + history + feedback"]
     invdb["%LOCALAPPDATA%/dcs-miz-planner/<br/>inventory.sqlite"]
     ref["reference.py<br/>compat façade"]
@@ -76,12 +76,15 @@ YAML spec -> cli -> loader -> MissionSpec -> narrative expand (if enabled)
                                                .miz
 
 cli validate  -> validation.py
-cli theatres  -> install/ (probe) -> inventory.sqlite  (refresh on demand)
-cli catalog   -> catalog/ (sync known from YAML+enums; list joins install theatres)
+cli theatres  -> install/ (probe) -> inventory.sqlite  (refresh on demand;
+                 theatres + aircraft_modules)
+cli catalog   -> catalog/ (sync known from YAML+enums; list joins install
+                 theatres and aircraft)
 cli prefs / feedback -> memory/ (user_* tables in same SQLite)
 cli plan      -> agent/ (NL→Spec one-shot; voice + tools + stub/live LLM; validate gate; commander brief; records history)
 cli chat      -> agent/session (multi-turn REPL; slash cmds; /accept writes Spec)
-tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent API)
+tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent API;
+                 planning tools still use *known* aircraft/theatres, not discovered-only)
 ```
 
 ## Modules
@@ -98,29 +101,91 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
 | `sounds.py` | Sound-asset registry lookup + path materialization for `.miz` embed | `data/sounds`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
-| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options; theatre views join install inventory (`known` / `offerable`) | `registry`, `install`, stdlib `sqlite3` |
+| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options; joins install inventory for theatres **and** aircraft modules (`known` / `installed` / `offerable`; discovered-only never promoted) | `registry`, `install`, stdlib `sqlite3` |
 | `memory/` | User prefs, generation history, satisfaction feedback (`user_*` tables; never wiped by catalog sync) | `install.default_db_path`, stdlib `sqlite3` |
 | `tools/` | Agent-facing callables: catalog lookups, `get_mission_spec_schema`, validate/compile, `randomize_mission`, prefs/history/feedback, research_guidance (`focus=mission_design`), `list_installed_campaigns` | `catalog`, `memory`, `validation`, `compiler`, `loader`, `randomize`, `install.campaigns`, `agent/spec_schema` |
 | `briefing.py` | Spec → plain-text Sortie / Description / Blue|Red Task for `.miz` `l10n` (splits commander brief; lazy-imports voice) | `models`, `agent.voice` |
 | `randomize.py` | Seeded Spec→Spec variation (weather/time/geometry/opposition); compiler stays deterministic | `models`, `registry` |
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
-| `install/` | Read-only DCS install probe; theatre inventory; `campaigns` index (`Mods/campaigns` `.cmp`/`.miz`/`Doc/*.pdf` filenames only — no PDF text); SQLite cache | `registry`, stdlib `sqlite3` |
+| `install/` | Read-only DCS install probe; theatre + aircraft-module inventory (folder harvest); `campaigns` index; SQLite cache on `--refresh` | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
 | `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Expands narrative if needed, validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), emits native zones/triggers, writes briefing `l10n` + `.miz` | `models`, `narrative`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `dcs.*` |
 | `compiler/triggers_emit.py` | Spec zones/triggers → PyDCS `add_triggerzone` + `TriggerOnce`/`Continious` rules (incl. `SoundToAll`, numeric flags, `GroupLifeLess`, `MarkToAll`, `ExplodeWPMarker`, player `UnitAltitude*` / `UnitSpeed*`) | `models`, `sounds`, `dcs.condition`/`action`/`triggers` |
 
-Three stores stay separate on purpose (four table namespaces, one DB file):
+Four table namespaces share one DB file on purpose:
 
 - **YAML registry** = product source of truth (what this planner knows how to compile).
-- **SQLite install inventory** = user-local cache of what is installed/enabled on this PC
-  (`theatres` / `scan_meta` tables in `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`).
-- **SQLite known catalog** = agent/UI query layer (`catalog_*` tables in the **same** DB file),
-  replaced by `dcs-miz catalog sync` from packaged YAML + Spec enums + planning-option rows —
-  not a second DCS-id SoT. Planning options carry `supported` / `advisory` / `future` so the
-  agent can invent situations without claiming unsupported knobs compile. Extra DCS maps
-  (e.g. Normandy) are not required for this catalog.
-- **SQLite user memory** = prefs + generation history + feedback (`user_meta` / `user_prefs` /
-  `generation_history` / `satisfaction_feedback`); catalog sync must not clear these.
+- **SQLite install inventory** = user-local cache of what is on this PC
+  (`theatres`, `aircraft_modules`, `scan_meta` in
+  `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`). Filled by
+  `dcs-miz theatres --refresh` (rare; installs seldom change).
+- **SQLite known catalog** = agent/UI query layer (`catalog_*` in the **same** DB),
+  replaced by `dcs-miz catalog sync` from packaged YAML + Spec enums + planning-option
+  rows — not a second DCS-id SoT. Planning options carry `supported` / `advisory` /
+  `future`. Extra DCS maps (e.g. Normandy) are not required for this catalog.
+- **SQLite user memory** = prefs + generation history + feedback (`user_*`); catalog
+  sync must not clear these.
+
+### Known vs discovered (catalog layers)
+
+```mermaid
+flowchart TB
+    subgraph product ["Product SoT — compile-supported"]
+        yaml["data/channel/*.yaml<br/>+ Spec enums"]
+        reg["registry.py"]
+        yaml --> reg
+    end
+
+    subgraph sync ["Known catalog — query layer"]
+        csync["dcs-miz catalog sync"]
+        ctab["catalog_* tables<br/>known theatres / aircraft / options"]
+        reg --> csync --> ctab
+    end
+
+    subgraph disk ["This PC — changes rarely"]
+        dcs["DCS install<br/>Mods/terrains, Mods/aircraft,<br/>CoreMods/..."]
+        refresh["dcs-miz theatres --refresh"]
+        inv["inventory tables<br/>theatres + aircraft_modules"]
+        dcs --> refresh --> inv
+    end
+
+    subgraph join ["Catalog list join — honesty, not promotion"]
+        listT["catalog list theatres"]
+        listA["catalog list aircraft"]
+        ctab --> listT
+        ctab --> listA
+        inv --> listT
+        inv --> listA
+        listT --> flagsT["known / installed / offerable<br/>+ discovered-only maps"]
+        listA --> flagsA["known / installed / offerable<br/>+ discovered-only folders"]
+    end
+
+    subgraph agent ["Agent invent path today"]
+        tools["tools: get_aircraft_details,<br/>list_mission_options, …"]
+        ctab --> tools
+        tools --> spec["Mission Spec<br/>known ids only"]
+        spec --> validate["validate / compile"]
+        validate --> reg
+        inv -.soft-warn missing<br/>known module folders.-> validate
+    end
+
+    promote["Promote path (human PR)<br/>edit YAML → accept in DCS → catalog sync"]
+    flagsT -.->|never auto| promote
+    flagsA -.->|never auto| promote
+    promote --> yaml
+
+    maint["#8a.2 later: /maintenance slash<br/>read-only summary + optional refresh"]
+    inv -.-> maint
+    flagsT -.-> maint
+    flagsA -.-> maint
+```
+
+| Flag | Meaning |
+|------|---------|
+| **known** | Present in packaged YAML / `catalog_*` after sync — planner may use as Spec id (subject to other rules). |
+| **installed** | Present in last inventory scan (theatre available/disabled/… or aircraft folder on disk). |
+| **offerable** | Known **and** locally usable for planning (theatre: available + planner-supported; aircraft: known + folder present). |
+| **discovered-only** | On disk (or in inventory) but **not** in known YAML — list for honesty; never emit as Spec theatre/aircraft. |
 
 Ordinary install reads hit the DB; `dcs-miz theatres --refresh` rescans. Never commit the DB.
 
@@ -163,5 +228,5 @@ A Cursor hook (`.cursor/hooks/architecture-on-push.py`) reminds you on `git push
 `src/dcs_miz_planner/` is part of what you are pushing. It only reminds; it never blocks,
 and it is not a generator — the map is written by hand so it explains intent, not just imports.
 
-Not yet built (later M3/M4): aircraft module discovery from install is
-deferred (`catalog-discover-modules`).
+Not yet built (parked): host `/maintenance` install summary (`#8a.2`); see
+[`BACKLOG.md`](BACKLOG.md).
