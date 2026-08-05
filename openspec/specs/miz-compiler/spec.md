@@ -303,9 +303,11 @@ group at the Spec percent threshold, `coalition_in_zone` to part-of-coalition-in
 for the player coalition, `sound` to sound-to-all with the resolved registry file
 embedded in the `.miz` mapResource, `radio_item_add` / `radio_item_remove` to F10 radio
 item add/remove (flag on for add), `activate_group` / `deactivate_group` to
-activate/deactivate the referenced placed group. Groups with Spec `late_activation: true`
-MUST be written with ME late activation enabled. Unsupported types MUST fail clearly
-before writing a `.miz`.
+activate/deactivate the referenced placed group, `mark` to mark-to-all for the referenced
+zone with compiler-assigned mark id and Spec text, `smoke` to explosion/smoke-marker for
+the referenced zone with curated color. Groups with Spec `late_activation: true` MUST be
+written with ME late activation enabled. Unsupported types MUST fail clearly before
+writing a `.miz`.
 
 #### Scenario: Unknown mapping fails
 - **WHEN** a future/unsupported condition type somehow reaches compile
@@ -338,3 +340,12 @@ before writing a `.miz`.
 - **WHEN** a Spec with a valid `group_life_less` condition is compiled
 - **THEN** the `.miz` MUST include a group-life-less condition for the corresponding
   placed group at the Spec percent
+
+#### Scenario: mark emit
+- **WHEN** a Spec with a valid `mark` action is compiled
+- **THEN** the `.miz` MUST include a mark-to-all action for the referenced zone
+
+#### Scenario: smoke emit
+- **WHEN** a Spec with a valid `smoke` action is compiled
+- **THEN** the `.miz` MUST include a smoke-marker (explosion marker) action for the
+  referenced zone

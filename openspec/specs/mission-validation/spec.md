@@ -191,10 +191,11 @@ path that skips validation solely because the Spec was randomized.
 ### Requirement: Validate typed triggers and zones
 The shared validation engine SHALL accept Specs whose `triggers` and `zones` conform to the
 mission-triggers vocabulary and reference rules, and MUST reject unknown types, duplicate
-zone names, out-of-range `enemy_index` / `target_index`, missing zone references, empty
-flag names, unknown `sound.asset_id` values, and invalid `group_life_less` (bad index XOR,
-out-of-range index, or percent outside 1–100). Blanket refusal of any non-empty `triggers`
-list MUST NOT apply once the typed model is in force.
+zone names, out-of-range `enemy_index` / `target_index`, missing zone references (including
+`mark.zone` / `smoke.zone`), empty flag names, unknown `sound.asset_id` values, invalid
+`smoke.color`, and invalid `group_life_less` (bad index XOR, out-of-range index, or percent
+outside 1–100). Blanket refusal of any non-empty `triggers` list MUST NOT apply once the
+typed model is in force.
 
 #### Scenario: Out-of-range enemy_index fails
 - **WHEN** `unit_dead.enemy_index` is 0 but `enemies` is empty
@@ -210,4 +211,12 @@ list MUST NOT apply once the typed model is in force.
 
 #### Scenario: Invalid group_life_less rejected
 - **WHEN** a Spec uses `group_life_less` with both indices set or percent outside 1–100
+- **THEN** `validate_mission_spec` (or Spec load) MUST fail with a clear error
+
+#### Scenario: Missing mark zone rejected
+- **WHEN** a Spec uses `mark` with a zone name absent from `zones`
+- **THEN** `validate_mission_spec` MUST fail with a clear error
+
+#### Scenario: Invalid smoke color rejected
+- **WHEN** a Spec uses `smoke` with a color outside the curated set
 - **THEN** `validate_mission_spec` (or Spec load) MUST fail with a clear error
