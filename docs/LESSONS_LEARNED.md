@@ -7,6 +7,18 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Creative decision memory (`detail.creative`)
+
+- **Date:** 2026-08-04
+- **Lesson:** Persist creative picks under `generation_history.detail_json` as
+  `{"creative": {"behaviours": [...], "inspirations": [...], "sources": [...]}}`.
+  Hosts merge light Spec infer when `creative` is absent (`infer_creative_from_spec`).
+  Bias via `creative_bias_from_history` + optional prefs
+  (`preferred_behaviours` / `avoid_behaviours` / `creativity_level`); inject
+  `format_creative_bias_fragment` into the system prompt. Feedback tags
+  `liked:…` / `avoid:…` strengthen taste. Do not auto-rewrite packaged cards.
+- **Code:** `memory/creative.py`, `agent/planner.py`, `agent/session.py`, `prompts.py`.
+
 ## Local campaign inspiration (`.cmp` vs `Doc/`)
 
 - **Date:** 2026-08-04

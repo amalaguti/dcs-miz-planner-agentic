@@ -46,11 +46,12 @@ Player altitude/speed gates
 (`examples/manston_freeflight_altitude_speed_gates.yaml`; accepted in ME 2026-08-04).
 Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
 `research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
-`Mods/campaigns` + Doc briefings) for assertive creative planning.
+`Mods/campaigns` + Doc briefings) for assertive creative planning. Creative decisions
+persist in generation `detail.creative`; feedback + history bias later invents.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `creative-decision-memory` (wire generation detail + feedback → creative prompt bias); then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path beyond live snippets / local listing.
+**Next:** `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path beyond live snippets / local listing.
 
 ## Stack
 

@@ -18,6 +18,9 @@ from ..memory import (
     OUTCOME_SUCCESS,
     OUTCOME_VALIDATION_FAILED,
     UserMemoryService,
+    detail_with_inferred_creative,
+    format_creative_bias_fragment,
+    load_creative_bias,
 )
 from ..models import MissionSpec
 from ..validation import validate_mission_spec
@@ -153,7 +156,12 @@ def plan_mission(
     out = Path(output_path)
     prefs = load_prefs(db_path)
     resolved_voice = resolve_voice(cli_voice=voice, prefs=prefs)
-    system_prompt = compose_system_prompt(resolved_voice, mode="oneshot")
+    bias = load_creative_bias(db_path=db_path)
+    system_prompt = compose_system_prompt(
+        resolved_voice,
+        mode="oneshot",
+        creative_bias_fragment=format_creative_bias_fragment(bias),
+    )
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": prompt},
@@ -231,11 +239,14 @@ def plan_mission(
                 spec=spec,
                 spec_path=out,
                 miz_path=compiled,
-                detail={
-                    "aircraft": spec.player.aircraft,
-                    "airfield": spec.player.airfield,
-                    "voice": resolved_voice,
-                },
+                detail=detail_with_inferred_creative(
+                    {
+                        "aircraft": spec.player.aircraft,
+                        "airfield": spec.player.airfield,
+                        "voice": resolved_voice,
+                    },
+                    spec,
+                ),
             )
             return PlanResult(
                 ok=True,

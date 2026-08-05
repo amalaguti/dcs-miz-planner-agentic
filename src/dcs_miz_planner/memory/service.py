@@ -20,6 +20,9 @@ SEED_PREF_KEYS = (
     "preferred_start_type",
     "preferred_weather",
     "squadron_voice",
+    "preferred_behaviours",
+    "avoid_behaviours",
+    "creativity_level",
 )
 
 

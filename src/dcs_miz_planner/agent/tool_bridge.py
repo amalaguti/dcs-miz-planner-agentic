@@ -140,7 +140,11 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "list_generation_history",
-            "description": "List recent mission generations (newest first).",
+            "description": (
+                "List recent mission generations (newest first). When inventing "
+                "immersion, prefer detail.creative behaviours that scored well; "
+                "soft-avoid poorly scored ones."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -155,7 +159,9 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "name": "record_generation",
             "description": (
                 "Record a generation outcome. The host also auto-records; use when "
-                "explicitly logging an attempt."
+                "explicitly logging an attempt. Optional detail.creative may include "
+                "inspirations, behaviours (mission_behaviour ids), and sources "
+                "(catalog|campaign_doc|research|user_request)."
             ),
             "parameters": {
                 "type": "object",
@@ -169,7 +175,13 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                     "theatre": {"type": "string"},
                     "spec_path": {"type": "string"},
                     "miz_path": {"type": "string"},
-                    "detail": {"type": "object"},
+                    "detail": {
+                        "type": "object",
+                        "description": (
+                            "Optional metadata; include creative={inspirations,behaviours,sources} "
+                            "when immersion recipes were applied"
+                        ),
+                    },
                 },
                 "required": ["outcome"],
             },
@@ -179,7 +191,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "record_feedback",
-            "description": "Record satisfaction feedback (score/note/tags).",
+            "description": (
+                "Record satisfaction feedback (score/note/tags). Tags may name "
+                "behaviours as liked:altitude_speed_gates or avoid:narrative_pack."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {

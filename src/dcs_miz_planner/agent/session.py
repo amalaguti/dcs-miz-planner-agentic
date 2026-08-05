@@ -13,7 +13,14 @@ import yaml
 
 from ..compiler import PyDCSCompiler
 from ..install.models import TheatreInventory
-from ..memory import OUTCOME_COMPILE_FAILED, OUTCOME_SUCCESS, OUTCOME_VALIDATION_FAILED
+from ..memory import (
+    OUTCOME_COMPILE_FAILED,
+    OUTCOME_SUCCESS,
+    OUTCOME_VALIDATION_FAILED,
+    detail_with_inferred_creative,
+    format_creative_bias_fragment,
+    load_creative_bias,
+)
 from ..models import MissionSpec
 from ..tools.surface import list_mission_options, research_guidance
 from ..validation import validate_mission_spec
@@ -86,7 +93,12 @@ class PlanSession:
     def start(self) -> str:
         prefs = load_prefs(self.db_path)
         self.resolved_voice = resolve_voice(cli_voice=self.voice, prefs=prefs)
-        self.system_prompt = compose_system_prompt(self.resolved_voice, mode="chat")
+        bias = load_creative_bias(db_path=self.db_path)
+        self.system_prompt = compose_system_prompt(
+            self.resolved_voice,
+            mode="chat",
+            creative_bias_fragment=format_creative_bias_fragment(bias),
+        )
         self.messages = [{"role": "system", "content": self.system_prompt}]
         self._started = True
         verb = "on" if self.verbose else "off"
@@ -184,7 +196,12 @@ class PlanSession:
                 return SlashResult(output="Unknown voice. Use raf, usaaf, or neutral.")
             self.voice = normalized
             self.resolved_voice = normalized
-            self.system_prompt = compose_system_prompt(normalized, mode="chat")
+            bias = load_creative_bias(db_path=self.db_path)
+            self.system_prompt = compose_system_prompt(
+                normalized,
+                mode="chat",
+                creative_bias_fragment=format_creative_bias_fragment(bias),
+            )
             # Replace system message
             if self.messages and self.messages[0].get("role") == "system":
                 self.messages[0] = {"role": "system", "content": self.system_prompt}
@@ -394,7 +411,10 @@ class PlanSession:
             spec=spec,
             spec_path=self.output_path,
             miz_path=compiled,
-            detail={"voice": self.resolved_voice, "source": "chat"},
+            detail=detail_with_inferred_creative(
+                {"voice": self.resolved_voice, "source": "chat"},
+                spec,
+            ),
         )
         self.last_generation_id = gid
         for w in channel_date_realism_warnings(spec):

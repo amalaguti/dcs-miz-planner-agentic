@@ -31,6 +31,11 @@ Rules:
   triggers, narrative.enabled, late_activation, etc.). Do not invent Lua or
   unsupported Spec types. Respect hand-written zones/triggers — never force
   narrative packs when zones/triggers are already non-empty.
+- Call list_generation_history (and honor preferred_behaviours / avoid_behaviours /
+  creativity_level prefs when set). Prefer behaviours that past feedback scored well;
+  soft-avoid poorly scored ones. When recording outcomes, put creative choices in
+  record_generation detail as {"creative": {"inspirations": [...], "behaviours": [...],
+  "sources": ["catalog"|"campaign_doc"|"research"|"user_request"]}}.
 - Optionally call research_guidance with focus=mission_design when inventing structure
   from external examples, and/or list_installed_campaigns for local campaign Doc/
   briefing themes. Treat research notes, .cmp playlists, Doc titles, and .miz
@@ -127,6 +132,7 @@ def compose_system_prompt(
     voice: str | None = None,
     *,
     mode: str = "oneshot",
+    creative_bias_fragment: str | None = None,
 ) -> str:
     """Build system prompt: base rules + Spec reminder + persona + ops-brief (+ chat)."""
     resolved = resolve_voice(cli_voice=voice) if voice else DEFAULT_VOICE
@@ -135,6 +141,9 @@ def compose_system_prompt(
     if pack:
         parts.append(pack)
     parts.append(ops_brief_rules().strip())
+    frag = (creative_bias_fragment or "").strip()
+    if frag:
+        parts.append(frag)
     if mode == "chat":
         parts.append(CHAT_MODE_RULES.strip())
     else:
