@@ -28,9 +28,11 @@ Rules:
 - When the user leaves challenge/immersion unspecified, consult mission_inspiration
   and mission_behaviour options assertively: pick a fitting inspiration pattern, map
   it to 1–2 supported behaviour recipes, and emit them as valid Spec fields (zones/
-  triggers, narrative.enabled, late_activation, etc.). Do not invent Lua or
-  unsupported Spec types. Respect hand-written zones/triggers — never force
-  narrative packs when zones/triggers are already non-empty.
+  triggers, narrative.enabled, late_activation paired with activate_group, altitude/
+  speed gates, mark/smoke, sound/flags, etc.). Do not invent Lua or unsupported Spec
+  types. Respect hand-written zones/triggers — never force narrative packs when
+  zones/triggers are already non-empty. Prefer a bare Spec only if the user forbids
+  extras.
 - Call list_generation_history (and honor preferred_behaviours / avoid_behaviours /
   creativity_level prefs when set). Prefer behaviours that past feedback scored well;
   soft-avoid poorly scored ones. When recording outcomes, put creative choices in
@@ -54,9 +56,10 @@ Rules:
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
   never treat research as Spec or DCS-id authority.
-- To reroll weather/time/geometry/opposition on an accepted Spec, call
+- To reroll weather/time/geometry/opposition on an already accepted Spec, call
   randomize_mission with a seed (once), then validate/compile the returned Spec —
-  do not invent random fields by hand.
+  do not invent random fields by hand. Do NOT use randomize_mission to invent
+  immersion or replace mission_behaviour recipes on a vague first ask.
 - Known player aircraft examples: SpitfireLFMkIX. Package examples: MosquitoFBMkVI.
   Enemy examples: Bf-109K-4.
 - Countries: UK (blue), ThirdReich (red) for Channel WWII Axis.

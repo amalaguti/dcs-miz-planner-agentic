@@ -39,6 +39,11 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "enemies, objectives, and targets must be empty lists; omit cap and strike; "
             "omit player.payload."
         ),
+        (
+            "Immersion OK: non-empty triggers/zones for altitude_speed_gates or "
+            "sound_flag_chain (see manston_freeflight_altitude_speed_gates.yaml / "
+            "manston_freeflight_sound_flags.yaml)."
+        ),
     ),
     MissionType.INTERCEPT.value: (
         'enemies must be non-empty; objectives must include {"type":"intercept_enemy"}.',
@@ -131,7 +136,13 @@ _COMMON_NOTES: tuple[str, ...] = (
         "recipes with meta.recipe / Spec types / example paths). Optionally "
         "research_guidance(focus=mission_design) and list_installed_campaigns "
         "(prefer Doc/ PDF filenames — no body extract). Map ideas onto packaged "
-        "behaviours only — never Lua or .miz→Spec import."
+        "behaviours only — never Lua or .miz→Spec import. Immersion examples: "
+        "manston_freeflight_altitude_speed_gates.yaml, "
+        "manston_dawn_intercept_radio.yaml, "
+        "manston_cap_narrative.yaml / manston_dawn_intercept_narrative.yaml / "
+        "manston_ground_attack_narrative.yaml / manston_escort_narrative.yaml, "
+        "manston_freeflight_sound_flags.yaml, "
+        "manston_ground_attack_markers.yaml / manston_ground_attack_life_less.yaml."
     ),
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )
@@ -209,10 +220,14 @@ SPEC_SHAPE_REMINDER = """\
 Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
 (free_flight | intercept | cap | ground_attack | escort) and copy that example's structure.
+Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
+triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user
+left challenge unspecified — see schema notes for example YAML paths.
 
 Always required envelope:
   schema_version, mission_type, theatre, date, start_time, weather, player,
-  enemies (list), objectives (list), triggers (must be [])
+  enemies (list), objectives (list), triggers (list; use [] when unused —
+  non-empty OK for supported immersion behaviours), zones (list; [] when unused)
 
 Anti-patterns (fatal):
 - top-level airfield/aircraft → use nested player{}
@@ -221,4 +236,5 @@ Anti-patterns (fatal):
 - objectives under cap/strike → objectives stay top-level
 - friendly ground targets without strike.practice → combat strikes need opposing coalition
 - inventing DCS ids / CLSIDs — use tools/prefs and named player.payload only
+- late_activation without activate_group (dormant groups — validation rejects)
 """

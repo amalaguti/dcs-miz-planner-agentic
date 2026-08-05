@@ -20,8 +20,9 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   `activate_group` (and activate without late_act) now **errors** at validate — empty
   sky Specs are no longer green.
 - **Code / process:** `.cursor/skills/eval-agent-creativity/`; `validation.py`
-  (`late_activation_no_activate` / `activate_not_late`); prompts / agent tools when
-  `#30c` is implemented.
+  (`late_activation_no_activate` / `activate_not_late`); `#30c` fixes sticky
+  `SPEC_SHAPE_REMINDER` empty-triggers conflict, complete-recipe `infer_creative`, and
+  stronger prompt/schema immersion pointers.
 
 ## Creative decision memory (`detail.creative`)
 

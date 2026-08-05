@@ -108,11 +108,6 @@ def infer_creative_from_spec(spec: Any) -> dict[str, Any] | None:
 
     enemies = getattr(spec, "enemies", None) or []
     targets = getattr(spec, "targets", None) or []
-    if any(getattr(e, "late_activation", False) for e in enemies) or any(
-        getattr(t, "late_activation", False) for t in targets
-    ):
-        behaviours.append("radio_late_activation")
-
     triggers = getattr(spec, "triggers", None) or []
     cond_types: set[str] = set()
     action_types: set[str] = set()
@@ -126,6 +121,13 @@ def infer_creative_from_spec(spec: Any) -> dict[str, Any] | None:
             if t:
                 action_types.add(str(t))
 
+    has_late = any(getattr(e, "late_activation", False) for e in enemies) or any(
+        getattr(t, "late_activation", False) for t in targets
+    )
+    # Complete late-act recipe only — half-recipes must not bias memory.
+    if has_late and "activate_group" in action_types:
+        behaviours.append("radio_late_activation")
+
     if cond_types & {
         "unit_altitude_higher",
         "unit_altitude_lower",
@@ -135,11 +137,6 @@ def infer_creative_from_spec(spec: Any) -> dict[str, Any] | None:
         behaviours.append("altitude_speed_gates")
     if action_types & {"mark", "smoke"}:
         behaviours.append("mark_smoke")
-    if (
-        action_types & {"radio_item_add", "radio_item_remove", "activate_group"}
-        and "radio_late_activation" not in behaviours
-    ):
-        behaviours.append("radio_late_activation")
     if "sound" in action_types or cond_types & {
         "flag_equals",
         "flag_more",

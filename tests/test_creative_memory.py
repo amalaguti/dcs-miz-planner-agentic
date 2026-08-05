@@ -140,6 +140,52 @@ def test_infer_creative_from_gates_example() -> None:
     assert kept["creative"]["behaviours"] == ["mark_smoke"]
 
 
+def test_infer_skips_incomplete_late_activation() -> None:
+    from dcs_miz_planner.models import (
+        EnemyFlight,
+        MissionDate,
+        MissionSpec,
+        MissionType,
+        Objective,
+        ObjectiveType,
+        Player,
+        WeatherPreset,
+    )
+
+    half = MissionSpec(
+        schema_version="1",
+        mission_type=MissionType.INTERCEPT,
+        theatre="TheChannel",
+        date=MissionDate(year=1944, month=6, day=6),
+        start_time="06:00",
+        weather=WeatherPreset.SUNNY_CLEAR,
+        player=Player(aircraft="SpitfireLFMkIX", airfield="Manston"),
+        enemies=[EnemyFlight(aircraft="Bf-109K-4", count=2, late_activation=True)],
+        objectives=[Objective(type=ObjectiveType.INTERCEPT_ENEMY)],
+    )
+    creative = infer_creative_from_spec(half)
+    behaviours = (creative or {}).get("behaviours") or []
+    assert "radio_late_activation" not in behaviours
+
+    root = Path(__file__).resolve().parents[1]
+    full = load_mission_spec(root / "examples" / "manston_dawn_intercept_radio.yaml")
+    full_c = infer_creative_from_spec(full)
+    assert full_c is not None
+    assert "radio_late_activation" in full_c["behaviours"]
+
+
+def test_spec_shape_reminder_allows_triggers() -> None:
+    from dcs_miz_planner.agent.prompts import compose_system_prompt
+    from dcs_miz_planner.agent.spec_schema import SPEC_SHAPE_REMINDER
+
+    assert "must be []" not in SPEC_SHAPE_REMINDER
+    assert "non-empty OK" in SPEC_SHAPE_REMINDER or "Immersion" in SPEC_SHAPE_REMINDER
+    prompt = compose_system_prompt("raf")
+    assert "must be []" not in prompt
+    assert "randomize_mission" in prompt
+    assert "vague first ask" in prompt or "Do NOT use randomize_mission" in prompt
+
+
 def test_prompts_mention_history_bias() -> None:
     from dcs_miz_planner.agent.prompts import compose_system_prompt
     from dcs_miz_planner.agent.tool_bridge import TOOL_DEFINITIONS
