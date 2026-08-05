@@ -1,0 +1,26 @@
+{
+  "required_members": [
+    "mission",
+    "options",
+    "theatre",
+    "warehouses",
+    "l10n/DEFAULT/dictionary"
+  ],
+  "mission_must_contain": [
+    "SpitfireLFMkIX",
+    "Bf-109K-4",
+    "[\"airdromeId\"]=5",
+    "[\"start_time\"]=21600",
+    "TakeOffParking",
+    "\"Player\"",
+    "lateActivation",
+    "a_activate_group",
+    "c_flag_is_true",
+    "a_add_radio_item_for_coalition"
+  ],
+  "source_spec": "examples/manston_dawn_intercept_radio.yaml",
+  "normalized_fields": [
+    "onboard_num"
+  ],
+  "briefing_voice": "raf"
+}

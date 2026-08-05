@@ -1,0 +1,21 @@
+dictionary=
+{
+	["DictKey_Translation_1"]="Cold start at Manston at dawn. Use F10 Other radio to pick Easy / Medium / Hard opposition; each choice activates one late Bf-109 flight on the Dover approaches. Choose one difficulty in play (selecting multiple activates multiple groups).\
+\
+Right. You're away from Manston in the SpitfireLFMkIX, 06:00 hours, weather Clear skies, excellent visibility, start cold_parking.\
+\
+Watch for escort fighters above the bombers or bounce from cloud; guard your six in the merge; mind Channel over-water navigation and fuel; do not press into flak or numbers you cannot handle.",
+	["DictKey_Translation_10"]="Hard opposition airborne — four Bf-109s. Weapons free.",
+	["DictKey_Translation_2"]="For this intercept against 1× Bf-109K-4, 2× Bf-109K-4, 4× Bf-109K-4: climb with purpose, gain altitude advantage before committing, bounce from up-sun when you can, and break contact if the fight turns against you. Pair up; do not chase alone.\
+\
+Cold or hot start as briefed; taxi clear; climb on the assigned heading toward the threat axis. Confirm guns/sight; call tally before merge. Disengage with speed and altitude, then recover to base.\
+\
+Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
+	["DictKey_Translation_3"]="",
+	["DictKey_Translation_4"]="Manston Dawn Intercept (Radio Difficulty)",
+	["DictKey_Translation_5"]="Difficulty: Easy (1× 109)",
+	["DictKey_Translation_6"]="Difficulty: Medium (2× 109)",
+	["DictKey_Translation_7"]="Difficulty: Hard (4× 109)",
+	["DictKey_Translation_8"]="Easy opposition airborne — one Bf-109. Weapons free.",
+	["DictKey_Translation_9"]="Medium opposition airborne — two Bf-109s. Weapons free."
+}

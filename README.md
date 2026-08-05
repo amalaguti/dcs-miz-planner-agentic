@@ -17,7 +17,8 @@ refresh with `dcs-miz theatres --refresh`. Known agent catalog (`catalog_*` tabl
 same DB) syncs from Channel YAML + Spec enums via `dcs-miz catalog sync`. Shared validation
 (`dcs-miz validate` / compile) checks registry + local theatre inventory.
 Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
-(refresh: `uv run python tests/refresh_manston_golden.py`). Intercept Spec
+(refresh: `uv run python tests/refresh_manston_golden.py`; trigger-rich examples:
+`uv run python tests/refresh_trigger_rich_goldens.py`). Intercept Spec
 (`examples/manston_dawn_intercept.yaml`) places Bf-109K-4s on a Hawkinge/Dover
 approach corridor. CAP Spec (`examples/manston_cap.yaml`) orbits a station SE of
 Manston with engagement/ROE (accepted in-game 2026-08-01). Ground-attack Spec
@@ -45,6 +46,7 @@ in ME 2026-08-04). Curated `sound` + numeric flags
 (`examples/manston_ground_attack_markers.yaml`; accepted in ME 2026-08-04).
 Player altitude/speed gates
 (`examples/manston_freeflight_altitude_speed_gates.yaml`; accepted in ME 2026-08-04).
+Trigger-rich examples above are also pinned by structural goldens (not string-smoke only).
 Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
 `research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
 `Mods/campaigns` `.miz` / `.cmp` / Doc PDF **filenames** — no PDF text extract yet; see
@@ -58,7 +60,7 @@ hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 **Next:** Adversarial review track in [`docs/BACKLOG.md`](docs/BACKLOG.md)
-(`#35`/`#36` goldens/CI next); notes in
+(`#36` CI next); notes in
 [`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
 Then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path
 beyond live snippets / local listing.

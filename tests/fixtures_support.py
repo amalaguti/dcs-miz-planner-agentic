@@ -18,11 +18,23 @@ INTERCEPT_SPEC = REPO_ROOT / "examples" / "manston_dawn_intercept.yaml"
 CAP_SPEC = REPO_ROOT / "examples" / "manston_cap.yaml"
 GROUND_ATTACK_SPEC = REPO_ROOT / "examples" / "manston_ground_attack.yaml"
 ESCORT_SPEC = REPO_ROOT / "examples" / "manston_escort.yaml"
+RADIO_SPEC = REPO_ROOT / "examples" / "manston_dawn_intercept_radio.yaml"
+GATES_SPEC = REPO_ROOT / "examples" / "manston_freeflight_altitude_speed_gates.yaml"
+MARKERS_SPEC = REPO_ROOT / "examples" / "manston_ground_attack_markers.yaml"
+SOUND_FLAGS_SPEC = REPO_ROOT / "examples" / "manston_freeflight_sound_flags.yaml"
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cold_freeflight"
 INTERCEPT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_dawn_intercept"
 CAP_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cap"
 GA_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_ground_attack"
 ESCORT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_escort"
+RADIO_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_dawn_intercept_radio"
+GATES_FIXTURE_DIR = (
+    Path(__file__).resolve().parent / "fixtures" / "manston_freeflight_altitude_speed_gates"
+)
+MARKERS_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_ground_attack_markers"
+SOUND_FLAGS_FIXTURE_DIR = (
+    Path(__file__).resolve().parent / "fixtures" / "manston_freeflight_sound_flags"
+)
 
 REQUIRED_MEMBERS = ("mission", "options", "theatre", "warehouses", "l10n/DEFAULT/dictionary")
 DICTIONARY_MEMBER = "l10n/DEFAULT/dictionary"
@@ -85,6 +97,51 @@ ESCORT_MISSION_CONTRACTS = (
     "groupId",
     '["value"]=0',  # OptROE WeaponFree
 )
+RADIO_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    "Bf-109K-4",
+    '["airdromeId"]=5',
+    '["start_time"]=21600',
+    "TakeOffParking",
+    '"Player"',
+    "lateActivation",
+    "a_activate_group",
+    "c_flag_is_true",
+    "a_add_radio_item_for_coalition",
+)
+GATES_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    '["airdromeId"]=5',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    "c_unit_altitude_higher_AGL",
+    "c_unit_speed_higher",
+    "a_out_text_delay",
+)
+MARKERS_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    '["airdromeId"]=5',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    "Blitz_36-6700A",
+    "a_mark_to_all",
+    "a_explosion_marker",
+    "a_out_text_delay",
+)
+SOUND_FLAGS_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    '["airdromeId"]=5',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    "a_out_sound",
+    "c_flag_more",
+    "a_inc_flag",
+    "a_set_flag_value",
+    "c_time_since_flag",
+)
 
 # PyDCS assigns a random board number each process; pin it for stable goldens.
 _ONBOARD_NUM_RE = re.compile(r'\["onboard_num"\]="\d+"')
@@ -144,6 +201,29 @@ def compile_escort(output_path: Path) -> Path:
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(
         spec, output_path, voice="raf"
     )
+
+
+def _compile_example(spec_path: Path, output_path: Path) -> Path:
+    spec = load_mission_spec(spec_path)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
+def compile_radio(output_path: Path) -> Path:
+    return _compile_example(RADIO_SPEC, output_path)
+
+
+def compile_gates(output_path: Path) -> Path:
+    return _compile_example(GATES_SPEC, output_path)
+
+
+def compile_markers(output_path: Path) -> Path:
+    return _compile_example(MARKERS_SPEC, output_path)
+
+
+def compile_sound_flags(output_path: Path) -> Path:
+    return _compile_example(SOUND_FLAGS_SPEC, output_path)
 
 
 def extract_structural(miz_path: Path) -> tuple[set[str], str, str, str]:
@@ -225,6 +305,42 @@ def write_escort_golden(miz_path: Path, fixture_dir: Path = ESCORT_FIXTURE_DIR) 
         fixture_dir,
         source_spec="examples/manston_escort.yaml",
         mission_contracts=ESCORT_MISSION_CONTRACTS,
+    )
+
+
+def write_radio_golden(miz_path: Path, fixture_dir: Path = RADIO_FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_dawn_intercept_radio.yaml",
+        mission_contracts=RADIO_MISSION_CONTRACTS,
+    )
+
+
+def write_gates_golden(miz_path: Path, fixture_dir: Path = GATES_FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_freeflight_altitude_speed_gates.yaml",
+        mission_contracts=GATES_MISSION_CONTRACTS,
+    )
+
+
+def write_markers_golden(miz_path: Path, fixture_dir: Path = MARKERS_FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_ground_attack_markers.yaml",
+        mission_contracts=MARKERS_MISSION_CONTRACTS,
+    )
+
+
+def write_sound_flags_golden(miz_path: Path, fixture_dir: Path = SOUND_FLAGS_FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_freeflight_sound_flags.yaml",
+        mission_contracts=SOUND_FLAGS_MISSION_CONTRACTS,
     )
 
 

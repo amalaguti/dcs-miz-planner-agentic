@@ -1,0 +1,18 @@
+dictionary=
+{
+	["DictKey_Translation_1"]="Same Manston cold free flight as the acceptance example, plus a curated sound callout and a small numeric flag chain for Spec/validation/ME coverage.\
+\
+Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather Clear skies, excellent visibility, start cold_parking.\
+\
+Watch weather deterioration and cloud base, mid-air conflict near the field, fuel state on the way home, and Channel ditching risk if you wander offshore.",
+	["DictKey_Translation_2"]="Free flight: treat this as a familiarisation / local area hop. Build situational awareness, practise gentle handling, and keep clear of known flak belts and crowded corridors unless tasked.\
+\
+Complete start checks, taxi and takeoff as briefed, climb to a safe working altitude, fly a disciplined local pattern or area tour, then recover for a stable approach and landing.\
+\
+Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
+	["DictKey_Translation_3"]="",
+	["DictKey_Translation_4"]="Manston Free Flight (sound + flags sample)",
+	["DictKey_Translation_6"]="Manston Tower — radio check (sound fixture).",
+	["DictKey_Translation_7"]="Flag chain advanced — beats incremented.",
+	["DictKey_Translation_8"]="Numeric flag beat complete."
+}

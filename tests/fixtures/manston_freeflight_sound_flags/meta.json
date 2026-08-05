@@ -1,0 +1,26 @@
+{
+  "required_members": [
+    "mission",
+    "options",
+    "theatre",
+    "warehouses",
+    "l10n/DEFAULT/dictionary"
+  ],
+  "mission_must_contain": [
+    "SpitfireLFMkIX",
+    "[\"airdromeId\"]=5",
+    "[\"start_time\"]=32400",
+    "TakeOffParking",
+    "\"Player\"",
+    "a_out_sound",
+    "c_flag_more",
+    "a_inc_flag",
+    "a_set_flag_value",
+    "c_time_since_flag"
+  ],
+  "source_spec": "examples/manston_freeflight_sound_flags.yaml",
+  "normalized_fields": [
+    "onboard_num"
+  ],
+  "briefing_voice": "raf"
+}

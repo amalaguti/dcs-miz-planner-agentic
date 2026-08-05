@@ -1,0 +1,17 @@
+dictionary=
+{
+	["DictKey_Translation_1"]="Same Manston Channel ground attack as the acceptance example, plus a time-based FAC-style mark: at T+15s place red smoke and an F10 map mark on the strike zone (visual aid over the truck targets).\
+\
+Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather Clear skies, excellent visibility, start cold_parking.\
+\
+Watch Channel weather and fuel with the slipper, flak around the target, navigation over water, and mid-air conflict near the coast; jettison the tank before combat and do not press a blind attack into cloud.",
+	["DictKey_Translation_2"]="Ground attack on bearing 125°, 76 km, ingress 2000 m. Targets: 3× Blitz_36-6700A (enemy only). Loadout: spitfire_2x250_slipper. Run in with a clear abort, release on the briefed aiming point, and do not linger in flak.\
+\
+Cold start as briefed; taxi and takeoff with the slipper tank fitted; climb toward the Channel strike bearing; jettison the external fuel tank in the cockpit before the attack run; then press the dive/level attack and recover to base.\
+\
+Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
+	["DictKey_Translation_3"]="",
+	["DictKey_Translation_4"]="Manston Ground Attack (mark/smoke sample)",
+	["DictKey_Translation_5"]="GA targets — truck convoy",
+	["DictKey_Translation_6"]="Manston — target marked (smoke + F10 map mark)."
+}
