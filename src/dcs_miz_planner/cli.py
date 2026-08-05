@@ -747,6 +747,9 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    from .env_load import load_local_dotenv
+
+    load_local_dotenv()
     argv = list(sys.argv[1:] if argv is None else argv)
     parser = _build_parser()
 

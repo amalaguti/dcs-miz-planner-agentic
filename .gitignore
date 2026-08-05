@@ -4,6 +4,11 @@ research/
 ideas-concepts.txt
 ideas-in-progress.txt
 
+# Secrets / local env (never commit API keys)
+.env
+.env.local
+.env.*.local
+
 # Node / OpenSpec
 node_modules/
 npm-debug.log*

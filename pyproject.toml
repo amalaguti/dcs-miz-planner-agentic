@@ -9,6 +9,7 @@ dependencies = [
     "pyyaml>=6.0",
     "pydcs>=0.15.0",
     "openai>=2.52.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [project.scripts]

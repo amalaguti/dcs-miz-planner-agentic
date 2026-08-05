@@ -219,8 +219,7 @@ uv run dcs-miz plan "..." --stub --voice usaaf --compile -o out/planned.yaml
 
 ```bash
 uv run dcs-miz chat --stub --voice raf -o out/planned.yaml
-# live:
-# $env:OPENAI_API_KEY = "sk-..."
+# live: set OPENAI_API_KEY in .env (see .env.example) or in the shell, then:
 # uv run dcs-miz chat --voice raf -o out/planned.yaml --compile
 ```
 
@@ -239,7 +238,8 @@ procedures, and watch-outs. Spec YAML stays plain machine fields.
 Live (OpenAI-compatible):
 
 ```bash
-# PowerShell
+# Option A: local .env (gitignored) — copy .env.example → .env and set OPENAI_API_KEY=
+# Option B: PowerShell for this session
 $env:OPENAI_API_KEY = "sk-..."
 # optional: $env:DCS_MIZ_LLM_MODEL = "gpt-4o-mini"
 # optional: $env:DCS_MIZ_RESEARCH_LIVE = "1"  # web-backed research_guidance
@@ -247,7 +247,8 @@ uv run dcs-miz plan "dawn intercept from Manston vs Bf-109s" -o out/planned.yaml
 ```
 
 The agent may call catalog tools, then writes Mission Spec YAML; `--compile` uses PyDCS.
-Never put API keys in the repo or SQLite — environment only.
+Never put API keys in the repo or SQLite — use a local `.env` (gitignored) or the
+environment; shell env wins over `.env`.
 Dates should fit the history you want (WWII Channel content usually 1939–1945; modern
 or other eras are allowed). A mismatched Channel date still succeeds but prints a
 **Warning** on stderr.

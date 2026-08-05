@@ -218,12 +218,17 @@ class OpenAILLM:
 
 def live_llm_from_env(*, env: dict[str, str] | None = None) -> OpenAILLM:
     """Build a live client from environment; raise if API key missing."""
+    if env is None:
+        from ..env_load import load_local_dotenv
+
+        load_local_dotenv()
     env = env if env is not None else dict(os.environ)
     key = (env.get(ENV_API_KEY) or "").strip()
     if not key:
         raise AgentConfigError(
             f"Live planning requires {ENV_API_KEY}. "
-            f"Set that environment variable, or pass --stub for offline mode."
+            f"Set that environment variable, put it in a local .env file "
+            f"(see .env.example), or pass --stub for offline mode."
         )
     model = (env.get(ENV_MODEL) or DEFAULT_MODEL).strip() or DEFAULT_MODEL
     base = (env.get(ENV_BASE_URL) or "").strip() or None
