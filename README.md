@@ -62,8 +62,9 @@ inspiration, not imported as Spec; stub LLM + offline research fixtures keep tes
 hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** Re-eval vague invent live (`ff-interesting`, marked GA, Big Show); **R8**
-deps when bumping PyDCS; R1/R2 deep `.miz` audits. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
+**Next:** **R1** Spitfire user-mission `.miz` audit (design + Lua/trigger patterns);
+**R8** when bumping PyDCS; `#8a.2` install `/maintenance` if useful. See
+[`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Stack
 
