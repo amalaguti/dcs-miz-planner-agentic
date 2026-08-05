@@ -8,9 +8,7 @@ on:
 
 jobs:
   test:
-    # Windows: product is DCS/Windows; mission dump goldens are authored there
-    # and full-mission equality is not reliable across libc float formatting.
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
