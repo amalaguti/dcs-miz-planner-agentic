@@ -62,8 +62,8 @@ inspiration, not imported as Spec; stub LLM + offline research fixtures keep tes
 hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** **R8** deps upgrade review when bumping PyDCS; `#22` only if native triggers
-prove insufficient; R1/R2 deep `.miz` audits. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
+**Next:** Re-eval vague invent live (`ff-interesting`, marked GA, Big Show); **R8**
+deps when bumping PyDCS; R1/R2 deep `.miz` audits. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Stack
 
