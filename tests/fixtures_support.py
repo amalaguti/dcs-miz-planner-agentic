@@ -116,7 +116,11 @@ GATES_MISSION_CONTRACTS = (
     "TakeOffParking",
     '"Player"',
     "c_unit_altitude_higher_AGL",
+    "c_unit_altitude_lower_AGL",
     "c_unit_speed_higher",
+    "c_unit_speed_lower",
+    "c_time_since_flag",
+    "a_set_flag",
     "a_out_text_delay",
 )
 MARKERS_MISSION_CONTRACTS = (

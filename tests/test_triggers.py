@@ -439,8 +439,12 @@ GATES = ROOT / "examples" / "manston_freeflight_altitude_speed_gates.yaml"
 def test_altitude_speed_gates_example_loads():
     spec = load_mission_spec(GATES)
     conds = [c for t in spec.triggers for c in t.when]
+    acts = [a for t in spec.triggers for a in t.then]
     assert any(c.type == "unit_altitude_higher" for c in conds)
     assert any(c.type == "unit_speed_higher" for c in conds)
+    assert any(c.type == "time_since_flag" for c in conds)
+    assert any(c.type == "flag_is" for c in conds)
+    assert any(a.type == "set_flag" for a in acts)
     alt = next(c for c in conds if c.type == "unit_altitude_higher")
     spd = next(c for c in conds if c.type == "unit_speed_higher")
     assert alt.altitude_m == 300 and alt.agl is True
@@ -456,6 +460,8 @@ def test_compile_altitude_speed_gates(tmp_path: Path):
         mission = zf.read("mission").decode("utf-8", "replace")
     assert "c_unit_altitude_higher_AGL" in mission
     assert "c_unit_speed_higher" in mission
+    assert "c_time_since_flag" in mission
+    assert "a_set_flag" in mission or "a_clear_flag" in mission
     assert "a_out_text_delay" in mission or "out_text" in mission
 
 
@@ -513,6 +519,22 @@ def test_altitude_msl_emit(tmp_path: Path):
 
 def test_cli_validate_gates_ok():
     assert main(["validate", str(GATES)]) == 0
+
+
+def test_fractional_altitude_soft_warns(tmp_path: Path):
+    data = yaml.safe_load(GATES.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "unit_altitude_higher", "altitude_m": 300.7}],
+            "then": [{"type": "message", "text": "x"}],
+        }
+    ]
+    p = tmp_path / "frac.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    spec = load_mission_spec(p)
+    result = validate_mission_spec(spec)
+    assert result.ok
+    assert any(w.code == "gate_threshold_truncated" for w in result.warnings)
 
 
 def test_schema_notes_mention_altitude_and_speed_gates():

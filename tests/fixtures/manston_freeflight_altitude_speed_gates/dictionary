@@ -1,6 +1,6 @@
 dictionary=
 {
-	["DictKey_Translation_1"]="Same Manston cold free flight as the acceptance example, plus continuous ingress-discipline gates on the player: stay below 300 m AGL and under 450 km/h after T+30s (time gate avoids parking spam).\
+	["DictKey_Translation_1"]="Same Manston cold free flight as the acceptance example, plus ingress-discipline gates: stay below 300 m AGL and under 450 km/h after T+30s. Warnings use a flag cooldown so a missed callout can repeat while you stay out of limits, without flooding every ME tick.\
 \
 Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather Clear skies, excellent visibility, start cold_parking.\
 \
@@ -13,5 +13,7 @@ Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
 	["DictKey_Translation_3"]="",
 	["DictKey_Translation_4"]="Manston Free Flight (altitude/speed gates sample)",
 	["DictKey_Translation_5"]="Manston — too high. Stay below 300 m AGL.",
-	["DictKey_Translation_6"]="Manston — too fast. Stay under 450 km/h."
+	["DictKey_Translation_6"]="Manston — still too high. Stay below 300 m AGL.",
+	["DictKey_Translation_7"]="Manston — too fast. Stay under 450 km/h.",
+	["DictKey_Translation_8"]="Manston — still too fast. Stay under 450 km/h."
 }

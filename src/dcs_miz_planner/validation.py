@@ -1122,5 +1122,43 @@ def validate_mission_spec(
                     ),
                 )
             )
+    warnings.extend(_gate_threshold_truncation_warnings(spec))
 
     return ValidationResult(errors=tuple(errors), warnings=tuple(warnings))
+
+
+def _gate_threshold_truncation_warnings(spec: MissionSpec) -> list[ValidationError]:
+    """Soft-warn when altitude/speed gate thresholds are not integers (emit uses int())."""
+    out: list[ValidationError] = []
+    for ti, trig in enumerate(spec.triggers):
+        for ci, cond in enumerate(trig.when):
+            path = f"triggers[{ti}].when[{ci}]"
+            if isinstance(
+                cond, (UnitAltitudeHigherCondition, UnitAltitudeLowerCondition)
+            ) and cond.altitude_m != int(cond.altitude_m):
+                out.append(
+                    ValidationError(
+                        code="gate_threshold_truncated",
+                        path=f"{path}.altitude_m",
+                        message=(
+                            f"{cond.type} altitude_m={cond.altitude_m} will be emitted as "
+                            f"integer metres ({int(cond.altitude_m)}); fractional part is dropped"
+                        ),
+                        hint="Use a whole number of metres, or accept truncation. Advisory only.",
+                    )
+                )
+            elif isinstance(
+                cond, (UnitSpeedHigherCondition, UnitSpeedLowerCondition)
+            ) and cond.speed_kmh != int(cond.speed_kmh):
+                out.append(
+                    ValidationError(
+                        code="gate_threshold_truncated",
+                        path=f"{path}.speed_kmh",
+                        message=(
+                            f"{cond.type} speed_kmh={cond.speed_kmh} is converted via int() "
+                            f"during emit; fractional km/h may not match intent"
+                        ),
+                        hint="Prefer whole km/h values. Advisory only.",
+                    )
+                )
+    return out

@@ -197,17 +197,29 @@ options:
     id: altitude_speed_gates
     label: Altitude / speed ingress gates
     description: >
-      Continuous player discipline after a short time gate: warn or cue when above
-      an AGL ceiling or faster than a speed limit (ingress / low-level challenge).
+      Player discipline after a short time gate: warn when above an AGL ceiling or
+      faster than a speed limit, then re-warn on a cooldown while still violating
+      (flag + time_since_flag) — not every ME tick.
     support: supported
     meta:
       intent: [ingress_discipline, low_level, challenge]
       mission_types: [free_flight, intercept, cap, ground_attack, escort]
-      conditions: [time_more, unit_altitude_higher, unit_altitude_lower, unit_speed_higher, unit_speed_lower]
-      actions: [message]
+      conditions:
+        [
+          time_more,
+          unit_altitude_higher,
+          unit_altitude_lower,
+          unit_speed_higher,
+          unit_speed_lower,
+          flag_is,
+          time_since_flag,
+        ]
+      actions: [message, set_flag]
       recipe: >
-        After time_more (~30s), continuous rules with unit_altitude_higher (altitude_m,
-        agl true) and/or unit_speed_higher (speed_kmh) → message. Player unit only.
+        After time_more (~30s): first warn when unit_altitude_higher / unit_speed_higher
+        and cooldown flag is false → message + set_flag true; re-warn when still out of
+        limits and time_since_flag (~45s) → message + set_flag true; clear flag with
+        unit_altitude_lower / unit_speed_lower. altitude_m/speed_kmh emit as integers.
       example: examples/manston_freeflight_altitude_speed_gates.yaml
 
   - family: mission_behaviour

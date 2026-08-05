@@ -1,14 +1,16 @@
-# Compileable sample: player altitude + speed gates (open in ME;
-# expect UNIT ALTITUDE HIGHER AGL + UNIT SPEED HIGHER under Set Rules for Triggers).
-# After T+30s, continuous rules warn if you climb above 300 m AGL or exceed 450 km/h.
+# Compileable sample: player altitude + speed gates with timed re-warn
+# (open in ME; expect UNIT ALTITUDE / SPEED + flag / TIME SINCE FLAG rules).
+# After T+30s: first warn when out of limits, then re-warn ~every 45s if still
+# violating; clear cooldown when back inside limits (no tick-spam).
 schema_version: "1"
 mission_type: free_flight
 theatre: TheChannel
 name: Manston Free Flight (altitude/speed gates sample)
 description: >
-  Same Manston cold free flight as the acceptance example, plus continuous
-  ingress-discipline gates on the player: stay below 300 m AGL and under 450 km/h
-  after T+30s (time gate avoids parking spam).
+  Same Manston cold free flight as the acceptance example, plus ingress-discipline
+  gates: stay below 300 m AGL and under 450 km/h after T+30s. Warnings use a flag
+  cooldown so a missed callout can repeat while you stay out of limits, without
+  flooding every ME tick.
 date:
   year: 1944
   month: 6
@@ -24,7 +26,7 @@ player:
   start: cold_parking
 zones: []
 triggers:
-  - name: altitude_gate
+  - name: altitude_warn
     once: false
     when:
       - type: time_more
@@ -32,18 +34,84 @@ triggers:
       - type: unit_altitude_higher
         altitude_m: 300
         agl: true
+      - type: flag_is
+        flag: alt_gate_cd
+        value: false
     then:
       - type: message
         text: "Manston — too high. Stay below 300 m AGL."
         duration_s: 8
-  - name: speed_gate
+      - type: set_flag
+        flag: alt_gate_cd
+        value: true
+  - name: altitude_rewarn
+    once: false
+    when:
+      - type: time_more
+        seconds: 30
+      - type: unit_altitude_higher
+        altitude_m: 300
+        agl: true
+      - type: time_since_flag
+        flag: alt_gate_cd
+        seconds: 45
+    then:
+      - type: message
+        text: "Manston — still too high. Stay below 300 m AGL."
+        duration_s: 8
+      - type: set_flag
+        flag: alt_gate_cd
+        value: true
+  - name: altitude_clear
+    once: false
+    when:
+      - type: unit_altitude_lower
+        altitude_m: 300
+        agl: true
+    then:
+      - type: set_flag
+        flag: alt_gate_cd
+        value: false
+  - name: speed_warn
     once: false
     when:
       - type: time_more
         seconds: 30
       - type: unit_speed_higher
         speed_kmh: 450
+      - type: flag_is
+        flag: spd_gate_cd
+        value: false
     then:
       - type: message
         text: "Manston — too fast. Stay under 450 km/h."
         duration_s: 8
+      - type: set_flag
+        flag: spd_gate_cd
+        value: true
+  - name: speed_rewarn
+    once: false
+    when:
+      - type: time_more
+        seconds: 30
+      - type: unit_speed_higher
+        speed_kmh: 450
+      - type: time_since_flag
+        flag: spd_gate_cd
+        seconds: 45
+    then:
+      - type: message
+        text: "Manston — still too fast. Stay under 450 km/h."
+        duration_s: 8
+      - type: set_flag
+        flag: spd_gate_cd
+        value: true
+  - name: speed_clear
+    once: false
+    when:
+      - type: unit_speed_lower
+        speed_kmh: 450
+    then:
+      - type: set_flag
+        flag: spd_gate_cd
+        value: false

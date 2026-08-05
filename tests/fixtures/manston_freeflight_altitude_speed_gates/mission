@@ -508,7 +508,7 @@ mission=
 		["centerY"]=0,
 		["zoom"]=1000000
 	},
-	["maxDictId"]=6,
+	["maxDictId"]=8,
 	["pictureFileNameB"]=
 	{
 	},
@@ -562,13 +562,21 @@ mission=
 	{
 		["actions"]=
 		{
-			[1]="a_out_text_delay(getValueDictByKey(\"DictKey_Translation_5\"), 8, false);",
-			[2]="a_out_text_delay(getValueDictByKey(\"DictKey_Translation_6\"), 8, false);"
+			[1]="a_out_text_delay(getValueDictByKey(\"DictKey_Translation_5\"), 8, false);a_set_flag(1);",
+			[2]="a_out_text_delay(getValueDictByKey(\"DictKey_Translation_6\"), 8, false);a_set_flag(1);",
+			[3]="a_clear_flag(1);",
+			[4]="a_out_text_delay(getValueDictByKey(\"DictKey_Translation_7\"), 8, false);a_set_flag(2);",
+			[5]="a_out_text_delay(getValueDictByKey(\"DictKey_Translation_8\"), 8, false);a_set_flag(2);",
+			[6]="a_clear_flag(2);"
 		},
 		["conditions"]=
 		{
-			[1]="return(c_time_after(30) and c_unit_altitude_higher_AGL(1, 300) )",
-			[2]="return(c_time_after(30) and c_unit_speed_higher(1, 125.0) )"
+			[1]="return(c_time_after(30) and c_unit_altitude_higher_AGL(1, 300) and c_flag_is_false(1) )",
+			[2]="return(c_time_after(30) and c_unit_altitude_higher_AGL(1, 300) and c_time_since_flag(1, 45) )",
+			[3]="return(c_unit_altitude_lower_AGL(1, 300) )",
+			[4]="return(c_time_after(30) and c_unit_speed_higher(1, 125.0) and c_flag_is_false(2) )",
+			[5]="return(c_time_after(30) and c_unit_speed_higher(1, 125.0) and c_time_since_flag(2, 45) )",
+			[6]="return(c_unit_speed_lower(1, 125.0) )"
 		},
 		["customStartup"]=
 		{
@@ -579,12 +587,20 @@ mission=
 		["flag"]=
 		{
 			[1]=true,
-			[2]=true
+			[2]=true,
+			[3]=true,
+			[4]=true,
+			[5]=true,
+			[6]=true
 		},
 		["func"]=
 		{
 			[1]="if mission.trig.conditions[1]() then mission.trig.actions[1]() end",
-			[2]="if mission.trig.conditions[2]() then mission.trig.actions[2]() end"
+			[2]="if mission.trig.conditions[2]() then mission.trig.actions[2]() end",
+			[3]="if mission.trig.conditions[3]() then mission.trig.actions[3]() end",
+			[4]="if mission.trig.conditions[4]() then mission.trig.actions[4]() end",
+			[5]="if mission.trig.conditions[5]() then mission.trig.actions[5]() end",
+			[6]="if mission.trig.conditions[6]() then mission.trig.actions[6]() end"
 		},
 		["funcStartup"]=
 		{
@@ -609,10 +625,15 @@ mission=
 					["predicate"]="a_out_text_delay",
 					["seconds"]=8,
 					["text"]="DictKey_Translation_5"
+				},
+				[2]=
+				{
+					["flag"]=1,
+					["predicate"]="a_set_flag"
 				}
 			},
 			["colorItem"]="0xffffffff",
-			["comment"]="altitude_gate",
+			["comment"]="altitude_warn",
 			["eventlist"]="",
 			["predicate"]="triggerContinious",
 			["rules"]=
@@ -627,6 +648,11 @@ mission=
 					["altitude"]=300,
 					["predicate"]="c_unit_altitude_higher_AGL",
 					["unit"]=1
+				},
+				[3]=
+				{
+					["flag"]=1,
+					["predicate"]="c_flag_is_false"
 				}
 			}
 		},
@@ -641,10 +667,82 @@ mission=
 					["predicate"]="a_out_text_delay",
 					["seconds"]=8,
 					["text"]="DictKey_Translation_6"
+				},
+				[2]=
+				{
+					["flag"]=1,
+					["predicate"]="a_set_flag"
 				}
 			},
 			["colorItem"]="0xffffffff",
-			["comment"]="speed_gate",
+			["comment"]="altitude_rewarn",
+			["eventlist"]="",
+			["predicate"]="triggerContinious",
+			["rules"]=
+			{
+				[1]=
+				{
+					["predicate"]="c_time_after",
+					["seconds"]=30
+				},
+				[2]=
+				{
+					["altitude"]=300,
+					["predicate"]="c_unit_altitude_higher_AGL",
+					["unit"]=1
+				},
+				[3]=
+				{
+					["flag"]=1,
+					["predicate"]="c_time_since_flag",
+					["seconds"]=45
+				}
+			}
+		},
+		[3]=
+		{
+			["actions"]=
+			{
+				[1]=
+				{
+					["flag"]=1,
+					["predicate"]="a_clear_flag"
+				}
+			},
+			["colorItem"]="0xffffffff",
+			["comment"]="altitude_clear",
+			["eventlist"]="",
+			["predicate"]="triggerContinious",
+			["rules"]=
+			{
+				[1]=
+				{
+					["altitude"]=300,
+					["predicate"]="c_unit_altitude_lower_AGL",
+					["unit"]=1
+				}
+			}
+		},
+		[4]=
+		{
+			["actions"]=
+			{
+				[1]=
+				{
+					["KeyDict_text"]="DictKey_Translation_7",
+					["clearview"]=false,
+					["predicate"]="a_out_text_delay",
+					["seconds"]=8,
+					["text"]="DictKey_Translation_7"
+				},
+				[2]=
+				{
+					["flag"]=2,
+					["predicate"]="a_set_flag"
+				}
+			},
+			["colorItem"]="0xffffffff",
+			["comment"]="speed_warn",
 			["eventlist"]="",
 			["predicate"]="triggerContinious",
 			["rules"]=
@@ -657,6 +755,78 @@ mission=
 				[2]=
 				{
 					["predicate"]="c_unit_speed_higher",
+					["speedU"]=125.0,
+					["unit"]=1
+				},
+				[3]=
+				{
+					["flag"]=2,
+					["predicate"]="c_flag_is_false"
+				}
+			}
+		},
+		[5]=
+		{
+			["actions"]=
+			{
+				[1]=
+				{
+					["KeyDict_text"]="DictKey_Translation_8",
+					["clearview"]=false,
+					["predicate"]="a_out_text_delay",
+					["seconds"]=8,
+					["text"]="DictKey_Translation_8"
+				},
+				[2]=
+				{
+					["flag"]=2,
+					["predicate"]="a_set_flag"
+				}
+			},
+			["colorItem"]="0xffffffff",
+			["comment"]="speed_rewarn",
+			["eventlist"]="",
+			["predicate"]="triggerContinious",
+			["rules"]=
+			{
+				[1]=
+				{
+					["predicate"]="c_time_after",
+					["seconds"]=30
+				},
+				[2]=
+				{
+					["predicate"]="c_unit_speed_higher",
+					["speedU"]=125.0,
+					["unit"]=1
+				},
+				[3]=
+				{
+					["flag"]=2,
+					["predicate"]="c_time_since_flag",
+					["seconds"]=45
+				}
+			}
+		},
+		[6]=
+		{
+			["actions"]=
+			{
+				[1]=
+				{
+					["flag"]=2,
+					["predicate"]="a_clear_flag"
+				}
+			},
+			["colorItem"]="0xffffffff",
+			["comment"]="speed_clear",
+			["eventlist"]="",
+			["predicate"]="triggerContinious",
+			["rules"]=
+			{
+				[1]=
+				{
+					["predicate"]="c_unit_speed_lower",
 					["speedU"]=125.0,
 					["unit"]=1
 				}

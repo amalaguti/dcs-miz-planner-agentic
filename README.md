@@ -44,9 +44,10 @@ in ME 2026-08-04). Curated `sound` + numeric flags
 (`examples/manston_ground_attack_life_less.yaml`; accepted in ME 2026-08-04).
 `mark` / `smoke` zone markers
 (`examples/manston_ground_attack_markers.yaml`; accepted in ME 2026-08-04).
-Player altitude/speed gates
-(`examples/manston_freeflight_altitude_speed_gates.yaml`; accepted in ME 2026-08-04).
-Trigger-rich examples above are also pinned by structural goldens (not string-smoke only).
+Player altitude/speed gates with flag cooldown re-warn
+(`examples/manston_freeflight_altitude_speed_gates.yaml`; accepted in ME 2026-08-04;
+re-warn polish 2026-08-05). Trigger-rich examples above are also pinned by structural
+goldens (not string-smoke only).
 Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
 `research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
 `Mods/campaigns` `.miz` / `.cmp` / Doc PDFs — filenames by default; opt-in
@@ -60,11 +61,10 @@ inspiration, not imported as Spec; stub LLM + offline research fixtures keep tes
 hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** Adversarial review track in [`docs/BACKLOG.md`](docs/BACKLOG.md)
-(`#42` altitude-gate-polish + remainder); notes in
+**Next:** Adversarial track `#31`–`#42` is done; notes in
 [`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
 Then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path
-beyond live snippets / local listing.
+beyond live snippets / local listing. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Stack
 

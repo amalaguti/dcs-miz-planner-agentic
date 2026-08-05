@@ -85,12 +85,15 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ## Player altitude / speed gates
 
-- **Date:** 2026-08-04
+- **Date:** 2026-08-04 (re-warn polish 2026-08-05)
 - **Lesson:** Spec `unit_altitude_higher|lower` (`altitude_m`, `agl` default true →
   PyDCS `UnitAltitude*AGL` or MSL) and `unit_speed_higher|lower` (`speed_kmh` → m/s
   at emit). Always bind to the player unit id from `pydcs_compiler` (no Spec unit
-  ids). Prefer `once: false` + `time_more` so continuous warnings do not spam on
-  cold parking. Example: `manston_freeflight_altitude_speed_gates.yaml`.
+  ids). Prefer flag cooldown + `time_since_flag` re-warn while still violating
+  (not bare continuous message spam every ME tick); clear flag when back in limits;
+  keep `time_more` so parking does not spam. Emit uses `int(altitude_m)` /
+  speed conversion — non-integers soft-warn (`gate_threshold_truncated`). Example:
+  `manston_freeflight_altitude_speed_gates.yaml`.
 - **Code:** `models.py`, `validation.py`, `compiler/triggers_emit.py`,
   `pydcs_compiler.py`.
 
