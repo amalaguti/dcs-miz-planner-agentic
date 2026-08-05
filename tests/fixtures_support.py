@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import difflib
 import json
 import re
 import zipfile
@@ -149,10 +150,13 @@ SOUND_FLAGS_MISSION_CONTRACTS = (
 
 # PyDCS assigns a random board number each process; pin it for stable goldens.
 _ONBOARD_NUM_RE = re.compile(r'\["onboard_num"\]="\d+"')
+# Liveries come from a local DCS install scan; absent on CI → omit the field.
+_LIVERY_LINE_RE = re.compile(r'\n\t+\["livery_id"\]="[^"]*",')
 
 
 def normalize_mission(mission: str) -> str:
-    return _ONBOARD_NUM_RE.sub('["onboard_num"]="<num>"', mission)
+    mission = _ONBOARD_NUM_RE.sub('["onboard_num"]="<num>"', mission)
+    return _LIVERY_LINE_RE.sub("", mission)
 
 
 def channel_available_inventory() -> TheatreInventory:
@@ -259,7 +263,7 @@ def write_golden(
         "required_members": list(REQUIRED_MEMBERS),
         "mission_must_contain": list(mission_contracts),
         "source_spec": source_spec,
-        "normalized_fields": ["onboard_num"],
+        "normalized_fields": ["onboard_num", "livery_id"],
         "briefing_voice": "raf",
     }
     (fixture_dir / "meta.json").write_text(
@@ -348,6 +352,23 @@ def write_sound_flags_golden(miz_path: Path, fixture_dir: Path = SOUND_FLAGS_FIX
     )
 
 
+def _first_diff(expected: str, actual: str, *, limit: int = 8) -> str:
+    """Short unified-diff snippet for golden assertion messages."""
+    lines = list(
+        difflib.unified_diff(
+            expected.splitlines(),
+            actual.splitlines(),
+            fromfile="golden",
+            tofile="compiled",
+            lineterm="",
+            n=2,
+        )
+    )
+    if not lines:
+        return "(no line diff; length or trailing newline mismatch)"
+    return "\n".join(lines[:limit])
+
+
 def assert_matches_golden(miz_path: Path, fixture_dir: Path = FIXTURE_DIR) -> None:
     meta = json.loads((fixture_dir / "meta.json").read_text(encoding="utf-8"))
     required = set(meta["required_members"])
@@ -359,9 +380,13 @@ def assert_matches_golden(miz_path: Path, fixture_dir: Path = FIXTURE_DIR) -> No
     expected_theatre = (fixture_dir / "theatre").read_text(encoding="utf-8").rstrip("\n")
     assert theatre.rstrip("\n") == expected_theatre, "theatre member diverges from golden"
 
-    expected_mission = (fixture_dir / "mission").read_text(encoding="utf-8").rstrip("\n")
-    assert normalize_mission(mission).rstrip("\n") == expected_mission, (
-        "mission member diverges from golden (after normalizing volatile fields)"
+    expected_mission = normalize_mission(
+        (fixture_dir / "mission").read_text(encoding="utf-8")
+    ).rstrip("\n")
+    actual_mission = normalize_mission(mission).rstrip("\n")
+    assert actual_mission == expected_mission, (
+        "mission member diverges from golden (after normalizing volatile fields)\n"
+        + _first_diff(expected_mission, actual_mission)
     )
 
     expected_dictionary = (fixture_dir / "dictionary").read_text(encoding="utf-8").rstrip("\n")

@@ -76,8 +76,10 @@ def discover_dcs_roots(
         return discover_dcs_roots(explicit=env_root, env=env)
 
     candidates: list[Path] = []
+    # Always consult the registry helper so tests can monkeypatch it on any OS.
+    # The real implementation returns [] on non-Windows.
+    candidates.extend(_registry_dcs_paths())
     if sys.platform == "win32":
-        candidates.extend(_registry_dcs_paths())
         for key in ("ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA"):
             base = env.get(key)
             if not base:
