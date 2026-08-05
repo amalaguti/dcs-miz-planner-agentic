@@ -40,6 +40,7 @@ from .models import (
 )
 from .registry import ChannelRegistry, RegistryError, get_channel_registry
 from .sounds import get_sound_asset, list_sound_assets
+from .theatre_terrain import bound_theatre_ids
 
 
 def _validate_enemy_aircraft(
@@ -1015,6 +1016,18 @@ def validate_mission_spec(
                 path="theatre",
                 message=f"Unsupported theatre '{spec.theatre}'",
                 hint=f"Known: {registry.list_theatres()}",
+            )
+        )
+    elif spec.theatre not in bound_theatre_ids():
+        errors.append(
+            ValidationError(
+                code="theatre_terrain_unbound",
+                path="theatre",
+                message=(
+                    f"Theatre '{spec.theatre}' is in the registry but has no PyDCS "
+                    "terrain binding for compile"
+                ),
+                hint=f"Bound theatres: {sorted(bound_theatre_ids())}",
             )
         )
     else:

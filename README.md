@@ -60,7 +60,7 @@ hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 **Next:** Adversarial review track in [`docs/BACKLOG.md`](docs/BACKLOG.md)
-(`#39`+ remaining); notes in
+(`#40`+ remaining); notes in
 [`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
 Then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path
 beyond live snippets / local listing.

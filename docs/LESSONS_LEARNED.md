@@ -7,6 +7,15 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Spec theatre → PyDCS terrain binding (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** Never `Mission(terrain=TheChannel())` while ignoring `spec.theatre`. Use
+  `theatre_terrain.terrain_for_theatre(spec.theatre)`; unbound ids fail compile and
+  validate (`theatre_terrain_unbound`). Registry theatres must stay ⊆ binding keys
+  before adding a second theatre.
+- **Code:** `theatre_terrain.py`, `pydcs_compiler.py`, `channel_domain.py`.
+
 ## Soft-warn: known aircraft module missing from install (2026-08-05)
 
 - **Date:** 2026-08-05

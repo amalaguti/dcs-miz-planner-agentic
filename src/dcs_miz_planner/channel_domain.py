@@ -24,9 +24,10 @@ _CHORD_SLACK_M = 8000.0
 def classify_channel_domain(x: float, y: float) -> Domain:
     """Return ``land`` or ``sea`` for a Channel terrain map point (x, y)."""
     from dcs.mapping import Point
-    from dcs.terrain.thechannel import TheChannel
 
-    terrain = TheChannel()
+    from .theatre_terrain import terrain_for_theatre
+
+    terrain = terrain_for_theatre("TheChannel")
     point = Point(x, y, terrain)
     uk = [a for a in terrain.airport_list() if a.id in _UK_AIRPORT_IDS]
     fr = [a for a in terrain.airport_list() if a.id in _FR_AIRPORT_IDS]
@@ -50,12 +51,12 @@ def strike_map_point(
     registry: ChannelRegistry | None = None,
 ) -> tuple[float, float]:
     """Compile-equivalent strike Point (x, y) from player airfield + strike block."""
-    from dcs.terrain.thechannel import TheChannel
+    from .theatre_terrain import terrain_for_theatre
 
     if spec.strike is None:
         raise ValueError("strike block required")
     registry = registry if registry is not None else get_channel_registry()
-    terrain = TheChannel()
+    terrain = terrain_for_theatre(spec.theatre)
     airdrome_id = registry.airdrome_id(spec.player.airfield)
     airport = terrain.airport_by_id(airdrome_id)
     if airport is None:

@@ -110,9 +110,9 @@ class PyDCSCompiler(CompilerInterface):
         from dcs.mission import Mission
         from dcs.mission import StartType as DcsStartType
         from dcs.planes import plane_map
-        from dcs.terrain import TheChannel
 
         from ..narrative import NarrativeError, expand_narrative_if_needed
+        from ..theatre_terrain import TheatreTerrainError, terrain_for_theatre
 
         try:
             spec = expand_narrative_if_needed(spec, voice=voice)
@@ -141,7 +141,12 @@ class PyDCSCompiler(CompilerInterface):
 
         _disable_payload_scan(aircraft_type, *enemy_types, *package_types)
 
-        mission = Mission(terrain=TheChannel())
+        try:
+            terrain = terrain_for_theatre(spec.theatre)
+        except TheatreTerrainError as exc:
+            raise ValueError(str(exc)) from exc
+
+        mission = Mission(terrain=terrain)
 
         # Date + time. PyDCS start_time is a datetime; DCS mission time is
         # naive local mission time (no timezone).
