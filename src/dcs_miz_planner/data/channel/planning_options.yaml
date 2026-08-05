@@ -191,3 +191,169 @@ options:
       Reroll weather, clock, geometry, and/or opposition on an existing Spec via
       dcs-miz randomize / randomize_mission tool (seed argument; not a Spec field).
     support: advisory
+
+  # --- mission_behaviour: compile-backed Spec recipes (agent creativity) ---
+  - family: mission_behaviour
+    id: altitude_speed_gates
+    label: Altitude / speed ingress gates
+    description: >
+      Continuous player discipline after a short time gate: warn or cue when above
+      an AGL ceiling or faster than a speed limit (ingress / low-level challenge).
+    support: supported
+    meta:
+      intent: [ingress_discipline, low_level, challenge]
+      mission_types: [free_flight, intercept, cap, ground_attack, escort]
+      conditions: [time_more, unit_altitude_higher, unit_altitude_lower, unit_speed_higher, unit_speed_lower]
+      actions: [message]
+      recipe: >
+        After time_more (~30s), continuous rules with unit_altitude_higher (altitude_m,
+        agl true) and/or unit_speed_higher (speed_kmh) → message. Player unit only.
+      example: examples/manston_freeflight_altitude_speed_gates.yaml
+
+  - family: mission_behaviour
+    id: mark_smoke
+    label: F10 mark + smoke marker
+    description: >
+      Place an F10 map mark and/or ME smoke marker on a Spec zone to cue ingress or
+      target area visually.
+    support: supported
+    meta:
+      intent: [visual_cue, target_area, immersion]
+      mission_types: [ground_attack, intercept, cap, escort, free_flight]
+      actions: [mark, smoke]
+      conditions: [time_more, coalition_in_zone, flag_is]
+      recipe: >
+        Define a zone; on time or zone entry emit mark (zone + text) and/or smoke
+        (zone + curated color green|red|white|orange|blue).
+      example: examples/manston_ground_attack_markers.yaml
+
+  - family: mission_behaviour
+    id: narrative_pack
+    label: Opt-in narrative pack
+    description: >
+      Expand curated immersion (push / callouts / win) via narrative.enabled when
+      zones and triggers are empty — never with hand-authored triggers.
+    support: supported
+    meta:
+      intent: [immersion, win_condition, radio_colour]
+      mission_types: [cap, intercept, ground_attack, escort]
+      recipe: >
+        Set narrative.enabled true (and leave zones/triggers empty). Packs expand into
+        typed conditions/actions; do not invent Lua.
+      examples:
+        - examples/manston_cap_narrative.yaml
+        - examples/manston_dawn_intercept_narrative.yaml
+        - examples/manston_ground_attack_narrative.yaml
+        - examples/manston_escort_narrative.yaml
+
+  - family: mission_behaviour
+    id: radio_late_activation
+    label: F10 radio + late activation
+    description: >
+      Dormant enemies/targets (late_activation) spawned from an F10 radio menu item
+      for player-chosen difficulty or timing.
+    support: supported
+    meta:
+      intent: [difficulty_menu, player_choice, spawn]
+      mission_types: [intercept, cap, escort, ground_attack]
+      conditions: [flag_is]
+      actions: [radio_item_add, radio_item_remove, activate_group, message]
+      recipe: >
+        enemies/targets late_activation true; on mission start radio_item_add; flag from
+        menu → activate_group (enemy_index or target_index).
+      example: examples/manston_dawn_intercept_radio.yaml
+
+  - family: mission_behaviour
+    id: sound_flag_chain
+    label: Curated sound + numeric flags
+    description: >
+      Play a curated sound asset and/or drive timed flag beats (equals/more/less,
+      time_since_flag, inc_flag, set_flag_value) without file paths.
+    support: supported
+    meta:
+      intent: [audio_cue, timed_beats, immersion]
+      mission_types: [free_flight, intercept, cap, ground_attack, escort]
+      conditions: [time_more, flag_equals, flag_more, flag_less, time_since_flag]
+      actions: [sound, set_flag, set_flag_value, inc_flag, message]
+      recipe: >
+        sound uses curated asset_id only; chain flags with flag_equals/more/less and
+        time_since_flag for sequenced callouts.
+      example: examples/manston_freeflight_sound_flags.yaml
+
+  - family: mission_behaviour
+    id: group_life_less
+    label: Group life remaining threshold
+    description: >
+      Fire when an enemy or target group’s remaining life drops below a percent
+      (partial-damage objective beat).
+    support: supported
+    meta:
+      intent: [partial_damage, objective_beat]
+      mission_types: [ground_attack, intercept, cap, escort]
+      conditions: [group_life_less]
+      actions: [message, set_flag, mission_end]
+      recipe: >
+        group_life_less with enemy_index or target_index plus percent 1–100 (remaining
+        life), then message / flag / mission_end as needed.
+      example: examples/manston_ground_attack_life_less.yaml
+
+  # --- mission_inspiration: advisory patterns → behaviour ids ---
+  - family: mission_inspiration
+    id: low_level_channel_hop
+    label: Low-level Channel hop
+    description: >
+      Free-flight familiarisation with a hard deck and speed limit after takeoff —
+      stay low and measured over the coast.
+    support: advisory
+    meta:
+      behaviours: [altitude_speed_gates]
+      source: stock/R5-style free-flight discipline
+      mission_types: [free_flight]
+
+  - family: mission_inspiration
+    id: marked_strike_ingress
+    label: Marked strike ingress
+    description: >
+      Ground-attack with F10 mark + smoke on the target zone so the pilot can find the
+      aim point visually, optionally with a life-% beat.
+    support: advisory
+    meta:
+      behaviours: [mark_smoke, group_life_less]
+      source: stock GA / ME marker patterns
+      mission_types: [ground_attack]
+
+  - family: mission_inspiration
+    id: scramble_difficulty_menu
+    label: Scramble with difficulty menu
+    description: >
+      Dawn intercept where the player chooses when bandits appear via F10 radio, with
+      optional narrative immersion if not hand-writing triggers.
+    support: advisory
+    meta:
+      behaviours: [radio_late_activation, narrative_pack]
+      source: Dawn Raid–style radio + late activation (R5)
+      mission_types: [intercept]
+
+  - family: mission_inspiration
+    id: cap_with_narrative_beats
+    label: CAP with narrative beats
+    description: >
+      Patrol station with curated CAP narrative (on-station / bandits / win) when the
+      user wants immersion without authoring triggers by hand.
+    support: advisory
+    meta:
+      behaviours: [narrative_pack]
+      source: curated narrative packs
+      mission_types: [cap]
+
+  - family: mission_inspiration
+    id: timed_audio_callouts
+    label: Timed audio callouts
+    description: >
+      Free flight or training hop with a curated beep and flag-driven message beats
+      for procedural rhythm.
+    support: advisory
+    meta:
+      behaviours: [sound_flag_chain]
+      source: sound + flag enrichment sample
+      mission_types: [free_flight, intercept]

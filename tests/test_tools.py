@@ -118,6 +118,19 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("payload_family", "spitfire_2x250_slipper")]["meta"]["payload"] == (
         "spitfire_2x250_slipper"
     )
+    # mission_behaviour / mission_inspiration capability catalog
+    assert by_key[("mission_behaviour", "altitude_speed_gates")]["support"] == "supported"
+    assert "unit_altitude_higher" in str(
+        by_key[("mission_behaviour", "altitude_speed_gates")]["meta"]
+    )
+    assert by_key[("mission_behaviour", "mark_smoke")]["support"] == "supported"
+    assert by_key[("mission_behaviour", "narrative_pack")]["support"] == "supported"
+    assert by_key[("mission_behaviour", "radio_late_activation")]["support"] == "supported"
+    assert by_key[("mission_behaviour", "sound_flag_chain")]["support"] == "supported"
+    assert by_key[("mission_behaviour", "group_life_less")]["support"] == "supported"
+    insp = by_key[("mission_inspiration", "low_level_channel_hop")]
+    assert insp["support"] == "advisory"
+    assert "altitude_speed_gates" in insp["meta"]["behaviours"]
     supports = {o["support"] for o in options}
     assert supports >= {"supported", "advisory"}
     assert "future" not in {
@@ -198,6 +211,42 @@ def test_enrich_live_query_adds_context() -> None:
     assert "TheChannel" in enriched
     assert "SpitfireLFMkIX" in enriched
     assert "WWII" in enriched
+
+
+def test_enrich_live_query_mission_design_focus() -> None:
+    from dcs_miz_planner.tools.research import enrich_live_query
+
+    enriched = enrich_live_query(
+        "Spitfire low level Channel mission ideas",
+        mission_type="free_flight",
+        theatre="TheChannel",
+        focus="mission_design",
+    )
+    lower = enriched.lower()
+    assert "user files" in lower
+    assert "mission editor" in lower or "triggers" in lower
+    assert "github" in lower or "miz" in lower
+
+
+def test_research_guidance_passes_focus(monkeypatch: pytest.MonkeyPatch) -> None:
+    from dcs_miz_planner.tools import research as research_mod
+    from dcs_miz_planner.tools.surface import research_guidance
+
+    seen: dict[str, str | None] = {}
+
+    def fake_gather(query, **kwargs):  # type: ignore[no-untyped-def]
+        seen["focus"] = kwargs.get("focus")
+        return ([{"title": "t", "snippet": "s", "source": "fixture:x"}], None)
+
+    monkeypatch.setattr(research_mod, "gather_research_notes", fake_gather)
+    # surface imports gather at module level — patch surface binding too
+    import dcs_miz_planner.tools.surface as surface_mod
+
+    monkeypatch.setattr(surface_mod, "gather_research_notes", fake_gather)
+    result = research_guidance("design a strike", focus="mission_design")
+    assert result["ok"] is True
+    assert result.get("focus") == "mission_design"
+    assert seen["focus"] == "mission_design"
 
 
 def test_research_guidance_live_success_via_inject() -> None:
@@ -316,3 +365,28 @@ def test_dispatch_research_guidance() -> None:
     )
     assert result["ok"] is True
     assert result["notes"]
+
+
+def test_dispatch_list_installed_campaigns() -> None:
+    from dcs_miz_planner.agent.tool_bridge import TOOL_DEFINITIONS, dispatch_tool
+
+    names = {t["function"]["name"] for t in TOOL_DEFINITIONS}
+    assert "list_installed_campaigns" in names
+    result = dispatch_tool("list_installed_campaigns", {})
+    assert result["ok"] is True
+    assert "campaigns" in result
+
+
+def test_prompts_mention_capability_catalog() -> None:
+    from dcs_miz_planner.agent.prompts import compose_system_prompt
+    from dcs_miz_planner.agent.spec_schema import build_spec_schema
+
+    prompt = compose_system_prompt("raf")
+    assert "mission_behaviour" in prompt
+    assert "mission_inspiration" in prompt
+    assert "list_installed_campaigns" in prompt
+    assert "mission_design" in prompt
+    schema = build_spec_schema("free_flight")
+    joined = " ".join(schema.notes)
+    assert "mission_behaviour" in joined
+    assert "list_installed_campaigns" in joined

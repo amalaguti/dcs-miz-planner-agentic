@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from ..catalog import CatalogService
 from ..compiler import PyDCSCompiler
+from ..install.campaigns import index_installed_campaigns
 from ..install.models import TheatreInventory
 from ..loader import SpecLoadError, load_mission_spec
 from ..memory import UserMemoryService
@@ -431,6 +432,7 @@ def research_guidance(
     theatre: str | None = None,
     aircraft: str | None = None,
     live: bool | None = None,
+    focus: str | None = None,
     db_path: Path | str | None = None,
 ) -> dict[str, Any]:
     """
@@ -438,6 +440,8 @@ def research_guidance(
 
     Soft-fails: always returns ok with notes (fixtures on offline or live error/empty).
     Live mode sets ``warning`` when web retrieval fails or returns nothing.
+    ``focus="mission_design"`` biases live search toward User Files / mission repos /
+    ME patterns (still not Spec-field authority).
     Research is not Spec or DCS-id authority. ``db_path`` unused (tool signature parity).
     """
     del db_path
@@ -450,6 +454,7 @@ def research_guidance(
         theatre=theatre,
         aircraft=aircraft,
         live=live,
+        focus=focus,
     )
     payload: dict[str, Any] = {"notes": notes, "query": q}
     if mission_type:
@@ -458,6 +463,48 @@ def research_guidance(
         payload["theatre"] = theatre
     if aircraft:
         payload["aircraft"] = aircraft
+    if focus:
+        payload["focus"] = focus
     if warning:
         payload["warning"] = warning
+    return ok_result(**payload)
+
+
+def list_installed_campaigns(
+    *,
+    dcs_root: Path | str | None = None,
+    campaigns_dir: Path | str | None = None,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """
+    List local DCS campaigns under ``Mods/campaigns`` for mission inspiration.
+
+    Returns campaign name, mission ``.miz`` filenames, ``Doc/`` PDF filenames, and a
+    short ``.cmp`` description when present. Read-only; does not import ``.miz`` into
+    Spec. ``db_path`` unused (tool signature parity).
+    """
+    del db_path
+    index = index_installed_campaigns(explicit_root=dcs_root, campaigns_dir=campaigns_dir)
+    campaigns = [
+        {
+            "name": c.name,
+            "path": c.path,
+            "description": c.description,
+            "cmp_file": c.cmp_file,
+            "missions": [m.filename for m in c.missions],
+            "docs": [d.filename for d in c.docs],
+        }
+        for c in index.campaigns
+    ]
+    diags = [{"message": d.message, "source": d.source} for d in index.diagnostics]
+    payload: dict[str, Any] = {
+        "campaigns": campaigns,
+        "dcs_roots": list(index.dcs_roots),
+        "diagnostics": diags,
+    }
+    if not campaigns and not index.dcs_roots and campaigns_dir is None and dcs_root is None:
+        # No install discovered — structured empty, non-fatal for the agent.
+        payload["warning"] = "no DCS World root or campaigns found"
+    elif not campaigns:
+        payload["warning"] = "no campaigns listed under Mods/campaigns"
     return ok_result(**payload)

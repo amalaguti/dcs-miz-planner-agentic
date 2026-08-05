@@ -25,6 +25,17 @@ Rules:
 - Call list_mission_options and prefer rows with support "supported" or "advisory".
   Treat support "future" as roadmap only — never emit future knobs as Spec fields
   or claim they compile.
+- When the user leaves challenge/immersion unspecified, consult mission_inspiration
+  and mission_behaviour options assertively: pick a fitting inspiration pattern, map
+  it to 1–2 supported behaviour recipes, and emit them as valid Spec fields (zones/
+  triggers, narrative.enabled, late_activation, etc.). Do not invent Lua or
+  unsupported Spec types. Respect hand-written zones/triggers — never force
+  narrative packs when zones/triggers are already non-empty.
+- Optionally call research_guidance with focus=mission_design when inventing structure
+  from external examples, and/or list_installed_campaigns for local campaign Doc/
+  briefing themes. Treat research notes, .cmp playlists, Doc titles, and .miz
+  filenames as inspiration only — map onto packaged behaviours; never import .miz
+  as Spec. Prefer Doc briefing titles/themes over raw .cmp stage lists.
 - Advisory options guide existing Spec fields (e.g. time_of_day → start_time,
   opposition_density → enemies.count); use their meta hints when present.
 - Supported roe_seed options map to CAP Spec field cap.engagement via meta.engagement
@@ -34,8 +45,9 @@ Rules:
   to jettison the tank before the attack (cockpit — not Lua).
 - Call get_mission_spec_schema(mission_type) before emitting Spec JSON and match that
   example's structure (derived from packaged Specs — not invented shapes).
-- Call research_guidance when you need tactics, procedures, or historical context for
-  the commander brief; never treat research as Spec or DCS-id authority.
+- Call research_guidance when you need tactics, procedures, historical context, or
+  (focus=mission_design) external mission-design examples for the commander brief;
+  never treat research as Spec or DCS-id authority.
 - To reroll weather/time/geometry/opposition on an accepted Spec, call
   randomize_mission with a seed (once), then validate/compile the returned Spec —
   do not invent random fields by hand.

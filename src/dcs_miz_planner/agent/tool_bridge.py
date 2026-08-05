@@ -13,6 +13,7 @@ from ..tools import (
     get_mission_spec_schema,
     get_user_prefs,
     list_generation_history,
+    list_installed_campaigns,
     list_mission_options,
     randomize_mission,
     record_feedback,
@@ -57,7 +58,22 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "name": "list_mission_options",
             "description": (
                 "List known mission enums, offerable theatres, and enriched planning "
-                "options with support levels (supported|advisory|future)."
+                "options with support levels (supported|advisory|future). Includes "
+                "mission_behaviour (Spec recipes) and mission_inspiration (advisory "
+                "patterns → behaviour ids) for creative immersion/challenge."
+            ),
+            "parameters": {"type": "object", "properties": {}},
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_installed_campaigns",
+            "description": (
+                "List local DCS campaigns under Mods/campaigns (names, .miz files, "
+                "Doc/ briefing PDF titles, short .cmp description). Inspiration only — "
+                "prefer Doc briefing themes; map ideas onto mission_behaviour cards. "
+                "Never import .miz as Spec or invent Lua."
             ),
             "parameters": {"type": "object", "properties": {}},
         },
@@ -182,8 +198,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "name": "research_guidance",
             "description": (
                 "Research short notes on flight procedures, combat manoeuvres, "
-                "pilot accounts, or historical context for the commander brief. "
-                "Not a source of DCS type ids or Spec fields."
+                "pilot accounts, historical context, or (with focus=mission_design) "
+                "how others built DCS missions (User Files / repos / ME patterns). "
+                "Map ideas onto mission_behaviour cards. Not a source of DCS type ids "
+                "or Spec fields."
             ),
             "parameters": {
                 "type": "object",
@@ -195,6 +213,13 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                     },
                     "theatre": {"type": "string"},
                     "aircraft": {"type": "string"},
+                    "focus": {
+                        "type": "string",
+                        "description": (
+                            "Optional: tactics (default) or mission_design for "
+                            "User Files / mission-repo / ME pattern bias"
+                        ),
+                    },
                 },
                 "required": ["query"],
             },
@@ -290,6 +315,8 @@ def dispatch_tool(
         return get_aircraft_details(str(args.get("aircraft_id", "")), db_path=db_path)
     if name == "list_mission_options":
         return list_mission_options(db_path=db_path)
+    if name == "list_installed_campaigns":
+        return list_installed_campaigns(db_path=db_path)
     if name == "get_mission_spec_schema":
         return get_mission_spec_schema(str(args.get("mission_type", "")))
     if name == "get_user_prefs":
@@ -341,6 +368,7 @@ def dispatch_tool(
             mission_type=args.get("mission_type"),
             theatre=args.get("theatre"),
             aircraft=args.get("aircraft"),
+            focus=args.get("focus"),
             db_path=db_path,
         )
     if name == "validate_mission_spec":

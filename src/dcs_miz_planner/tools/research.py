@@ -110,8 +110,13 @@ def enrich_live_query(
     mission_type: str | None = None,
     theatre: str | None = None,
     aircraft: str | None = None,
+    focus: str | None = None,
 ) -> str:
-    """Build a fetch string from the user query plus available Spec context."""
+    """Build a fetch string from the user query plus available Spec context.
+
+    ``focus="mission_design"`` biases toward DCS User Files / public mission repos /
+    Mission Editor pattern discovery (still not Spec-field authority).
+    """
     parts: list[str] = []
     q = (query or "").strip()
     if q:
@@ -134,6 +139,20 @@ def enrich_live_query(
         and "world war" not in lower
     ):
         joined = f"{joined} WWII".strip()
+
+    focus_l = (focus or "").strip().lower()
+    if focus_l in {"mission_design", "mission-design", "design"}:
+        bias_terms = (
+            "DCS World mission",
+            "User Files",
+            "mission editor triggers",
+            "GitHub miz",
+        )
+        lower2 = joined.lower()
+        for term in bias_terms:
+            if term.lower() not in lower2:
+                joined = f"{joined} {term}".strip()
+                lower2 = joined.lower()
     return joined or q
 
 
@@ -318,6 +337,7 @@ def gather_research_notes(
     theatre: str | None = None,
     aircraft: str | None = None,
     live: bool | None = None,
+    focus: str | None = None,
     web_fetch: Callable[[str], list[dict[str, str]]] | None = None,
 ) -> tuple[list[dict[str, str]], str | None]:
     """
@@ -325,6 +345,7 @@ def gather_research_notes(
 
     ``web_fetch`` is injectable for tests (callable returning notes or raising).
     When omitted, live mode uses Instant Answer then HTML fallback.
+    ``focus="mission_design"`` enriches the live query toward mission-pattern sources.
     """
     fixtures = fixture_notes(query=query, mission_type=mission_type)
     if not _live_enabled(live):
@@ -336,6 +357,7 @@ def gather_research_notes(
         mission_type=mission_type,
         theatre=theatre,
         aircraft=aircraft,
+        focus=focus,
     )
     try:
         live_notes = list(fetch(enriched_q))

@@ -44,10 +44,13 @@ in ME 2026-08-04). Curated `sound` + numeric flags
 (`examples/manston_ground_attack_markers.yaml`; accepted in ME 2026-08-04).
 Player altitude/speed gates
 (`examples/manston_freeflight_altitude_speed_gates.yaml`; accepted in ME 2026-08-04).
+Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
+`research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
+`Mods/campaigns` + Doc briefings) for assertive creative planning.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `script-snippet-library` only if native triggers are insufficient; R8 when bumping deps; more ME enrichment as needed.
+**Next:** `creative-decision-memory` (wire generation detail + feedback → creative prompt bias); then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path beyond live snippets / local listing.
 
 ## Stack
 
@@ -153,11 +156,16 @@ uv run dcs-miz catalog list --known-only
 uv run dcs-miz catalog list --type aircraft --json
 uv run dcs-miz catalog list --type planning_options --json
 uv run dcs-miz catalog list --type planning_options --family weather --support supported
+uv run dcs-miz catalog list --type planning_options --family mission_behaviour --support supported
+uv run dcs-miz catalog list --type planning_options --family mission_inspiration
 ```
 
 To grow **known** entries: edit `src/dcs_miz_planner/data/channel/*.yaml` (and Spec enums
 when needed), accept in DCS when compile-supported, then `catalog sync`. Planning knobs live
-in `planning_options.yaml` with support levels (`supported` / `advisory` / `future`).
+in `planning_options.yaml` with support levels (`supported` / `advisory` / `future`), including
+`mission_behaviour` (Spec recipes) and `mission_inspiration` (advisory patterns). Deep
+community/campaign `.miz` audits remain R1/R2; live research snippets and local campaign
+`Doc/` listing are lighter inspiration channels.
 Discovered install theatres are listed with `known=false` and are not auto-promoted.
 Normandy (or other maps) is not required for the planning-option catalog.
 
@@ -168,12 +176,16 @@ Import from `dcs_miz_planner.tools` (no dedicated tools CLI — pytest is the ac
 - `find_airfield(query)` / `get_aircraft_details(aircraft_id)` — known catalog
 - `get_mission_spec_schema(mission_type)` — compact Spec example + notes (from `examples/`)
 - `list_mission_options()` — Spec enums + enriched planning options + offerable theatres
+  (includes `mission_behaviour` / `mission_inspiration` capability cards)
+- `list_installed_campaigns()` — local `Mods/campaigns` names, `.miz` files, `Doc/` PDFs
+  (inspiration only; no `.miz`→Spec import)
 - `get_user_prefs` / `set_user_prefs` / `list_generation_history` / `record_generation` /
   `record_feedback` — local user memory
-- `research_guidance(query, …)` — tactics/procedures/history notes for commander briefs
-  (offline fixtures by default; set `DCS_MIZ_RESEARCH_LIVE=1` or chat `/research` for
-  best-effort web: DuckDuckGo Instant Answer, then HTML results; soft-fail warns and
-  labels offline fixtures — research is never Spec/DCS-id authority)
+- `research_guidance(query, …, focus=)` — tactics/procedures/history notes for commander
+  briefs; `focus=mission_design` biases live search toward User Files / mission repos /
+  ME patterns (offline fixtures by default; set `DCS_MIZ_RESEARCH_LIVE=1` or chat
+  `/research` for best-effort web: DuckDuckGo Instant Answer, then HTML results;
+  soft-fail warns and labels offline fixtures — research is never Spec/DCS-id authority)
 - `validate_mission_spec(path)` / `compile_mission(path, output)` — wrap existing engines
 
 Results are JSON-friendly dicts with an `ok` flag for later LLM tool calling.

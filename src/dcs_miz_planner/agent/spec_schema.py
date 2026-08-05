@@ -125,6 +125,14 @@ _COMMON_NOTES: tuple[str, ...] = (
         "expands a curated pack into that vocabulary when zones/triggers are empty."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
+    (
+        "For creative immersion/challenge: list_mission_options families "
+        "mission_inspiration (advisory patterns) and mission_behaviour (supported "
+        "recipes with meta.recipe / Spec types / example paths). Optionally "
+        "research_guidance(focus=mission_design) and list_installed_campaigns "
+        "(prefer Doc/ briefing themes). Map ideas onto packaged behaviours only — "
+        "never Lua or .miz→Spec import."
+    ),
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )
 

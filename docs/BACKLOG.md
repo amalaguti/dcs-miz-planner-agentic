@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#22` only if native insufficient; R8 when bumping pydcs; next enrichment TBD
+**Next promote / in proposal:** `creative-decision-memory` (detail + feedback → prompt bias); `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep audits vs live snippets / local campaign Doc listing
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -132,6 +132,8 @@ the trigger/script text itself is human-authored, versioned, and tested.
 | 27 | `group-life-less` | Spec condition for remaining group life % (`enemy_index`/`target_index` + `percent`) → PyDCS `GroupLifeLess`; partial-damage objective beats | `done` (accepted in ME 2026-08-04; GROUP LIFE LESS @ 50%) |
 | 28 | `trigger-markers` | Spec actions `mark` (F10 map mark) + `smoke` (ME Smoke Marker) on Spec zones → PyDCS `MarkToAll` / `ExplodeWPMarker` | `done` (accepted in ME 2026-08-04; Mark To All id 1 + red Smoke Marker) |
 | 29 | `altitude-speed-gates` | Spec player conditions `unit_altitude_*` / `unit_speed_*` → PyDCS UnitAltitude* / UnitSpeed* (ingress discipline) | `done` (accepted in ME 2026-08-04; continuous AGL + speed gates) |
+| 30 | `agent-capability-catalog` | Packaged `mission_behaviour` / `mission_inspiration` cards; mission-design `research_guidance`; local `Mods/campaigns` + Doc index for assertive creative planning | `done` (2026-08-04; catalog + tools + prompts) |
+| 30a | `creative-decision-memory` | Record inspiration/behaviour choices in generation `detail` + feedback → prompt bias over time | `idea` (next) |
 | 24 | `cockpit-state-triggers` | Optional interactive/training missions driven by Spitfire cockpit arguments (promotes research R4 once verified in-game) | `idea` |
 
 Sequencing note: 20–21 need `mission-spec-schema` (M2 `#2`), `validation-engine` (M2 `#5`) and

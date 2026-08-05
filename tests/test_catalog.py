@@ -207,6 +207,16 @@ def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
     weather = service.list_rows("planning_options", family="weather", support="supported")
     assert {r["id"] for r in weather} == {"sunny_clear", "dawn_clear", "marginal_vfr"}
 
+    behaviours = service.list_rows(
+        "planning_options", family="mission_behaviour", support="supported"
+    )
+    behaviour_ids = {r["id"] for r in behaviours}
+    assert "altitude_speed_gates" in behaviour_ids
+    assert "mark_smoke" in behaviour_ids
+
+    inspirations = service.list_rows("planning_options", family="mission_inspiration")
+    assert any(r["id"] == "low_level_channel_hop" for r in inspirations)
+
     buf = io.StringIO()
     with redirect_stdout(buf):
         assert (
