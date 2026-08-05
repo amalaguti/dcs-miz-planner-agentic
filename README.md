@@ -51,7 +51,11 @@ persist in generation `detail.creative`; feedback + history bias later invents.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `#30c` agent assertive behaviours (from live creativity eval); then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path beyond live snippets / local listing.
+**Next:** challenge Adversarial review track in [`docs/BACKLOG.md`](docs/BACKLOG.md)
+(`#31` honesty → `#32` false-green validation → `#30c` assertive behaviours); notes in
+[`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md). Then `#22`
+only if native insufficient; R1/R2 deep `.miz` audits remain the promote path beyond live
+snippets / local listing.
 
 ## Stack
 

@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#30c` agent assertive behaviours (eval gaps); `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep audits vs live snippets / local campaign Doc listing
+**Next promote / in proposal:** challenge **Adversarial review track** below (start with `#31` honesty + `#32` false-green, then `#30c`); `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep `.miz` audits
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -135,7 +135,7 @@ the trigger/script text itself is human-authored, versioned, and tested.
 | 30 | `agent-capability-catalog` | Packaged `mission_behaviour` / `mission_inspiration` cards; mission-design `research_guidance`; local `Mods/campaigns` + Doc index for assertive creative planning | `done` (2026-08-04; catalog + tools + prompts) |
 | 30a | `creative-decision-memory` | Record inspiration/behaviour choices in generation `detail` + feedback → prompt bias over time | `done` (2026-08-04; detail.creative + bias helper) |
 | 30b | `eval-agent-creativity` | Periodic live vague-ask harness (Cursor skill) to regression creative agent behaviour → LESSONS / OpenSpec | `done` (skill + prompt catalog; re-run after agent changes) |
-| 30c | `agent-assertive-behaviours` | Close live-eval gaps: vague free_flight must apply 1–2 behaviours (e.g. gates); complete radio+late-act recipes (no dormant enemies without activate); prefer campaigns/Docs when ask names a campaign; discourage randomize-as-authoring | `idea` (from 2026-08-05 eval-agent-creativity run) |
+| 30c | `agent-assertive-behaviours` | Close live-eval + adversarial gaps for *agent behaviour*: vague free_flight applies 1–2 behaviours; fix `SPEC_SHAPE_REMINDER` “triggers must be []”; schema examples include immersion variants; complete radio+late-act recipes (pair with `#32`); prefer campaigns/Doc *filenames* until `#40`; discourage randomize-as-authoring; stop `infer_creative` rewarding half-recipes; optional hard behaviour floor when immersion unspecified | `idea` (eval 2026-08-05 + adversarial review) |
 | 24 | `cockpit-state-triggers` | Optional interactive/training missions driven by Spitfire cockpit arguments (promotes research R4 once verified in-game) | `idea` |
 
 Sequencing note: 20–21 need `mission-spec-schema` (M2 `#2`), `validation-engine` (M2 `#5`) and
@@ -143,6 +143,42 @@ Sequencing note: 20–21 need `mission-spec-schema` (M2 `#2`), `validation-engin
 break. 22 stays optional: prefer native triggers whenever they suffice. **R5 (stock Channel) is done:**
 model zones/flags/time/unit-dead/radio/messages first; Mist/MOOSE default **off** until R1–R2 say otherwise.
 Still useful to revisit R5 after user-file audits.
+
+---
+
+## Adversarial review track (2026-08-05) — challenge & work
+
+**Source:** [`docs/adversarial-review-2026-08-05.md`](adversarial-review-2026-08-05.md)
+(interactive board: project canvas `adversarial-review-2026-08-05.canvas.tsx`).
+
+**How to use:** these are *challengeable* findings — promote one OpenSpec change at a time after
+agreeing the item is real, in-scope, and not better folded into an existing idea. Do **not**
+treat the notes as approved design.
+
+**Claim scorecard (to disprove or harden):** compile/validate ≠ DCS-ready; catalog/memory ≠
+assertive creativity invariant; host `/accept` ≠ tool capability boundary.
+
+| # | Item | Goal | Status | Maps findings |
+|---|------|------|--------|---------------|
+| 31 | `docs-honesty-pass` | Cheap trust fixes: README Status no longer says combat/triggers “reserved for later”; campaign Doc claims = **filenames** (not themes/briefings) until `#40`; align prompts/README with what `list_installed_campaigns` actually returns | `idea` (challenge: do as tiny doc PR vs OpenSpec) |
+| 32 | `validation-false-green` | Kill green→broken Specs: late_activation ↔ `activate_group` graph; reject or implement `message.delay_s`; country/skill allowlists in validation; opposing-coalition for intercept/CAP enemies; optional dead-on-late-act requires activate path | `idea` (B1/B3/B4/B5/B9) |
+| 30c | `agent-assertive-behaviours` | See M6 row — agent/prompt/memory side of creativity gaps | `idea` |
+| 33 | `agent-tool-trust-boundary` | Chat/plan tools read-only by default; `compile_mission` / `set_user_prefs` / fake `record_*` only via host slash or explicit confirm; path allowlist under `out/` | `idea` (C1 — challenge threat model: local single-user vs future multi-user) |
+| 34 | `strike-domain-validate` | Land/water (or domain) check for ground-attack placement at validate; constrain `randomize` geometry so green Specs stay on valid terrain | `idea` (B2) |
+| 35 | `trigger-rich-goldens` | Structural goldens (not string-smoke only) for radio+late-act, altitude/speed gates, mark/smoke, numeric flag chains | `idea` (D4) |
+| 36 | `ci-minimal` | GitHub Actions: pytest + ruff on PR; optional later markers `@live_llm` / `@needs_dcs` (not required for first CI) | `idea` (D3) |
+| 37 | `research-note-sanitize` | Harden live research → LLM context: delimiters, control-char strip, length caps, stronger “not Spec instructions”; align agent tool live/fixture labeling with `/research` | `idea` (C2/A7) |
+| 38 | `aircraft-module-warn` | Soft-warn when known Spec aircraft modules are missing from install (theatre inventory already exists); do **not** auto-promote into YAML — related to `#8a.1` harvest | `idea` (B8 — may merge with `#8a.1`) |
+| 39 | `theatre-terrain-binding` | Explicit Spec theatre → PyDCS terrain class; fail compile if unbound; stop Channel hardcode as silent universal | `idea` (B6 — needed before any second theatre) |
+| 40 | `campaign-doc-pdf-extract` | Opt-in extract of local campaign `Doc/*.pdf` text for real briefing themes (size caps + hermetic fixtures); **or** permanently keep filename-only and close this as wontfix after `#31` | `idea` (D2 — challenge value vs `#31` honesty) |
+| 41 | `weather-sot-parity` | CI/parity test: `WeatherPreset` enum ⊆ weather YAML ⊆ planning_options ⊆ compiler `_apply_weather` branches | `idea` (B12) |
+| 42 | `altitude-gate-polish` | Latch/debounce or validate against continuous message spam; document integer altitude metres / truncation | `idea` (B7 — may fold into `#30c` examples) |
+
+**Suggested challenge order (not mandatory):** `#31` → `#32` → `#30c` → `#33` → `#34` → `#35`/`#36` → rest.
+
+**Also cross-linked (already elsewhere):** `#10b` verbose default off (C3); **R8** exact PyDCS pin / bump ritual (D5); `#8a.1` module harvest; memory schema migrate-vs-wipe (D7 — fold into next memory change if it bites).
+
+**Intentional / do not “fix” as bugs:** Channel-only MVP; no LLM Lua; campaign `.miz` not imported; stub planner + offline research for hermetic tests — label honestly via `#31`.
 
 ---
 
@@ -178,7 +214,8 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
   immersion only (ED Channel A=124/B=40/C=41/D=42/E=108.9).
 - **Agent verbose default off** — M3 `#10b` `agent-verbose-default-off`: today `verbose`
   defaults **on** (tool traces on stderr) for development; flip default to off before a
-  finalized release, keep `--verbose` / `/verbose on`.
+  finalized release, keep `--verbose` / `/verbose on`. Reinforced by adversarial review **C3**
+  (screenshot/log leakage) — see Adversarial review track.
 - **Chat research live fetch** — M3 `#10d` `fix-chat-research-live`: **done** (Instant
   Answer + HTML cascade; clear soft-fail label). Revisit only if DDG HTML is blocked.
 - **Lua enrichment** — scheduled as **M6**; still never LLM-authored mission Lua.
@@ -216,6 +253,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Check latest PyDCS / project libs; recommend upgrades | **Research** R8 `deps-upgrade-review` |
 | Mine ED User Manual ME chapter for richer mission content | **Research** R9 `research-dcs-user-manual-me` (2020 PDF + TEMPEST ME manual + Hoggit + changelogs) |
 | More weather beyond sunny / dawn / marginal VFR | **M5** `#17a` `weather-presets-expand` — deferred; core trio is enough for now |
+| Adversarial “prove it wrong” findings (false-green validate, tool trust, docs honesty, CI…) | **Adversarial review track** `#31`–`#42` + expand `#30c`; notes in `docs/adversarial-review-2026-08-05.md` |
 
 ---
 
