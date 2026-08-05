@@ -132,53 +132,82 @@ Four table namespaces share one DB file on purpose:
 flowchart TB
     subgraph product ["Product SoT — compile-supported"]
         yaml["data/channel/*.yaml<br/>+ Spec enums"]
-        reg["registry.py"]
+        reg["registry.ChannelRegistry<br/>list_theatres / list_aircraft / …"]
         yaml --> reg
     end
 
     subgraph sync ["Known catalog — query layer"]
-        csync["dcs-miz catalog sync"]
-        ctab["catalog_* tables<br/>known theatres / aircraft / options"]
-        reg --> csync --> ctab
+        cliSync["cli._catalog_sync_cmd"]
+        build["catalog.sync.build_snapshot_from_registry"]
+        cstore["catalog.store.CatalogStore.replace_snapshot"]
+        ctab["catalog_* tables"]
+        cliSync --> build --> cstore --> ctab
+        reg --> build
     end
 
     subgraph disk ["This PC — changes rarely"]
-        dcs["DCS install<br/>Mods/terrains, Mods/aircraft,<br/>CoreMods/..."]
-        refresh["dcs-miz theatres --refresh"]
-        inv["inventory tables<br/>theatres + aircraft_modules"]
-        dcs --> refresh --> inv
+        dcs["DCS install folders"]
+        cliRef["cli._theatres_cmd --refresh"]
+        invSvc["install.service.InventoryService.refresh"]
+        probe["install.probe.probe_installations"]
+        harvest["install.aircraft_modules.harvest_aircraft_modules"]
+        istore["install.store.InventoryStore.replace"]
+        inv["theatres + aircraft_modules<br/>+ scan_meta"]
+        dcs --> cliRef --> invSvc --> probe
+        probe --> harvest
+        probe --> istore
+        harvest --> istore
+        istore --> inv
+        invSvc -.get / has_cache.-> inv
     end
 
     subgraph join ["Catalog list join — honesty, not promotion"]
-        listT["catalog list theatres"]
-        listA["catalog list aircraft"]
+        cliList["cli._catalog_list_cmd"]
+        listT["CatalogService.list_theatres"]
+        listA["CatalogService.list_aircraft"]
+        joinT["catalog.service.join_theatre_views"]
+        joinA["catalog.service.join_aircraft_views"]
+        flagsT["TheatreAvailabilityView<br/>known / installed / offerable"]
+        flagsA["AircraftAvailabilityView<br/>known / installed / offerable"]
+        cliList --> listT --> joinT --> flagsT
+        cliList --> listA --> joinA --> flagsA
         ctab --> listT
         ctab --> listA
-        inv --> listT
-        inv --> listA
-        listT --> flagsT["known / installed / offerable<br/>+ discovered-only maps"]
-        listA --> flagsA["known / installed / offerable<br/>+ discovered-only folders"]
+        inv --> joinT
+        inv --> joinA
     end
 
     subgraph agent ["Agent invent path today"]
-        tools["tools: get_aircraft_details,<br/>list_mission_options, …"]
+        tools["tools.surface.get_aircraft_details<br/>tools.surface.list_mission_options<br/>find_airfield …"]
         ctab --> tools
         tools --> spec["Mission Spec<br/>known ids only"]
-        spec --> validate["validate / compile"]
-        validate --> reg
-        inv -.soft-warn missing<br/>known module folders.-> validate
+        spec --> val["validation.validate_mission_spec"]
+        val --> reg
+        warn["aircraft_modules.missing_aircraft_module_messages<br/>→ soft-warn aircraft_module_missing"]
+        inv -.-> warn -.-> val
     end
 
-    promote["Promote path (human PR)<br/>edit YAML → accept in DCS → catalog sync"]
+    promote["Human promote: edit YAML → DCS accept → catalog sync"]
     flagsT -.->|never auto| promote
     flagsA -.->|never auto| promote
     promote --> yaml
 
-    maint["#8a.2 later: /maintenance slash<br/>read-only summary + optional refresh"]
+    maint["#8a.2 later: host /maintenance<br/>read-only + optional InventoryService.refresh"]
     inv -.-> maint
     flagsT -.-> maint
     flagsA -.-> maint
 ```
+
+| Concern | Primary callables |
+|---------|-------------------|
+| Known SoT | `registry.ChannelRegistry`, packaged `data/channel/*.yaml` |
+| Sync known → SQLite | `cli._catalog_sync_cmd` → `catalog.sync.build_snapshot_from_registry` → `CatalogStore.replace_snapshot` |
+| Rescan install | `cli._theatres_cmd` (`--refresh`) → `InventoryService.refresh` → `probe.probe_installations` + `aircraft_modules.harvest_aircraft_modules` → `InventoryStore.replace` |
+| Read cache | `InventoryService.get` / `has_cache`; `CatalogService.ensure_synced` |
+| Join list | `CatalogService.list_theatres` / `list_aircraft` → `join_theatre_views` / `join_aircraft_views` → `TheatreAvailabilityView` / `AircraftAvailabilityView` |
+| Agent lookups | `tools.surface.get_aircraft_details`, `list_mission_options`, `find_airfield` (known catalog; not discovered-only) |
+| Missing known pack | `aircraft_modules.missing_aircraft_module_messages` (validate soft-warn) |
+| Chat host summary | `agent.session.PlanSession._catalog` → `list_mission_options` (offerable theatres + known aircraft ids) |
 
 | Flag | Meaning |
 |------|---------|
