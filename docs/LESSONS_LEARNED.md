@@ -7,6 +7,19 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## R1 Channel User Files: native dynamic > Mist (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** Audited community Channel Spitfire singles (`research/spitfire-user-missions.md`).
+  A full F10 + late-activate “dynamic BoB” works with **native triggers only**
+  (`BATTLE_OF_BRITAIN_MASTERV2.miz`). Another variant embeds Mist for zone unit
+  queries / scheduled RTB, but still uses **native `a_set_flag_random`** for raid
+  dice and large `a_activate_group` pools. Do **not** treat “dynamic” as a reason to
+  pin Mist; prefer Spec `radio`/`late_activation` (have) and optional `#22a`
+  `set_flag_random` before `#22` Lua. Ignore ME-exported Avionics/Config `.lua` zip
+  members (Dunkirk) — they are not mission scripts.
+- **Source:** R1 Priority Channel downloads under `research/samples/user-singles/`.
+
 ## Weather SoT parity (2026-08-05)
 
 - **Date:** 2026-08-05
