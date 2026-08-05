@@ -7,7 +7,15 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
-## Live eval: assertive creativity still weak (2026-08-05)
+## Soft-warn: known aircraft module missing from install (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** Theatre inventory does not prove Spitfire/Mosquito/109 packs are
+  installed. Spec type ids ≠ updater ids (`SPITFIRE-MKIX`); check folders under
+  `Mods/aircraft/` and `CoreMods/WWII Units/` (FW-190 Spec `A8`/`D9` → folders
+  `FW-190A-8` / `FW-190D-9`). Soft-warn only (`aircraft_module_missing`); never
+  auto-promote into YAML (`#8a.1` remains harvest/listing).
+- **Code:** `install/aircraft_modules.py`, `ValidationResult.warnings`.
 
 - **Date:** 2026-08-05
 - **Lesson:** First `eval-agent-creativity` live run showed catalog tools are *consulted*

@@ -193,13 +193,23 @@ def validate_mission_spec(
         }
         for e in result.errors
     ]
+    warnings = [
+        {
+            "code": w.code,
+            "path": w.path,
+            "message": w.message,
+            "hint": w.hint,
+        }
+        for w in result.warnings
+    ]
     if result.ok:
-        return ok_result(path=str(path), errors=errors)
+        return ok_result(path=str(path), errors=errors, warnings=warnings)
     return err_result(
         "Mission Spec validation failed",
         code="validation_failed",
         path=str(path),
         errors=errors,
+        warnings=warnings,
     )
 
 

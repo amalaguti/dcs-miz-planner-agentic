@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .allowlists import KNOWN_COUNTRIES, KNOWN_SKILLS, country_hint, skill_hint
+from .install.aircraft_modules import missing_aircraft_module_messages
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
 from .models import (
@@ -451,6 +452,7 @@ class ValidationResult:
     """Outcome of ``validate_mission_spec``."""
 
     errors: tuple[ValidationError, ...] = ()
+    warnings: tuple[ValidationError, ...] = ()
 
     @property
     def ok(self) -> bool:
@@ -1005,6 +1007,7 @@ def validate_mission_spec(
     elif spec.mission_type is MissionType.ESCORT:
         _validate_escort(spec, registry, errors)
 
+    inv: TheatreInventory | None = None
     if not registry.has_theatre(spec.theatre):
         errors.append(
             ValidationError(
@@ -1092,4 +1095,19 @@ def validate_mission_spec(
             )
         )
 
-    return ValidationResult(errors=tuple(errors))
+    warnings: list[ValidationError] = []
+    if inv is not None and inv.dcs_roots:
+        for path, aircraft_id, message in missing_aircraft_module_messages(spec, inv.dcs_roots):
+            warnings.append(
+                ValidationError(
+                    code="aircraft_module_missing",
+                    path=path,
+                    message=message,
+                    hint=(
+                        f"Install the '{aircraft_id}' module in DCS, or change the Spec "
+                        "aircraft. This warning does not fail validation."
+                    ),
+                )
+            )
+
+    return ValidationResult(errors=tuple(errors), warnings=tuple(warnings))

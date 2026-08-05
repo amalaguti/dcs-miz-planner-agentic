@@ -129,16 +129,33 @@ def _validate_cmd(args: argparse.Namespace) -> int:
                 }
                 for e in result.errors
             ],
+            "warnings": [
+                {
+                    "code": w.code,
+                    "path": w.path,
+                    "message": w.message,
+                    "hint": w.hint,
+                }
+                for w in result.warnings
+            ],
         }
         print(json.dumps(payload, indent=2))
     elif result.ok:
         print(f"Valid: {spec_path}")
+        for w in result.warnings:
+            loc = f"{w.path}: " if w.path else ""
+            hint = f" — {w.hint}" if w.hint else ""
+            print(f"  Warning [{w.code}] {loc}{w.message}{hint}", file=sys.stderr)
     else:
         print(f"Invalid: {spec_path}", file=sys.stderr)
         for err in result.errors:
             loc = f"{err.path}: " if err.path else ""
             hint = f" — {err.hint}" if err.hint else ""
             print(f"  [{err.code}] {loc}{err.message}{hint}", file=sys.stderr)
+        for w in result.warnings:
+            loc = f"{w.path}: " if w.path else ""
+            hint = f" — {w.hint}" if w.hint else ""
+            print(f"  Warning [{w.code}] {loc}{w.message}{hint}", file=sys.stderr)
     return 0 if result.ok else 2
 
 
