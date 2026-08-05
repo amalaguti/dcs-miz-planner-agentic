@@ -11,6 +11,7 @@ from .campaigns import (
     scan_campaigns_root,
 )
 from .models import (
+    AircraftModuleRecord,
     AvailabilityState,
     Diagnostic,
     TheatreInventory,
@@ -19,6 +20,7 @@ from .models import (
 from .service import InventoryService, default_db_path, get_inventory, refresh_inventory
 
 __all__ = [
+    "AircraftModuleRecord",
     "AvailabilityState",
     "CampaignDocRef",
     "CampaignIndex",

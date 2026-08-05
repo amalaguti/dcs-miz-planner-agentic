@@ -64,7 +64,7 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 8 | `agent-tools-surface` | Tools: `find_airfield`, `get_aircraft_details`, `list_mission_options`, `validate_mission_spec`, `compile_mission` (query catalog SQLite where appropriate; validate/compile stay registry-backed) | `done` (API/CLI accepted 2026-08-01) |
 | 9 | `mission-option-catalog` | Enumerate planning knobs the agent can ask about / suggest (start type, weather, time, opposition density, ROE seeds, payload families); load into SQLite catalog for list/ask | `done` (catalog/tool accepted 2026-08-01; Normandy not required) |
 | 8a | `agent-catalog-sqlite` | Sync YAML registry + mission types/options into queryable SQLite tables for agent/UI; keep install inventory schema distinct (`catalog_*` vs install tables); theatre discovery join; aircraft module harvest deferred | `done` (CLI accepted 2026-07-26) |
-| 8a.1 | `catalog-discover-modules` | Optional: harvest installed aircraft modules for discovery-only listing (never auto-promote into known YAML) | `idea` |
+| 8a.1 | `catalog-discover-modules` | Optional: harvest installed aircraft modules for discovery-only listing (never auto-promote into known YAML) | `done` (2026-08-05; cache on theatres --refresh) |
 | 8b | `user-prefs-and-history` | Store user preferences, mission-generation history (Spec path, outcome), and post-flight / post-gen satisfaction surveys; agent tools to read prefs and record feedback | `done` (CLI/API accepted 2026-08-01) |
 | 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling (uses catalog + prefs/history tools) | `done` (stub Spec accepted 2026-08-01; live needs OPENAI_API_KEY) |
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
@@ -176,7 +176,7 @@ assertive creativity invariant; host `/accept` ≠ tool capability boundary.
 
 **Suggested challenge order (not mandatory):** `#31` → `#32` → `#30c` → `#33` → `#34` → `#35`/`#36` → rest.
 
-**Also cross-linked (already elsewhere):** `#10b` verbose default off (done); **R8** exact PyDCS pin / bump ritual (D5); `#8a.1` module harvest; memory schema migrate-vs-wipe (D7 — fold into next memory change if it bites).
+**Also cross-linked (already elsewhere):** `#10b` verbose default off (done); **R8** exact PyDCS pin / bump ritual (D5); `#8a.1` module harvest (done); memory schema migrate-vs-wipe (D7 — fold into next memory change if it bites).
 
 **Intentional / do not “fix” as bugs:** Channel-only MVP; no LLM Lua; campaign `.miz` not imported; stub planner + offline research for hermetic tests — label honestly via `#31`.
 

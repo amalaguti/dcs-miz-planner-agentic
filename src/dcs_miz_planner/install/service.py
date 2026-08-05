@@ -33,6 +33,10 @@ class InventoryService:
             return cached
         return self.refresh()
 
+    def has_cache(self) -> bool:
+        """True when SQLite already holds a scan (no auto-refresh)."""
+        return self._store.has_inventory()
+
     def refresh(self) -> TheatreInventory:
         """Rescan disk and replace the SQLite inventory."""
         inventory = probe_installations(
@@ -51,6 +55,7 @@ class InventoryService:
             dcs_roots=loaded.dcs_roots,
             saved_games_roots=loaded.saved_games_roots,
             theatres=loaded.theatres,
+            aircraft_modules=loaded.aircraft_modules,
             diagnostics=loaded.diagnostics,
             from_cache=False,
         )

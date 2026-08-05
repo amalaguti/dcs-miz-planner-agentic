@@ -1,22 +1,21 @@
-"""Public catalog API: sync known rows; join theatres with install inventory."""
+"""Public catalog API: sync known rows; join theatres/aircraft with install inventory."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from ..install.models import AvailabilityState, TheatreInventory, TheatreRecord
+from ..install.models import (
+    AircraftModuleRecord,
+    AvailabilityState,
+    TheatreInventory,
+    TheatreRecord,
+)
 from ..install.service import InventoryService
 from ..install.store import default_db_path
 from ..registry import ChannelRegistry
-from .models import CatalogSnapshot, TheatreAvailabilityView
+from .models import AircraftAvailabilityView, CatalogSnapshot, TheatreAvailabilityView
 from .store import CatalogStore
 from .sync import build_snapshot_from_registry
-
-# Aircraft module harvest from install is deferred (see backlog catalog-discover-modules).
-AIRCRAFT_DISCOVERY_DEFERRED = (
-    "Aircraft module discovery from the DCS install is not implemented; "
-    "known aircraft come only from packaged Channel YAML via catalog sync."
-)
 
 LIST_TYPES = (
     "theatres",
@@ -42,6 +41,19 @@ def _prefer_theatre(a: TheatreRecord, b: TheatreRecord) -> TheatreRecord:
         available = 1 if t.state is AvailabilityState.AVAILABLE else 0
         supported = 1 if t.planner_supported else 0
         return (available, supported)
+
+    return a if score(a) >= score(b) else b
+
+
+def _prefer_aircraft_module(
+    a: AircraftModuleRecord, b: AircraftModuleRecord
+) -> AircraftModuleRecord:
+    """Prefer planner-supported / Mods/aircraft when the same folder appears twice."""
+
+    def score(m: AircraftModuleRecord) -> tuple[int, int]:
+        supported = 1 if m.planner_supported else 0
+        preferred_source = 1 if m.source == "Mods/aircraft" else 0
+        return (supported, preferred_source)
 
     return a if score(a) >= score(b) else b
 
@@ -84,8 +96,67 @@ def join_theatre_views(
     return views
 
 
+def join_aircraft_views(
+    known_ids: frozenset[str] | set[str],
+    inventory: TheatreInventory | None,
+) -> list[AircraftAvailabilityView]:
+    """Merge known catalog aircraft with install module discovery."""
+    by_known_id: dict[str, AircraftModuleRecord] = {}
+    discovered_only: dict[tuple[str, str], AircraftModuleRecord] = {}
+
+    if inventory is not None:
+        for rec in inventory.aircraft_modules:
+            if rec.known_aircraft_ids:
+                for aid in rec.known_aircraft_ids:
+                    existing = by_known_id.get(aid)
+                    by_known_id[aid] = (
+                        rec if existing is None else _prefer_aircraft_module(existing, rec)
+                    )
+            else:
+                key = (rec.folder_name, rec.source)
+                existing = discovered_only.get(key)
+                discovered_only[key] = (
+                    rec if existing is None else _prefer_aircraft_module(existing, rec)
+                )
+
+    views: list[AircraftAvailabilityView] = []
+    for aircraft_id in sorted(set(known_ids) | set(by_known_id)):
+        known = aircraft_id in known_ids
+        rec = by_known_id.get(aircraft_id)
+        installed = rec is not None
+        planner = known
+        offerable = known and installed
+        views.append(
+            AircraftAvailabilityView(
+                aircraft_id=aircraft_id,
+                known=known,
+                installed=installed,
+                planner_supported=planner,
+                offerable=offerable,
+                source=rec.source if rec is not None else None,
+                dcs_root=rec.dcs_root if rec is not None else None,
+                folder_name=rec.folder_name if rec is not None else None,
+            )
+        )
+
+    for rec in sorted(discovered_only.values(), key=lambda m: (m.folder_name, m.source)):
+        views.append(
+            AircraftAvailabilityView(
+                aircraft_id=rec.folder_name,
+                known=False,
+                installed=True,
+                planner_supported=False,
+                offerable=False,
+                source=rec.source,
+                dcs_root=rec.dcs_root,
+                folder_name=rec.folder_name,
+            )
+        )
+    return views
+
+
 class CatalogService:
-    """SQLite-backed known catalog with optional install join for theatres."""
+    """SQLite-backed known catalog with optional install join for theatres/aircraft."""
 
     def __init__(
         self,
@@ -123,10 +194,25 @@ class CatalogService:
         snap = self.ensure_synced()
         known = frozenset(t.theatre_id for t in snap.theatres)
         if inventory is None and include_discovered:
-            inventory = InventoryService(db_path=self.db_path, env=self.env).get()
-        elif inventory is None:
-            inventory = None
+            inv_svc = InventoryService(db_path=self.db_path, env=self.env)
+            inventory = inv_svc.get() if inv_svc.has_cache() else None
         views = join_theatre_views(known, inventory if include_discovered else None)
+        if not include_discovered:
+            return [v for v in views if v.known]
+        return views
+
+    def list_aircraft(
+        self,
+        *,
+        inventory: TheatreInventory | None = None,
+        include_discovered: bool = True,
+    ) -> list[AircraftAvailabilityView]:
+        snap = self.ensure_synced()
+        known = frozenset(a.aircraft_id for a in snap.aircraft)
+        if inventory is None and include_discovered:
+            inv_svc = InventoryService(db_path=self.db_path, env=self.env)
+            inventory = inv_svc.get() if inv_svc.has_cache() else None
+        views = join_aircraft_views(known, inventory if include_discovered else None)
         if not include_discovered:
             return [v for v in views if v.known]
         return views

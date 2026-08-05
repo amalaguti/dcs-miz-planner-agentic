@@ -41,8 +41,19 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   installed. Spec type ids ≠ updater ids (`SPITFIRE-MKIX`); check folders under
   `Mods/aircraft/` and `CoreMods/WWII Units/` (FW-190 Spec `A8`/`D9` → folders
   `FW-190A-8` / `FW-190D-9`). Soft-warn only (`aircraft_module_missing`); never
-  auto-promote into YAML (`#8a.1` remains harvest/listing).
+  auto-promote into YAML.
 - **Code:** `install/aircraft_modules.py`, `ValidationResult.warnings`.
+
+## Aircraft module discovery cache (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** Harvest folders on `theatres --refresh` into `aircraft_modules` SQLite
+  (schema v2) alongside theatres — installs rarely change. Scan
+  `Mods/aircraft` + `CoreMods/aircraft` (require `entry.lua`) and
+  `CoreMods/WWII Units` (skip shared dirs like `Weapons`/`l10n`). Catalog
+  `list --type aircraft` joins known vs discovered-only; never promote into YAML.
+  Catalog list does **not** auto-rescan — refresh theatres first.
+- **Code:** `harvest_aircraft_modules`, `InventoryStore`, `join_aircraft_views`.
 
 - **Date:** 2026-08-05
 - **Lesson:** First `eval-agent-creativity` live run showed catalog tools are *consulted*

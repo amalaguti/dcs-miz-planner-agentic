@@ -37,13 +37,27 @@ class TheatreRecord:
 
 
 @dataclass(frozen=True)
+class AircraftModuleRecord:
+    """One aircraft (or aircraft-like) module folder observed under a DCS root."""
+
+    folder_name: str
+    dcs_root: str
+    source: str
+    folder_path: str
+    known_aircraft_ids: tuple[str, ...] = ()
+    planner_supported: bool = False
+    evidence: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class TheatreInventory:
-    """Cached or freshly scanned local theatre inventory."""
+    """Cached or freshly scanned local theatre (+ aircraft module) inventory."""
 
     scanned_at: datetime
     dcs_roots: tuple[str, ...]
     saved_games_roots: tuple[str, ...]
     theatres: tuple[TheatreRecord, ...]
+    aircraft_modules: tuple[AircraftModuleRecord, ...] = ()
     diagnostics: tuple[Diagnostic, ...] = ()
     from_cache: bool = False
 

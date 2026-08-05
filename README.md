@@ -13,7 +13,8 @@ Manston cold free flight was the first accepted-in-game slice. Channel DCS facts
 (airfields, aircraft, radio, weather presets) live in packaged YAML under
 `src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
-refresh with `dcs-miz theatres --refresh`. Known agent catalog (`catalog_*` tables in the
+refresh with `dcs-miz theatres --refresh` (caches theatres **and** aircraft module
+folders). Known agent catalog (`catalog_*` tables in the
 same DB) syncs from Channel YAML + Spec enums via `dcs-miz catalog sync`. Shared validation
 (`dcs-miz validate` / compile) checks registry + local theatre inventory.
 Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
@@ -61,9 +62,8 @@ inspiration, not imported as Spec; stub LLM + offline research fixtures keep tes
 hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** `#8a.1` module harvest listing, **R8** deps upgrade review, or `#22` only if
-native triggers prove insufficient. See [`docs/BACKLOG.md`](docs/BACKLOG.md). Adversarial
-track notes: [`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
+**Next:** **R8** deps upgrade review when bumping PyDCS; `#22` only if native triggers
+prove insufficient; R1/R2 deep `.miz` audits. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Stack
 
@@ -168,7 +168,8 @@ Product theatre ids stay in YAML; the SQLite file is only a user-local install i
 uv run dcs-miz catalog sync              # replace catalog_* from packaged YAML + Spec enums
 uv run dcs-miz catalog list              # theatres: known vs installed vs offerable
 uv run dcs-miz catalog list --known-only
-uv run dcs-miz catalog list --type aircraft --json
+uv run dcs-miz catalog list --type aircraft --json   # known + discovered folders (after --refresh)
+uv run dcs-miz catalog list --type aircraft --known-only
 uv run dcs-miz catalog list --type planning_options --json
 uv run dcs-miz catalog list --type planning_options --family weather --support supported
 uv run dcs-miz catalog list --type planning_options --family mission_behaviour --support supported

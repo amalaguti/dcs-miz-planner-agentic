@@ -65,6 +65,20 @@ class TheatreAvailabilityView:
 
 
 @dataclass(frozen=True)
+class AircraftAvailabilityView:
+    """Known catalog aircraft joined with local install module discovery."""
+
+    aircraft_id: str
+    known: bool
+    installed: bool
+    planner_supported: bool
+    offerable: bool
+    source: str | None = None
+    dcs_root: str | None = None
+    folder_name: str | None = None
+
+
+@dataclass(frozen=True)
 class CatalogSnapshot:
     """In-memory known catalog after sync or load."""
 

@@ -17,7 +17,7 @@ from .agent import (
     stub_chat_clarify_then_spec,
 )
 from .agent.verbose import DEFAULT_VERBOSE
-from .catalog import AIRCRAFT_DISCOVERY_DEFERRED, LIST_TYPES, CatalogService
+from .catalog import LIST_TYPES, CatalogService
 from .compiler import PyDCSCompiler
 from .install import InventoryService, default_db_path
 from .loader import SpecLoadError, load_mission_spec
@@ -281,9 +281,39 @@ def _catalog_list_cmd(args: argparse.Namespace) -> int:
         return 0
 
     if resource_type == "aircraft":
-        note = AIRCRAFT_DISCOVERY_DEFERRED
-    else:
-        note = None
+        views = service.list_aircraft(include_discovered=not args.known_only)
+        if args.json:
+            payload = {
+                "db_path": str(service.db_path),
+                "type": "aircraft",
+                "rows": [
+                    {
+                        "aircraft_id": v.aircraft_id,
+                        "known": v.known,
+                        "installed": v.installed,
+                        "planner_supported": v.planner_supported,
+                        "offerable": v.offerable,
+                        "source": v.source,
+                        "folder_name": v.folder_name,
+                        "dcs_root": v.dcs_root,
+                    }
+                    for v in views
+                ],
+            }
+            print(json.dumps(payload, indent=2))
+            return 0
+        print(f"Catalog aircraft db={service.db_path}")
+        print(f"{'aircraft_id':<22} {'known':<6} {'installed':<10} {'offerable':<10} source")
+        print("-" * 80)
+        for v in views:
+            source = v.source or "-"
+            print(
+                f"{v.aircraft_id:<22} {v.known!s:<6} {v.installed!s:<10} "
+                f"{v.offerable!s:<10} {source}"
+            )
+        return 0
+
+    note = None
 
     family = getattr(args, "family", None)
     support = getattr(args, "support", None)
@@ -564,7 +594,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     catalog_p = sub.add_parser(
         "catalog",
-        help="Sync/list known agent catalog (YAML + Spec enums; joins install for theatres)",
+        help="Sync/list known agent catalog (YAML + Spec enums; joins install for theatres/aircraft)",
     )
     catalog_p.set_defaults(func=_catalog_root_cmd)
     catalog_sub = catalog_p.add_subparsers(dest="catalog_command")
@@ -581,7 +611,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     list_p = catalog_sub.add_parser(
         "list",
-        help="List catalog rows (theatres include install discovery unless --known-only)",
+        help="List catalog rows (theatres/aircraft include install discovery unless --known-only)",
     )
     list_p.add_argument(
         "--type",
@@ -592,7 +622,7 @@ def _build_parser() -> argparse.ArgumentParser:
     list_p.add_argument(
         "--known-only",
         action="store_true",
-        help="For theatres: omit discovered-only install theatres",
+        help="For theatres/aircraft: omit discovered-only install rows",
     )
     list_p.add_argument(
         "--family",

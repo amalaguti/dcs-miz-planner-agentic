@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from ..registry import get_channel_registry
+from .aircraft_modules import harvest_aircraft_modules
 from .discover import discover_dcs_roots, discover_saved_games_roots
 from .models import AvailabilityState, Diagnostic, TheatreInventory, TheatreRecord
 from .parse import parse_autoupdate_modules, parse_plugins_enabled, parse_terrain_entry
@@ -147,11 +148,14 @@ def probe_installations(
                 )
             )
 
+    aircraft_modules = harvest_aircraft_modules(dcs_roots)
+
     return TheatreInventory(
         scanned_at=datetime.now(UTC),
         dcs_roots=tuple(str(p) for p in dcs_roots),
         saved_games_roots=tuple(str(p) for p in sg_roots),
         theatres=tuple(theatres),
+        aircraft_modules=tuple(aircraft_modules),
         diagnostics=tuple(diagnostics),
         from_cache=False,
     )
