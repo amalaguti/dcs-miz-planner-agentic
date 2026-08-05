@@ -7,6 +7,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## R2 ED Spitfire campaigns: immersion without triggers (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** All 60 `.miz` in installed Spitfire campaigns (Beware, Fight or Die, Epsom,
+  Big Show) audit as trigger-class **`none`**: no Mist, no `a_do_script`, empty/no ME
+  trigger actions. Many groups still set `lateActivation` without radio/activate graphs.
+  Campaigns teach **briefing / Doc / kneeboard / AI package** design, not Spec trigger
+  recipes. Keep learning triggers from Channel IA + User Files singles; keep Spec
+  late-act ↔ `activate_group` validation for *authored* missions.
+- **Source:** `research/spitfire-campaigns.md`; harness `research/audit_campaigns_r2.py`.
+
 ## R1 Channel User Files: native dynamic > Mist (2026-08-05)
 
 - **Date:** 2026-08-05
