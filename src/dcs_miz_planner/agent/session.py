@@ -56,7 +56,7 @@ Slash commands:
   /briefing          Commander brief for the current draft Spec
   /research [query]  Live web research when possible (falls back to fixtures)
   /catalog           Show local agent catalog summary
-  /verbose [on|off]  Toggle debug / tool-call tracing (default: on)
+  /verbose [on|off]  Toggle debug / tool-call tracing (default: off)
   /voice <id>        Set voice for this session (raf|usaaf|neutral)
   /prefs             Show stored user preferences
   /clear             Clear chat history and draft (keep voice/prefs)

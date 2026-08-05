@@ -16,6 +16,7 @@ from .agent import (
     run_chat_repl,
     stub_chat_clarify_then_spec,
 )
+from .agent.verbose import DEFAULT_VERBOSE
 from .catalog import AIRCRAFT_DISCOVERY_DEFERRED, LIST_TYPES, CatalogService
 from .compiler import PyDCSCompiler
 from .install import InventoryService, default_db_path
@@ -650,8 +651,8 @@ def _build_parser() -> argparse.ArgumentParser:
     plan_p.add_argument(
         "--verbose",
         action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Trace LLM rounds and tool calls on stderr (default: on; --no-verbose to quiet)",
+        default=DEFAULT_VERBOSE,
+        help="Trace LLM rounds and tool calls on stderr (default: off; --verbose to enable)",
     )
     plan_p.set_defaults(func=_plan_cmd)
 
@@ -692,8 +693,8 @@ def _build_parser() -> argparse.ArgumentParser:
     chat_p.add_argument(
         "--verbose",
         action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Trace LLM rounds and tool calls on stderr (default: on; --no-verbose to quiet)",
+        default=DEFAULT_VERBOSE,
+        help="Trace LLM rounds and tool calls on stderr (default: off; --verbose to enable)",
     )
     chat_p.set_defaults(func=_chat_cmd)
 

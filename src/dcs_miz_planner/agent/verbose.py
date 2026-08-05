@@ -1,4 +1,4 @@
-"""Agent debug / verbose logging (stderr). Default ON until product polish."""
+"""Agent debug / verbose logging (stderr). Default off; opt in with --verbose / /verbose on."""
 
 from __future__ import annotations
 
@@ -6,9 +6,8 @@ import json
 import sys
 from typing import Any
 
-# Default ON while the product is still under active development.
-# Backlog: flip default to False before a "finalized" release.
-DEFAULT_VERBOSE = True
+# Quiet by default (adversarial C3 / backlog #10b). Opt in via CLI or /verbose on.
+DEFAULT_VERBOSE = False
 
 
 def vlog(verbose: bool, message: str) -> None:

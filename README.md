@@ -61,10 +61,9 @@ inspiration, not imported as Spec; stub LLM + offline research fixtures keep tes
 hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** Adversarial track `#31`–`#42` is done; notes in
-[`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
-Then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path
-beyond live snippets / local listing. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
+**Next:** `#8a.1` module harvest listing, **R8** deps upgrade review, or `#22` only if
+native triggers prove insufficient. See [`docs/BACKLOG.md`](docs/BACKLOG.md). Adversarial
+track notes: [`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
 
 ## Stack
 
@@ -244,8 +243,8 @@ Slash commands: `/help`, `/quit`, `/show`, `/accept`, `/compile`, `/briefing`,
 is written only on `/accept` (not when the model merely prints JSON). `/research` prefers
 live web (Instant Answer, then DuckDuckGo HTML results); on empty/error it prints a clear
 warning and labels offline fixture fallback (sources still shown on each note).
-**Verbose is on by default** (LLM rounds + tool calls on stderr); use `--no-verbose` or
-`/verbose off` to quiet.
+**Verbose is off by default**; use `--verbose` or `/verbose on` for LLM rounds + tool
+calls on stderr.
 
 The planner speaks as a squadron commander (default **raf**; override with `--voice` or
 pref `squadron_voice`). On success it prints a short commander brief: situation, tactics,

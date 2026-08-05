@@ -114,6 +114,16 @@ def test_help_lists_new_commands(tmp_path: Path) -> None:
     assert "/catalog" in r.output
 
 
+def test_verbose_defaults_off(tmp_path: Path) -> None:
+    from dcs_miz_planner.agent.verbose import DEFAULT_VERBOSE
+
+    assert DEFAULT_VERBOSE is False
+    session = PlanSession(llm=StubLLM(), output_path=tmp_path / "x.yaml")
+    banner = session.start()
+    assert "verbose=off" in banner
+    assert session.verbose is False
+
+
 def test_verbose_slash_toggle(tmp_path: Path) -> None:
     session = PlanSession(llm=StubLLM(), output_path=tmp_path / "x.yaml", verbose=True)
     banner = session.start()

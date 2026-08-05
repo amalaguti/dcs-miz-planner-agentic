@@ -68,7 +68,7 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 8b | `user-prefs-and-history` | Store user preferences, mission-generation history (Spec path, outcome), and post-flight / post-gen satisfaction surveys; agent tools to read prefs and record feedback | `done` (CLI/API accepted 2026-08-01) |
 | 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling (uses catalog + prefs/history tools) | `done` (stub Spec accepted 2026-08-01; live needs OPENAI_API_KEY) |
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
-| 10b | `agent-verbose-default-off` | After product polish: default agent `verbose` **off** (quiet CLI); keep `--verbose` / `/verbose on` for debugging | `idea` (final polish) |
+| 10b | `agent-verbose-default-off` | After product polish: default agent `verbose` **off** (quiet CLI); keep `--verbose` / `/verbose on` for debugging | `done` (2026-08-05) |
 | 10c | `agent-spec-schema-tool` | Derived Mission Spec shape for the agent (tool + prompt fragment); stop hand-maintaining JSON skeletons as mission types grow | `done` (CLI/API accepted 2026-08-01) |
 | 10d | `fix-chat-research-live` | Make `/research` (and `research_guidance`) actually return useful live web notes; today live often yields nothing and silently falls back to fixtures | `done` (pytest/API 2026-08-02; Instant Answer + HTML cascade; clear soft-fail label) |
 | 11 | `squadron-commander-voice` | Agent persona: USAAF or RAF squadron commander tone for questions, guidance, and briefings (configurable; may follow prefs); tactics/procedures/watch-outs brief + optional research | `done` (CLI/API accepted 2026-08-01) |
@@ -176,7 +176,7 @@ assertive creativity invariant; host `/accept` ≠ tool capability boundary.
 
 **Suggested challenge order (not mandatory):** `#31` → `#32` → `#30c` → `#33` → `#34` → `#35`/`#36` → rest.
 
-**Also cross-linked (already elsewhere):** `#10b` verbose default off (C3); **R8** exact PyDCS pin / bump ritual (D5); `#8a.1` module harvest; memory schema migrate-vs-wipe (D7 — fold into next memory change if it bites).
+**Also cross-linked (already elsewhere):** `#10b` verbose default off (done); **R8** exact PyDCS pin / bump ritual (D5); `#8a.1` module harvest; memory schema migrate-vs-wipe (D7 — fold into next memory change if it bites).
 
 **Intentional / do not “fix” as bugs:** Channel-only MVP; no LLM Lua; campaign `.miz` not imported; stub planner + offline research for hermetic tests — label honestly via `#31`.
 
@@ -212,10 +212,9 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 - **Spitfire Channel radio A–E bank** — M5 `#19` `spitfire-radio-channel-presets`:
   parked 2026-08-02; group frequency 124 already flyable; unit Radio bank is cockpit
   immersion only (ED Channel A=124/B=40/C=41/D=42/E=108.9).
-- **Agent verbose default off** — M3 `#10b` `agent-verbose-default-off`: today `verbose`
-  defaults **on** (tool traces on stderr) for development; flip default to off before a
-  finalized release, keep `--verbose` / `/verbose on`. Reinforced by adversarial review **C3**
-  (screenshot/log leakage) — see Adversarial review track.
+- **Agent verbose default off** — M3 `#10b` `agent-verbose-default-off`: **done**
+  2026-08-05; default quiet, `--verbose` / `/verbose on` for traces. Reinforced by
+  adversarial review **C3** (screenshot/log leakage).
 - **Chat research live fetch** — M3 `#10d` `fix-chat-research-live`: **done** (Instant
   Answer + HTML cascade; clear soft-fail label). Revisit only if DDG HTML is blocked.
 - **Lua enrichment** — scheduled as **M6**; still never LLM-authored mission Lua.
