@@ -23,6 +23,15 @@ _EXAMPLE_FILES: dict[str, str] = {
     MissionType.ESCORT.value: "manston_escort.yaml",
 }
 
+# Preferred examples for get_mission_spec_schema / invent (immersion-first).
+_AGENT_EXAMPLE_FILES: dict[str, str] = {
+    MissionType.FREE_FLIGHT.value: "manston_freeflight_altitude_speed_gates.yaml",
+    MissionType.INTERCEPT.value: "manston_dawn_intercept_radio.yaml",
+    MissionType.CAP.value: "manston_cap_narrative.yaml",
+    MissionType.GROUND_ATTACK.value: "manston_ground_attack_markers.yaml",
+    MissionType.ESCORT.value: "manston_escort_narrative.yaml",
+}
+
 ANTI_PATTERNS: tuple[str, ...] = (
     'top-level "airfield" / "aircraft" (use nested player.aircraft / player.airfield)',
     '"date" as an ISO string like "1944-06-06" (use {"year","month","day"})',
@@ -169,14 +178,18 @@ def supported_mission_types() -> tuple[str, ...]:
 
 
 def build_spec_schema(mission_type: str) -> SpecSchemaView:
-    """Load and validate the packaged example for ``mission_type``."""
+    """Load and validate the packaged example for ``mission_type`` (immersion-first)."""
     key = (mission_type or "").strip()
-    filename = _EXAMPLE_FILES.get(key)
-    if filename is None:
+    if key not in _EXAMPLE_FILES:
         allowed = ", ".join(supported_mission_types())
         raise ValueError(f"Unsupported mission_type {mission_type!r}; expected one of: {allowed}")
+    filename = _AGENT_EXAMPLE_FILES.get(key) or _EXAMPLE_FILES[key]
 
     path = examples_dir() / filename
+    if not path.is_file():
+        # Fall back to bare compile example if immersion file missing.
+        filename = _EXAMPLE_FILES[key]
+        path = examples_dir() / filename
     if not path.is_file():
         raise FileNotFoundError(f"Missing Spec example for {key}: {path}")
 

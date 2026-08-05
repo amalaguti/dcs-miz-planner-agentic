@@ -24,6 +24,7 @@ from ..memory import (
 )
 from ..models import MissionSpec
 from ..validation import validate_mission_spec
+from .immersion import host_immersion_repair_nudge
 from .llm import LLMClient, default_tools
 from .prompts import compose_system_prompt, host_spec_repair_nudge
 from .realism import channel_date_realism_warnings
@@ -168,6 +169,7 @@ def plan_mission(
     ]
     tools = default_tools()
     repair_used = False
+    immersion_repair_used = False
     last_parse_error: str | None = None
     outer_rounds = max(1, max_turns)
     vlog(verbose, f"[verbose] plan_mission start voice={resolved_voice}")
@@ -207,6 +209,12 @@ def plan_mission(
 
         vresult = validate_mission_spec(spec, inventory=inventory)
         if vresult.ok:
+            if not immersion_repair_used:
+                nudge = host_immersion_repair_nudge(prompt, spec)
+                if nudge:
+                    immersion_repair_used = True
+                    messages.append({"role": "user", "content": nudge})
+                    continue
             write_spec_yaml(spec, out)
             compiled: Path | None = None
             if compile_output:

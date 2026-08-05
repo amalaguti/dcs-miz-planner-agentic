@@ -25,6 +25,7 @@ from ..models import MissionSpec
 from ..tools.research import format_research_host_message, format_research_lines
 from ..tools.surface import list_mission_options, research_guidance
 from ..validation import validate_mission_spec
+from .immersion import host_immersion_repair_nudge
 from .llm import LLMClient, default_tools
 from .planner import (
     diagnose_mission_spec_parse,
@@ -147,6 +148,17 @@ class PlanSession:
         content = (resp.content or "").strip() or "(no reply)"
         parsed, parse_err = diagnose_mission_spec_parse(resp.content)
         if parsed is not None:
+            nudge = host_immersion_repair_nudge(user_text, parsed)
+            if nudge and not getattr(self, "_immersion_nudge_used", False):
+                self._immersion_nudge_used = True
+                self.messages.append({"role": "user", "content": nudge})
+                return SlashResult(
+                    output=(
+                        content + "\n\n[Host] Draft looked bare for immersion cues — "
+                        "commander nudged to apply a packaged behaviour. "
+                        "Await a revised Spec JSON, then /accept."
+                    )
+                )
             self.proposed_spec = parsed
             self.draft_spec = parsed
             self.last_spec_error = None

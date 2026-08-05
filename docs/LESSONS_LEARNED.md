@@ -34,6 +34,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   before adding a second theatre.
 - **Code:** `theatre_terrain.py`, `pydcs_compiler.py`, `channel_domain.py`.
 
+## Soft immersion floor for vague invent (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** After `#30c`, live eval still under-emitted on “interesting” FF / marked
+  GA / Big Show. Host `host_immersion_repair_nudge` once when prompt cues immersion
+  but Spec is bare; `get_mission_spec_schema` prefers immersion examples (gates,
+  markers, radio, narrative); invent tools omit `randomize_mission` (CLI randomize
+  remains). Soft floor — bare Spec may still accept after one nudge.
+- **Code:** `agent/immersion.py`, `planner.py`, `session.py`, `spec_schema.py`,
+  `tool_bridge.py`.
+
 ## Soft-warn: known aircraft module missing from install (2026-08-05)
 
 - **Date:** 2026-08-05

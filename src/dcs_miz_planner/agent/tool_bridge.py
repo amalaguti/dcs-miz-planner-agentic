@@ -334,10 +334,16 @@ MUTATING_TOOL_NAMES: frozenset[str] = frozenset(
     }
 )
 
+# Host/CLI only during invent — burns turns on fake paths for vague asks.
+INVENT_EXCLUDED_TOOL_NAMES: frozenset[str] = frozenset({"randomize_mission"})
+
 # Full catalog (planning + mutating) for admin/tests; default agent surface is planning-only.
 ALL_TOOL_DEFINITIONS: list[dict[str, Any]] = list(TOOL_DEFINITIONS)
 TOOL_DEFINITIONS = [
-    t for t in ALL_TOOL_DEFINITIONS if t["function"]["name"] not in MUTATING_TOOL_NAMES
+    t
+    for t in ALL_TOOL_DEFINITIONS
+    if t["function"]["name"] not in MUTATING_TOOL_NAMES
+    and t["function"]["name"] not in INVENT_EXCLUDED_TOOL_NAMES
 ]
 MUTATING_TOOL_DEFINITIONS: list[dict[str, Any]] = [
     t for t in ALL_TOOL_DEFINITIONS if t["function"]["name"] in MUTATING_TOOL_NAMES

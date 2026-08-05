@@ -182,8 +182,8 @@ def test_spec_shape_reminder_allows_triggers() -> None:
     assert "non-empty OK" in SPEC_SHAPE_REMINDER or "Immersion" in SPEC_SHAPE_REMINDER
     prompt = compose_system_prompt("raf")
     assert "must be []" not in prompt
-    assert "randomize_mission" in prompt
-    assert "vague first ask" in prompt or "Do NOT use randomize_mission" in prompt
+    assert "not an invent-time tool" in prompt or "randomize_mission" not in prompt
+    assert "vague free_flight" in prompt or "altitude_speed_gates" in prompt
 
 
 def test_prompts_mention_history_bias() -> None:

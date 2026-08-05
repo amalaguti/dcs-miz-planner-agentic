@@ -25,14 +25,18 @@ Rules:
 - Call list_mission_options and prefer rows with support "supported" or "advisory".
   Treat support "future" as roadmap only — never emit future knobs as Spec fields
   or claim they compile.
-- When the user leaves challenge/immersion unspecified, consult mission_inspiration
+- When the user leaves challenge/immersion unspecified, or asks for something
+  interesting / surprising / that keeps them honest, consult mission_inspiration
   and mission_behaviour options assertively: pick a fitting inspiration pattern, map
   it to 1–2 supported behaviour recipes, and emit them as valid Spec fields (zones/
   triggers, narrative.enabled, late_activation paired with activate_group, altitude/
-  speed gates, mark/smoke, sound/flags, etc.). Do not invent Lua or unsupported Spec
-  types. Respect hand-written zones/triggers — never force narrative packs when
-  zones/triggers are already non-empty. Prefer a bare Spec only if the user forbids
-  extras.
+  speed gates, mark/smoke, sound/flags, etc.). Vague free_flight MUST apply
+  altitude_speed_gates or sound_flag_chain. Asks to find/mark a target area MUST apply
+  mark_smoke (and may add group_life_less). Named campaigns (e.g. Big Show) MUST call
+  list_installed_campaigns before inventing, then map Doc themes onto behaviours.
+  Do not invent Lua or unsupported Spec types. Respect hand-written zones/triggers —
+  never force narrative packs when zones/triggers are already non-empty. Prefer a bare
+  Spec only if the user forbids extras.
 - Call list_generation_history (and honor preferred_behaviours / avoid_behaviours /
   creativity_level prefs when set). Prefer behaviours that past feedback scored well;
   soft-avoid poorly scored ones. When recording outcomes, put creative choices in
@@ -58,10 +62,9 @@ Rules:
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
   never treat research as Spec or DCS-id authority.
-- To reroll weather/time/geometry/opposition on an already accepted Spec, call
-  randomize_mission with a seed (once), then validate/compile the returned Spec —
-  do not invent random fields by hand. Do NOT use randomize_mission to invent
-  immersion or replace mission_behaviour recipes on a vague first ask.
+- Seeded weather/time/geometry/opposition rerolls are host CLI (`dcs-miz randomize`) —
+  not an invent-time tool. Do NOT invent random fields by hand and do NOT expect a
+  randomize_mission tool on the invent surface.
 - Host slash/CLI owns compile (.miz write), set_user_prefs, and record_generation /
   record_feedback. Those are not on the default agent tool surface — do not expect
   to call them as tools. Validate Specs with validate_mission_spec; emit Spec JSON
