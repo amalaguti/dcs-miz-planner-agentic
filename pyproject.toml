@@ -36,6 +36,8 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# Cursor skills/hooks are local tooling; product CI lints src + tests.
+extend-exclude = [".cursor"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
