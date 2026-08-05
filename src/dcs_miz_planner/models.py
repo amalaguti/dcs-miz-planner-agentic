@@ -328,6 +328,34 @@ class DeactivateGroupAction(SpecModel):
         return self
 
 
+class SmokeColor(str, Enum):
+    """ME Smoke Marker colors (ExplodeWPMarker)."""
+
+    GREEN = "green"
+    RED = "red"
+    WHITE = "white"
+    ORANGE = "orange"
+    BLUE = "blue"
+
+
+class MarkAction(SpecModel):
+    """F10 map mark on a Spec zone (ME Mark To All)."""
+
+    type: Literal["mark"] = "mark"
+    zone: str = Field(min_length=1)
+    text: str = Field(min_length=1)
+    readonly: bool = True
+
+
+class SmokeAction(SpecModel):
+    """Colored smoke pillar on a Spec zone (ME Smoke Marker)."""
+
+    type: Literal["smoke"] = "smoke"
+    zone: str = Field(min_length=1)
+    color: SmokeColor
+    altitude_m: float = Field(default=1.0, gt=0)
+
+
 TriggerAction = Annotated[
     MessageAction
     | SetFlagAction
@@ -338,7 +366,9 @@ TriggerAction = Annotated[
     | RadioItemAddAction
     | RadioItemRemoveAction
     | ActivateGroupAction
-    | DeactivateGroupAction,
+    | DeactivateGroupAction
+    | MarkAction
+    | SmokeAction,
     Field(discriminator="type"),
 ]
 

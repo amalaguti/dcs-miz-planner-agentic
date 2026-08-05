@@ -53,9 +53,9 @@ Rules:
   strike, and escort; omit player.payload. Optional typed zones/triggers allowed
   (compiler emits native ME tables; never put Lua in the Spec). Prefer curated
   sound asset_id (no paths), numeric flags (flag_equals/more/less,
-  time_since_flag, inc_flag, set_flag_value), and group_life_less
-  (enemy_index or target_index + percent 1–100 remaining life) when authoring
-  hand triggers.
+  time_since_flag, inc_flag, set_flag_value), group_life_less
+  (enemy_index or target_index + percent 1–100 remaining life), and mark/smoke
+  (zone name + text / curated color) when authoring hand triggers.
 - intercept: non-empty enemies and objectives (type intercept_enemy); omit cap, strike,
   escort, targets, package, and player.payload. Optional narrative.enabled true expands
   curated intercept immersion (scramble + bandits-down win) when zones/triggers are empty

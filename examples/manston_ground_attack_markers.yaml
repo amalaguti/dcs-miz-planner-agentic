@@ -1,0 +1,58 @@
+# Compileable sample: mark + smoke on a strike-area zone (open in ME;
+# expect MARK TO ALL + SMOKE MARKER under Set Rules for Triggers).
+schema_version: "1"
+mission_type: ground_attack
+theatre: TheChannel
+name: Manston Ground Attack (mark/smoke sample)
+description: >
+  Same Manston Channel ground attack as the acceptance example, plus a
+  time-based FAC-style mark: at T+15s place red smoke and an F10 map mark on
+  the strike zone (visual aid over the truck targets).
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+  payload: spitfire_2x250_slipper
+strike:
+  bearing_deg: 125
+  distance_km: 76
+  altitude_m: 2000
+enemies: []
+targets:
+  - unit: Blitz_36-6700A
+    count: 3
+    skill: Average
+    country: ThirdReich
+    coalition: red
+objectives:
+  - type: attack_ground
+zones:
+  - name: strike_mark
+    bearing_deg: 125
+    distance_km: 76
+    radius_m: 1500
+triggers:
+  - name: mark_targets
+    once: true
+    when:
+      - type: time_more
+        seconds: 15
+    then:
+      - type: smoke
+        zone: strike_mark
+        color: red
+      - type: mark
+        zone: strike_mark
+        text: "GA targets — truck convoy"
+      - type: message
+        text: "Manston — target marked (smoke + F10 map mark)."
+        duration_s: 12

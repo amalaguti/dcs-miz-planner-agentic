@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** markers / altitude gates as needed; `#22` only if native insufficient; R8 when bumping pydcs
+**Next promote / in proposal:** altitude/speed gates as needed; `#22` only if native insufficient; R8 when bumping pydcs
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -130,6 +130,7 @@ the trigger/script text itself is human-authored, versioned, and tested.
 | 25 | `trigger-radio-late-activation` | F10 radio menu items + late-activated enemy/target groups (Dawn Raid–style difficulty / spawn options); native ME only | `done` (accepted in-game 2026-08-04; ME radio + late activation) |
 | 26 | `trigger-sound-flags` | Native `sound` action (curated `asset_id`) + richer flags (`flag_equals` / `flag_more` / `flag_less` / `time_since_flag`, `inc_flag` / `set_flag_value`) | `done` (accepted in-game 2026-08-04; beep + flag chain) |
 | 27 | `group-life-less` | Spec condition for remaining group life % (`enemy_index`/`target_index` + `percent`) → PyDCS `GroupLifeLess`; partial-damage objective beats | `done` (accepted in ME 2026-08-04; GROUP LIFE LESS @ 50%) |
+| 28 | `trigger-markers` | Spec actions `mark` (F10 map mark) + `smoke` (ME Smoke Marker) on Spec zones → PyDCS `MarkToAll` / `ExplodeWPMarker` | `done` (accepted in ME 2026-08-04; Mark To All id 1 + red Smoke Marker) |
 | 24 | `cockpit-state-triggers` | Optional interactive/training missions driven by Spitfire cockpit arguments (promotes research R4 once verified in-game) | `idea` |
 
 Sequencing note: 20–21 need `mission-spec-schema` (M2 `#2`), `validation-engine` (M2 `#5`) and

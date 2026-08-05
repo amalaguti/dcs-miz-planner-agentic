@@ -16,6 +16,7 @@ from .models import (
     FlagMoreCondition,
     GroupLifeLessCondition,
     IncFlagAction,
+    MarkAction,
     MissionSpec,
     MissionType,
     ObjectiveType,
@@ -23,6 +24,7 @@ from .models import (
     RadioItemRemoveAction,
     SetFlagAction,
     SetFlagValueAction,
+    SmokeAction,
     SoundAction,
     TargetDeadCondition,
     TimeSinceFlagCondition,
@@ -507,6 +509,24 @@ def _validate_triggers_and_zones(
                                 hint=f"Known: {list_sound_assets() or '(none)'}",
                             )
                         )
+            elif isinstance(act, (MarkAction, SmokeAction)):
+                if act.zone not in zone_names:
+                    errors.append(
+                        ValidationError(
+                            code="unknown_zone",
+                            path=f"{path}.zone",
+                            message=f"Unknown zone {act.zone!r}",
+                            hint=f"Known zones: {sorted(zone_names) or '(none)'}",
+                        )
+                    )
+                if isinstance(act, MarkAction) and not act.text.strip():
+                    errors.append(
+                        ValidationError(
+                            code="empty_mark_text",
+                            path=f"{path}.text",
+                            message="mark text must be non-empty",
+                        )
+                    )
             elif isinstance(act, (SetFlagAction, SetFlagValueAction, IncFlagAction)) and not (
                 act.flag.strip()
             ):

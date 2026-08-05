@@ -14,6 +14,7 @@ from ..models import (
     FlagMoreCondition,
     GroupLifeLessCondition,
     IncFlagAction,
+    MarkAction,
     MessageAction,
     MissionEndAction,
     MissionEndResult,
@@ -22,6 +23,8 @@ from ..models import (
     RadioItemRemoveAction,
     SetFlagAction,
     SetFlagValueAction,
+    SmokeAction,
+    SmokeColor,
     SoundAction,
     TargetDeadCondition,
     TimeMoreCondition,
@@ -31,6 +34,14 @@ from ..models import (
     opposing_coalition,
 )
 from ..sounds import resolve_sound_path
+
+_SMOKE_COLOR_TO_ME: dict[SmokeColor, int] = {
+    SmokeColor.GREEN: 0,
+    SmokeColor.RED: 1,
+    SmokeColor.WHITE: 2,
+    SmokeColor.ORANGE: 3,
+    SmokeColor.BLUE: 4,
+}
 
 
 def apply_zones_and_triggers(
@@ -71,6 +82,8 @@ def apply_zones_and_triggers(
             flag_ids[name] = len(flag_ids) + 1
         return flag_ids[name]
 
+    next_mark_id = 1
+
     for rule in spec.triggers:
         trig = (
             TriggerOnce(comment=rule.name or "")
@@ -82,17 +95,18 @@ def apply_zones_and_triggers(
                 _map_condition(cond, zone_ids, enemy_group_ids, target_ids, flag_id, condition)
             )
         for act in rule.then:
-            trig.add_action(
-                _map_action(
-                    act,
-                    mission,
-                    spec,
-                    flag_id,
-                    action,
-                    enemy_group_ids,
-                    target_ids,
-                )
+            mapped, next_mark_id = _map_action(
+                act,
+                mission,
+                spec,
+                flag_id,
+                action,
+                enemy_group_ids,
+                target_ids,
+                zone_ids,
+                next_mark_id,
             )
+            trig.add_action(mapped)
         mission.triggerrules.triggers.append(trig)
 
 
@@ -160,49 +174,92 @@ def _map_action(
     action_mod,
     enemy_group_ids: list[int],
     target_group_ids: list[int],
+    zone_ids: dict[str, int],
+    next_mark_id: int,
 ):
     if isinstance(act, MessageAction):
         seconds = int(act.duration_s) if act.duration_s is not None else 10
         # delay_s is Spec-level; ME out-text uses display duration. Spec delay is
         # approximated by requiring time conditions in ``when`` for v1.
-        return action_mod.MessageToAll(mission.string(act.text), seconds=max(seconds, 1))
+        return (
+            action_mod.MessageToAll(mission.string(act.text), seconds=max(seconds, 1)),
+            next_mark_id,
+        )
     if isinstance(act, SetFlagAction):
         fid = flag_id(act.flag)
-        return action_mod.SetFlag(fid) if act.value else action_mod.ClearFlag(fid)
+        mapped = action_mod.SetFlag(fid) if act.value else action_mod.ClearFlag(fid)
+        return mapped, next_mark_id
     if isinstance(act, SetFlagValueAction):
-        return action_mod.SetFlagValue(flag_id(act.flag), value=act.value)
+        return action_mod.SetFlagValue(flag_id(act.flag), value=act.value), next_mark_id
     if isinstance(act, IncFlagAction):
-        return action_mod.IncreaseFlag(flag_id(act.flag), value=act.by)
+        return action_mod.IncreaseFlag(flag_id(act.flag), value=act.by), next_mark_id
     if isinstance(act, SoundAction):
         path = resolve_sound_path(act.asset_id)
         res_key = mission.map_resource.add_resource_file(path)
-        return action_mod.SoundToAll(file_res_key=res_key)
+        return action_mod.SoundToAll(file_res_key=res_key), next_mark_id
     if isinstance(act, MissionEndAction):
         if act.result is MissionEndResult.WIN:
             winner = spec.player.coalition.value
         else:
             winner = opposing_coalition(spec.player.coalition).value
-        return action_mod.EndMission(winner=winner, text=mission.string(""))
+        return action_mod.EndMission(winner=winner, text=mission.string("")), next_mark_id
     if isinstance(act, RadioItemAddAction):
         fid = flag_id(act.flag)
         text = mission.string(act.label)
         if act.coalition is not None:
-            return action_mod.AddRadioItemForCoalition(
-                coalitionlist=act.coalition.value,
-                radiotext=text,
-                flag=fid,
-                value=1,
+            return (
+                action_mod.AddRadioItemForCoalition(
+                    coalitionlist=act.coalition.value,
+                    radiotext=text,
+                    flag=fid,
+                    value=1,
+                ),
+                next_mark_id,
             )
-        return action_mod.AddRadioItem(radiotext=text, flag=fid, value=1)
+        return (
+            action_mod.AddRadioItem(radiotext=text, flag=fid, value=1),
+            next_mark_id,
+        )
     if isinstance(act, RadioItemRemoveAction):
-        return action_mod.RemoveRadioItem(radiotext=mission.string(act.label))
+        return action_mod.RemoveRadioItem(radiotext=mission.string(act.label)), next_mark_id
     if isinstance(act, ActivateGroupAction):
-        return action_mod.ActivateGroup(
-            group=_resolve_group_id(act, enemy_group_ids, target_group_ids)
+        return (
+            action_mod.ActivateGroup(
+                group=_resolve_group_id(act, enemy_group_ids, target_group_ids)
+            ),
+            next_mark_id,
         )
     if isinstance(act, DeactivateGroupAction):
-        return action_mod.DeactivateGroup(
-            group=_resolve_group_id(act, enemy_group_ids, target_group_ids)
+        return (
+            action_mod.DeactivateGroup(
+                group=_resolve_group_id(act, enemy_group_ids, target_group_ids)
+            ),
+            next_mark_id,
+        )
+    if isinstance(act, MarkAction):
+        zid = zone_ids.get(act.zone)
+        if zid is None:
+            raise ValueError(f"Unknown zone {act.zone!r} at compile time")
+        mark_id = next_mark_id
+        return (
+            action_mod.MarkToAll(
+                value=mark_id,
+                zone=zid,
+                text=mission.string(act.text),
+                readonly=act.readonly,
+            ),
+            next_mark_id + 1,
+        )
+    if isinstance(act, SmokeAction):
+        if act.zone not in zone_ids:
+            raise ValueError(f"Unknown zone {act.zone!r} at compile time")
+        return (
+            action_mod.ExplodeWPMarker(
+                zone=act.zone,
+                altitude=int(act.altitude_m),
+                color=_SMOKE_COLOR_TO_ME[act.color],
+            ),
+            next_mark_id,
         )
     raise ValueError(f"Unsupported trigger action type: {type(act)!r}")
 

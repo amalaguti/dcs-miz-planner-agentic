@@ -7,6 +7,16 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Mark + smoke zone markers
+
+- **Date:** 2026-08-04
+- **Lesson:** Spec `mark` (zone name + text → PyDCS `MarkToAll` / `a_mark_to_all`;
+  compiler assigns sequential mark ids) and `smoke` (zone + curated color →
+  `ExplodeWPMarker` / `a_explosion_marker`, ME Smoke Marker). Colors:
+  green/red/white/orange/blue → ME 0–4. Example:
+  `manston_ground_attack_markers.yaml`.
+- **Code:** `models.py`, `validation.py`, `compiler/triggers_emit.py`.
+
 ## Group life less (partial damage)
 
 - **Date:** 2026-08-04
@@ -47,8 +57,8 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   `ActivateGroup`/`DeactivateGroup`, sounds, `GroupLifeLess`, altitude/speed gates — Spec
   vocab is the bottleneck. Prefer native emit over `#22` unless world-event Lua is required.
   Ranked list: `research/me-enrichment-candidates.md` (gitignored).
-- **Next product slice:** markers / altitude gates after `#27` `group-life-less`
-  (sound + richer flags shipped as `#26`).
+- **Next product slice:** altitude/speed gates after `#28` `trigger-markers`
+  (sound + richer flags `#26`; `group-life-less` `#27`).
 
 ## R7 PyDCS open-issue triage (2026-08-04)
 

@@ -350,3 +350,84 @@ def test_schema_notes_mention_group_life_less():
 
     blob = " ".join(build_spec_schema("ground_attack").notes).lower()
     assert "group_life_less" in blob
+
+
+MARKERS = ROOT / "examples" / "manston_ground_attack_markers.yaml"
+
+
+def test_markers_example_loads():
+    spec = load_mission_spec(MARKERS)
+    assert any(z.name == "strike_mark" for z in spec.zones)
+    acts = [a for t in spec.triggers for a in t.then]
+    assert any(a.type == "smoke" for a in acts)
+    assert any(a.type == "mark" for a in acts)
+    smoke = next(a for a in acts if a.type == "smoke")
+    mark = next(a for a in acts if a.type == "mark")
+    assert smoke.zone == "strike_mark" and smoke.color.value == "red"
+    assert mark.zone == "strike_mark" and "truck" in mark.text.lower()
+    assert validate_mission_spec(spec).ok
+
+
+def test_compile_markers(tmp_path: Path):
+    spec = load_mission_spec(MARKERS)
+    out = PyDCSCompiler().compile(spec, tmp_path / "markers.miz")
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8", "replace")
+    assert "a_mark_to_all" in mission
+    assert "a_explosion_marker" in mission
+    assert "a_out_text_delay" in mission or "out_text" in mission
+
+
+def test_mark_unknown_zone_fails(tmp_path: Path):
+    data = yaml.safe_load(MARKERS.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "time_more", "seconds": 1}],
+            "then": [{"type": "mark", "zone": "missing", "text": "x"}],
+        }
+    ]
+    p = tmp_path / "noz.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    spec = load_mission_spec(p)
+    result = validate_mission_spec(spec)
+    assert not result.ok
+    assert any(e.code == "unknown_zone" for e in result.errors)
+
+
+def test_smoke_invalid_color_rejected(tmp_path: Path):
+    data = yaml.safe_load(MARKERS.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "time_more", "seconds": 1}],
+            "then": [{"type": "smoke", "zone": "strike_mark", "color": "purple"}],
+        }
+    ]
+    p = tmp_path / "badcolor.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_mark_empty_text_rejected(tmp_path: Path):
+    data = yaml.safe_load(MARKERS.read_text(encoding="utf-8"))
+    data["triggers"] = [
+        {
+            "when": [{"type": "time_more", "seconds": 1}],
+            "then": [{"type": "mark", "zone": "strike_mark", "text": ""}],
+        }
+    ]
+    p = tmp_path / "emptytext.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_cli_validate_markers_ok():
+    assert main(["validate", str(MARKERS)]) == 0
+
+
+def test_schema_notes_mention_mark_and_smoke():
+    from dcs_miz_planner.agent.spec_schema import build_spec_schema
+
+    blob = " ".join(build_spec_schema("ground_attack").notes).lower()
+    assert "mark" in blob and "smoke" in blob
