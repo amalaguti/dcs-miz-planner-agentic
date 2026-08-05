@@ -1,6 +1,6 @@
 [project]
 name = "dcs-miz-planner"
-version = "0.2.0"
+version = "0.3.0"
 description = "Natural-language -> Mission Spec -> deterministic DCS .miz compiler"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"

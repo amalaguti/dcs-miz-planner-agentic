@@ -63,8 +63,9 @@ inspiration, not imported as Spec; stub LLM + offline research fixtures keep tes
 hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** **R8** when bumping PyDCS; `#8a.2` install `/maintenance` if useful; optional
-fuller flag-random + late-act example. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
+**Release:** **v0.3** marks the pre–mission-designer baseline (immersion floor, R1/R2 audits,
+`set_flag_random`). **Next:** catalog shelves for dynamics / strike composition / places +
+agent co-design. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Stack
 
