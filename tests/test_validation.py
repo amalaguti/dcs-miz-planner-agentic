@@ -181,3 +181,113 @@ def test_compile_manston_with_injected_inventory(tmp_path: Path):
     spec = load_mission_spec(EXAMPLE)
     out = PyDCSCompiler(inventory=_channel_inventory()).compile(spec, tmp_path / "ok.miz")
     assert out.exists()
+
+
+def test_late_activation_without_activate_fails():
+    from dcs_miz_planner.models import Coalition
+
+    spec = MissionSpec(
+        schema_version="1",
+        mission_type=MissionType.INTERCEPT,
+        theatre="TheChannel",
+        date=MissionDate(year=1944, month=6, day=6),
+        start_time="06:00",
+        weather=WeatherPreset.SUNNY_CLEAR,
+        player=Player(aircraft="SpitfireLFMkIX", airfield="Manston"),
+        enemies=[
+            EnemyFlight(
+                aircraft="Bf-109K-4",
+                count=2,
+                late_activation=True,
+                coalition=Coalition.RED,
+            )
+        ],
+        objectives=[Objective(type=ObjectiveType.INTERCEPT_ENEMY)],
+    )
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert any(e.code == "late_activation_no_activate" for e in result.errors)
+
+
+def test_activate_without_late_activation_fails():
+    from dcs_miz_planner.models import (
+        ActivateGroupAction,
+        Coalition,
+        FlagIsCondition,
+        TriggerRule,
+    )
+
+    spec = MissionSpec(
+        schema_version="1",
+        mission_type=MissionType.INTERCEPT,
+        theatre="TheChannel",
+        date=MissionDate(year=1944, month=6, day=6),
+        start_time="06:00",
+        weather=WeatherPreset.SUNNY_CLEAR,
+        player=Player(aircraft="SpitfireLFMkIX", airfield="Manston"),
+        enemies=[EnemyFlight(aircraft="Bf-109K-4", count=2, coalition=Coalition.RED)],
+        objectives=[Objective(type=ObjectiveType.INTERCEPT_ENEMY)],
+        triggers=[
+            TriggerRule(
+                name="spawn",
+                when=[FlagIsCondition(flag="spawn", value=True)],
+                then=[ActivateGroupAction(enemy_index=0)],
+            )
+        ],
+    )
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert any(e.code == "activate_not_late" for e in result.errors)
+
+
+def test_message_delay_s_rejected_at_load():
+    from pydantic import ValidationError as PydanticValidationError
+
+    from dcs_miz_planner.models import MessageAction
+
+    with pytest.raises(PydanticValidationError):
+        MessageAction(text="hi", delay_s=5)
+
+
+def test_unknown_country_and_skill():
+    spec = _base_spec(country="Germany", skill="SuperAce")
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    codes = {e.code for e in result.errors}
+    assert "unknown_country" in codes
+    assert "unknown_skill" in codes
+    country_err = next(e for e in result.errors if e.code == "unknown_country")
+    assert country_err.hint and "ThirdReich" in country_err.hint
+
+
+def test_friendly_intercept_enemy_fails():
+    from dcs_miz_planner.models import Coalition
+
+    spec = MissionSpec(
+        schema_version="1",
+        mission_type=MissionType.INTERCEPT,
+        theatre="TheChannel",
+        date=MissionDate(year=1944, month=6, day=6),
+        start_time="06:00",
+        weather=WeatherPreset.SUNNY_CLEAR,
+        player=Player(aircraft="SpitfireLFMkIX", airfield="Manston"),
+        enemies=[
+            EnemyFlight(aircraft="Bf-109K-4", count=2, coalition=Coalition.BLUE),
+        ],
+        objectives=[Objective(type=ObjectiveType.INTERCEPT_ENEMY)],
+    )
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert any(e.code == "friendly_enemy" for e in result.errors)
+
+
+def test_radio_late_activation_example_validates():
+    radio = Path(__file__).resolve().parents[1] / "examples" / "manston_dawn_intercept_radio.yaml"
+    spec = load_mission_spec(radio)
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert result.ok, result.errors
+
+
+def test_shipped_examples_validate(tmp_path: Path):
+    examples = Path(__file__).resolve().parents[1] / "examples"
+    inv = _channel_inventory()
+    for path in sorted(examples.glob("*.yaml")):
+        spec = load_mission_spec(path)
+        result = validate_mission_spec(spec, inventory=inv)
+        assert result.ok, f"{path.name}: {result.errors}"

@@ -16,9 +16,12 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   without F10/`activate_group` (dormant bandits); “Big Show” never called
   `list_installed_campaigns`. Track as BACKLOG `#30c` — prefer prompt/tool/validation
   hardenings over new Spec predicates. Half-recipes (late-act without activate) are
-  worse than narrative-only.
-- **Code / process:** `.cursor/skills/eval-agent-creativity/`; prompts / validation /
-  agent tools when `#30c` is implemented.
+  worse than narrative-only. **Validation (`#32`):** late_activation without
+  `activate_group` (and activate without late_act) now **errors** at validate — empty
+  sky Specs are no longer green.
+- **Code / process:** `.cursor/skills/eval-agent-creativity/`; `validation.py`
+  (`late_activation_no_activate` / `activate_not_late`); prompts / agent tools when
+  `#30c` is implemented.
 
 ## Creative decision memory (`detail.creative`)
 
@@ -373,15 +376,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ## Channel WWII Axis: use `ThirdReich`, not `Germany`
 
-- **Date:** 2026-07-26
+- **Date:** 2026-07-26 (validate allowlist 2026-08-05)
 - **Symptom:** Intercept `.miz` shows “Allies flight: Bf 109 K-4” in the Mission Editor.
 - **Cause:** PyDCS Channel defaults put modern **Germany** on **blue** (Allies). Looking up
   `Germany` reuses that blue country even when the Spec says `coalition: red`.
 - **Fix:** Spec/compiler use PyDCS country id **`ThirdReich`** (DCS name “Third Reich”) on
   **red**. `_ensure_country` resolves by class attribute name, looks up by DCS display name,
-  and refuses a country already parked on the wrong coalition.
-- **Code:** `compiler/pydcs_compiler.py` (`_ensure_country`); example
-  `examples/manston_dawn_intercept.yaml`.
+  and refuses a country already parked on the wrong coalition. Shared validate allowlist
+  (`allowlists.KNOWN_COUNTRIES` = UK / ThirdReich) rejects unknown countries with a
+  Germany→ThirdReich hint before compile.
+- **Code:** `allowlists.py`, `validation.py`, `compiler/pydcs_compiler.py`
+  (`_ensure_country`); example `examples/manston_dawn_intercept.yaml`.
 
 ## Intercept spawn: Hawkinge anchor + Dover-approach offset
 

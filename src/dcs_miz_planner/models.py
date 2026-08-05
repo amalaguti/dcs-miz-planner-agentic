@@ -284,7 +284,8 @@ TriggerCondition = Annotated[
 class MessageAction(SpecModel):
     type: Literal["message"] = "message"
     text: str = Field(min_length=1)
-    delay_s: float = Field(default=0, ge=0)
+    # Non-zero delay is unsupported at emit; keep field only as 0 / omitted.
+    delay_s: float = Field(default=0, ge=0, le=0)
     duration_s: float | None = Field(default=None, gt=0)
 
 

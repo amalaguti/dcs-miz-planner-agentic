@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#32` `validation-false-green`, then `#30c`; `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep `.miz` audits
+**Next promote / in proposal:** `#30c` `agent-assertive-behaviours`; `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep `.miz` audits
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -161,7 +161,7 @@ assertive creativity invariant; host `/accept` ≠ tool capability boundary.
 | # | Item | Goal | Status | Maps findings |
 |---|------|------|--------|---------------|
 | 31 | `docs-honesty-pass` | Cheap trust fixes: README Status no longer says combat/triggers “reserved for later”; campaign Doc claims = **filenames** (not themes/briefings) until `#40`; align prompts/README with what `list_installed_campaigns` actually returns | `done` (2026-08-05) |
-| 32 | `validation-false-green` | Kill green→broken Specs: late_activation ↔ `activate_group` graph; reject or implement `message.delay_s`; country/skill allowlists in validation; opposing-coalition for intercept/CAP enemies; optional dead-on-late-act requires activate path | `idea` (B1/B3/B4/B5/B9) |
+| 32 | `validation-false-green` | Kill green→broken Specs: late_activation ↔ `activate_group` graph; reject or implement `message.delay_s`; country/skill allowlists in validation; opposing-coalition for intercept/CAP enemies; optional dead-on-late-act requires activate path | `done` (2026-08-05) |
 | 30c | `agent-assertive-behaviours` | See M6 row — agent/prompt/memory side of creativity gaps | `idea` |
 | 33 | `agent-tool-trust-boundary` | Chat/plan tools read-only by default; `compile_mission` / `set_user_prefs` / fake `record_*` only via host slash or explicit confirm; path allowlist under `out/` | `idea` (C1 — challenge threat model: local single-user vs future multi-user) |
 | 34 | `strike-domain-validate` | Land/water (or domain) check for ground-attack placement at validate; constrain `randomize` geometry so green Specs stay on valid terrain | `idea` (B2) |

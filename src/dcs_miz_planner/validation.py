@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .allowlists import KNOWN_COUNTRIES, KNOWN_SKILLS, country_hint, skill_hint
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
 from .models import (
@@ -17,6 +18,7 @@ from .models import (
     GroupLifeLessCondition,
     IncFlagAction,
     MarkAction,
+    MessageAction,
     MissionSpec,
     MissionType,
     ObjectiveType,
@@ -56,6 +58,89 @@ def _validate_enemy_aircraft(
                     hint=f"Known: {registry.list_aircraft()}",
                 )
             )
+
+
+def _validate_opposing_enemies(
+    spec: MissionSpec,
+    errors: list[ValidationError],
+    *,
+    context: str,
+) -> None:
+    expected = opposing_coalition(spec.player.coalition)
+    for i, enemy in enumerate(spec.enemies):
+        if enemy.coalition is not expected:
+            errors.append(
+                ValidationError(
+                    code="friendly_enemy",
+                    path=f"enemies[{i}].coalition",
+                    message=(
+                        f"{context} enemies must oppose the player; "
+                        f"expected {expected.value}, got {enemy.coalition.value}"
+                    ),
+                )
+            )
+
+
+def _check_country_skill(
+    *,
+    country: str,
+    skill: str,
+    country_path: str,
+    skill_path: str,
+    errors: list[ValidationError],
+) -> None:
+    if country not in KNOWN_COUNTRIES:
+        errors.append(
+            ValidationError(
+                code="unknown_country",
+                path=country_path,
+                message=f"Unknown or unsupported country {country!r}",
+                hint=country_hint(country),
+            )
+        )
+    if skill not in KNOWN_SKILLS:
+        errors.append(
+            ValidationError(
+                code="unknown_skill",
+                path=skill_path,
+                message=f"Unknown skill {skill!r}",
+                hint=skill_hint(skill),
+            )
+        )
+
+
+def _validate_countries_and_skills(spec: MissionSpec, errors: list[ValidationError]) -> None:
+    _check_country_skill(
+        country=spec.player.country,
+        skill=spec.player.skill,
+        country_path="player.country",
+        skill_path="player.skill",
+        errors=errors,
+    )
+    for i, enemy in enumerate(spec.enemies):
+        _check_country_skill(
+            country=enemy.country,
+            skill=enemy.skill,
+            country_path=f"enemies[{i}].country",
+            skill_path=f"enemies[{i}].skill",
+            errors=errors,
+        )
+    for i, tgt in enumerate(spec.targets):
+        _check_country_skill(
+            country=tgt.country,
+            skill=tgt.skill,
+            country_path=f"targets[{i}].country",
+            skill_path=f"targets[{i}].skill",
+            errors=errors,
+        )
+    for i, flight in enumerate(spec.package):
+        _check_country_skill(
+            country=flight.country,
+            skill=flight.skill,
+            country_path=f"package[{i}].country",
+            skill_path=f"package[{i}].skill",
+            errors=errors,
+        )
 
 
 def _validate_ground_attack(
@@ -295,19 +380,7 @@ def _validate_escort(
                 )
             )
 
-    expected_enemy = opposing_coalition(spec.player.coalition)
-    for i, enemy in enumerate(spec.enemies):
-        if enemy.coalition is not expected_enemy:
-            errors.append(
-                ValidationError(
-                    code="friendly_enemy",
-                    path=f"enemies[{i}].coalition",
-                    message=(
-                        "Escort bounce enemies must oppose the player; "
-                        f"expected {expected_enemy.value}, got {enemy.coalition.value}"
-                    ),
-                )
-            )
+    _validate_opposing_enemies(spec, errors, context="Escort bounce")
     _validate_enemy_aircraft(spec, registry, errors)
 
 
@@ -474,6 +547,20 @@ def _validate_triggers_and_zones(
                             ),
                         )
                     )
+                elif (
+                    act.enemy_index is not None
+                    and not spec.enemies[act.enemy_index].late_activation
+                ):
+                    errors.append(
+                        ValidationError(
+                            code="activate_not_late",
+                            path=f"{path}.enemy_index",
+                            message=(
+                                f"{act.type} requires enemies[{act.enemy_index}].late_activation "
+                                "true (otherwise activate/deactivate is a no-op)"
+                            ),
+                        )
+                    )
                 if act.target_index is not None and act.target_index >= len(spec.targets):
                     errors.append(
                         ValidationError(
@@ -485,6 +572,31 @@ def _validate_triggers_and_zones(
                             ),
                         )
                     )
+                elif (
+                    act.target_index is not None
+                    and not spec.targets[act.target_index].late_activation
+                ):
+                    errors.append(
+                        ValidationError(
+                            code="activate_not_late",
+                            path=f"{path}.target_index",
+                            message=(
+                                f"{act.type} requires targets[{act.target_index}].late_activation "
+                                "true (otherwise activate/deactivate is a no-op)"
+                            ),
+                        )
+                    )
+            elif isinstance(act, MessageAction) and act.delay_s > 0:
+                errors.append(
+                    ValidationError(
+                        code="message_delay_unsupported",
+                        path=f"{path}.delay_s",
+                        message=(
+                            "message.delay_s > 0 is unsupported; use when conditions "
+                            "(e.g. time_more) for timing"
+                        ),
+                    )
+                )
             elif isinstance(act, RadioItemAddAction):
                 if not act.label.strip():
                     errors.append(
@@ -560,6 +672,51 @@ def _validate_triggers_and_zones(
                     )
                 )
 
+    _validate_late_activation_graph(spec, errors)
+
+
+def _validate_late_activation_graph(
+    spec: MissionSpec,
+    errors: list[ValidationError],
+) -> None:
+    """Every late-act group needs activate_group; covered activate/deactivate checks above."""
+    activated_enemies: set[int] = set()
+    activated_targets: set[int] = set()
+    for rule in spec.triggers:
+        for act in rule.then:
+            if isinstance(act, ActivateGroupAction):
+                if act.enemy_index is not None:
+                    activated_enemies.add(act.enemy_index)
+                if act.target_index is not None:
+                    activated_targets.add(act.target_index)
+
+    for i, enemy in enumerate(spec.enemies):
+        if enemy.late_activation and i not in activated_enemies:
+            errors.append(
+                ValidationError(
+                    code="late_activation_no_activate",
+                    path=f"enemies[{i}].late_activation",
+                    message=(
+                        f"enemies[{i}] has late_activation true but no activate_group "
+                        f"references enemy_index {i} (group stays dormant)"
+                    ),
+                    hint="Add an activate_group action (e.g. F10 radio flag) for this index",
+                )
+            )
+    for i, tgt in enumerate(spec.targets):
+        if tgt.late_activation and i not in activated_targets:
+            errors.append(
+                ValidationError(
+                    code="late_activation_no_activate",
+                    path=f"targets[{i}].late_activation",
+                    message=(
+                        f"targets[{i}] has late_activation true but no activate_group "
+                        f"references target_index {i} (group stays dormant)"
+                    ),
+                    hint="Add an activate_group action for this index",
+                )
+            )
+
 
 def validate_mission_spec(
     spec: MissionSpec,
@@ -605,6 +762,7 @@ def validate_mission_spec(
         )
 
     _validate_triggers_and_zones(spec, errors)
+    _validate_countries_and_skills(spec, errors)
 
     if spec.mission_type is MissionType.FREE_FLIGHT:
         if spec.cap is not None:
@@ -711,6 +869,7 @@ def validate_mission_spec(
                     )
                 )
         _validate_enemy_aircraft(spec, registry, errors)
+        _validate_opposing_enemies(spec, errors, context="Intercept")
     elif spec.mission_type is MissionType.CAP:
         if spec.cap is None:
             errors.append(
@@ -772,6 +931,7 @@ def validate_mission_spec(
                         )
                     )
         _validate_enemy_aircraft(spec, registry, errors)
+        _validate_opposing_enemies(spec, errors, context="CAP")
     elif spec.mission_type is MissionType.GROUND_ATTACK:
         if spec.escort is not None:
             errors.append(
