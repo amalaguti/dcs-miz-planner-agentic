@@ -65,3 +65,12 @@ successful write (unless an explicit skip-validate flag is provided for debuggin
 - **WHEN** `dcs-miz randomize` is run on a checked-in example Spec with `--seed 1` and an
   output path
 - **THEN** the written YAML MUST load as a Mission Spec and MUST pass validation
+
+### Requirement: Geometry randomization preserves ground-attack strike domain
+When the geometry axis jitters a ground-attack `strike` block, randomization MUST NOT
+leave the Spec with a strike point domain that mismatches the Spec’s target unit domains.
+Implementations MAY redraw jitter until compatible or retain the pre-jitter strike.
+
+#### Scenario: GA geometry randomize keeps domain
+- **WHEN** a valid ground-attack Spec is randomized with the geometry axis
+- **THEN** the result MUST still pass strike-domain validation
