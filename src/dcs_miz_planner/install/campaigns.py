@@ -1,4 +1,8 @@
-"""Read-only index of installed DCS campaigns under Mods/campaigns."""
+"""Read-only index of installed DCS campaigns under Mods/campaigns.
+
+Lists ``.cmp`` metadata, ``.miz`` filenames, and ``Doc/*.pdf`` filenames only —
+does not extract PDF body text.
+"""
 
 from __future__ import annotations
 
@@ -133,8 +137,8 @@ def index_installed_campaigns(
     """
     Discover DCS roots and list campaigns under ``Mods/campaigns``.
 
-    ``campaigns_dir`` overrides discovery for hermetic tests (points at a fake
-    campaigns tree directly).
+    Doc entries are PDF filenames only (no text extract). ``campaigns_dir`` overrides
+    discovery for hermetic tests (points at a fake campaigns tree directly).
     """
     diagnostics: list[Diagnostic] = []
 

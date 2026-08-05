@@ -380,13 +380,23 @@ def test_dispatch_list_installed_campaigns() -> None:
 def test_prompts_mention_capability_catalog() -> None:
     from dcs_miz_planner.agent.prompts import compose_system_prompt
     from dcs_miz_planner.agent.spec_schema import build_spec_schema
+    from dcs_miz_planner.agent.tool_bridge import TOOL_DEFINITIONS
 
     prompt = compose_system_prompt("raf")
     assert "mission_behaviour" in prompt
     assert "mission_inspiration" in prompt
     assert "list_installed_campaigns" in prompt
     assert "mission_design" in prompt
+    assert "briefing themes" not in prompt.lower()
+    assert "PDF filenames" in prompt or "Doc/ PDF filenames" in prompt
     schema = build_spec_schema("free_flight")
     joined = " ".join(schema.notes)
     assert "mission_behaviour" in joined
     assert "list_installed_campaigns" in joined
+    assert "briefing themes" not in joined.lower()
+    camp_tool = next(
+        t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_installed_campaigns"
+    )
+    desc = camp_tool["function"]["description"].lower()
+    assert "briefing themes" not in desc
+    assert "filename" in desc

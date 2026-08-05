@@ -479,9 +479,9 @@ def list_installed_campaigns(
     """
     List local DCS campaigns under ``Mods/campaigns`` for mission inspiration.
 
-    Returns campaign name, mission ``.miz`` filenames, ``Doc/`` PDF filenames, and a
-    short ``.cmp`` description when present. Read-only; does not import ``.miz`` into
-    Spec. ``db_path`` unused (tool signature parity).
+    Returns campaign name, mission ``.miz`` filenames, ``Doc/`` PDF **filenames only**
+    (no PDF text extract), and a short ``.cmp`` description when present. Read-only;
+    does not import ``.miz`` into Spec. ``db_path`` unused (tool signature parity).
     """
     del db_path
     index = index_installed_campaigns(explicit_root=dcs_root, campaigns_dir=campaigns_dir)

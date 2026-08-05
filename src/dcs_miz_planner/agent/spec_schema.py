@@ -130,8 +130,8 @@ _COMMON_NOTES: tuple[str, ...] = (
         "mission_inspiration (advisory patterns) and mission_behaviour (supported "
         "recipes with meta.recipe / Spec types / example paths). Optionally "
         "research_guidance(focus=mission_design) and list_installed_campaigns "
-        "(prefer Doc/ briefing themes). Map ideas onto packaged behaviours only — "
-        "never Lua or .miz→Spec import."
+        "(prefer Doc/ PDF filenames — no body extract). Map ideas onto packaged "
+        "behaviours only — never Lua or .miz→Spec import."
     ),
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )

@@ -6,9 +6,10 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 
 ## Status
 
-First vertical slice done: Manston cold free flight compiles and flies in DCS
-(accepted in-game). Mission Spec is formalized (`schema_version: "1"`, unknown
-fields rejected, combat/trigger keys reserved for later). Channel DCS facts
+Channel Spitfire MVP through M6: Mission Spec (`schema_version: "1"`, unknown fields
+rejected) covers free_flight, intercept, CAP, ground_attack, and escort, plus native ME
+triggers (zones, flags, radio, late activation, sound, markers, altitude/speed gates).
+Manston cold free flight was the first accepted-in-game slice. Channel DCS facts
 (airfields, aircraft, radio, weather presets) live in packaged YAML under
 `src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
@@ -46,16 +47,21 @@ Player altitude/speed gates
 (`examples/manston_freeflight_altitude_speed_gates.yaml`; accepted in ME 2026-08-04).
 Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
 `research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
-`Mods/campaigns` + Doc briefings) for assertive creative planning. Creative decisions
-persist in generation `detail.creative`; feedback + history bias later invents.
+`Mods/campaigns` `.miz` / `.cmp` / Doc PDF **filenames** — no PDF text extract yet; see
+backlog `#40`) for creative planning inspiration. Creative decisions persist in generation
+`detail.creative`; feedback + history bias later invents.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+**Intentional limits:** Channel theatre only; campaign `.miz` files are listed for
+inspiration, not imported as Spec; stub LLM + offline research fixtures keep tests
+hermetic.
+
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** challenge Adversarial review track in [`docs/BACKLOG.md`](docs/BACKLOG.md)
-(`#31` honesty → `#32` false-green validation → `#30c` assertive behaviours); notes in
-[`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md). Then `#22`
-only if native insufficient; R1/R2 deep `.miz` audits remain the promote path beyond live
-snippets / local listing.
+**Next:** Adversarial review track in [`docs/BACKLOG.md`](docs/BACKLOG.md)
+(`#32` false-green validation → `#30c` assertive behaviours); notes in
+[`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
+Then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path
+beyond live snippets / local listing.
 
 ## Stack
 

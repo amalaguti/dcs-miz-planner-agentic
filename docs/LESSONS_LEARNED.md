@@ -34,13 +34,14 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ## Local campaign inspiration (`.cmp` vs `Doc/`)
 
-- **Date:** 2026-08-04
+- **Date:** 2026-08-04 (honesty update 2026-08-05)
 - **Lesson:** `Mods/campaigns/*.cmp` is the campaign **playlist** (stages → `.miz`
-  filenames, optional description) — not mission narrative. Per-sortie design
-  colour lives in each pack’s `Doc/*.pdf` briefings. Agent tool
-  `list_installed_campaigns` lists `.cmp` metadata + `.miz` names + Doc filenames;
-  prefer Doc themes when inventing; never import `.miz` as Spec. Hermetic tests
-  use a fake campaigns tree (`campaigns_dir=`), not `S:\DCS World`.
+  filenames, optional description) — not mission narrative. Real per-sortie colour
+  often lives in each pack’s `Doc/*.pdf`, but the agent tool only indexes **PDF
+  filenames** (no body extract until backlog `#40`). Prefer Doc filenames/titles over
+  raw `.cmp` stage lists when inventing; map onto packaged behaviours; never import
+  `.miz` as Spec. Hermetic tests use a fake campaigns tree (`campaigns_dir=`), not
+  `S:\DCS World`.
 - **Code:** `install/campaigns.py`, `tools/surface.py` (`list_installed_campaigns`).
 
 ## Player altitude / speed gates

@@ -71,9 +71,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "name": "list_installed_campaigns",
             "description": (
                 "List local DCS campaigns under Mods/campaigns (names, .miz files, "
-                "Doc/ briefing PDF titles, short .cmp description). Inspiration only — "
-                "prefer Doc briefing themes; map ideas onto mission_behaviour cards. "
-                "Never import .miz as Spec or invent Lua."
+                "Doc/ PDF filenames, short .cmp description). Inspiration only — "
+                "prefer Doc PDF filenames over .cmp stage lists; map ideas onto "
+                "mission_behaviour cards. No PDF text extract. Never import .miz as "
+                "Spec or invent Lua."
             ),
             "parameters": {"type": "object", "properties": {}},
         },
