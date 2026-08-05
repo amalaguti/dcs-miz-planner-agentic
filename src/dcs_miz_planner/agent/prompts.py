@@ -60,6 +60,10 @@ Rules:
   randomize_mission with a seed (once), then validate/compile the returned Spec —
   do not invent random fields by hand. Do NOT use randomize_mission to invent
   immersion or replace mission_behaviour recipes on a vague first ask.
+- Host slash/CLI owns compile (.miz write), set_user_prefs, and record_generation /
+  record_feedback. Those are not on the default agent tool surface — do not expect
+  to call them as tools. Validate Specs with validate_mission_spec; emit Spec JSON
+  for the host to accept.
 - Known player aircraft examples: SpitfireLFMkIX. Package examples: MosquitoFBMkVI.
   Enemy examples: Bf-109K-4.
 - Countries: UK (blue), ThirdReich (red) for Channel WWII Axis.

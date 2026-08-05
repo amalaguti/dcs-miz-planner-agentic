@@ -210,11 +210,28 @@ def compile_mission(
     db_path: Path | str | None = None,
     inventory: TheatreInventory | None = None,
     voice: str | None = None,
+    out_root: Path | str | None = None,
 ) -> dict[str, Any]:
-    """Compile a Mission Spec YAML to a ``.miz`` via PyDCSCompiler."""
+    """Compile a Mission Spec YAML to a ``.miz`` via PyDCSCompiler.
+
+    ``output_path`` MUST resolve under ``out_root`` (default: ``<repo>/out``).
+    """
     path = Path(spec_path)
     if not path.is_file():
         return err_result(f"Spec not found: {path}", code="not_found", path=str(path))
+
+    root = Path(out_root) if out_root is not None else Path(__file__).resolve().parents[3] / "out"
+    root = root.resolve()
+    out = Path(output_path)
+    try:
+        resolved_out = out.resolve()
+        resolved_out.relative_to(root)
+    except (OSError, ValueError):
+        return err_result(
+            f"Compile output must be under {root} (got {out})",
+            code="path_not_allowed",
+            path=str(out),
+        )
 
     try:
         spec = load_mission_spec(path)
@@ -236,9 +253,10 @@ def compile_mission(
 
         resolved_voice = resolve_voice(cli_voice=voice)
 
-    out = Path(output_path)
     try:
-        written = PyDCSCompiler(inventory=inventory).compile(spec, out, voice=resolved_voice)
+        written = PyDCSCompiler(inventory=inventory).compile(
+            spec, resolved_out, voice=resolved_voice
+        )
     except ValueError as exc:
         return err_result(str(exc), code="compile_failed", path=str(path))
     return ok_result(path=str(path), output=str(written))

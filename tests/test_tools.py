@@ -145,9 +145,37 @@ def test_validate_and_compile_manston(tmp_path: Path) -> None:
     assert validated["ok"] is True
 
     out = tmp_path / "tools_manston.miz"
-    compiled = compile_mission(EXAMPLE_SPEC, out, inventory=inv)
+    compiled = compile_mission(EXAMPLE_SPEC, out, inventory=inv, out_root=tmp_path)
     assert compiled["ok"] is True
     assert Path(compiled["output"]).is_file()
+
+
+def test_compile_outside_out_rejected(tmp_path: Path) -> None:
+    inv = channel_available_inventory()
+    allowed = tmp_path / "out"
+    allowed.mkdir()
+    outside = tmp_path / "elsewhere" / "nope.miz"
+    outside.parent.mkdir()
+    result = compile_mission(EXAMPLE_SPEC, outside, inventory=inv, out_root=allowed)
+    assert result["ok"] is False
+    assert result["code"] == "path_not_allowed"
+    assert not outside.exists()
+
+
+def test_dispatch_blocks_mutating_tools_by_default() -> None:
+    from dcs_miz_planner.agent.tool_bridge import (
+        MUTATING_TOOL_NAMES,
+        TOOL_DEFINITIONS,
+        dispatch_tool,
+    )
+
+    names = {t["function"]["name"] for t in TOOL_DEFINITIONS}
+    assert "compile_mission" not in names
+    assert "set_user_prefs" not in names
+    for name in MUTATING_TOOL_NAMES:
+        result = dispatch_tool(name, {})
+        assert result["ok"] is False
+        assert result["code"] == "mutating_tool_blocked"
 
 
 def test_user_memory_tools(tmp_path: Path) -> None:

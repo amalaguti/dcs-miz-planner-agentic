@@ -384,11 +384,36 @@ avoid. Empty history MUST yield empty prefer/avoid lists.
 - **THEN** prefer and avoid MUST be empty
 
 ### Requirement: Agent tools document creative detail and bias
-Tool descriptions and/or planning guidance MUST state that `record_generation` detail
-MAY carry `creative` inspiration/behaviour ids, and that `list_generation_history`
-(plus feedback when available) SHOULD inform creative picks on vague asks.
+Planning guidance MUST state that generation `detail` MAY carry `creative`
+inspiration/behaviour ids, and that `list_generation_history` (plus feedback when
+available) SHOULD inform creative picks on vague asks. Host-owned mutating tool
+definitions (when present for admin/tests) MUST still document optional creative detail
+on `record_generation`.
 
 #### Scenario: record_generation description mentions creative detail
-- **WHEN** tool definitions are inspected
+- **WHEN** mutating/admin tool definitions are inspected
 - **THEN** `record_generation` guidance MUST mention optional creative decision detail
   (or an equivalent documented host convention tested in prompts)
+
+### Requirement: Default agent tools are read-only
+The default LLM tool list for planning and chat MUST omit mutating tools
+(`compile_mission`, `set_user_prefs`, `record_generation`, `record_feedback`). Those
+operations MUST remain available to host code via Python APIs or an explicit
+`allow_mutating` dispatch flag for tests/admin, not via the default agent tool surface.
+
+#### Scenario: Default tools exclude compile and prefs write
+- **WHEN** the default planning tool definitions are listed
+- **THEN** they MUST NOT include `compile_mission`, `set_user_prefs`, `record_generation`,
+  or `record_feedback`
+
+#### Scenario: Mutating dispatch blocked by default
+- **WHEN** `dispatch_tool` is called for `compile_mission` without mutating allowed
+- **THEN** it MUST return a structured error and MUST NOT write a `.miz`
+
+### Requirement: Compile output path allowlist
+When `compile_mission` runs (host or allowed dispatch), the output path MUST resolve to a
+location under an allowed `out/` directory. Paths outside that tree MUST be rejected.
+
+#### Scenario: Compile outside out rejected
+- **WHEN** compile is requested with an output path outside the allowed `out/` tree
+- **THEN** the call MUST fail with a clear path error and MUST NOT write the file

@@ -314,16 +314,49 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
 ]
 
 
+MUTATING_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "compile_mission",
+        "set_user_prefs",
+        "record_generation",
+        "record_feedback",
+    }
+)
+
+# Full catalog (planning + mutating) for admin/tests; default agent surface is planning-only.
+ALL_TOOL_DEFINITIONS: list[dict[str, Any]] = list(TOOL_DEFINITIONS)
+TOOL_DEFINITIONS = [
+    t for t in ALL_TOOL_DEFINITIONS if t["function"]["name"] not in MUTATING_TOOL_NAMES
+]
+MUTATING_TOOL_DEFINITIONS: list[dict[str, Any]] = [
+    t for t in ALL_TOOL_DEFINITIONS if t["function"]["name"] in MUTATING_TOOL_NAMES
+]
+
+
 def dispatch_tool(
     name: str,
     arguments: dict[str, Any] | str,
     *,
     db_path: Path | str | None = None,
+    allow_mutating: bool = False,
 ) -> dict[str, Any]:
-    """Invoke a real tool by name; return its structured result dict."""
+    """Invoke a real tool by name; return its structured result dict.
+
+    Mutating tools are blocked unless ``allow_mutating`` is True (host/tests only).
+    """
     if isinstance(arguments, str):
         arguments = json.loads(arguments) if arguments.strip() else {}
     args = dict(arguments or {})
+
+    if name in MUTATING_TOOL_NAMES and not allow_mutating:
+        return {
+            "ok": False,
+            "error": (
+                f"Tool {name!r} is host-owned (not on the default agent surface). "
+                "Use CLI / host slash commands, or allow_mutating for tests."
+            ),
+            "code": "mutating_tool_blocked",
+        }
 
     if name == "find_airfield":
         return find_airfield(str(args.get("query", "")), db_path=db_path)

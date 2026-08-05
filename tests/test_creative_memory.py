@@ -188,7 +188,7 @@ def test_spec_shape_reminder_allows_triggers() -> None:
 
 def test_prompts_mention_history_bias() -> None:
     from dcs_miz_planner.agent.prompts import compose_system_prompt
-    from dcs_miz_planner.agent.tool_bridge import TOOL_DEFINITIONS
+    from dcs_miz_planner.agent.tool_bridge import MUTATING_TOOL_DEFINITIONS
 
     prompt = compose_system_prompt(
         "raf",
@@ -198,12 +198,13 @@ def test_prompts_mention_history_bias() -> None:
     )
     assert "list_generation_history" in prompt
     assert "detail.creative" in prompt or "creative" in prompt
+    assert "default agent tool" in prompt
     biased = compose_system_prompt(
         "raf",
         creative_bias_fragment="Creative taste from past generations:\n- Prefer: altitude_speed_gates",
     )
     assert "altitude_speed_gates" in biased
-    rec = next(t for t in TOOL_DEFINITIONS if t["function"]["name"] == "record_generation")
+    rec = next(t for t in MUTATING_TOOL_DEFINITIONS if t["function"]["name"] == "record_generation")
     assert "creative" in rec["function"]["description"].lower()
 
 

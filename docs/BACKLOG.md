@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#33` `agent-tool-trust-boundary`; then `#34`; `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep `.miz` audits
+**Next promote / in proposal:** `#34` `strike-domain-validate`; then `#35`/`#36`; `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep `.miz` audits
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -163,7 +163,7 @@ assertive creativity invariant; host `/accept` ≠ tool capability boundary.
 | 31 | `docs-honesty-pass` | Cheap trust fixes: README Status no longer says combat/triggers “reserved for later”; campaign Doc claims = **filenames** (not themes/briefings) until `#40`; align prompts/README with what `list_installed_campaigns` actually returns | `done` (2026-08-05) |
 | 32 | `validation-false-green` | Kill green→broken Specs: late_activation ↔ `activate_group` graph; reject or implement `message.delay_s`; country/skill allowlists in validation; opposing-coalition for intercept/CAP enemies; optional dead-on-late-act requires activate path | `done` (2026-08-05) |
 | 30c | `agent-assertive-behaviours` | See M6 row — agent/prompt/memory side of creativity gaps | `done` (2026-08-05) |
-| 33 | `agent-tool-trust-boundary` | Chat/plan tools read-only by default; `compile_mission` / `set_user_prefs` / fake `record_*` only via host slash or explicit confirm; path allowlist under `out/` | `idea` (C1 — challenge threat model: local single-user vs future multi-user) |
+| 33 | `agent-tool-trust-boundary` | Chat/plan tools read-only by default; `compile_mission` / `set_user_prefs` / fake `record_*` only via host slash or explicit confirm; path allowlist under `out/` | `done` (2026-08-05) |
 | 34 | `strike-domain-validate` | Land/water (or domain) check for ground-attack placement at validate; constrain `randomize` geometry so green Specs stay on valid terrain | `idea` (B2) |
 | 35 | `trigger-rich-goldens` | Structural goldens (not string-smoke only) for radio+late-act, altitude/speed gates, mark/smoke, numeric flag chains | `idea` (D4) |
 | 36 | `ci-minimal` | GitHub Actions: pytest + ruff on PR; optional later markers `@live_llm` / `@needs_dcs` (not required for first CI) | `idea` (D3) |

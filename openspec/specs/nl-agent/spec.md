@@ -265,3 +265,13 @@ behaviours, never Lua, and never forcing narrative when hand triggers exist.
 - **WHEN** the planning or chat system prompt is built
 - **THEN** it MUST mention consulting generation history / feedback (or derived bias)
   when choosing mission_behaviour recipes on vague asks
+
+### Requirement: Prompt states mutate/compile are host-owned
+Planning system guidance MUST state that compiling `.miz` files, writing user prefs, and
+recording generations/feedback are host/CLI responsibilities — not agent tool calls on the
+default planning surface.
+
+#### Scenario: Prompt mentions host-owned compile/prefs
+- **WHEN** the planning system prompt is built
+- **THEN** it MUST indicate that compile / preference writes / feedback recording are
+  outside the default agent tool surface (host or CLI)
