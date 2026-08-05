@@ -39,3 +39,5 @@ Do **not** log routine typos, lint noise, or OpenSpec checkbox edits.
 
 - README stays brief (`keep-readme-updated`); do not dump lessons into README — link if needed
 - Research samples stay in gitignored `research/`; promote durable facts here or into the registry/specs
+- Live agent creativity regressions: skill `eval-agent-creativity` (vague-ask suite → LESSONS /
+  OpenSpec). Append agent-behaviour pitfalls found there when they are durable.
