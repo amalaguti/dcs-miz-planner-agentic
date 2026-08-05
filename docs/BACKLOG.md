@@ -111,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#41`+ adversarial remainder; `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep `.miz` audits
+**Next promote / in proposal:** `#42`+ adversarial remainder; `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep `.miz` audits
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -171,7 +171,7 @@ assertive creativity invariant; host `/accept` ≠ tool capability boundary.
 | 38 | `aircraft-module-warn` | Soft-warn when known Spec aircraft modules are missing from install (theatre inventory already exists); do **not** auto-promote into YAML — related to `#8a.1` harvest | `done` (2026-08-05) |
 | 39 | `theatre-terrain-binding` | Explicit Spec theatre → PyDCS terrain class; fail compile if unbound; stop Channel hardcode as silent universal | `done` (2026-08-05) |
 | 40 | `campaign-doc-pdf-extract` | Opt-in extract of local campaign `Doc/*.pdf` text for real briefing themes (size caps + hermetic fixtures); **or** permanently keep filename-only and close this as wontfix after `#31` | `done` (2026-08-05; opt-in + mtime/size cache) |
-| 41 | `weather-sot-parity` | CI/parity test: `WeatherPreset` enum ⊆ weather YAML ⊆ planning_options ⊆ compiler `_apply_weather` branches | `idea` (B12) |
+| 41 | `weather-sot-parity` | CI/parity test: `WeatherPreset` enum ⊆ weather YAML ⊆ planning_options ⊆ compiler `_apply_weather` branches | `done` (2026-08-05) |
 | 42 | `altitude-gate-polish` | Latch/debounce or validate against continuous message spam; document integer altitude metres / truncation | `idea` (B7 — may fold into `#30c` examples) |
 
 **Suggested challenge order (not mandatory):** `#31` → `#32` → `#30c` → `#33` → `#34` → `#35`/`#36` → rest.

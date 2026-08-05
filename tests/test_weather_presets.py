@@ -70,3 +70,14 @@ def test_compile_weather_presets_differ(tmp_path: Path) -> None:
     assert '["density"]=8' in marg_m
     assert dawn_m != sunny_m
     assert marg_m != sunny_m
+
+
+def test_weather_sot_parity() -> None:
+    from dcs_miz_planner.weather_sot import collect_weather_sot
+
+    sets = collect_weather_sot()
+    assert sets.enum, "WeatherPreset enum must not be empty"
+    assert sets.aligned, (
+        f"Weather SoT mismatch: enum={sorted(sets.enum)} yaml={sorted(sets.yaml)} "
+        f"planning={sorted(sets.planning)} compiler={sorted(sets.compiler)}"
+    )

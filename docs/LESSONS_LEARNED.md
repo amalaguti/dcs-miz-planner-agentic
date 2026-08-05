@@ -7,6 +7,15 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Weather SoT parity (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** Weather ids must stay equal across `WeatherPreset` enum,
+  `weather_presets.yaml`, planning_options `weather` family, and
+  `PyDCSCompiler._apply_weather` branches. Use `weather_sot.collect_weather_sot()` /
+  `test_weather_sot_parity` when adding a preset — do not update only one surface.
+- **Code:** `weather_sot.py`, `tests/test_weather_presets.py`.
+
 ## Campaign Doc PDF excerpts are cached (2026-08-05)
 
 - **Date:** 2026-08-05
