@@ -297,7 +297,10 @@ time-after, `flag_is` to flag true/false, `flag_equals` / `flag_more` / `flag_le
 numeric flag compare, `time_since_flag` to time-since-flag, `unit_dead` to group-dead for
 the referenced enemy flight, `target_dead` to group-dead for the referenced ground/sea
 target group, `group_life_less` to group-life-less for the referenced enemy or target
-group at the Spec percent threshold, `coalition_in_zone` to part-of-coalition-in-zone;
+group at the Spec percent threshold, `coalition_in_zone` to part-of-coalition-in-zone,
+`unit_altitude_higher` / `unit_altitude_lower` to unit-altitude higher/lower (AGL or MSL
+per Spec `agl`) for the player unit, `unit_speed_higher` / `unit_speed_lower` to
+unit-speed higher/lower for the player unit with Spec `speed_kmh` converted to m/s;
 `message` to delayed out-text, `set_flag` to set/clear flag, `set_flag_value` /
 `inc_flag` to set-flag-value / increase-flag, `mission_end` to end-mission with win/lose
 for the player coalition, `sound` to sound-to-all with the resolved registry file
@@ -349,3 +352,13 @@ writing a `.miz`.
 - **WHEN** a Spec with a valid `smoke` action is compiled
 - **THEN** the `.miz` MUST include a smoke-marker (explosion marker) action for the
   referenced zone
+
+#### Scenario: altitude gate emit
+- **WHEN** a Spec with a valid `unit_altitude_higher` (or lower) condition is compiled
+- **THEN** the `.miz` MUST include the corresponding unit-altitude predicate for the
+  player unit
+
+#### Scenario: speed gate emit
+- **WHEN** a Spec with a valid `unit_speed_higher` (or lower) condition is compiled
+- **THEN** the `.miz` MUST include the corresponding unit-speed predicate for the player
+  unit

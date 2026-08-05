@@ -35,10 +35,50 @@ Rules MUST NOT contain Lua, Mist, MOOSE, or free-form script fields. Optional `n
 - **WHEN** a trigger action or condition includes an undeclared field such as `lua` or `script`
 - **THEN** loading MUST fail (unknown field)
 
+### Requirement: Player altitude gate conditions
+The Mission Spec trigger condition vocabulary MUST include `unit_altitude_higher` and
+`unit_altitude_lower`. Each MUST accept `altitude_m` (> 0) and MAY accept `agl`
+(boolean, default true). Conditions MUST apply to the player aircraft unit only. The Spec
+MUST NOT accept free-form Lua, raw DCS unit ids, or enemy/target indices for these
+conditions.
+
+#### Scenario: Altitude higher AGL accepted structurally
+- **WHEN** a condition uses `type: unit_altitude_higher` with `altitude_m: 300` and
+  `agl: true` (or omitted)
+- **THEN** structural load MUST succeed when the rest of the Spec is valid
+
+#### Scenario: Altitude lower MSL accepted structurally
+- **WHEN** a condition uses `type: unit_altitude_lower` with `altitude_m: 1000` and
+  `agl: false`
+- **THEN** structural load MUST succeed when the rest of the Spec is valid
+
+#### Scenario: Non-positive altitude fails
+- **WHEN** `unit_altitude_higher` or `unit_altitude_lower` sets `altitude_m` ≤ 0
+- **THEN** load or validation MUST fail clearly
+
+### Requirement: Player speed gate conditions
+The Mission Spec trigger condition vocabulary MUST include `unit_speed_higher` and
+`unit_speed_lower`. Each MUST accept `speed_kmh` (> 0). Conditions MUST apply to the
+player aircraft unit only. The Spec MUST NOT accept free-form Lua, raw DCS unit ids, or
+speed in arbitrary units other than km/h.
+
+#### Scenario: Speed higher accepted structurally
+- **WHEN** a condition uses `type: unit_speed_higher` with `speed_kmh: 400`
+- **THEN** structural load MUST succeed when the rest of the Spec is valid
+
+#### Scenario: Speed lower accepted structurally
+- **WHEN** a condition uses `type: unit_speed_lower` with `speed_kmh: 200`
+- **THEN** structural load MUST succeed when the rest of the Spec is valid
+
+#### Scenario: Non-positive speed fails
+- **WHEN** `unit_speed_higher` or `unit_speed_lower` sets `speed_kmh` ≤ 0
+- **THEN** load or validation MUST fail clearly
+
 ### Requirement: v1 condition and action vocabulary
 Supported condition types MUST include `time_more`, `flag_is`, `flag_equals`,
 `flag_more`, `flag_less`, `time_since_flag`, `unit_dead`, `coalition_in_zone`,
-`target_dead`, and `group_life_less`. Supported action types MUST include `message`,
+`target_dead`, `group_life_less`, `unit_altitude_higher`, `unit_altitude_lower`,
+`unit_speed_higher`, and `unit_speed_lower`. Supported action types MUST include `message`,
 `set_flag`, `set_flag_value`, `inc_flag`, `mission_end`, `sound`, `radio_item_add`,
 `radio_item_remove`, `activate_group`, `deactivate_group`, `mark`, and `smoke`. Unknown
 `type` values MUST be rejected.
@@ -73,6 +113,14 @@ Supported condition types MUST include `time_more`, `flag_is`, `flag_equals`,
 
 #### Scenario: smoke accepted in vocabulary
 - **WHEN** an action uses `type: smoke` with `zone` and a curated `color`
+- **THEN** structural load MUST succeed when the rest of the Spec is valid
+
+#### Scenario: altitude gate accepted in vocabulary
+- **WHEN** a condition uses `type: unit_altitude_higher` with `altitude_m`
+- **THEN** structural load MUST succeed when the rest of the Spec is valid
+
+#### Scenario: speed gate accepted in vocabulary
+- **WHEN** a condition uses `type: unit_speed_higher` with `speed_kmh`
 - **THEN** structural load MUST succeed when the rest of the Spec is valid
 
 ### Requirement: Radio menu actions
@@ -212,8 +260,10 @@ of `enemy_index` or `target_index`; `group_life_less.percent` MUST be an integer
 to 100 inclusive; flag names on `flag_is` / `flag_equals` / `flag_more` / `flag_less` /
 `time_since_flag` / `set_flag` / `set_flag_value` / `inc_flag` MUST be non-empty; every
 `sound.asset_id` MUST exist in the product sound-asset registry; every `smoke.color` MUST
-be one of the curated colors. Well-formed non-empty `triggers`/`zones` MUST pass
-validation and MUST be eligible for native compile emit.
+be one of the curated colors; every `unit_altitude_higher` / `unit_altitude_lower`
+`altitude_m` MUST be > 0; every `unit_speed_higher` / `unit_speed_lower` `speed_kmh`
+MUST be > 0. Well-formed non-empty `triggers`/`zones` MUST pass validation and MUST be
+eligible for native compile emit.
 
 #### Scenario: Missing zone reference fails
 - **WHEN** a condition references zone `alpha` but `zones` has no such name
@@ -240,6 +290,14 @@ validation and MUST be eligible for native compile emit.
 - **WHEN** `group_life_less.target_index` is 0 but `targets` is empty
 - **THEN** validation MUST fail with a clear error
 
+#### Scenario: Non-positive altitude gate fails
+- **WHEN** `unit_altitude_higher.altitude_m` is 0 or negative
+- **THEN** validation or load MUST fail with a clear error
+
+#### Scenario: Non-positive speed gate fails
+- **WHEN** `unit_speed_lower.speed_kmh` is 0 or negative
+- **THEN** validation or load MUST fail with a clear error
+
 ### Requirement: Validated triggers are compileable
 A Spec that passes shared validation for typed zones/triggers MUST be accepted by the
 compiler for native emit (subject to registry/install checks). The system MUST NOT leave
@@ -252,11 +310,12 @@ validated trigger graphs as validate-only once native compile is implemented.
 ### Requirement: Narrative-produced rules stay in v1 vocabulary
 Zones and triggers produced by narrative expansion MUST use only supported v1 condition
 types (`time_more`, `flag_is`, `flag_equals`, `flag_more`, `flag_less`,
-`time_since_flag`, `unit_dead`, `coalition_in_zone`, `target_dead`, `group_life_less`)
+`time_since_flag`, `unit_dead`, `coalition_in_zone`, `target_dead`, `group_life_less`,
+`unit_altitude_higher`, `unit_altitude_lower`, `unit_speed_higher`, `unit_speed_lower`)
 and action types (`message`, `set_flag`, `set_flag_value`, `inc_flag`, `mission_end`,
 `sound`, `radio_item_add`, `radio_item_remove`, `activate_group`, `deactivate_group`,
 `mark`, `smoke`). They MUST remain eligible for native ME compile emit without Lua.
-Narrative packs MUST NOT be required to emit `mark` or `smoke` rules.
+Narrative packs MUST NOT be required to emit altitude/speed gate rules.
 
 #### Scenario: Expanded CAP graph validates
 - **WHEN** a CAP Spec with `narrative.enabled: true` is expanded and validated

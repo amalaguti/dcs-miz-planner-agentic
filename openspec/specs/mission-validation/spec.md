@@ -193,9 +193,10 @@ The shared validation engine SHALL accept Specs whose `triggers` and `zones` con
 mission-triggers vocabulary and reference rules, and MUST reject unknown types, duplicate
 zone names, out-of-range `enemy_index` / `target_index`, missing zone references (including
 `mark.zone` / `smoke.zone`), empty flag names, unknown `sound.asset_id` values, invalid
-`smoke.color`, and invalid `group_life_less` (bad index XOR, out-of-range index, or percent
-outside 1–100). Blanket refusal of any non-empty `triggers` list MUST NOT apply once the
-typed model is in force.
+`smoke.color`, invalid `group_life_less` (bad index XOR, out-of-range index, or percent
+outside 1–100), and non-positive `altitude_m` / `speed_kmh` on altitude/speed gate
+conditions. Blanket refusal of any non-empty `triggers` list MUST NOT apply once the typed
+model is in force.
 
 #### Scenario: Out-of-range enemy_index fails
 - **WHEN** `unit_dead.enemy_index` is 0 but `enemies` is empty
@@ -219,4 +220,12 @@ typed model is in force.
 
 #### Scenario: Invalid smoke color rejected
 - **WHEN** a Spec uses `smoke` with a color outside the curated set
+- **THEN** `validate_mission_spec` (or Spec load) MUST fail with a clear error
+
+#### Scenario: Non-positive altitude gate rejected
+- **WHEN** a Spec uses `unit_altitude_higher` with `altitude_m` ≤ 0
+- **THEN** `validate_mission_spec` (or Spec load) MUST fail with a clear error
+
+#### Scenario: Non-positive speed gate rejected
+- **WHEN** a Spec uses `unit_speed_higher` with `speed_kmh` ≤ 0
 - **THEN** `validate_mission_spec` (or Spec load) MUST fail with a clear error
