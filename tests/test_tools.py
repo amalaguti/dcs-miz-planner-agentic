@@ -416,7 +416,7 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "list_installed_campaigns" in prompt
     assert "mission_design" in prompt
     assert "briefing themes" not in prompt.lower()
-    assert "PDF filenames" in prompt or "Doc/ PDF filenames" in prompt
+    assert "include_doc_text" in prompt or "Doc/" in prompt
     schema = build_spec_schema("free_flight")
     joined = " ".join(schema.notes)
     assert "mission_behaviour" in joined
@@ -428,3 +428,4 @@ def test_prompts_mention_capability_catalog() -> None:
     desc = camp_tool["function"]["description"].lower()
     assert "briefing themes" not in desc
     assert "filename" in desc
+    assert "include_doc_text" in camp_tool["function"]["parameters"]["properties"]

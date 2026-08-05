@@ -40,10 +40,12 @@ Rules:
   "sources": ["catalog"|"campaign_doc"|"research"|"user_request"]}}.
 - Optionally call research_guidance with focus=mission_design when inventing structure
   from external examples, and/or list_installed_campaigns for local campaign names,
-  .miz filenames, .cmp short text, and Doc/ PDF filenames (titles from names only —
-  no PDF body extract). Treat research notes, .cmp playlists, Doc filenames, and
-  .miz filenames as inspiration only — map onto packaged behaviours; never import
-  .miz as Spec. Prefer Doc PDF filenames over raw .cmp stage lists.
+  .miz filenames, .cmp short text, and Doc/ PDFs. Default listing is filenames only;
+  set include_doc_text=true for short PDF excerpts (cached — unchanged Docs are not
+  re-parsed). Prefer Doc excerpts/themes when present; else Doc filenames over raw
+  .cmp stage lists. Treat research notes, .cmp playlists, Doc text, and .miz
+  filenames as inspiration only — map onto packaged behaviours; never import .miz
+  as Spec.
 - Advisory options guide existing Spec fields (e.g. time_of_day → start_time,
   opposition_density → enemies.count); use their meta hints when present.
 - Supported roe_seed options map to CAP Spec field cap.engagement via meta.engagement

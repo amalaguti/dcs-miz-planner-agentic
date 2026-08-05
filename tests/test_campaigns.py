@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from dcs_miz_planner.install.campaigns import index_installed_campaigns, scan_campaigns_root
+from dcs_miz_planner.install.doc_extract import DocTextCache, excerpt_for_pdf
 from dcs_miz_planner.tools import list_installed_campaigns
 
 
@@ -53,8 +54,9 @@ def _write_fixture_campaign(campaigns: Path) -> Path:
     (pack / "Fixture - 02.miz").write_bytes(b"PK\x03\x04fake")
     doc = pack / "Doc"
     doc.mkdir()
-    (doc / "Fixture - Mission 01.pdf").write_bytes(b"%PDF-1.4 fixture")
-    (doc / "Fixture - Campaign introduction.pdf").write_bytes(b"%PDF-1.4 intro")
+    # Bytes need only exist on disk for size/mtime cache identity; extract is mocked.
+    (doc / "Fixture - Mission 01.pdf").write_bytes(b"%PDF-1.4 fixture body")
+    (doc / "Fixture - Campaign introduction.pdf").write_bytes(b"%PDF-1.4 intro body")
     return pack
 
 
@@ -97,7 +99,9 @@ def test_list_installed_campaigns_tool_fixture(tmp_path: Path) -> None:
     camp = result["campaigns"][0]
     assert camp["name"] == "Spitfire Fixture Campaign"
     assert "Fixture - 01.miz" in camp["missions"]
-    assert "Fixture - Mission 01.pdf" in camp["docs"]
+    names = [d["filename"] for d in camp["docs"]]
+    assert "Fixture - Mission 01.pdf" in names
+    assert all(d.get("excerpt") is None for d in camp["docs"])
 
 
 def test_list_installed_campaigns_missing_install_nonfatal(
@@ -113,3 +117,44 @@ def test_list_installed_campaigns_missing_install_nonfatal(
     assert result["ok"] is True
     assert result["campaigns"] == []
     assert "warning" in result
+
+
+def test_include_doc_text_returns_excerpt(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from dcs_miz_planner.install import doc_extract as de
+
+    campaigns = tmp_path / "campaigns"
+    campaigns.mkdir()
+    _write_fixture_campaign(campaigns)
+    db = tmp_path / "cache.sqlite"
+    monkeypatch.setattr(
+        de, "extract_pdf_text", lambda _p, **_k: "Dawn Channel patrol briefing theme"
+    )
+
+    result = list_installed_campaigns(campaigns_dir=campaigns, db_path=db, include_doc_text=True)
+    assert result["ok"] is True
+    assert result["include_doc_text"] is True
+    docs = result["campaigns"][0]["docs"]
+    excerpts = [d.get("excerpt") or "" for d in docs]
+    assert any("Channel patrol" in e for e in excerpts)
+
+
+def test_doc_extract_cache_avoids_reread(tmp_path: Path) -> None:
+    campaigns = tmp_path / "campaigns"
+    campaigns.mkdir()
+    pack = _write_fixture_campaign(campaigns)
+    pdf = pack / "Doc" / "Fixture - Mission 01.pdf"
+    cache = DocTextCache(tmp_path / "cache.sqlite")
+
+    calls = {"n": 0}
+
+    def counting(_path: Path, **_kwargs: object) -> str:
+        calls["n"] += 1
+        return "cached briefing colour"
+
+    e1, cached1 = excerpt_for_pdf(pdf, cache=cache, extract_fn=counting)
+    e2, cached2 = excerpt_for_pdf(pdf, cache=cache, extract_fn=counting)
+    assert e1 == "cached briefing colour"
+    assert e2 == e1
+    assert cached1 is False
+    assert cached2 is True
+    assert calls["n"] == 1

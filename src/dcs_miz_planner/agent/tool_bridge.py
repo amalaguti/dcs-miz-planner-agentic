@@ -71,12 +71,23 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "name": "list_installed_campaigns",
             "description": (
                 "List local DCS campaigns under Mods/campaigns (names, .miz files, "
-                "Doc/ PDF filenames, short .cmp description). Inspiration only — "
-                "prefer Doc PDF filenames over .cmp stage lists; map ideas onto "
-                "mission_behaviour cards. No PDF text extract. Never import .miz as "
-                "Spec or invent Lua."
+                "Doc/ PDFs, short .cmp description). Inspiration only — never import "
+                ".miz as Spec. Default: Doc filenames only. Set include_doc_text=true "
+                "for short PDF excerpts (cached by file mtime/size; unchanged Docs are "
+                "not re-parsed). Prefer Doc themes when excerpts exist; else filenames."
             ),
-            "parameters": {"type": "object", "properties": {}},
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "include_doc_text": {
+                        "type": "boolean",
+                        "description": (
+                            "If true, return short Doc PDF excerpts (cached). "
+                            "Default false = filenames only."
+                        ),
+                    },
+                },
+            },
         },
     },
     {
@@ -365,7 +376,8 @@ def dispatch_tool(
     if name == "list_mission_options":
         return list_mission_options(db_path=db_path)
     if name == "list_installed_campaigns":
-        return list_installed_campaigns(db_path=db_path)
+        include_doc_text = bool(args.get("include_doc_text", False))
+        return list_installed_campaigns(db_path=db_path, include_doc_text=include_doc_text)
     if name == "get_mission_spec_schema":
         return get_mission_spec_schema(str(args.get("mission_type", "")))
     if name == "get_user_prefs":

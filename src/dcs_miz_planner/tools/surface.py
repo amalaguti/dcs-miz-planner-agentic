@@ -507,32 +507,49 @@ def list_installed_campaigns(
     dcs_root: Path | str | None = None,
     campaigns_dir: Path | str | None = None,
     db_path: Path | str | None = None,
+    include_doc_text: bool = False,
 ) -> dict[str, Any]:
     """
     List local DCS campaigns under ``Mods/campaigns`` for mission inspiration.
 
-    Returns campaign name, mission ``.miz`` filenames, ``Doc/`` PDF **filenames only**
-    (no PDF text extract), and a short ``.cmp`` description when present. Read-only;
-    does not import ``.miz`` into Spec. ``db_path`` unused (tool signature parity).
+    Returns campaign name, mission ``.miz`` filenames, ``Doc/`` PDF filenames, and a
+    short ``.cmp`` description when present. When ``include_doc_text`` is true, Doc
+    entries include short PDF excerpts (mtime/size cached under ``db_path``). Read-only;
+    does not import ``.miz`` into Spec.
     """
-    del db_path
+    from ..install.doc_extract import DocTextCache, enrich_campaign_docs
+    from ..install.store import default_db_path
+
     index = index_installed_campaigns(explicit_root=dcs_root, campaigns_dir=campaigns_dir)
-    campaigns = [
-        {
-            "name": c.name,
-            "path": c.path,
-            "description": c.description,
-            "cmp_file": c.cmp_file,
-            "missions": [m.filename for m in c.missions],
-            "docs": [d.filename for d in c.docs],
-        }
-        for c in index.campaigns
-    ]
+    cache: DocTextCache | None = None
+    if include_doc_text:
+        cache = DocTextCache(db_path if db_path is not None else default_db_path())
+
+    campaigns: list[dict[str, Any]] = []
+    for c in index.campaigns:
+        if include_doc_text:
+            docs_out = [
+                {"filename": d.filename, "excerpt": d.excerpt}
+                for d in enrich_campaign_docs(c.path, [d.filename for d in c.docs], cache=cache)
+            ]
+        else:
+            docs_out = [{"filename": d.filename, "excerpt": None} for d in c.docs]
+        campaigns.append(
+            {
+                "name": c.name,
+                "path": c.path,
+                "description": c.description,
+                "cmp_file": c.cmp_file,
+                "missions": [m.filename for m in c.missions],
+                "docs": docs_out,
+            }
+        )
     diags = [{"message": d.message, "source": d.source} for d in index.diagnostics]
     payload: dict[str, Any] = {
         "campaigns": campaigns,
         "dcs_roots": list(index.dcs_roots),
         "diagnostics": diags,
+        "include_doc_text": include_doc_text,
     }
     if not campaigns and not index.dcs_roots and campaigns_dir is None and dcs_root is None:
         # No install discovered — structured empty, non-fatal for the agent.

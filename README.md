@@ -49,8 +49,9 @@ Player altitude/speed gates
 Trigger-rich examples above are also pinned by structural goldens (not string-smoke only).
 Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
 `research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
-`Mods/campaigns` `.miz` / `.cmp` / Doc PDF **filenames** — no PDF text extract yet; see
-backlog `#40`) for creative planning inspiration. Creative decisions persist in generation
+`Mods/campaigns` `.miz` / `.cmp` / Doc PDFs — filenames by default; opt-in
+`include_doc_text` for short cached PDF excerpts) for creative planning inspiration.
+Creative decisions persist in generation
 `detail.creative`; feedback + history bias later invents.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
@@ -60,7 +61,7 @@ hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 **Next:** Adversarial review track in [`docs/BACKLOG.md`](docs/BACKLOG.md)
-(`#40`+ remaining); notes in
+(`#41`+ remaining); notes in
 [`docs/adversarial-review-2026-08-05.md`](docs/adversarial-review-2026-08-05.md).
 Then `#22` only if native insufficient; R1/R2 deep `.miz` audits remain the promote path
 beyond live snippets / local listing.
@@ -192,8 +193,9 @@ Import from `dcs_miz_planner.tools` (no dedicated tools CLI — pytest is the ac
 - `get_mission_spec_schema(mission_type)` — compact Spec example + notes (from `examples/`)
 - `list_mission_options()` — Spec enums + enriched planning options + offerable theatres
   (includes `mission_behaviour` / `mission_inspiration` capability cards)
-- `list_installed_campaigns()` — local `Mods/campaigns` names, `.miz` files, `Doc/` PDFs
-  (inspiration only; no `.miz`→Spec import)
+- `list_installed_campaigns(include_doc_text=False)` — local `Mods/campaigns` names,
+  `.miz` files, `Doc/` PDFs (filenames by default; set `include_doc_text=true` for
+  short excerpts cached by mtime/size). Inspiration only; no `.miz`→Spec import
 - `get_user_prefs` / `set_user_prefs` / `list_generation_history` / `record_generation` /
   `record_feedback` — local user memory
 - `research_guidance(query, …, focus=)` — tactics/procedures/history notes for commander

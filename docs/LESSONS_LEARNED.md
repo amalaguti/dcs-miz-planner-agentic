@@ -7,6 +7,15 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Campaign Doc PDF excerpts are cached (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** Opt-in `include_doc_text` on `list_installed_campaigns` extracts short
+  Doc PDF text via `pypdf`, capped (size/pages/chars). Cache in inventory SQLite
+  (`campaign_doc_cache`) by absolute path + mtime_ns + size so unchanged campaign Docs
+  are not re-parsed. Default remains filenames-only for fast listing.
+- **Code:** `install/doc_extract.py`, `tools/surface.py`.
+
 ## Spec theatre → PyDCS terrain binding (2026-08-05)
 
 - **Date:** 2026-08-05
