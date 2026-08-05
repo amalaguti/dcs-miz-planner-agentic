@@ -22,6 +22,7 @@ from ..models import (
     RadioItemAddAction,
     RadioItemRemoveAction,
     SetFlagAction,
+    SetFlagRandomAction,
     SetFlagValueAction,
     SmokeAction,
     SmokeColor,
@@ -241,6 +242,15 @@ def _map_action(
         return action_mod.SetFlagValue(flag_id(act.flag), value=act.value), next_mark_id
     if isinstance(act, IncFlagAction):
         return action_mod.IncreaseFlag(flag_id(act.flag), value=act.by), next_mark_id
+    if isinstance(act, SetFlagRandomAction):
+        return (
+            action_mod.SetFlagRandom(
+                flag_id(act.flag),
+                min_value=act.min,
+                max_value=act.max,
+            ),
+            next_mark_id,
+        )
     if isinstance(act, SoundAction):
         path = resolve_sound_path(act.asset_id)
         res_key = mission.map_resource.add_resource_file(path)
@@ -336,7 +346,13 @@ def collect_flag_names(rules: list[TriggerRule]) -> list[str]:
         for act in rule.then:
             if isinstance(
                 act,
-                (SetFlagAction, SetFlagValueAction, IncFlagAction, RadioItemAddAction),
+                (
+                    SetFlagAction,
+                    SetFlagValueAction,
+                    IncFlagAction,
+                    SetFlagRandomAction,
+                    RadioItemAddAction,
+                ),
             ):
                 _add(act.flag)
     return seen

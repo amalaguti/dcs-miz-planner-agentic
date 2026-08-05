@@ -280,17 +280,19 @@ options:
     label: Curated sound + numeric flags
     description: >
       Play a curated sound asset and/or drive timed flag beats (equals/more/less,
-      time_since_flag, inc_flag, set_flag_value) without file paths.
+      time_since_flag, inc_flag, set_flag_value, set_flag_random) without file paths.
     support: supported
     meta:
-      intent: [audio_cue, timed_beats, immersion]
+      intent: [audio_cue, timed_beats, immersion, random_flag]
       mission_types: [free_flight, intercept, cap, ground_attack, escort]
       conditions: [time_more, flag_equals, flag_more, flag_less, time_since_flag]
-      actions: [sound, set_flag, set_flag_value, inc_flag, message]
+      actions: [sound, set_flag, set_flag_value, inc_flag, set_flag_random, message]
       recipe: >
         sound uses curated asset_id only; chain flags with flag_equals/more/less and
-        time_since_flag for sequenced callouts.
+        time_since_flag for sequenced callouts; set_flag_random for native raid dice
+        (min–max inclusive) before branching on flag_equals.
       example: examples/manston_freeflight_sound_flags.yaml
+      example_flag_random: examples/manston_freeflight_flag_random.yaml
 
   - family: mission_behaviour
     id: group_life_less

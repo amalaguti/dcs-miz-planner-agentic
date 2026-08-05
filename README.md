@@ -41,6 +41,7 @@ native ME triggers (accepted through GA 2026-08-04). F10 radio + late activation
 (`examples/manston_dawn_intercept_radio.yaml`) for difficulty spawn options (accepted
 in ME 2026-08-04). Curated `sound` + numeric flags
 (`examples/manston_freeflight_sound_flags.yaml`; accepted in-game 2026-08-04).
+Native Set Flag Random (`examples/manston_freeflight_flag_random.yaml`; 2026-08-05).
 `group_life_less` partial-damage beats
 (`examples/manston_ground_attack_life_less.yaml`; accepted in ME 2026-08-04).
 `mark` / `smoke` zone markers
@@ -62,9 +63,8 @@ inspiration, not imported as Spec; stub LLM + offline research fixtures keep tes
 hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Next:** Optional `#22a` `trigger-flag-random` (native raid dice from R1); **R2**
-campaign `.miz` audit; **R8** when bumping PyDCS; `#8a.2` install `/maintenance`.
-See [`docs/BACKLOG.md`](docs/BACKLOG.md).
+**Next:** **R2** campaign `.miz` audit; **R8** when bumping PyDCS; `#8a.2` install
+`/maintenance` if useful. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Stack
 

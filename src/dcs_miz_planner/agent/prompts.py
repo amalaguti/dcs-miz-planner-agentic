@@ -83,7 +83,7 @@ Rules:
   strike, and escort; omit player.payload. Optional typed zones/triggers allowed
   (compiler emits native ME tables; never put Lua in the Spec). Prefer curated
   sound asset_id (no paths), numeric flags (flag_equals/more/less,
-  time_since_flag, inc_flag, set_flag_value), group_life_less
+  time_since_flag, inc_flag, set_flag_value, set_flag_random), group_life_less
   (enemy_index or target_index + percent 1–100 remaining life), mark/smoke
   (zone name + text / curated color), and player altitude/speed gates
   (unit_altitude_higher|lower with altitude_m + optional agl; unit_speed_higher|lower

@@ -15,10 +15,12 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   (`BATTLE_OF_BRITAIN_MASTERV2.miz`). Another variant embeds Mist for zone unit
   queries / scheduled RTB, but still uses **native `a_set_flag_random`** for raid
   dice and large `a_activate_group` pools. Do **not** treat “dynamic” as a reason to
-  pin Mist; prefer Spec `radio`/`late_activation` (have) and optional `#22a`
-  `set_flag_random` before `#22` Lua. Ignore ME-exported Avionics/Config `.lua` zip
-  members (Dunkirk) — they are not mission scripts.
+  pin Mist; prefer Spec `radio`/`late_activation` (have) and Spec `set_flag_random`
+  (`#22a`, PyDCS `SetFlagRandom`) before `#22` Lua. Ignore ME-exported Avionics/Config
+  `.lua` zip members (Dunkirk) — they are not mission scripts.
 - **Source:** R1 Priority Channel downloads under `research/samples/user-singles/`.
+- **Code:** `models.SetFlagRandomAction`, `compiler/triggers_emit.py`; example
+  `examples/manston_freeflight_flag_random.yaml`.
 
 ## Weather SoT parity (2026-08-05)
 

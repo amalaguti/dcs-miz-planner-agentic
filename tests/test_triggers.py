@@ -196,6 +196,8 @@ def test_schema_notes_mention_radio_or_late():
 
 
 SOUND_FLAGS = ROOT / "examples" / "manston_freeflight_sound_flags.yaml"
+FLAG_RANDOM = ROOT / "examples" / "manston_freeflight_flag_random.yaml"
+FLAG_RANDOM = ROOT / "examples" / "manston_freeflight_flag_random.yaml"
 
 
 def test_sound_flags_example_loads():
@@ -259,6 +261,41 @@ def test_sound_path_field_rejected(tmp_path: Path):
 
 def test_cli_validate_sound_flags_ok():
     assert main(["validate", str(SOUND_FLAGS)]) == 0
+
+
+def test_flag_random_example_loads():
+    spec = load_mission_spec(FLAG_RANDOM)
+    assert any(a.type == "set_flag_random" for t in spec.triggers for a in t.then)
+    act = next(a for t in spec.triggers for a in t.then if a.type == "set_flag_random")
+    assert act.flag == "raid_die" and act.min == 1 and act.max == 4
+    assert validate_mission_spec(spec).ok
+
+
+def test_compile_flag_random(tmp_path: Path):
+    spec = load_mission_spec(FLAG_RANDOM)
+    out = PyDCSCompiler().compile(spec, tmp_path / "flag_random.miz")
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8", "replace")
+    assert "a_set_flag_random" in mission
+    assert "c_flag_equals" in mission
+
+
+def test_flag_random_inverted_range_rejected(tmp_path: Path):
+    data = _base()
+    data["triggers"] = [
+        {
+            "when": [{"type": "time_more", "seconds": 1}],
+            "then": [{"type": "set_flag_random", "flag": "x", "min": 5, "max": 1}],
+        }
+    ]
+    p = tmp_path / "bad_rand.yaml"
+    p.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(SpecLoadError):
+        load_mission_spec(p)
+
+
+def test_cli_validate_flag_random_ok():
+    assert main(["validate", str(FLAG_RANDOM)]) == 0
 
 
 def test_schema_notes_mention_sound_and_numeric_flags():

@@ -307,6 +307,21 @@ class IncFlagAction(SpecModel):
     by: int = Field(default=1)
 
 
+class SetFlagRandomAction(SpecModel):
+    """Set a numeric flag to a uniform random integer in [min, max] (ME Set Flag Random)."""
+
+    type: Literal["set_flag_random"] = "set_flag_random"
+    flag: str = Field(min_length=1)
+    min: int
+    max: int
+
+    @model_validator(mode="after")
+    def _min_le_max(self) -> SetFlagRandomAction:
+        if self.min > self.max:
+            raise ValueError("set_flag_random requires min <= max")
+        return self
+
+
 class SoundAction(SpecModel):
     """Play a curated sound asset to all (no arbitrary paths)."""
 
@@ -396,6 +411,7 @@ TriggerAction = Annotated[
     | SetFlagAction
     | SetFlagValueAction
     | IncFlagAction
+    | SetFlagRandomAction
     | SoundAction
     | MissionEndAction
     | RadioItemAddAction

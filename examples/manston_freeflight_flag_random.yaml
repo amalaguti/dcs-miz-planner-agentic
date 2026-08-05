@@ -1,0 +1,47 @@
+# Compileable sample: Set Flag Random (open in ME; expect SET FLAG RANDOM
+# under Set Rules for Triggers). Native raid-dice pattern from R1 audits.
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Free Flight (flag random sample)
+description: >
+  Same Manston cold free flight as the acceptance example, plus a native Set Flag
+  Random roll (1–4) after T+5s and a message when the rolled value equals 1.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+zones: []
+triggers:
+  - name: roll_raid_die
+    once: true
+    when:
+      - type: time_more
+        seconds: 5
+    then:
+      - type: set_flag_random
+        flag: raid_die
+        min: 1
+        max: 4
+      - type: message
+        text: "Manston — raid die rolled (1–4 into flag raid_die)."
+        duration_s: 8
+  - name: light_raid
+    once: true
+    when:
+      - type: flag_equals
+        flag: raid_die
+        value: 1
+    then:
+      - type: message
+        text: "Light raid result (die == 1)."
+        duration_s: 8

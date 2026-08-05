@@ -26,6 +26,7 @@ from .models import (
     RadioItemAddAction,
     RadioItemRemoveAction,
     SetFlagAction,
+    SetFlagRandomAction,
     SetFlagValueAction,
     SmokeAction,
     SoundAction,
@@ -716,14 +717,24 @@ def _validate_triggers_and_zones(
                             message="mark text must be non-empty",
                         )
                     )
-            elif isinstance(act, (SetFlagAction, SetFlagValueAction, IncFlagAction)) and not (
-                act.flag.strip()
-            ):
+            elif isinstance(
+                act,
+                (SetFlagAction, SetFlagValueAction, IncFlagAction, SetFlagRandomAction),
+            ) and not (act.flag.strip()):
                 errors.append(
                     ValidationError(
                         code="empty_flag_name",
                         path=f"{path}.flag",
                         message="flag name must be non-empty",
+                    )
+                )
+            elif isinstance(act, SetFlagRandomAction) and act.min > act.max:
+                errors.append(
+                    ValidationError(
+                        code="flag_random_range",
+                        path=path,
+                        message="set_flag_random requires min <= max",
+                        hint=f"got min={act.min}, max={act.max}",
                     )
                 )
 
