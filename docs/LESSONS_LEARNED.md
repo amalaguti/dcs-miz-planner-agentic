@@ -7,6 +7,20 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## CI needs hermetic inventory + Windows runners (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** GitHub runners have no DCS install cache. Any test that calls
+  `validate_mission_spec` / `PyDCSCompiler` / CLI `validate` without an explicit
+  `inventory=` hits `get_inventory()` → `install_inventory_unavailable`. Autouse
+  `tests/conftest.py` patches `validation.get_inventory` to
+  `channel_available_inventory()`; tests that need empty/disabled inventory still
+  pass `inventory=` explicitly. Also: full mission-dump goldens diverge on
+  Linux vs Windows-authored fixtures — keep CI on `windows-latest`. Registry
+  discovery must still call `_registry_dcs_paths()` on all platforms so Linux
+  unit tests can monkeypatch it (real impl returns `[]` off Windows).
+- **Code:** `tests/conftest.py`, `.github/workflows/ci.yml`, `install/discover.py`.
+
 ## R2 ED Spitfire campaigns: immersion without triggers (2026-08-05)
 
 - **Date:** 2026-08-05
