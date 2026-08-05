@@ -128,6 +128,23 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("mission_behaviour", "radio_late_activation")]["support"] == "supported"
     assert by_key[("mission_behaviour", "sound_flag_chain")]["support"] == "supported"
     assert by_key[("mission_behaviour", "group_life_less")]["support"] == "supported"
+
+    # Mission-designer shelves (#30e)
+    for mode in ("fixed", "live", "choose", "hybrid"):
+        row = by_key[("dynamics_mode", mode)]
+        assert row["support"] == "advisory"
+        assert row["meta"].get("layer") == "play_time"
+    soft = by_key[("strike_target_class", "soft_vehicles")]
+    assert soft["support"] == "supported"
+    assert soft["meta"]["domain"] == "land"
+    assert "Blitz_36-6700A" in soft["meta"]["unit_ids"]
+    sea = by_key[("strike_target_class", "sea_craft")]
+    assert sea["meta"]["domain"] == "sea"
+    assert "Schnellboot_type_S130" in sea["meta"]["ship_ids"]
+    assert by_key[("strike_target_class", "hard_infrastructure")]["support"] == "future"
+    assert by_key[("channel_place", "manston_home")]["meta"]["airfield"] == "Manston"
+    assert by_key[("channel_place", "french_coast_strike_belt")]["meta"]["domain"] == "land"
+    assert by_key[("channel_place", "mid_channel_shipping")]["meta"]["domain"] == "sea"
     insp = by_key[("mission_inspiration", "low_level_channel_hop")]
     assert insp["support"] == "advisory"
     assert "altitude_speed_gates" in insp["meta"]["behaviours"]
@@ -413,6 +430,11 @@ def test_prompts_mention_capability_catalog() -> None:
     prompt = compose_system_prompt("raf")
     assert "mission_behaviour" in prompt
     assert "mission_inspiration" in prompt
+    assert "dynamics_mode" in prompt
+    assert "strike_target_class" in prompt
+    assert "channel_place" in prompt
+    assert "Layer A" in prompt or "randomize" in prompt
+    assert "Layer B" in prompt or "play-time" in prompt.lower() or "play-time" in prompt
     assert "list_installed_campaigns" in prompt
     assert "mission_design" in prompt
     assert "briefing themes" not in prompt.lower()
@@ -420,8 +442,17 @@ def test_prompts_mention_capability_catalog() -> None:
     schema = build_spec_schema("free_flight")
     joined = " ".join(schema.notes)
     assert "mission_behaviour" in joined
+    assert "dynamics_mode" in joined
+    assert "strike_target_class" in joined
     assert "list_installed_campaigns" in joined
     assert "briefing themes" not in joined.lower()
+    options_tool = next(
+        t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_mission_options"
+    )
+    opt_desc = options_tool["function"]["description"]
+    assert "dynamics_mode" in opt_desc
+    assert "strike_target_class" in opt_desc
+    assert "channel_place" in opt_desc
     camp_tool = next(
         t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_installed_campaigns"
     )

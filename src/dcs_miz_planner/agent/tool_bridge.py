@@ -59,8 +59,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "description": (
                 "List known mission enums, offerable theatres, and enriched planning "
                 "options with support levels (supported|advisory|future). Includes "
-                "mission_behaviour (Spec recipes) and mission_inspiration (advisory "
-                "patterns → behaviour ids) for creative immersion/challenge."
+                "mission_behaviour / mission_inspiration (immersion recipes), plus "
+                "mission-designer shelves dynamics_mode, strike_target_class, and "
+                "channel_place for co-authoring play-time mode, strike composition, "
+                "and Channel places."
             ),
             "parameters": {"type": "object", "properties": {}},
         },

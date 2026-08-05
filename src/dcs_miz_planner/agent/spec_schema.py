@@ -144,7 +144,10 @@ _COMMON_NOTES: tuple[str, ...] = (
     (
         "For creative immersion/challenge: list_mission_options families "
         "mission_inspiration (advisory patterns) and mission_behaviour (supported "
-        "recipes with meta.recipe / Spec types / example paths). Optionally "
+        "recipes with meta.recipe / Spec types / example paths). For co-design of "
+        "play-time variation, strike targets, or Channel places: also consult "
+        "dynamics_mode, strike_target_class, and channel_place (advisory palette; "
+        "dynamics emit deferred — do not invent unit/ship ids). Optionally "
         "research_guidance(focus=mission_design) and list_installed_campaigns "
         "(Doc filenames by default; include_doc_text for cached PDF excerpts). "
         "Map ideas onto packaged "
