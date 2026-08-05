@@ -65,6 +65,7 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 9 | `mission-option-catalog` | Enumerate planning knobs the agent can ask about / suggest (start type, weather, time, opposition density, ROE seeds, payload families); load into SQLite catalog for list/ask | `done` (catalog/tool accepted 2026-08-01; Normandy not required) |
 | 8a | `agent-catalog-sqlite` | Sync YAML registry + mission types/options into queryable SQLite tables for agent/UI; keep install inventory schema distinct (`catalog_*` vs install tables); theatre discovery join; aircraft module harvest deferred | `done` (CLI accepted 2026-07-26) |
 | 8a.1 | `catalog-discover-modules` | Optional: harvest installed aircraft modules for discovery-only listing (never auto-promote into known YAML) | `done` (2026-08-05; cache on theatres --refresh) |
+| 8a.2 | `install-maintenance-slash` | Host `/maintenance` (or extend `/catalog`): read-only install summary (scan time, theatres, known aircraft installed/missing, discovered-only folders); optional refresh. Not default LLM invent tools — slash/CLI only | `idea` (parked 2026-08-05) |
 | 8b | `user-prefs-and-history` | Store user preferences, mission-generation history (Spec path, outcome), and post-flight / post-gen satisfaction surveys; agent tools to read prefs and record feedback | `done` (CLI/API accepted 2026-08-01) |
 | 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling (uses catalog + prefs/history tools) | `done` (stub Spec accepted 2026-08-01; live needs OPENAI_API_KEY) |
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
@@ -209,6 +210,10 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 
 ## Later / deferred
 
+- **Install maintenance slash** — M3 `#8a.2` `install-maintenance-slash`:
+  parked 2026-08-05 after `#8a.1` cache. Host `/maintenance` (or richer `/catalog`)
+  for read-only install status + optional refresh; keep out of default LLM invent
+  tool list so the agent does not treat discovered-only modules as Spec ids.
 - **Spitfire Channel radio A–E bank** — M5 `#19` `spitfire-radio-channel-presets`:
   parked 2026-08-02; group frequency 124 already flyable; unit Radio bank is cockpit
   immersion only (ED Channel A=124/B=40/C=41/D=42/E=108.9).
