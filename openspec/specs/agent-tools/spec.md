@@ -370,10 +370,12 @@ The system SHALL expose an agent-callable tool (e.g. `list_installed_campaigns`)
 discovers the local DCS World install root (reuse existing install discovery) and lists
 campaigns under `Mods/campaigns`, including campaign display name when available, mission
 `.miz` filenames, short description text when obtainable from lightweight `.cmp`
-metadata, and **filenames only** under each campaign’s `Doc/` folder when present
-(typically briefing PDFs, intro, maps). The tool MUST NOT extract or return PDF body
-text. Tool descriptions and host guidance MUST describe Doc entries as filenames/titles,
-not as readable briefing themes or extracted content. The tool MUST be read-only, MUST NOT
+metadata, and Doc PDF filenames under each campaign’s `Doc/` folder when present.
+By default the tool MUST NOT extract PDF body text (filenames / null excerpts only).
+When an explicit opt-in flag (e.g. `include_doc_text`) is set, the tool MAY return short
+text excerpts from local `Doc/*.pdf` files subject to size/page/length caps. Extracted
+excerpts MUST be cached keyed by file path and content identity (at least mtime and size)
+so unchanged PDFs are not re-read on later calls. The tool MUST be read-only, MUST NOT
 compile or import campaign `.miz` files into Mission Specs, and MUST NOT require network
 access. When no DCS root or campaigns folder is found, the tool MUST return a structured
 empty/failure result without inventing campaigns. Tests MUST use a hermetic fixture tree
@@ -390,10 +392,19 @@ rather than a machine-specific path.
 - **THEN** the tool MUST report a clear structured failure or empty list without crashing
   the agent loop
 
-#### Scenario: Doc entries are filenames only
-- **WHEN** a campaign folder contains `Doc/*.pdf` files
-- **THEN** the tool result MUST expose those PDF filenames and MUST NOT claim or return
-  extracted PDF text or briefing-body themes
+#### Scenario: Default Doc entries omit body text
+- **WHEN** a campaign folder contains `Doc/*.pdf` files and Doc text extract is not opted in
+- **THEN** the tool result MUST expose those PDF filenames and MUST NOT return extracted
+  PDF body text
+
+#### Scenario: Opt-in Doc extract returns excerpt
+- **WHEN** Doc text extract is opted in against a hermetic campaign tree with a readable PDF
+- **THEN** the tool result MUST include a non-empty excerpt for that Doc (subject to caps)
+
+#### Scenario: Unchanged PDF uses cache
+- **WHEN** Doc text extract is opted in twice for the same unchanged PDF path
+- **THEN** the second call MUST return the cached excerpt without re-parsing the PDF file
+
 
 ### Requirement: Creative bias from history and feedback
 The system SHALL provide a deterministic helper (callable from tests and planning hosts)
