@@ -22,6 +22,7 @@ from ..memory import (
     load_creative_bias,
 )
 from ..models import MissionSpec
+from ..tools.research import format_research_host_message, format_research_lines
 from ..tools.surface import list_mission_options, research_guidance
 from ..validation import validate_mission_spec
 from .llm import LLMClient, default_tools
@@ -285,28 +286,16 @@ class PlanSession:
         )
         notes = result.get("notes") or []
         warning = (result.get("warning") or "").strip()
-        if warning:
-            lines = [
-                f"Research for: {q}",
-                f"Warning: {warning}",
-                "Offline fixture fallback (not live web results):",
-            ]
-        else:
-            lines = [f"Research for: {q} (live web notes)"]
-        for note in notes:
-            title = note.get("title") or "note"
-            snippet = note.get("snippet") or ""
-            source = note.get("source") or ""
-            src = f" [{source}]" if source else ""
-            lines.append(f"- {title}{src}: {snippet}")
-        if not notes:
-            lines.append("(no notes)")
+        retrieval = result.get("retrieval")
+        lines = format_research_lines(q, notes, warning=warning or None, retrieval=retrieval)
         summary = "\n".join(lines)
         # Inject into session for later turns — advisory only, never Spec authority.
         self.messages.append(
             {
                 "role": "user",
-                "content": f"[Host /research]\n{summary}\nUse this as context only; not Spec authority.",
+                "content": format_research_host_message(
+                    q, notes, warning=warning or None, retrieval=retrieval
+                ),
             }
         )
         self.messages.append(

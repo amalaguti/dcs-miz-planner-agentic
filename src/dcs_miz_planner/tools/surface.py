@@ -17,7 +17,7 @@ from ..memory import UserMemoryService
 from ..models import MissionSpec
 from ..randomize import RandomizeError, parse_axes, randomize_mission_spec
 from ..validation import validate_mission_spec as _validate_mission_spec
-from .research import gather_research_notes
+from .research import gather_research_notes, retrieval_mode
 from .results import err_result, ok_result
 
 
@@ -474,7 +474,11 @@ def research_guidance(
         live=live,
         focus=focus,
     )
-    payload: dict[str, Any] = {"notes": notes, "query": q}
+    payload: dict[str, Any] = {
+        "notes": notes,
+        "query": q,
+        "retrieval": retrieval_mode(notes),
+    }
     if mission_type:
         payload["mission_type"] = mission_type
     if theatre:

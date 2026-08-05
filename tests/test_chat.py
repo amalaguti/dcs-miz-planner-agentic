@@ -43,7 +43,7 @@ def test_chat_clarify_tool_accept(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     research = session.handle_line("/research Channel Spitfire weather")
     assert "Research" in research.output
     assert "-" in research.output
-    assert "Offline fixture fallback" in research.output
+    assert "fixture" in research.output.lower()
     assert "Warning:" in research.output
 
     catalog = session.handle_line("/catalog")
@@ -70,8 +70,12 @@ def test_chat_research_labels_live_soft_fail(
     session.start()
     r = session.handle_line("/research Manston spitfire")
     assert "Warning:" in r.output
-    assert "Offline fixture fallback" in r.output
-    assert "not Spec authority" in session.messages[-2]["content"]
+    assert "Offline fixture fallback" in r.output or "fixture fallback" in r.output.lower()
+    injected = session.messages[-2]["content"]
+    assert "<<<UNTRUSTED_RESEARCH_NOTES>>>" in injected
+    assert "<<<END_UNTRUSTED_RESEARCH_NOTES>>>" in injected
+    assert "UNTRUSTED" in injected
+    assert "Spec" in injected
 
 
 def test_chat_no_auto_write_without_accept(tmp_path: Path) -> None:
