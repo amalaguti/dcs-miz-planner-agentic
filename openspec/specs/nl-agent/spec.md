@@ -314,10 +314,10 @@ mission designer co-author: call `list_mission_options` for families `dynamics_m
 consult) when the user discusses play-time variation, ground attack / strike composition,
 or where on the Channel to fight. Guidance MUST require recommending only from those
 shelves (and other packaged options), explaining tradeoffs before locking Spec fields.
-Guidance MUST distinguish CLI/`randomize` (new Spec day) from `dynamics_mode` (play-time
-palette deferred to Spec dynamics). The agent MUST NOT treat advisory dynamics rows as
-already compile-emitted Spec fields, MUST NOT invent unit/ship ids or airdromeIds, and
-MUST NOT emit LLM Lua.
+Guidance MUST distinguish CLI/`randomize` (new Spec day) from Spec `dynamics` /
+`dynamics_mode` (play-time Layer B). When the user locks play-time variation, the agent
+SHOULD emit Spec `dynamics` (mode + pools). The agent MUST NOT invent unit/ship ids or
+airdromeIds, and MUST NOT emit LLM Lua.
 
 #### Scenario: Prompt guidance mentions designer shelves
 - **WHEN** the planning or chat system prompt is built
@@ -329,3 +329,17 @@ MUST NOT emit LLM Lua.
 - **WHEN** guidance describes variation / replayability
 - **THEN** it MUST distinguish seeded Spec reroll (`randomize`) from play-time
   `dynamics_mode` shelves
+
+### Requirement: Schema and invent guidance mention dynamics Spec
+`get_mission_spec_schema` notes and invent/chat guidance MUST mention optional Spec
+`dynamics` (modes + pools) as the preferred way to declare play-time live/choose/hybrid
+variation, distinct from CLI `randomize`. Guidance MUST still require co-author consult of
+catalog `dynamics_mode` shelves and MUST NOT invent Lua.
+
+#### Scenario: Prompt mentions dynamics Spec field
+- **WHEN** the planning system prompt is built
+- **THEN** it MUST mention Spec `dynamics` (or equivalent) for play-time variation
+
+#### Scenario: Schema notes mention dynamics
+- **WHEN** `get_mission_spec_schema` is requested for a combat mission type
+- **THEN** notes MUST reference optional `dynamics` expand without claiming Mist

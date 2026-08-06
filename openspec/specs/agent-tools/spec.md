@@ -482,7 +482,8 @@ location under an allowed `out/` directory. Paths outside that tree MUST be reje
 `list_mission_options` MUST return packaged `dynamics_mode`, `strike_target_class`, and
 `channel_place` planning options (family, id, description, support, meta) after catalog
 sync so agents can co-author recommendations from declared shelves. The tool description
-MUST mention these designer shelves (not only envelope enums and behaviour cards).
+MUST mention these designer shelves (not only envelope enums and behaviour cards) and that
+`dynamics_mode` corresponds to Spec `dynamics` expand.
 
 #### Scenario: Tool returns dynamics_mode rows
 - **WHEN** `list_mission_options` is called after catalog sync with dynamics modes packaged
@@ -497,3 +498,13 @@ MUST mention these designer shelves (not only envelope enums and behaviour cards
 #### Scenario: Tool returns channel_place rows
 - **WHEN** `list_mission_options` is called after catalog sync with places packaged
 - **THEN** the enriched options collection MUST include at least one `channel_place` row
+
+### Requirement: Tool surface describes dynamics expand
+Agent-facing tool descriptions (`list_mission_options` / schema tool notes as applicable)
+MUST mention that `dynamics_mode` catalog rows correspond to Spec `dynamics` expand once
+this capability ships.
+
+#### Scenario: list_mission_options description stays honest
+- **WHEN** tool definitions are listed after this change
+- **THEN** `list_mission_options` description MUST still surface `dynamics_mode` and MUST
+  not claim dynamics cannot be emitted if Spec expand exists

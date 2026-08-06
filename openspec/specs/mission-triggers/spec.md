@@ -365,3 +365,13 @@ message-only gates without cooldown MUST NOT be the documented recommended recip
 - **WHEN** the altitude/speed gates example Spec is loaded
 - **THEN** it MUST include flag set/clear and `time_since_flag` (or equivalent) in the
   altitude and/or speed gate trigger graph alongside the unit altitude/speed conditions
+
+### Requirement: Dynamics expand uses existing trigger actions only
+Expanded dynamics graphs MUST use only already-supported Spec trigger conditions/actions
+(`set_flag_random`, radio items, `activate_group`, `message`, flags, time). They MUST NOT
+introduce new ME predicates for dynamics expand.
+
+#### Scenario: Expanded graph validates as native triggers
+- **WHEN** dynamics expand produces triggers
+- **THEN** those triggers MUST pass the same trigger validation rules as hand-authored
+  graphs

@@ -166,9 +166,10 @@ step (YAML/LESSONS), not automatic `.miz` import.
 The packaged planning-option catalog SHALL include families `dynamics_mode`,
 `strike_target_class`, and `channel_place` for mission-designer co-authoring. Entries
 MUST use support `supported`, `advisory`, or `future` honestly. `dynamics_mode` rows
-MUST remain non-`supported` until a later change makes Spec dynamics compile-backed.
-`strike_target_class` meta MUST NOT invent DCS unit/ship ids (only ids present in
-packaged Channel ground/ship YAML). `channel_place` MUST NOT invent airdromeIds.
+MUST be Spec-backed (`supported`, or `advisory` with `meta` pointing at Spec
+`dynamics.mode`) once dynamics expand ships. `strike_target_class` meta MUST NOT invent
+DCS unit/ship ids (only ids present in packaged Channel ground/ship YAML).
+`channel_place` MUST NOT invent airdromeIds.
 
 #### Scenario: Dynamics modes packaged
 - **WHEN** catalog sync runs after this change
@@ -184,3 +185,13 @@ packaged Channel ground/ship YAML). `channel_place` MUST NOT invent airdromeIds.
 - **WHEN** a caller lists planning options for family `channel_place`
 - **THEN** results MUST include at least one place referencing Manston or another known
   Channel airfield without inventing airdrome ids
+
+### Requirement: Dynamics mode options reflect Spec-backed expand
+After dynamics expand ships, packaged `dynamics_mode` planning options MUST be marked so
+agents do not treat them as emit-deferred-only: prefer `supported` (or `advisory` with
+`meta` pointing at Spec `dynamics.mode`) consistently with other Spec-backed knobs.
+
+#### Scenario: Catalog lists dynamics modes after sync
+- **WHEN** catalog sync runs after this change
+- **THEN** `dynamics_mode` rows MUST remain listable and describe Spec `dynamics.mode`
+  values `fixed`, `live`, `choose`, `hybrid`
