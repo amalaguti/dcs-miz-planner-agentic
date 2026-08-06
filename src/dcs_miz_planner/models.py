@@ -56,6 +56,21 @@ class WeatherOpts(SpecModel):
     seed: int = Field(ge=0, le=2_147_483_647)
 
 
+class FogDynamicsMode(str, Enum):
+    BURN_OFF = "burn_off"
+    ROLL_IN = "roll_in"
+
+
+class FogDynamics(SpecModel):
+    """Mid-sortie fog evolution via curated setFogAnimation (no free-form Lua)."""
+
+    mode: FogDynamicsMode
+    start_after_s: int = Field(default=0, ge=0, le=86_400)
+    duration_s: int = Field(default=1800, ge=1, le=86_400)
+    end_visibility_m: float | None = Field(default=None, ge=0, le=100_000)
+    end_thickness_m: float | None = Field(default=None, ge=0, le=5_000)
+
+
 class ObjectiveType(str, Enum):
     INTERCEPT_ENEMY = "intercept_enemy"
     PATROL = "patrol"
@@ -541,6 +556,7 @@ class MissionSpec(SpecModel):
     start_time: str  # "HH:MM" 24h; compiler converts to seconds-since-midnight
     weather: WeatherPreset
     weather_opts: WeatherOpts | None = None
+    fog_dynamics: FogDynamics | None = None
     player: Player
     name: str = "Free Flight"
     description: str = ""

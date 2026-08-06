@@ -1,0 +1,26 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Dawn Fog Burn-Off
+description: >-
+  Cold start at Manston at first light under dawn_clear haze. After ten minutes,
+  curated fog animation burns the fog off over twenty minutes (setFogAnimation).
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "06:00"
+weather: dawn_clear
+weather_opts:
+  seed: 42
+fog_dynamics:
+  mode: burn_off
+  start_after_s: 600
+  duration_s: 1200
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking

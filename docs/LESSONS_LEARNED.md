@@ -16,9 +16,11 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   `.miz` weather table. Invent-time randomness among campaign-seeded patterns is
   fine (`#17a` + `#17e` invent jitter); sunny→rainy *during* flight is not
   productizable without ED APIs. Foggy↔clear belongs in `#17c` + curated
-  snippets (`#22`), never LLM Lua.
-- **Code / notes:** ED FAQ weather singleton; `research/weather.md` feasibility;
-  backlog `#17a` / `#17e` / `#17c` / `#22`.
+  snippets, never LLM Lua. `#17c` ships a fog-only slice: Spec `fog_dynamics` →
+  PyDCS `DoScript(mission.string(lua))` with human template
+  `world.weather.setFogAnimation({{duration}, vis, thick})` on ONCE `TimeAfter`.
+- **Code / notes:** `fog_dynamics.py`, `compiler/fog_emit.py`; ED FAQ weather
+  singleton; backlog `#17c` / `#22`.
 
 ## Weather invent seed vs golden stability (2026-08-06)
 

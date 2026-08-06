@@ -221,6 +221,7 @@ class PyDCSCompiler(CompilerInterface):
             target_group_ids,
             player_unit_id=group.units[0].id,
         )
+        self._apply_fog_dynamics(mission, spec)
         self._apply_briefing(mission, spec, voice)
 
         out = Path(output_path)
@@ -228,6 +229,12 @@ class PyDCSCompiler(CompilerInterface):
         mission.save(str(out))
         self._ensure_theatre_member(out, spec.theatre)
         return out
+
+    @staticmethod
+    def _apply_fog_dynamics(mission, spec: MissionSpec) -> None:
+        from .fog_emit import apply_fog_dynamics
+
+        apply_fog_dynamics(mission, spec)
 
     @staticmethod
     def _apply_zones_and_triggers(
