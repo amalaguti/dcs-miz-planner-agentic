@@ -407,3 +407,12 @@ config) MUST surface as clear validation or compile errors.
 - **WHEN** a Channel Spec uses a known weather pattern and `weather_opts.seed`
   within the allowed range
 - **THEN** validation MUST succeed for weather_opts
+
+### Requirement: Fog dynamics validation
+Shared validation MUST accept well-formed `fog_dynamics` and MUST reject invalid
+timings (e.g. negative duration) with clear errors. Validation MUST NOT require
+empty triggers solely because fog_dynamics is set.
+
+#### Scenario: Negative duration rejected
+- **WHEN** `fog_dynamics.duration_s` is negative
+- **THEN** load or validation MUST fail
