@@ -372,9 +372,9 @@ options:
       source: sound + flag enrichment sample
       mission_types: [free_flight, intercept]
 
-  # --- Mission-designer shelves (palette for co-authoring; dynamics emit = #30f) ---
-  # Layer A = dcs-miz randomize (new Spec day). Layer B = dynamics_mode (play-time
-  # variation inside one .miz once Spec dynamics ships).
+  # --- Mission-designer shelves (palette for co-authoring; Spec dynamics = #30f) ---
+  # Layer A = dcs-miz randomize (new Spec day). Layer B = dynamics_mode / Spec dynamics
+  # (play-time variation inside one .miz).
 
   - family: dynamics_mode
     id: fixed
@@ -382,52 +382,55 @@ options:
     description: >
       Same play every load — no raid dice or F10 spawn menus. Hand triggers and
       late groups still allowed. Layer B off; use Layer A (randomize CLI) if you
-      want a different authored day.
-    support: advisory
+      want a different authored day. Spec: dynamics.mode fixed (no auto emit).
+    support: supported
     meta:
       layer: play_time
+      spec_field: dynamics.mode
       intended_emit: none
-      note: Palette only until Spec dynamics (#30f); not a Spec field today.
+      note: Spec dynamics.mode=fixed clears the pack with no dice/menu triggers.
 
   - family: dynamics_mode
     id: live
     label: Live dice
     description: >
-      Play-time surprise: native set_flag_random (and flag branches) to wake late
-      pools / messages differently each load of the same .miz.
-    support: advisory
+      Play-time surprise: Spec dynamics.mode live expands to set_flag_random and
+      flag branches that activate late pools (and optional messages).
+    support: supported
     meta:
       layer: play_time
+      spec_field: dynamics.mode
       intended_emit: [set_flag_random, activate_group, message]
       related_behaviours: [sound_flag_chain, radio_late_activation]
-      note: Palette only until Spec dynamics (#30f); hand-author flag_random today.
+      example: examples/manston_dawn_intercept_dynamics_live.yaml
 
   - family: dynamics_mode
     id: choose
     label: Player chooses (F10)
     description: >
-      On-the-fly player choice via F10 radio + late_activation pools (difficulty /
-      when bandits appear) — not Mist mid-mission rewrites.
-    support: advisory
+      On-the-fly player choice via Spec dynamics.mode choose — F10 radio + late
+      pools (difficulty / when bandits appear). Not Mist mid-mission rewrites.
+    support: supported
     meta:
       layer: play_time
+      spec_field: dynamics.mode
       intended_emit: [radio_item_add, activate_group, message]
       related_behaviours: [radio_late_activation]
-      note: Palette only until Spec dynamics (#30f); use radio_late_activation today.
+      example: examples/manston_dawn_intercept_radio.yaml
 
   - family: dynamics_mode
     id: hybrid
     label: Hybrid (dice + F10)
     description: >
-      Combine live dice with an F10 menu — e.g. player picks difficulty while raid
-      composition still rolls. Prefer exclusive pools so both layers do not double-spawn.
-    support: advisory
+      Spec dynamics.mode hybrid — F10 Auto (dice) plus per-pool menu labels.
+      Prefer exclusive: true so both layers do not double-spawn.
+    support: supported
     meta:
       layer: play_time
+      spec_field: dynamics.mode
       intended_emit: [set_flag_random, radio_item_add, activate_group, message]
       related_behaviours: [radio_late_activation, sound_flag_chain]
-      note: Palette only until Spec dynamics (#30f).
-
+      example: examples/manston_dawn_intercept_dynamics_hybrid.yaml
   - family: strike_target_class
     id: soft_vehicles
     label: Soft vehicles / trucks

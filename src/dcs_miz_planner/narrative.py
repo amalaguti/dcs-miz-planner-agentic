@@ -155,6 +155,14 @@ def apply_narrative(spec: MissionSpec, *, voice: str | None = None) -> MissionSp
     if spec.narrative is None or not spec.narrative.enabled:
         return spec
 
+    if spec.dynamics is not None:
+        raise NarrativeError(
+            "dynamics_narrative_xor",
+            "narrative",
+            "narrative.enabled cannot be used together with dynamics",
+            hint="Omit dynamics, or disable narrative and keep the dynamics pack",
+        )
+
     if spec.zones or spec.triggers:
         raise NarrativeError(
             "narrative_conflict",

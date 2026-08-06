@@ -792,11 +792,13 @@ def validate_mission_spec(
     voice: str | None = None,
 ) -> ValidationResult:
     """Validate a loaded Mission Spec; collect independent errors in one pass."""
+    from .dynamics import DynamicsError, expand_dynamics_if_needed
     from .narrative import NarrativeError, expand_narrative_if_needed
 
     try:
         spec = expand_narrative_if_needed(spec, voice=voice)
-    except NarrativeError as exc:
+        spec = expand_dynamics_if_needed(spec)
+    except (NarrativeError, DynamicsError) as exc:
         return ValidationResult(
             errors=(
                 ValidationError(

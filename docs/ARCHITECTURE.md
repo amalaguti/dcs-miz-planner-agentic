@@ -66,6 +66,9 @@ ASCII fallback:
 YAML spec -> cli -> loader -> MissionSpec -> narrative expand (if enabled)
                                                   |
                                                   v
+                                          dynamics expand (if set; XOR narrative)
+                                                  |
+                                                  v
                                           validate_mission_spec
                                                   |     ^
                                                   |     | (same engine)
@@ -93,8 +96,9 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 |--------|----------------|------------|
 | `cli.py` | `validate` / `compile` / `theatres` / `catalog` / `prefs` / `feedback` / `plan`; legacy spec path | `loader`, `validation`, `compiler`, `install`, `catalog`, `memory`, `agent` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
-| `models.py` | The public contract: `MissionSpec` + enums. Free flight through escort; weather trio; typed `zones`/`triggers` (no Lua; native emit incl. sound, numeric flags, `group_life_less`, `mark`/`smoke`, player altitude/speed gates); optional `narrative.enabled` | `pydantic` |
-| `narrative.py` | Opt-in CAP pack → materialise zones/triggers (squadron-voice message text); runs before validate/compile | `models`, `agent.voice` |
+| `models.py` | The public contract: `MissionSpec` + enums. Free flight through escort; weather trio; typed `zones`/`triggers` (no Lua; native emit incl. sound, numeric flags, `group_life_less`, `mark`/`smoke`, player altitude/speed gates); optional `narrative.enabled`; optional `dynamics` (play-time pools) | `pydantic` |
+| `narrative.py` | Opt-in CAP/intercept/escort/GA pack → materialise zones/triggers (squadron-voice message text); runs before validate/compile | `models`, `agent.voice` |
+| `dynamics.py` | Opt-in play-time Layer B pack (`fixed`/`live`/`choose`/`hybrid` + pools) → typed triggers; XOR with narrative; runs after narrative expand | `models` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules + sound `asset_id` + group life indices/percent); multi-error result | `models`, `registry`, `sounds`, `install` |
 | `data/channel/` | Committed Channel YAML SoT (airdromeIds, aircraft+radio, theatres, weather, payloads, planning_options) | shipped in wheel via hatch force-include |
 | `data/sounds/` | Curated sound assets (`asset_id` → `.wav`/`.ogg`) for Spec `sound` actions | shipped in wheel via hatch force-include |
@@ -109,7 +113,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; theatre + aircraft-module inventory (folder harvest); `campaigns` index; SQLite cache on `--refresh` | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
-| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Expands narrative if needed, validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), emits native zones/triggers, writes briefing `l10n` + `.miz` | `models`, `narrative`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `dcs.*` |
+| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Expands narrative/dynamics if needed, validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), emits native zones/triggers, writes briefing `l10n` + `.miz` | `models`, `narrative`, `dynamics`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `dcs.*` |
 | `compiler/triggers_emit.py` | Spec zones/triggers → PyDCS `add_triggerzone` + `TriggerOnce`/`Continious` rules (incl. `SoundToAll`, numeric flags, `GroupLifeLess`, `MarkToAll`, `ExplodeWPMarker`, player `UnitAltitude*` / `UnitSpeed*`) | `models`, `sounds`, `dcs.condition`/`action`/`triggers` |
 
 Four table namespaces share one DB file on purpose:

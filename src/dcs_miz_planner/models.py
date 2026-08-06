@@ -439,6 +439,75 @@ class NarrativeSpec(SpecModel):
     enabled: bool = False
 
 
+class DynamicsMode(str, Enum):
+    """Play-time variation mode (Layer B; distinct from CLI randomize)."""
+
+    FIXED = "fixed"
+    LIVE = "live"
+    CHOOSE = "choose"
+    HYBRID = "hybrid"
+
+
+class DynamicsRoll(SpecModel):
+    """Dice parameters for ``live`` / ``hybrid`` Auto paths."""
+
+    flag: str = Field(default="dyn_roll", min_length=1)
+    min: int = 1
+    max: int = 3
+    after_s: float = Field(default=5.0, ge=0)
+
+    @model_validator(mode="after")
+    def _min_le_max(self) -> DynamicsRoll:
+        if self.min > self.max:
+            raise ValueError("dynamics.roll requires min <= max")
+        return self
+
+
+class DynamicsMenu(SpecModel):
+    """F10 menu timing / Auto label for ``choose`` / ``hybrid``."""
+
+    after_s: float = Field(default=1.0, ge=0)
+    auto_label: str = Field(default="Auto (random)", min_length=1)
+
+
+class DynamicsPool(SpecModel):
+    """One exclusive or selectable opposition / target pool."""
+
+    id: str = Field(min_length=1)
+    roll_value: int | None = None
+    menu_label: str | None = None
+    enemy_indices: list[int] = Field(default_factory=list)
+    target_indices: list[int] = Field(default_factory=list)
+    message: str | None = None
+
+    @model_validator(mode="after")
+    def _has_indices(self) -> DynamicsPool:
+        if not self.enemy_indices and not self.target_indices:
+            raise ValueError(
+                "dynamics pool requires at least one enemy_indices or target_indices entry"
+            )
+        for idx in self.enemy_indices:
+            if idx < 0:
+                raise ValueError("enemy_indices must be >= 0")
+        for idx in self.target_indices:
+            if idx < 0:
+                raise ValueError("target_indices must be >= 0")
+        return self
+
+
+class DynamicsSpec(SpecModel):
+    """Opt-in play-time variation pack → typed triggers (no Lua).
+
+    Expands before validate/compile when present; cleared after expand (like narrative).
+    """
+
+    mode: DynamicsMode
+    pools: list[DynamicsPool] = Field(default_factory=list)
+    roll: DynamicsRoll | None = None
+    menu: DynamicsMenu | None = None
+    exclusive: bool = True
+
+
 def opposing_coalition(coalition: Coalition) -> Coalition:
     return Coalition.RED if coalition is Coalition.BLUE else Coalition.BLUE
 
@@ -448,7 +517,8 @@ class MissionSpec(SpecModel):
 
     Optional ``zones`` / ``triggers`` use the typed mission-triggers model (no Lua);
     validated graphs emit as native ME trigger tables. Optional ``narrative.enabled``
-    expands a curated pack into zones/triggers before validate/compile.
+    expands a curated pack into zones/triggers before validate/compile. Optional
+    ``dynamics`` expands play-time dice/F10/activate graphs the same way.
     Combat extension rules depend on ``mission_type``.
     """
 
@@ -472,6 +542,7 @@ class MissionSpec(SpecModel):
     strike: Strike | None = None
     escort: Escort | None = None
     narrative: NarrativeSpec | None = None
+    dynamics: DynamicsSpec | None = None
 
     @field_validator("schema_version")
     @classmethod

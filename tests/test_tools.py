@@ -129,11 +129,12 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("mission_behaviour", "sound_flag_chain")]["support"] == "supported"
     assert by_key[("mission_behaviour", "group_life_less")]["support"] == "supported"
 
-    # Mission-designer shelves (#30e)
+    # Mission-designer shelves (#30e / #30f Spec-backed dynamics)
     for mode in ("fixed", "live", "choose", "hybrid"):
         row = by_key[("dynamics_mode", mode)]
-        assert row["support"] == "advisory"
+        assert row["support"] == "supported"
         assert row["meta"].get("layer") == "play_time"
+        assert row["meta"].get("spec_field") == "dynamics.mode"
     soft = by_key[("strike_target_class", "soft_vehicles")]
     assert soft["support"] == "supported"
     assert soft["meta"]["domain"] == "land"
@@ -431,6 +432,7 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "mission_behaviour" in prompt
     assert "mission_inspiration" in prompt
     assert "dynamics_mode" in prompt
+    assert "dynamics" in prompt
     assert "strike_target_class" in prompt
     assert "channel_place" in prompt
     assert "Layer A" in prompt or "randomize" in prompt

@@ -1,0 +1,65 @@
+schema_version: "1"
+mission_type: intercept
+theatre: TheChannel
+name: Manston Dawn Intercept (Live Dynamics)
+description: >
+  Cold start at Manston at dawn. Play-time raid die (live dynamics) wakes one of
+  three late Bf-109 pools on the Dover approaches — same .miz, different opposition
+  each load. Prefer exclusive pools so only one path activates.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "06:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+enemies:
+  - aircraft: Bf-109K-4
+    count: 1
+    skill: Good
+    country: ThirdReich
+    coalition: red
+    late_activation: true
+  - aircraft: Bf-109K-4
+    count: 2
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    late_activation: true
+  - aircraft: Bf-109K-4
+    count: 4
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    late_activation: true
+objectives:
+  - type: intercept_enemy
+zones: []
+triggers: []
+dynamics:
+  mode: live
+  exclusive: true
+  roll:
+    flag: raid_die
+    min: 1
+    max: 3
+    after_s: 5
+  pools:
+    - id: easy
+      roll_value: 1
+      enemy_indices: [0]
+      message: "Light raid — one Bf-109 airborne. Weapons free."
+    - id: medium
+      roll_value: 2
+      enemy_indices: [1]
+      message: "Medium raid — two Bf-109s airborne. Weapons free."
+    - id: hard
+      roll_value: 3
+      enemy_indices: [2]
+      message: "Heavy raid — four Bf-109s airborne. Weapons free."

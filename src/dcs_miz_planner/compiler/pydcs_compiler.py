@@ -111,12 +111,14 @@ class PyDCSCompiler(CompilerInterface):
         from dcs.mission import StartType as DcsStartType
         from dcs.planes import plane_map
 
+        from ..dynamics import DynamicsError, expand_dynamics_if_needed
         from ..narrative import NarrativeError, expand_narrative_if_needed
         from ..theatre_terrain import TheatreTerrainError, terrain_for_theatre
 
         try:
             spec = expand_narrative_if_needed(spec, voice=voice)
-        except NarrativeError as exc:
+            spec = expand_dynamics_if_needed(spec)
+        except (NarrativeError, DynamicsError) as exc:
             raise ValueError(f"{exc.path}: {exc.message}") from exc
 
         self._validate(spec)

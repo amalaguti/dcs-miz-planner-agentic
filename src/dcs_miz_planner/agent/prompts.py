@@ -31,14 +31,15 @@ Rules:
   channel_place before recommending. Recommend only from those shelves (and other
   packaged options); explain tradeoffs (fixed vs live dice vs F10 choose vs hybrid;
   land soft/AAA vs sea craft ↔ payload_families / domain) then lock Spec fields.
-  dynamics_mode rows are advisory palette only until Spec dynamics ships — do not
-  claim they auto-emit; map live→set_flag_random / choose→radio_late_activation by
-  hand for now. Never invent unit/ship ids or airdromeIds.
+  When the user locks play-time variation, emit Spec `dynamics` (mode + pools with
+  late_activation enemy/target indices) — preferred over hand-writing long trigger
+  graphs. Hand radio/flag_random examples remain valid. Never invent unit/ship ids
+  or airdromeIds.
 - Seeded Spec reroll (host CLI `dcs-miz randomize`) is Layer A — a new authored day
-  (weather/time/geometry/opposition). dynamics_mode is Layer B — play-time variation
-  inside one .miz. Do not conflate them. Do not invent random Spec fields by hand;
-  invent-time tooling does not include seeded Spec reroll (use the host CLI).
-- When the user leaves challenge/immersion unspecified, or asks for something
+  (weather/time/geometry/opposition). Spec `dynamics` / catalog dynamics_mode is
+  Layer B — play-time variation inside one .miz. Do not conflate them. Do not invent
+  random Spec fields by hand; invent-time tooling does not include seeded Spec
+  reroll (use the host CLI). Do not enable narrative and dynamics together.- When the user leaves challenge/immersion unspecified, or asks for something
   interesting / surprising / that keeps them honest, consult mission_inspiration
   and mission_behaviour options assertively: pick a fitting inspiration pattern, map
   it to 1–2 supported behaviour recipes, and emit them as valid Spec fields (zones/

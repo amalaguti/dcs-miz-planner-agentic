@@ -37,7 +37,10 @@ chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026
 Opt-in CAP / intercept / escort / ground-attack narrative (`narrative.enabled`;
 `examples/manston_cap_narrative.yaml`, `manston_dawn_intercept_narrative.yaml`,
 `manston_escort_narrative.yaml`, `manston_ground_attack_narrative.yaml`) expands to
-native ME triggers (accepted through GA 2026-08-04). F10 radio + late activation
+native ME triggers (accepted through GA 2026-08-04). Opt-in Spec `dynamics`
+(`fixed`/`live`/`choose`/`hybrid` + pools; XOR with narrative) expands play-time
+dice/F10/activate graphs (`examples/manston_dawn_intercept_dynamics_live.yaml`,
+`manston_dawn_intercept_dynamics_hybrid.yaml`). F10 radio + late activation
 (`examples/manston_dawn_intercept_radio.yaml`) for difficulty spawn options (accepted
 in ME 2026-08-04). Curated `sound` + numeric flags
 (`examples/manston_freeflight_sound_flags.yaml`; accepted in-game 2026-08-04).
@@ -51,7 +54,8 @@ Player altitude/speed gates with flag cooldown re-warn
 re-warn polish 2026-08-05). Trigger-rich examples above are also pinned by structural
 goldens (not string-smoke only).
 Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
-mission-designer shelves (`dynamics_mode`, `strike_target_class`, `channel_place`),
+mission-designer shelves (`dynamics_mode` → Spec `dynamics`, `strike_target_class`,
+`channel_place`),
 `research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
 `Mods/campaigns` `.miz` / `.cmp` / Doc PDFs — filenames by default; opt-in
 `include_doc_text` for short cached PDF excerpts) for creative planning inspiration.
@@ -65,11 +69,9 @@ hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 **Release:** **v0.3** is the pre–mission-designer baseline (immersion floor, R1/R2 audits,
-`set_flag_random`, hermetic GitHub Actions CI). **Next:** `#30f`
-`mission-dynamics-pack` — Spec `dynamics` expand from the `#30e` designer shelves
-(dynamics modes / strike classes / Channel places). Optional later: `#15a` recon.
+`set_flag_random`, hermetic GitHub Actions CI). Designer shelves (`#30e`) and Spec
+`dynamics` expand (`#30f`) are done. Optional later: `#15a` recon.
 See [`docs/BACKLOG.md`](docs/BACKLOG.md).
-
 ## Stack
 
 - Python 3.12 + uv
@@ -151,8 +153,17 @@ uv run dcs-miz compile examples/manston_escort_narrative.yaml --voice raf
 uv run dcs-miz validate examples/manston_ground_attack_narrative.yaml
 uv run dcs-miz compile examples/manston_ground_attack_narrative.yaml --voice raf
 # -> out/manston_ground_attack_narrative.miz
-```
 
+# Intercept with live dynamics (raid die → late pools):
+uv run dcs-miz validate examples/manston_dawn_intercept_dynamics_live.yaml
+uv run dcs-miz compile examples/manston_dawn_intercept_dynamics_live.yaml
+# -> out/manston_dawn_intercept_dynamics_live.miz
+
+# Intercept with hybrid dynamics (F10 Auto + Easy/Medium/Hard):
+uv run dcs-miz validate examples/manston_dawn_intercept_dynamics_hybrid.yaml
+uv run dcs-miz compile examples/manston_dawn_intercept_dynamics_hybrid.yaml
+# -> out/manston_dawn_intercept_dynamics_hybrid.miz
+```
 Open the result in the DCS Mission Editor, or copy it into
 `Saved Games\DCS\Missions\` to fly it from Instant Action / Load Mission.
 

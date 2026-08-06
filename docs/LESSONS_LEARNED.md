@@ -7,6 +7,17 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Spec dynamics expand XOR with narrative (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** `dynamics` and `narrative.enabled` both require empty zones/triggers
+  and clear themselves after expand. Validate/compile runs narrative first — if XOR
+  is only checked inside `apply_dynamics`, narrative expands first and the failure
+  becomes `dynamics_conflict` (non-empty triggers) instead of the XOR code. Check
+  XOR at the start of **both** expanders (and fail closed on missing
+  `late_activation` for pooled enemies/targets).
+- **Code:** `dynamics.py`, `narrative.py`, `validation.py`.
+
 ## GitHub CLI + hermetic CI (no Windows/DCS on runners) (2026-08-05)
 
 - **Date:** 2026-08-05
