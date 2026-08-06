@@ -15,6 +15,7 @@ from .surface import (
     record_feedback,
     record_generation,
     research_guidance,
+    reweather_mission_file,
     set_user_prefs,
     validate_mission_spec,
 )
@@ -32,6 +33,7 @@ __all__ = [
     "record_feedback",
     "record_generation",
     "research_guidance",
+    "reweather_mission_file",
     "set_user_prefs",
     "validate_mission_spec",
 ]

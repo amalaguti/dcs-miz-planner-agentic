@@ -272,6 +272,37 @@ def compile_mission(
     return ok_result(path=str(path), output=str(written))
 
 
+def reweather_mission_file(
+    miz_path: str | Path,
+    weather: str,
+    *,
+    seed: int | None = None,
+    spec_path: str | Path | None = None,
+    voice: str | None = None,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Overwrite weather on an existing ``.miz`` (Spec recompile or miz patch)."""
+    inventory = None
+    if db_path is not None:
+        from ..install import InventoryService
+
+        inventory = InventoryService(db_path=db_path).get()
+    try:
+        from ..reweather import ReweatherError, reweather_mission
+
+        result = reweather_mission(
+            miz_path,
+            weather,
+            seed=seed,
+            spec_path=spec_path,
+            voice=voice,
+            inventory=inventory,
+        )
+    except ReweatherError as exc:
+        return err_result(str(exc), code="reweather_failed", path=str(miz_path))
+    return ok_result(**{k: v for k, v in result.items() if k != "ok"})
+
+
 def randomize_mission(
     *,
     seed: int,

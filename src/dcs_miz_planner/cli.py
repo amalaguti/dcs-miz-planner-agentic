@@ -62,6 +62,38 @@ def _compile_cmd(args: argparse.Namespace) -> int:
     return 0
 
 
+def _reweather_cmd(args: argparse.Namespace) -> int:
+    from .reweather import ReweatherError, reweather_mission
+
+    miz_path = Path(args.miz)
+    if not miz_path.exists():
+        print(f"Mission not found: {miz_path}", file=sys.stderr)
+        return 2
+    voice = None
+    if getattr(args, "voice", None):
+        from .agent.voice import resolve_voice
+
+        voice = resolve_voice(cli_voice=args.voice)
+    try:
+        result = reweather_mission(
+            miz_path,
+            args.weather,
+            seed=args.seed,
+            spec_path=Path(args.spec) if args.spec else None,
+            voice=voice,
+        )
+    except ReweatherError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(
+        f"Re-weathered {result['miz_path']} → {result['weather']} "
+        f"(mode={result['mode']}, seed={result.get('seed')})"
+    )
+    if result.get("note"):
+        print(result["note"])
+    return 0
+
+
 def _randomize_cmd(args: argparse.Namespace) -> int:
     spec_path = Path(args.spec)
     if not spec_path.exists():
@@ -532,6 +564,32 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     compile_p.set_defaults(func=_compile_cmd)
 
+    reweather_p = sub.add_parser(
+        "weather-set",
+        help="Change weather on an existing .miz and overwrite it (Spec sidecar or patch)",
+    )
+    reweather_p.add_argument("miz", help="Path to an existing .miz file")
+    reweather_p.add_argument(
+        "weather",
+        help="WeatherPreset id (e.g. rain_overcast, broken_channel)",
+    )
+    reweather_p.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Optional invent seed (default: draw a new seed)",
+    )
+    reweather_p.add_argument(
+        "--spec",
+        default=None,
+        help="Optional Spec YAML path (default: sibling .yaml/.yml of the .miz)",
+    )
+    reweather_p.add_argument(
+        "--voice",
+        help="Squadron voice for Spec recompile briefing: raf | usaaf | neutral",
+    )
+    reweather_p.set_defaults(func=_reweather_cmd)
+
     validate_p = sub.add_parser(
         "validate",
         help="Validate a Mission Spec without compiling",
@@ -808,6 +866,7 @@ def main(argv: list[str] | None = None) -> int:
         and argv[0]
         not in {
             "compile",
+            "weather-set",
             "validate",
             "randomize",
             "theatres",

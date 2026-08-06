@@ -19,6 +19,7 @@ from ..tools import (
     record_feedback,
     record_generation,
     research_guidance,
+    reweather_mission_file,
     set_user_prefs,
     validate_mission_spec,
 )
@@ -293,34 +294,31 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
-            "name": "randomize_mission",
+            "name": "reweather_mission",
             "description": (
-                "Seeded Spec→Spec reroll for replayability (weather/time/geometry/"
-                "opposition). Returns a concrete Spec dict; validate/compile separately. "
-                "Same seed + axes → same Spec."
+                "Change weather on an existing .miz and overwrite it. Prefers sibling "
+                "Spec YAML recompile; otherwise patches the weather table. Optional seed; "
+                "omitted seed draws a new invent day."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "seed": {
-                        "type": "integer",
-                        "description": "Non-negative integer seed",
+                    "miz_path": {"type": "string"},
+                    "weather": {
+                        "type": "string",
+                        "description": "WeatherPreset id (e.g. rain_overcast, broken_channel)",
                     },
+                    "seed": {"type": "integer", "description": "Optional invent seed"},
                     "spec_path": {
                         "type": "string",
-                        "description": "Path to base Mission Spec YAML",
+                        "description": "Optional Spec YAML path (else sibling of .miz)",
                     },
-                    "axes": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Optional: weather, time, geometry, opposition",
-                    },
-                    "annotate": {
-                        "type": "boolean",
-                        "description": "Append (seed N) to description",
+                    "voice": {
+                        "type": "string",
+                        "description": "Optional briefing voice on Spec recompile",
                     },
                 },
-                "required": ["seed", "spec_path"],
+                "required": ["miz_path", "weather"],
             },
         },
     },
@@ -330,6 +328,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
 MUTATING_TOOL_NAMES: frozenset[str] = frozenset(
     {
         "compile_mission",
+        "reweather_mission",
         "set_user_prefs",
         "record_generation",
         "record_feedback",
@@ -448,6 +447,16 @@ def dispatch_tool(
             str(args.get("output_path", "")),
             db_path=db_path,
             voice=args.get("voice"),
+        )
+    if name == "reweather_mission":
+        seed = args.get("seed")
+        return reweather_mission_file(
+            str(args.get("miz_path", "")),
+            str(args.get("weather", "")),
+            seed=int(seed) if seed is not None else None,
+            spec_path=args.get("spec_path"),
+            voice=args.get("voice"),
+            db_path=db_path,
         )
     if name == "randomize_mission":
         axes = args.get("axes")
