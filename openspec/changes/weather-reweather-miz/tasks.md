@@ -14,8 +14,8 @@
 
 - [x] 3.1 Hermetic: Spec sidecar path updates weather in overwritten `.miz`
 - [x] 3.2 Hermetic: miz-only patch changes weather without Spec
-- [ ] 3.3 Optional ME smoke: re-weather example, open in ME
+- [x] 3.3 Optional ME smoke: re-weather example, open in ME — accepted 2026-08-06 (`rain_overcast` → Overcast and Rain 2)
 
 ## 4. Docs
 
-- [ ] 4.1 LESSONS if load/save pitfalls appear
+- [x] 4.1 LESSONS if load/save pitfalls appear (none beyond reload note)

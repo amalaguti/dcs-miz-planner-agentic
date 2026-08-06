@@ -71,9 +71,9 @@ hermetic.
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 **Release:** **v0.3** is the pre–mission-designer baseline (immersion floor, R1/R2 audits,
 `set_flag_random`, hermetic GitHub Actions CI). Designer shelves (`#30e`) and Spec
-`dynamics` expand (`#30f`), Channel weather patterns (`#17a`), and invent weather
-jitter (`#17e`) are done. **Building:** `#17d` re-weather `.miz` overwrite.
-Optional later: `#15a` recon, `#17c` fog.
+`dynamics` expand (`#30f`), Channel weather patterns (`#17a`), invent weather
+jitter (`#17e`), and re-weather overwrite (`#17d`) are done. Optional later:
+`#15a` recon, `#17c` fog.
 See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 ## Stack
 
