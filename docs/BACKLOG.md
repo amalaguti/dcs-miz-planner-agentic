@@ -105,9 +105,10 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 |---|------|------|--------|
 | 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `done` (accepted in-game 2026-08-02; Sortie/Description/Task in ME) |
 | 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `done` (accepted in-game 2026-08-02; meteo brief phrasing) |
-| 17a | `weather-presets-expand` | Optional later: more Channel weather (rain, thunderstorm, IFR / low cloud, stronger wind); keep Spec ids + meteo brief descriptions; not needed for M5 core | `idea` (after M5; only if play shows a gap) |
+| 17a | `weather-presets-expand` | Optional later: more Channel weather (rain, thunderstorm, IFR / low cloud, stronger wind); keep Spec ids + meteo brief descriptions; not needed for M5 core. Deeper ME weather-panel knobs (cloud layers, turbulence, QNH, fog, season…) wait on research **R10** before Spec surface | `idea` (after M5; only if play shows a gap; R10 first for full ME weather depth) |
 | 18 | `mission-randomization` | Seeded Spec→Spec variation for replayability (CLI + tool; compiler stays deterministic) | `done` (accepted 2026-08-02; seed42 vs seed99 CAP) |
 | 19 | `spitfire-radio-channel-presets` | Match ED Channel Spitfire unit Radio bank (A=124, B=40, C=41, D=42, E=108.9) for cockpit channel clicks; group frequency 124 already correct | `idea` (parked 2026-08-02 — immersion only; not required to fly; revisit if cockpit radio parity matters or M6 radio menus need it) |
+| 17b | `static-objects-placement` | Place ME static objects / scenery (hangars, vehicles-as-static, props) from Spec for Channel immersion — promote only after **R10** ranks PyDCS + Channel type ids | `idea` (blocked on R10) |
 
 ---
 
@@ -203,6 +204,7 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R7 | `research-pydcs-issues` | Review open issues on [pydcs/dcs](https://github.com/pydcs/dcs/issues); assess impact on our compiler / Channel Specs; promote durable notes into `LESSONS_LEARNED.md` or specs when they affect us | `done` (2026-08-04; notes in `research/pydcs-issues.md`; LESSONS updated — stay on 0.15.0 + keep payload/theatre workarounds) |
 | R8 | `deps-upgrade-review` | Periodically check latest PyDCS and other project-related libraries; decide whether an upgrade is recommended (pin notes in LESSONS / pyproject when we bump) | `idea` |
 | R9 | `research-dcs-user-manual-me` | Inventory ME features we could map into Spec/compiler/agent; notes under `research/`; promote durable gaps into backlog / LESSONS. **Sources (use together):** (1) local `docs/DCS_User_Manual_EN_2020.pdf` (gitignored; [official EN download](https://www.digitalcombatsimulator.com/en/downloads/documentation/dcs-user_manual_en/) — still the 2020 file for DCS **2.5**; ME chapter ToC ~p.83 / Set Rules for Triggers — *baseline only*); (2) community [TEMPEST.114 Mission Editor Manual](https://forum.dcs.world/topic/347082-mission-editor-manual-most-of-all-me-how-do-i-do-this-are-solvable-with-this-little-pdf-it-has-lots-of-info-not-clear-in-the-ui-hope-it-helps/) (ED Forums, 2024 — clearer ME how-tos than the UI/ED PDF); (3) [Hoggit ME wiki](https://wiki.hoggitworld.com/view/DCS_editor_triggerBasics) ([conditions](https://wiki.hoggitworld.com/view/DCS_editor_conditions), actions, [AI tasking](https://wiki.hoggitworld.com/view/DCS_editor_AITasking)); (4) [Hoggit Scripting Engine docs](https://wiki.hoggitworld.com/view/Simulator_Scripting_Engine_Documentation) (for M6 `#22` Lua, not day-to-day Spec compile); (5) [ED changelogs](https://www.digitalcombatsimulator.com/en/news/changelog/) + newsletters for post-2020 ME features; (6) in-game ME + stock Channel IA/Training (cross-check with R5) | `done` (2026-08-04; ranked candidates in `research/me-enrichment-candidates.md` — next product: `#26` sound + richer flags) |
+| R10 | `research-me-mission-content` | **ME content-depth pass** (in-editor observation + PyDCS capability): inventory panels that expand *mission content* beyond triggers — full **weather** settings (clouds, precip, wind layers, fog, turbulence, QNH/pressure, temperature, season… vs our three named presets), **static object** / scenery placement, and other high-value ME placement knobs (warehouses, FARPs, drawn shapes, etc. only if Channel-useful). For each: Spec surface vs curated preset vs out-of-scope; note PyDCS support and Channel type ids. Write notes under `research/`; promote ranked follow-ups (feeds `#17a`, `#17b`, maybe new ideas). Complements R9 (docs) with live ME + compiled-`.miz` reality | `idea` (2026-08-06; sparked while browsing ME after `#30f`) |
 
 Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 
@@ -234,6 +236,7 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
 - **PyDCS issue watch** — research **R7**: **done** 2026-08-04 (`research/pydcs-issues.md` + LESSONS); re-run on R8 bumps / before `#22`.
 - **Dependency upgrade cadence** — research **R8**: check PyDCS + related libs; bump only when recommended.
 - **ED / ME docs pass** — research **R9**: **done** 2026-08-04 (`research/me-enrichment-candidates.md` + LESSONS); promoted `#25` radio + late activation.
+- **ME mission-content depth** — research **R10**: weather panel / statics / other ME placement beyond triggers; promote `#17a` / `#17b` (or new ideas) after notes.
 - Multiplayer, dynamic campaign, radio VO generation.
 
 ---
@@ -261,7 +264,8 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Review [pydcs/dcs issues](https://github.com/pydcs/dcs/issues); assess impact for LESSONS / specs | **Research** R7 `research-pydcs-issues` |
 | Check latest PyDCS / project libs; recommend upgrades | **Research** R8 `deps-upgrade-review` |
 | Mine ED User Manual ME chapter for richer mission content | **Research** R9 `research-dcs-user-manual-me` (2020 PDF + TEMPEST ME manual + Hoggit + changelogs) |
-| More weather beyond sunny / dawn / marginal VFR | **M5** `#17a` `weather-presets-expand` — deferred; core trio is enough for now |
+| More weather beyond sunny / dawn / marginal VFR | **M5** `#17a` `weather-presets-expand` — deferred; core trio is enough for now; full ME weather knobs → **R10** first |
+| ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | Adversarial “prove it wrong” findings (false-green validate, tool trust, docs honesty, CI…) | **Adversarial review track** `#31`–`#42` + expand `#30c`; notes in `docs/adversarial-review-2026-08-05.md` |
 
 ---
