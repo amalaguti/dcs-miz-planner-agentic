@@ -105,10 +105,11 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 |---|------|------|--------|
 | 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `done` (accepted in-game 2026-08-02; Sortie/Description/Task in ME) |
 | 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `done` (accepted in-game 2026-08-02; meteo brief phrasing) |
-| 17a | `weather-presets-expand` | Expand Channel Spec weather beyond the trio: curated **named patterns** seeded from Spitfire campaign `.miz` weather (cloud gallery + wind/fog/turb), pilot-facing brief text, SoT parity (`weather_sot`). Prefer recipes over raw ME knobs / live METAR. Research: R10 campaign scan (2026-08-06) | `idea` (R10 campaign corpus ready to promote) |
+| 17a | `weather-presets-expand` | Expand Channel Spec weather beyond the trio: curated **named patterns** seeded from Spitfire campaign `.miz` weather (cloud gallery + wind/fog/turb), pilot-facing brief text, SoT parity (`weather_sot`). Prefer recipes over raw ME knobs / live METAR. Optional invent-time **jitter** around pattern defaults (Layer A / `randomize`). Research: R10 campaign scan (2026-08-06) | `idea` (R10 campaign corpus ready to promote) |
 | 18 | `mission-randomization` | Seeded Spec→Spec variation for replayability (CLI + tool; compiler stays deterministic) | `done` (accepted 2026-08-02; seed42 vs seed99 CAP) |
 | 19 | `spitfire-radio-channel-presets` | Match ED Channel Spitfire unit Radio bank (A=124, B=40, C=41, D=42, E=108.9) for cockpit channel clicks; group frequency 124 already correct | `idea` (parked 2026-08-02 — immersion only; not required to fly; revisit if cockpit radio parity matters or M6 radio menus need it) |
 | 17b | `static-objects-placement` | Place ME static objects / scenery (hangars, vehicles-as-static, props) from Spec for Channel immersion — promote only after **R10** ranks PyDCS + Channel type ids | `idea` (blocked on R10) |
+| 17c | `weather-in-flight-fog` | Optional mid-sortie **fog** evolution (foggy→clear / clear→fog) via curated `world.weather.setFogAnimation` snippets — **not** sunny→rainy cloud swaps (no DCS API). After `#17a`; needs `#22` or fog-only snippet slice. Full in-flight cloud/rain deferred until ED APIs exist | `idea` (feasibility 2026-08-06; fog-only) |
 
 ---
 
@@ -266,7 +267,8 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Review [pydcs/dcs issues](https://github.com/pydcs/dcs/issues); assess impact for LESSONS / specs | **Research** R7 `research-pydcs-issues` |
 | Check latest PyDCS / project libs; recommend upgrades | **Research** R8 `deps-upgrade-review` |
 | Mine ED User Manual ME chapter for richer mission content | **Research** R9 `research-dcs-user-manual-me` (2020 PDF + TEMPEST ME manual + Hoggit + changelogs) |
-| More weather beyond sunny / dawn / marginal VFR | **M5** `#17a` `weather-presets-expand` — curated patterns after **R10** (ME templates + PyDCS cloud presets + Channel meteo cards); not live METAR |
+| More weather beyond sunny / dawn / marginal VFR | **M5** `#17a` `weather-presets-expand` — curated patterns after **R10**; invent-time jitter OK; not live METAR |
+| Mid-flight weather story (sunny→rain / fog burn-off) | **M5** `#17c` fog-only via curated Lua (`#22`); cloud/rain mid-mission **not** feasible (no DCS API) |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
 | Adversarial “prove it wrong” findings (false-green validate, tool trust, docs honesty, CI…) | **Adversarial review track** `#31`–`#42` + expand `#30c`; notes in `docs/adversarial-review-2026-08-05.md` |
