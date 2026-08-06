@@ -16,7 +16,6 @@ from ..models import (
     MissionSpec,
     MissionType,
     StartType,
-    WeatherPreset,
 )
 from ..registry import RegistryError, get_channel_registry
 from ..validation import MissionValidationError, validate_mission_spec
@@ -160,7 +159,7 @@ class PyDCSCompiler(CompilerInterface):
             (spec.start_seconds % 3600) // 60,
         )
 
-        self._apply_weather(mission, spec.weather)
+        self._apply_weather(mission, spec)
 
         country = self._ensure_country(
             mission, countries, spec.player.country, spec.player.coalition.value
@@ -693,12 +692,15 @@ class PyDCSCompiler(CompilerInterface):
             raise ValueError(str(exc)) from exc
 
     @staticmethod
-    def _apply_weather(mission, preset: WeatherPreset) -> None:
+    def _apply_weather(mission, spec) -> None:
         from dcs.weather import CloudPreset, Weather, Wind
 
-        from ..registry import get_channel_registry
+        from ..weather_invent import ensure_weather_seed, resolve_weather_snapshot
 
-        ref = get_channel_registry().weather_preset(preset.value)
+        # Always-on invent: deterministic given weather_opts.seed.
+        spec = ensure_weather_seed(spec)
+        snap = resolve_weather_snapshot(spec)
+
         w = mission.weather
         w.atmosphere_type = 0
         w.enable_dust = False
@@ -706,40 +708,49 @@ class PyDCSCompiler(CompilerInterface):
         w.clouds_iprecptns = Weather.Preceptions.None_
         w.clouds_preset = None
 
-        if ref.clouds_density is not None:
-            w.clouds_density = ref.clouds_density
-        if ref.clouds_thickness_m is not None:
-            w.clouds_thickness = round(ref.clouds_thickness_m)
-        if ref.clouds_base_m is not None:
-            w.clouds_base = round(ref.clouds_base_m)
-        if ref.enable_fog is not None:
-            w.enable_fog = ref.enable_fog
-        if ref.fog_thickness is not None:
-            w.fog_thickness = round(ref.fog_thickness)
-        if ref.fog_visibility is not None:
-            w.fog_visibility = round(ref.fog_visibility)
-        if ref.visibility_distance is not None:
-            w.visibility_distance = round(ref.visibility_distance)
-        if ref.temperature_c is not None:
-            w.season_temperature = float(ref.temperature_c)
-        if ref.qnh_mmhg is not None:
-            w.qnh = float(ref.qnh_mmhg)
-        if ref.turbulence is not None:
-            turb = float(ref.turbulence)
-            # Match PyDCS default dump (`0` not `0.0`) for integer turbulence.
+        if snap.clouds_density is not None:
+            w.clouds_density = snap.clouds_density
+        if snap.clouds_thickness_m is not None:
+            w.clouds_thickness = round(snap.clouds_thickness_m)
+        if snap.clouds_base_m is not None:
+            w.clouds_base = round(snap.clouds_base_m)
+        if snap.enable_fog is not None:
+            w.enable_fog = snap.enable_fog
+        if snap.fog_thickness is not None:
+            w.fog_thickness = round(snap.fog_thickness)
+        if snap.fog_visibility is not None:
+            w.fog_visibility = round(snap.fog_visibility)
+        if snap.visibility_distance is not None:
+            w.visibility_distance = round(snap.visibility_distance)
+        if snap.temperature_c is not None:
+            w.season_temperature = float(snap.temperature_c)
+        if snap.qnh_mmhg is not None:
+            w.qnh = float(snap.qnh_mmhg)
+        if snap.turbulence is not None:
+            turb = float(snap.turbulence)
             w.turbulence_at_ground = int(turb) if turb.is_integer() else turb
-        if ref.wind_ground_speed_ms is not None or ref.wind_ground_dir_deg is not None:
+        if snap.wind_ground is not None:
             w.wind_at_ground = Wind(
-                direction=float(ref.wind_ground_dir_deg or 0),
-                speed=float(ref.wind_ground_speed_ms or 0),
+                direction=float(snap.wind_ground.dir_deg),
+                speed=float(snap.wind_ground.speed_ms),
+            )
+        if snap.wind_2000 is not None:
+            w.wind_at_2000 = Wind(
+                direction=float(snap.wind_2000.dir_deg),
+                speed=float(snap.wind_2000.speed_ms),
+            )
+        if snap.wind_8000 is not None:
+            w.wind_at_8000 = Wind(
+                direction=float(snap.wind_8000.dir_deg),
+                speed=float(snap.wind_8000.speed_ms),
             )
 
-        if ref.cloud_preset:
+        if snap.cloud_preset:
             try:
-                gallery = CloudPreset.by_name(ref.cloud_preset)
+                gallery = CloudPreset.by_name(snap.cloud_preset)
             except Exception as exc:
                 raise ValueError(
-                    f"Unknown weather cloud_preset {ref.cloud_preset!r} for {preset.value}"
+                    f"Unknown weather cloud_preset {snap.cloud_preset!r} for {snap.pattern}"
                 ) from exc
             w.clouds_preset = gallery
             base = w.clouds_base

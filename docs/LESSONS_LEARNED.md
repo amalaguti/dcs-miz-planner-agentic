@@ -14,11 +14,22 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   thickness/visibility mid-sortie (`setFogAnimation`). It cannot change cloud
   presets, precip, or wind while the mission is running — those are fixed in the
   `.miz` weather table. Invent-time randomness among campaign-seeded patterns is
-  fine (`#17a` + `randomize`); sunny→rainy *during* flight is not productizable
-  without ED APIs. Foggy↔clear belongs in `#17c` + curated snippets (`#22`), never
-  LLM Lua.
+  fine (`#17a` + `#17e` invent jitter); sunny→rainy *during* flight is not
+  productizable without ED APIs. Foggy↔clear belongs in `#17c` + curated
+  snippets (`#22`), never LLM Lua.
 - **Code / notes:** ED FAQ weather singleton; `research/weather.md` feasibility;
-  backlog `#17a` / `#17c` / `#22`.
+  backlog `#17a` / `#17e` / `#17c` / `#22`.
+
+## Weather invent seed vs golden stability (2026-08-06)
+
+- **Date:** 2026-08-06
+- **Lesson:** Always-on invent jitter (`weather_invent.resolve_weather_snapshot`)
+  must not break structural goldens on the legacy density trio. Skip cloud-base
+  jitter (and inventing temperature) when there is no gallery preset; use a
+  **stable derived seed** from weather+date+time when `weather_opts` is omitted
+  at compile; use `draw=True` only when writing Spec YAML so sidecars get a
+  persisted random seed. Pin explicit seeds in invent hermetic tests.
+- **Code:** `weather_invent.py`, `write_spec_yaml`, `_apply_weather`.
 
 ## PyDCS cloud presets vs legacy density weather (2026-08-06)
 

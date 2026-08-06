@@ -11,6 +11,8 @@ date:
   day: 6
 start_time: "10:00"
 weather: rain_overcast
+weather_opts:
+  seed: 42
 player:
   aircraft: SpitfireLFMkIX
   airfield: Manston

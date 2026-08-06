@@ -101,7 +101,12 @@ def diagnose_mission_spec_parse(text: str | None) -> tuple[MissionSpec | None, s
 
 
 def write_spec_yaml(spec: MissionSpec, path: Path) -> None:
+    from ..weather_invent import ensure_weather_seed
+
     path.parent.mkdir(parents=True, exist_ok=True)
+    # Persist invent seed when omitted so sidecar compiles reproduce.
+    if spec.weather_opts is None:
+        spec = ensure_weather_seed(spec, draw=True)
     data = spec.model_dump(mode="json")
     path.write_text(
         yaml.safe_dump(data, sort_keys=False, allow_unicode=True),

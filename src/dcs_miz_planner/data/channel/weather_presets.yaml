@@ -35,6 +35,7 @@ presets:
   light_scattered_vfr:
     description: Light scattered cloud; good Channel VFR (campaign clear-day feel)
     cloud_preset: Preset1
+    gallery_family: [Preset1, Preset2]
     clouds_base_m: 1300
     clouds_thickness_m: 200
     clouds_density: 0
@@ -51,6 +52,7 @@ presets:
   high_scattered:
     description: High scattered layer; cooler Channel day with good tops visibility
     cloud_preset: Preset3
+    gallery_family: [Preset3, Preset4, Preset8]
     clouds_base_m: 840
     clouds_thickness_m: 200
     clouds_density: 0
@@ -67,6 +69,8 @@ presets:
   broken_channel:
     description: Broken cloud deck typical of Channel patrol / scramble days
     cloud_preset: Preset14
+    gallery_family:
+      [Preset13, Preset14, Preset15, Preset16, Preset17, Preset18, Preset19, Preset20]
     clouds_base_m: 1700
     clouds_thickness_m: 200
     clouds_density: 0
@@ -83,6 +87,8 @@ presets:
   overcast_low:
     description: Low overcast; grey Channel day, still flyable under the deck
     cloud_preset: Preset22
+    gallery_family:
+      [Preset21, Preset22, Preset23, Preset24, Preset25, Preset26, Preset27]
     clouds_base_m: 900
     clouds_thickness_m: 200
     clouds_density: 0
@@ -99,6 +105,7 @@ presets:
   rain_overcast:
     description: Overcast with rain; poor VFR, diversion weather
     cloud_preset: RainyPreset1
+    gallery_family: [RainyPreset1, RainyPreset2, RainyPreset3]
     clouds_base_m: 800
     clouds_thickness_m: 200
     clouds_density: 0
@@ -115,6 +122,8 @@ presets:
   scattered_summer:
     description: Summer scattered cloud; warmer day, fair visibility
     cloud_preset: Preset9
+    gallery_family:
+      [Preset5, Preset6, Preset7, Preset9, Preset10, Preset11, Preset12]
     clouds_base_m: 1700
     clouds_thickness_m: 200
     clouds_density: 0

@@ -50,6 +50,12 @@ class WeatherPreset(str, Enum):
     SCATTERED_SUMMER = "scattered_summer"
 
 
+class WeatherOpts(SpecModel):
+    """Invent-time weather options (seed for always-on jitter)."""
+
+    seed: int = Field(ge=0, le=2_147_483_647)
+
+
 class ObjectiveType(str, Enum):
     INTERCEPT_ENEMY = "intercept_enemy"
     PATROL = "patrol"
@@ -534,6 +540,7 @@ class MissionSpec(SpecModel):
     date: MissionDate
     start_time: str  # "HH:MM" 24h; compiler converts to seconds-since-midnight
     weather: WeatherPreset
+    weather_opts: WeatherOpts | None = None
     player: Player
     name: str = "Free Flight"
     description: str = ""

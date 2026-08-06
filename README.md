@@ -72,7 +72,8 @@ hermetic.
 **Release:** **v0.3** is the pre–mission-designer baseline (immersion floor, R1/R2 audits,
 `set_flag_random`, hermetic GitHub Actions CI). Designer shelves (`#30e`) and Spec
 `dynamics` expand (`#30f`) and Channel weather patterns (`#17a`) are done.
-Optional later: `#17d` re-weather `.miz`, `#17e` invent jitter, `#15a` recon, `#17c` fog.
+**Building:** `#17e` invent weather jitter. Optional later: `#17d` re-weather `.miz`,
+`#15a` recon, `#17c` fog.
 See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 ## Stack
 

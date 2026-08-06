@@ -45,6 +45,7 @@ class WeatherPresetRef:
     turbulence: float | None = None
     wind_ground_speed_ms: float | None = None
     wind_ground_dir_deg: float | None = None
+    gallery_family: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -338,6 +339,14 @@ def _parse_weather_preset(name: str, meta: Any) -> WeatherPresetRef:
         return bool(meta[key])
 
     cloud = meta.get("cloud_preset")
+    family_raw = meta.get("gallery_family")
+    family: tuple[str, ...] = ()
+    if family_raw is not None:
+        if not isinstance(family_raw, list) or not all(isinstance(x, str) for x in family_raw):
+            raise RegistryError(
+                f"weather_presets.yaml: {name!r} gallery_family must be a string list"
+            )
+        family = tuple(str(x) for x in family_raw)
     return WeatherPresetRef(
         name=name,
         description=str(meta.get("description") or ""),
@@ -354,6 +363,7 @@ def _parse_weather_preset(name: str, meta: Any) -> WeatherPresetRef:
         turbulence=_opt_float("turbulence"),
         wind_ground_speed_ms=_opt_float("wind_ground_speed_ms"),
         wind_ground_dir_deg=_opt_float("wind_ground_dir_deg"),
+        gallery_family=family,
     )
 
 
