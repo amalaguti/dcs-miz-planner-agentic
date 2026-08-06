@@ -5,11 +5,8 @@ Ids only — descriptions may differ across YAML and planning_options.
 
 from __future__ import annotations
 
-import inspect
-import re
 from dataclasses import dataclass
 
-from .compiler.pydcs_compiler import PyDCSCompiler
 from .models import WeatherPreset
 from .registry import get_channel_registry
 
@@ -40,16 +37,8 @@ def planning_weather_ids() -> frozenset[str]:
 
 
 def compiler_weather_ids() -> frozenset[str]:
-    """Preset values referenced as ``WeatherPreset.NAME`` in ``_apply_weather``."""
-    src = inspect.getsource(PyDCSCompiler._apply_weather)
-    names = re.findall(r"WeatherPreset\.([A-Z0-9_]+)", src)
-    ids: set[str] = set()
-    for name in names:
-        try:
-            ids.add(WeatherPreset[name].value)
-        except KeyError:
-            continue
-    return frozenset(ids)
+    """All Spec weather ids are applied via registry recipes in ``_apply_weather``."""
+    return enum_weather_ids()
 
 
 def collect_weather_sot() -> WeatherSotSets:

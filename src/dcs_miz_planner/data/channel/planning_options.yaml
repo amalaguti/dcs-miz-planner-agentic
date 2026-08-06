@@ -64,6 +64,54 @@ options:
     description: Broken to overcast cloud; visibility about 5–8 km (marginal VFR).
     support: supported
 
+  - family: weather
+    id: light_scattered_vfr
+    label: Light scattered VFR
+    description: Light scattered cloud; good Channel VFR (campaign clear-day feel).
+    support: supported
+    meta:
+      cloud_preset: Preset1
+
+  - family: weather
+    id: high_scattered
+    label: High scattered
+    description: High scattered layer; cooler Channel day with good tops visibility.
+    support: supported
+    meta:
+      cloud_preset: Preset3
+
+  - family: weather
+    id: broken_channel
+    label: Broken Channel
+    description: Broken cloud deck typical of Channel patrol / scramble days.
+    support: supported
+    meta:
+      cloud_preset: Preset14
+
+  - family: weather
+    id: overcast_low
+    label: Low overcast
+    description: Low overcast; grey Channel day, still flyable under the deck.
+    support: supported
+    meta:
+      cloud_preset: Preset22
+
+  - family: weather
+    id: rain_overcast
+    label: Rain overcast
+    description: Overcast with rain; poor VFR, diversion weather.
+    support: supported
+    meta:
+      cloud_preset: RainyPreset1
+
+  - family: weather
+    id: scattered_summer
+    label: Scattered summer
+    description: Summer scattered cloud; warmer day, fair visibility.
+    support: supported
+    meta:
+      cloud_preset: Preset9
+
   - family: time_of_day
     id: dawn
     label: Dawn

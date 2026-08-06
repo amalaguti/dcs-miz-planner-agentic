@@ -28,10 +28,23 @@ class AircraftRef:
 
 @dataclass(frozen=True)
 class WeatherPresetRef:
-    """Named weather preset known to the Mission Spec."""
+    """Named weather preset known to the Mission Spec (optional compile recipe)."""
 
     name: str
     description: str = ""
+    cloud_preset: str | None = None
+    clouds_base_m: float | None = None
+    clouds_thickness_m: float | None = None
+    clouds_density: int | None = None
+    enable_fog: bool | None = None
+    fog_thickness: float | None = None
+    fog_visibility: float | None = None
+    visibility_distance: float | None = None
+    temperature_c: float | None = None
+    qnh_mmhg: float | None = None
+    turbulence: float | None = None
+    wind_ground_speed_ms: float | None = None
+    wind_ground_dir_deg: float | None = None
 
 
 @dataclass(frozen=True)
@@ -157,13 +170,7 @@ class ChannelRegistry:
         if not isinstance(presets_raw, dict):
             raise RegistryError("weather_presets.yaml: 'presets' must be a mapping")
         weather_presets = {
-            str(name): WeatherPresetRef(
-                name=str(name),
-                description=str((meta or {}).get("description", ""))
-                if isinstance(meta, dict)
-                else "",
-            )
-            for name, meta in presets_raw.items()
+            str(name): _parse_weather_preset(str(name), meta) for name, meta in presets_raw.items()
         }
 
         payloads_raw = _load_yaml("payloads.yaml").get("payloads") or {}
@@ -307,6 +314,47 @@ class ChannelRegistry:
 
     def list_planning_options(self) -> tuple[PlanningOptionRef, ...]:
         return self._planning_options
+
+
+def _parse_weather_preset(name: str, meta: Any) -> WeatherPresetRef:
+    if meta is None:
+        return WeatherPresetRef(name=name)
+    if not isinstance(meta, dict):
+        raise RegistryError(f"weather_presets.yaml: {name!r} must map to a mapping")
+
+    def _opt_float(key: str) -> float | None:
+        if key not in meta or meta[key] is None:
+            return None
+        return float(meta[key])
+
+    def _opt_int(key: str) -> int | None:
+        if key not in meta or meta[key] is None:
+            return None
+        return int(meta[key])
+
+    def _opt_bool(key: str) -> bool | None:
+        if key not in meta or meta[key] is None:
+            return None
+        return bool(meta[key])
+
+    cloud = meta.get("cloud_preset")
+    return WeatherPresetRef(
+        name=name,
+        description=str(meta.get("description") or ""),
+        cloud_preset=str(cloud) if cloud else None,
+        clouds_base_m=_opt_float("clouds_base_m"),
+        clouds_thickness_m=_opt_float("clouds_thickness_m"),
+        clouds_density=_opt_int("clouds_density"),
+        enable_fog=_opt_bool("enable_fog"),
+        fog_thickness=_opt_float("fog_thickness"),
+        fog_visibility=_opt_float("fog_visibility"),
+        visibility_distance=_opt_float("visibility_distance"),
+        temperature_c=_opt_float("temperature_c"),
+        qnh_mmhg=_opt_float("qnh_mmhg"),
+        turbulence=_opt_float("turbulence"),
+        wind_ground_speed_ms=_opt_float("wind_ground_speed_ms"),
+        wind_ground_dir_deg=_opt_float("wind_ground_dir_deg"),
+    )
 
 
 def _parse_ground_unit(unit_id: str, meta: Any) -> GroundUnitRef:

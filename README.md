@@ -28,9 +28,10 @@ tank against enemy trucks inland near Dunkirk (accepted in-game 2026-08-02). Esc
 (`examples/manston_escort.yaml`) covers a Mosquito package SE of Manston with optional
 Bf-109 bounce (accepted in-game 2026-08-02). Compile writes squadron-commander briefing text
 into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; accepted in-game
-2026-08-02). Weather presets: `sunny_clear`, `dawn_clear`, `marginal_vfr` (examples under
-`examples/manston_dawn_freeflight.yaml` / `manston_marginal_vfr.yaml`; accepted in-game
-2026-08-02 with meteo briefing phrasing). Seeded Spec rerolls:
+2026-08-02). Weather presets: `sunny_clear`, `dawn_clear`, `marginal_vfr`, plus campaign-seeded
+gallery patterns (`light_scattered_vfr`, `high_scattered`, `broken_channel`,
+`overcast_low`, `rain_overcast`, `scattered_summer`; examples
+`manston_broken_channel.yaml` / `manston_rain_overcast.yaml`). Seeded Spec rerolls:
 `dcs-miz randomize <spec> --seed N` (weather/time/geometry/opposition; same seed → same Spec).
 Interactive multi-turn
 chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026-08-01).
@@ -70,7 +71,8 @@ hermetic.
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
 **Release:** **v0.3** is the pre–mission-designer baseline (immersion floor, R1/R2 audits,
 `set_flag_random`, hermetic GitHub Actions CI). Designer shelves (`#30e`) and Spec
-`dynamics` expand (`#30f`) are done. Optional later: `#15a` recon.
+`dynamics` expand (`#30f`) are done. **Building:** `#17a` weather pattern expand.
+Optional later: `#15a` recon, `#17c` in-flight fog.
 See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 ## Stack
 

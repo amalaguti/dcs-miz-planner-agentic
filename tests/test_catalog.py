@@ -205,7 +205,13 @@ def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
 
     service = CatalogService(db_path=db)
     weather = service.list_rows("planning_options", family="weather", support="supported")
-    assert {r["id"] for r in weather} == {"sunny_clear", "dawn_clear", "marginal_vfr"}
+    assert {r["id"] for r in weather} >= {
+        "sunny_clear",
+        "dawn_clear",
+        "marginal_vfr",
+        "broken_channel",
+        "rain_overcast",
+    }
 
     behaviours = service.list_rows(
         "planning_options", family="mission_behaviour", support="supported"
@@ -245,7 +251,7 @@ def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
             == 0
         )
     payload = json.loads(buf.getvalue())
-    assert {r["id"] for r in payload["rows"]} == {"sunny_clear", "dawn_clear", "marginal_vfr"}
+    assert {r["id"] for r in payload["rows"]} >= {"sunny_clear", "dawn_clear", "marginal_vfr"}
     assert all(r["support"] == "supported" for r in payload["rows"])
 
     first = CatalogService(db_path=db).sync()

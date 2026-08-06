@@ -42,6 +42,12 @@ class WeatherPreset(str, Enum):
     SUNNY_CLEAR = "sunny_clear"
     DAWN_CLEAR = "dawn_clear"
     MARGINAL_VFR = "marginal_vfr"
+    LIGHT_SCATTERED_VFR = "light_scattered_vfr"
+    HIGH_SCATTERED = "high_scattered"
+    BROKEN_CHANNEL = "broken_channel"
+    OVERCAST_LOW = "overcast_low"
+    RAIN_OVERCAST = "rain_overcast"
+    SCATTERED_SUMMER = "scattered_summer"
 
 
 class ObjectiveType(str, Enum):

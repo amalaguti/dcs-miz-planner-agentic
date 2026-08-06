@@ -1,0 +1,20 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Free Flight (Rain Overcast)
+description: >-
+  Cold start at Manston in overcast rain (RainyPreset1) — diversion weather
+  seeded from Spitfire campaign recipes.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "10:00"
+weather: rain_overcast
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking

@@ -1,9 +1,129 @@
 # Named weather presets used by Mission Spec (schema_version "1").
 # Descriptions are pilot-facing meteorological language (briefs / catalog).
+# Optional recipe fields drive PyDCS emit (cloud gallery + numerics).
+# cloud_preset: ME gallery id (PresetN / RainyPresetN) or omit for legacy density path.
 presets:
   sunny_clear:
     description: Clear skies, excellent visibility
+    clouds_density: 0
+    clouds_thickness_m: 0
+    clouds_base_m: 300
+    enable_fog: false
+    fog_thickness: 0
+    visibility_distance: 80000
+
   dawn_clear:
     description: Mostly clear with light haze; good visibility at first light
+    clouds_density: 1
+    clouds_thickness_m: 200
+    clouds_base_m: 400
+    enable_fog: true
+    fog_thickness: 80
+    fog_visibility: 8000
+    visibility_distance: 45000
+
   marginal_vfr:
     description: Broken to overcast cloud; visibility about 5–8 km (marginal VFR)
+    clouds_density: 8
+    clouds_thickness_m: 1500
+    clouds_base_m: 700
+    enable_fog: false
+    fog_thickness: 0
+    visibility_distance: 6000
+
+  # Campaign-seeded gallery patterns (Spitfire Beware / FoD / Epsom / Big Show scan)
+  light_scattered_vfr:
+    description: Light scattered cloud; good Channel VFR (campaign clear-day feel)
+    cloud_preset: Preset1
+    clouds_base_m: 1300
+    clouds_thickness_m: 200
+    clouds_density: 0
+    enable_fog: false
+    fog_thickness: 0
+    fog_visibility: 25
+    visibility_distance: 80000
+    temperature_c: 14
+    qnh_mmhg: 770
+    turbulence: 10.7
+    wind_ground_speed_ms: 2.1
+    wind_ground_dir_deg: 162
+
+  high_scattered:
+    description: High scattered layer; cooler Channel day with good tops visibility
+    cloud_preset: Preset3
+    clouds_base_m: 840
+    clouds_thickness_m: 200
+    clouds_density: 0
+    enable_fog: true
+    fog_thickness: 100
+    fog_visibility: 6000
+    visibility_distance: 80000
+    temperature_c: 1
+    qnh_mmhg: 767
+    turbulence: 6.4
+    wind_ground_speed_ms: 4.1
+    wind_ground_dir_deg: 295
+
+  broken_channel:
+    description: Broken cloud deck typical of Channel patrol / scramble days
+    cloud_preset: Preset14
+    clouds_base_m: 1700
+    clouds_thickness_m: 200
+    clouds_density: 0
+    enable_fog: true
+    fog_thickness: 120
+    fog_visibility: 5000
+    visibility_distance: 80000
+    temperature_c: 16
+    qnh_mmhg: 760
+    turbulence: 10.7
+    wind_ground_speed_ms: 4.1
+    wind_ground_dir_deg: 122
+
+  overcast_low:
+    description: Low overcast; grey Channel day, still flyable under the deck
+    cloud_preset: Preset22
+    clouds_base_m: 900
+    clouds_thickness_m: 200
+    clouds_density: 0
+    enable_fog: true
+    fog_thickness: 150
+    fog_visibility: 4000
+    visibility_distance: 80000
+    temperature_c: 7
+    qnh_mmhg: 757
+    turbulence: 15.8
+    wind_ground_speed_ms: 5.0
+    wind_ground_dir_deg: 128
+
+  rain_overcast:
+    description: Overcast with rain; poor VFR, diversion weather
+    cloud_preset: RainyPreset1
+    clouds_base_m: 800
+    clouds_thickness_m: 200
+    clouds_density: 0
+    enable_fog: true
+    fog_thickness: 200
+    fog_visibility: 3000
+    visibility_distance: 80000
+    temperature_c: 2
+    qnh_mmhg: 760
+    turbulence: 0
+    wind_ground_speed_ms: 3.1
+    wind_ground_dir_deg: 0
+
+  scattered_summer:
+    description: Summer scattered cloud; warmer day, fair visibility
+    cloud_preset: Preset9
+    clouds_base_m: 1700
+    clouds_thickness_m: 200
+    clouds_density: 0
+    enable_fog: false
+    fog_thickness: 0
+    fog_visibility: 25
+    visibility_distance: 80000
+    temperature_c: 20
+    qnh_mmhg: 760
+    turbulence: 0
+    wind_ground_speed_ms: 8.2
+    wind_ground_dir_deg: 122

@@ -694,38 +694,56 @@ class PyDCSCompiler(CompilerInterface):
 
     @staticmethod
     def _apply_weather(mission, preset: WeatherPreset) -> None:
-        # Existence already checked in _validate via the Channel registry.
-        from dcs.weather import Weather
+        from dcs.weather import CloudPreset, Weather, Wind
 
+        from ..registry import get_channel_registry
+
+        ref = get_channel_registry().weather_preset(preset.value)
         w = mission.weather
-        w.clouds_preset = None
+        w.atmosphere_type = 0
         w.enable_dust = False
         w.dust_density = 0
         w.clouds_iprecptns = Weather.Preceptions.None_
+        w.clouds_preset = None
 
-        if preset is WeatherPreset.SUNNY_CLEAR:
-            w.clouds_density = 0
-            w.clouds_thickness = 0
-            w.clouds_base = 300
-            w.enable_fog = False
-            w.fog_thickness = 0
-            w.visibility_distance = 80000
-        elif preset is WeatherPreset.DAWN_CLEAR:
-            # Light haze / first-light feel — still flyable Channel VFR.
-            w.clouds_density = 1
-            w.clouds_thickness = 200
-            w.clouds_base = 400
-            w.enable_fog = True
-            w.fog_thickness = 80
-            w.fog_visibility = 8000
-            w.visibility_distance = 45000
-        elif preset is WeatherPreset.MARGINAL_VFR:
-            # Broken/overcast + ~6 km visibility (marginal VFR band).
-            w.clouds_density = 8
-            w.clouds_thickness = 1500
-            w.clouds_base = 700
-            w.enable_fog = False
-            w.fog_thickness = 0
-            w.visibility_distance = 6000
-        else:  # pragma: no cover - enum exhaustiveness
-            raise ValueError(f"Unsupported weather preset: {preset}")
+        if ref.clouds_density is not None:
+            w.clouds_density = ref.clouds_density
+        if ref.clouds_thickness_m is not None:
+            w.clouds_thickness = round(ref.clouds_thickness_m)
+        if ref.clouds_base_m is not None:
+            w.clouds_base = round(ref.clouds_base_m)
+        if ref.enable_fog is not None:
+            w.enable_fog = ref.enable_fog
+        if ref.fog_thickness is not None:
+            w.fog_thickness = round(ref.fog_thickness)
+        if ref.fog_visibility is not None:
+            w.fog_visibility = round(ref.fog_visibility)
+        if ref.visibility_distance is not None:
+            w.visibility_distance = round(ref.visibility_distance)
+        if ref.temperature_c is not None:
+            w.season_temperature = float(ref.temperature_c)
+        if ref.qnh_mmhg is not None:
+            w.qnh = float(ref.qnh_mmhg)
+        if ref.turbulence is not None:
+            turb = float(ref.turbulence)
+            # Match PyDCS default dump (`0` not `0.0`) for integer turbulence.
+            w.turbulence_at_ground = int(turb) if turb.is_integer() else turb
+        if ref.wind_ground_speed_ms is not None or ref.wind_ground_dir_deg is not None:
+            w.wind_at_ground = Wind(
+                direction=float(ref.wind_ground_dir_deg or 0),
+                speed=float(ref.wind_ground_speed_ms or 0),
+            )
+
+        if ref.cloud_preset:
+            try:
+                gallery = CloudPreset.by_name(ref.cloud_preset)
+            except Exception as exc:
+                raise ValueError(
+                    f"Unknown weather cloud_preset {ref.cloud_preset!r} for {preset.value}"
+                ) from exc
+            w.clouds_preset = gallery
+            base = w.clouds_base
+            if base < gallery.min_base:
+                w.clouds_base = gallery.min_base
+            elif base > gallery.max_base:
+                w.clouds_base = gallery.max_base
