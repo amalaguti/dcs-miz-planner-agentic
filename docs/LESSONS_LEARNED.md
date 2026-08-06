@@ -27,14 +27,16 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   (`clouds.preset` = `PresetN` / `RainyPresetN`). PyDCS exposes this as
   `Weather.clouds_preset = CloudPreset.by_name(...)` via `dcs.cloud_presets`
   (30 presets in 0.15.x; each has min/max `clouds_base` metres — validate or
-  clamp). Our compiler currently sets `clouds_preset = None` and only tweaks
-  density/thickness/fog for three Spec ids. **Best reference corpus:** installed
+  clamp). `#17a` recipes set `cloud_preset` + numerics for expanded Spec ids;
+  the original trio (`sunny_clear` / `dawn_clear` / `marginal_vfr`) keeps the
+  legacy density/thickness path (`clouds_preset = None`). Clamp base into
+  gallery min/max. Campaign rainy gallery often leaves `iprecptns=0` — rain look
+  from the preset, not the precip enum. **Best reference corpus:** installed
   Spitfire campaign `.miz` weather tables (Beware / Fight or Die / Epsom / Big
   Show) — not empty ME weather-template folders. Mission `weather.name` is often
-  a stale `"Winter, clean sky"` string; trust `clouds.preset` + numerics. Prefer
-  curated Spec pattern ids seeded from that scan over raw ME knobs or live METAR.
-- **Code:** `compiler/pydcs_compiler._apply_weather`, `dcs.cloud_presets`,
-  research notes in gitignored `research/weather.md`.
+  a stale `"Winter, clean sky"` string; trust `clouds.preset` + numerics.
+- **Code:** `compiler/pydcs_compiler._apply_weather`, `weather_presets.yaml`,
+  `dcs.cloud_presets`, research notes in gitignored `research/weather.md`.
 
 ## Spec dynamics expand XOR with narrative (2026-08-05)
 

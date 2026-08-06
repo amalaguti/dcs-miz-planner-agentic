@@ -15,9 +15,9 @@
 - [x] 3.1 Hermetic tests: compile asserts gallery preset strings; trio still OK
 - [x] 3.2 Example Spec using a new pattern (e.g. broken or rain)
 - [x] 3.3 Refresh goldens only if trio emit changes (not needed — trio emit stable)
-- [ ] 3.4 Optional ME smoke (broken / rain examples)
+- [x] 3.4 Optional ME smoke (broken / rain examples) — accepted 2026-08-06 (`manston_broken_channel` / `manston_rain_overcast`)
 
 ## 4. Docs / agent
 
-- [x] 4.1 BACKLOG `#17a` → building; README Status one-liner
-- [ ] 4.2 LESSONS if clamp/fog pitfalls appear
+- [x] 4.1 BACKLOG `#17a` → done; README Status one-liner
+- [x] 4.2 LESSONS updated (gallery recipes vs legacy density path)

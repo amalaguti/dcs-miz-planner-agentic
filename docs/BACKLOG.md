@@ -105,11 +105,13 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 |---|------|------|--------|
 | 16 | `briefing-generation` | AI briefing text into `l10n` dictionary (sortie, description, tasks); uses squadron-commander voice when enabled | `done` (accepted in-game 2026-08-02; Sortie/Description/Task in ME) |
 | 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `done` (accepted in-game 2026-08-02; meteo brief phrasing) |
-| 17a | `weather-presets-expand` | Expand Channel Spec weather beyond the trio: curated **named patterns** seeded from Spitfire campaign `.miz` weather (cloud gallery + wind/fog/turb), pilot-facing brief text, SoT parity (`weather_sot`). Prefer recipes over raw ME knobs / live METAR. Optional invent-time **jitter** around pattern defaults (Layer A / `randomize`). Research: R10 campaign scan (2026-08-06) | `building` |
+| 17a | `weather-presets-expand` | Expand Channel Spec weather beyond the trio: curated **named patterns** seeded from Spitfire campaign `.miz` weather (cloud gallery + wind/fog/turb), pilot-facing brief text, SoT parity (`weather_sot`). Prefer recipes over raw ME knobs / live METAR. Invent jitter deferred to `#17e`. Research: R10 campaign scan (2026-08-06) | `done` (accepted ME smoke 2026-08-06; broken + rain examples) |
 | 18 | `mission-randomization` | Seeded Spec→Spec variation for replayability (CLI + tool; compiler stays deterministic) | `done` (accepted 2026-08-02; seed42 vs seed99 CAP) |
 | 19 | `spitfire-radio-channel-presets` | Match ED Channel Spitfire unit Radio bank (A=124, B=40, C=41, D=42, E=108.9) for cockpit channel clicks; group frequency 124 already correct | `idea` (parked 2026-08-02 — immersion only; not required to fly; revisit if cockpit radio parity matters or M6 radio menus need it) |
 | 17b | `static-objects-placement` | Place ME static objects / scenery (hangars, vehicles-as-static, props) from Spec for Channel immersion — promote only after **R10** ranks PyDCS + Channel type ids | `idea` (blocked on R10) |
 | 17c | `weather-in-flight-fog` | Optional mid-sortie **fog** evolution (foggy→clear / clear→fog) via curated `world.weather.setFogAnimation` snippets — **not** sunny→rainy cloud swaps (no DCS API). After `#17a`; needs `#22` or fog-only snippet slice. Full in-flight cloud/rain deferred until ED APIs exist | `idea` (feasibility 2026-08-06; fog-only) |
+| 17d | `weather-reweather-miz` | Agent + CLI: change weather on an **existing** `.miz` (named pattern / NL → recipe) and **overwrite** the same path — same sortie (groups/triggers), new static weather. Write Spec YAML alongside `.miz`; agent finds sibling or takes an explicit path. Prefer Spec recompile when YAML exists; else PyDCS `load_file` → apply recipe → `save`. Refresh briefing weather line when possible. Not mid-flight. After `#17a`. Shares apply path with `#17e` | `idea` (2026-08-06; overwrite + sidecar YAML OK) |
+| 17e | `weather-invent-jitter` | **Always-on** seeded invent variation around `#17a` patterns. **Hybrid priors:** (1) **within-family gallery preference** weighted by Spec **date/season** (+ start **time** where useful, e.g. morning fog risk) — pick among allowed `PresetN`/`RainyPresetN` for that pattern class, never silent cross-family swaps; (2) **soft nudge** on temp/QNH/wind layers/turb/fog/base after gallery pick; (3) seeded jitter for day-to-day noise. Climatology from `research/weather.md` (Channel seasonal — **no per-place bias**). Distinct from ME Dynamic cyclones and `#17c`. Goldens pin seed. Spec: `weather` enum + `weather_opts.seed` (auto-write if omitted) | `idea` (2026-08-06; hybrid gallery/nudge; place bias skipped) |
 
 ---
 
@@ -268,6 +270,8 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Check latest PyDCS / project libs; recommend upgrades | **Research** R8 `deps-upgrade-review` |
 | Mine ED User Manual ME chapter for richer mission content | **Research** R9 `research-dcs-user-manual-me` (2020 PDF + TEMPEST ME manual + Hoggit + changelogs) |
 | More weather beyond sunny / dawn / marginal VFR | **M5** `#17a` `weather-presets-expand` — curated patterns after **R10**; invent-time jitter OK; not live METAR |
+| Same mission file, change weather after fly/ME load | **M5** `#17d` `weather-reweather-miz` — overwrite `.miz` (Spec recompile or weather-table patch) |
+| Within-pattern variance (wind/fog/turb not identical every time) | **M5** `#17e` `weather-invent-jitter` — seeded; climatology bands; not ME Dynamic |
 | Mid-flight weather story (sunny→rain / fog burn-off) | **M5** `#17c` fog-only via curated Lua (`#22`); cloud/rain mid-mission **not** feasible (no DCS API) |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
@@ -295,6 +299,11 @@ Resolve these inside the relevant proposal, not here.
 | Embedded Lua snippets: `.miz` script member vs `DO SCRIPT` trigger action | M6 `#22` — R5 Training uses DictKey + `a_do_script`, not zip-root `.lua` |
 | Whether to pin Mist/MOOSE as optional runtime deps (from R5 findings) | M6 `#22` — **default no** (stock Channel); revisit after R1–R2 |
 | When to install VEAF MCP locally (R6) vs wait until first snippet work | R6 — **at first `#22` snippet authoring**, not during M2 |
+| Re-weather existing `.miz`: overwrite vs sibling file | **M5 `#17d` — decided: overwrite same path** (reload in ME after); Spec sidecar recompile preferred when YAML exists |
+| Invent weather jitter always-on vs only via `randomize` / Spec flag | **M5 `#17e` — decided: always jitter** (seeded for reproducibility; goldens pin seed). Pattern class preserved |
+| Spec sidecar for re-weather | **M5 `#17d` — decided: write YAML alongside `.miz`**; agent discovers sibling path or accepts explicit Spec/`.miz` path |
+| Season/date → climatology priors for weather numerics | **M5 `#17e` — decided: hybrid** — within-family gallery pick weighted by date/season (+ time-of-day cues) **plus** soft numeric nudge, then always-on seeded jitter. No silent cross-family gallery swaps (agent changes `weather` pattern for that). **Place bias (Dover vs Cotentin etc.) — out of scope**; date/time + jitter enough |
+| Spec shape for weather seed | **M5 `#17e` — decided:** `weather` enum + optional `weather_opts.seed`; **auto-write seed into sidecar YAML when omitted**. If reproducibility ever feels wrong, **re-weather with a new seed** (simple recovery; not a big deal). Re-weather that changes pattern also draws a new seed by default |
 
 ---
 
