@@ -7,6 +7,22 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## PyDCS cloud presets vs legacy density weather (2026-08-06)
+
+- **Date:** 2026-08-06
+- **Lesson:** Modern ME static weather uses a **cloud preset gallery**
+  (`clouds.preset` = `PresetN` / `RainyPresetN`). PyDCS exposes this as
+  `Weather.clouds_preset = CloudPreset.by_name(...)` via `dcs.cloud_presets`
+  (30 presets in 0.15.x; each has min/max `clouds_base` metres — validate or
+  clamp). Our compiler currently sets `clouds_preset = None` and only tweaks
+  density/thickness/fog for three Spec ids. ME **weather templates** live under
+  `Saved Games\DCS\MissionEditor\weather\dynamic\` as Lua weather-table slices
+  (static or dynamic via `atmosphere_type`); useful as authoring references for
+  `#17a`, not as Spec invent input. Prefer curated Spec pattern ids over raw ME
+  knobs or live METAR.
+- **Code:** `compiler/pydcs_compiler._apply_weather`, `dcs.cloud_presets`,
+  research notes in gitignored `research/weather.md`.
+
 ## Spec dynamics expand XOR with narrative (2026-08-05)
 
 - **Date:** 2026-08-05
