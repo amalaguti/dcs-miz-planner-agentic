@@ -17,8 +17,15 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
   fine (`#17a` + `#17e` invent jitter); sunny→rainy *during* flight is not
   productizable without ED APIs. Foggy↔clear belongs in `#17c` + curated
   snippets, never LLM Lua. `#17c` ships a fog-only slice: Spec `fog_dynamics` →
-  PyDCS `DoScript(mission.string(lua))` with human template
+  PyDCS `DoScriptFile` + `l10n/DEFAULT/fog_dynamics.lua` with human template
   `world.weather.setFogAnimation({{duration}, vis, thick})` on ONCE `TimeAfter`.
+  **Do not** use `DoScript(mission.string(lua))` for this: ME shows
+  `DictKey_Translation_N`, and if the dict value is empty/missing DCS executes
+  the key name → ` '=' expected near '<eof>'` (pydcs#179). Prefer
+  `DoScriptFile` / map resources for curated snippets.
+  Starting weather matters: `dawn_clear` is only ~8 km / 80 m haze — burn-off
+  looks invisible. Use `sea_fog` (~1 km / 400 m) for ME demos; watch from the
+  ramp or stay low (above the layer the change is easy to miss).
 - **Code / notes:** `fog_dynamics.py`, `compiler/fog_emit.py`; ED FAQ weather
   singleton; backlog `#17c` / `#22`.
 

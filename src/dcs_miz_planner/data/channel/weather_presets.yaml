@@ -22,6 +22,17 @@ presets:
     fog_visibility: 8000
     visibility_distance: 45000
 
+  # Dense surface fog for fog_dynamics burn-off demos (not light haze).
+  sea_fog:
+    description: Dense Channel sea fog; visibility about 1 km near the surface
+    clouds_density: 2
+    clouds_thickness_m: 300
+    clouds_base_m: 600
+    enable_fog: true
+    fog_thickness: 400
+    fog_visibility: 1200
+    visibility_distance: 3000
+
   marginal_vfr:
     description: Broken to overcast cloud; visibility about 5–8 km (marginal VFR)
     clouds_density: 8

@@ -113,8 +113,9 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; theatre + aircraft-module inventory (folder harvest); `campaigns` index; SQLite cache on `--refresh` | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
-| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Expands narrative/dynamics if needed, validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), emits native zones/triggers, writes briefing `l10n` + `.miz` | `models`, `narrative`, `dynamics`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `dcs.*` |
+| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Expands narrative/dynamics if needed, validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), emits native zones/triggers + optional fog_dynamics, writes briefing `l10n` + `.miz` | `models`, `narrative`, `dynamics`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `compiler.fog_emit`, `dcs.*` |
 | `compiler/triggers_emit.py` | Spec zones/triggers → PyDCS `add_triggerzone` + `TriggerOnce`/`Continious` rules (incl. `SoundToAll`, numeric flags, `GroupLifeLess`, `MarkToAll`, `ExplodeWPMarker`, player `UnitAltitude*` / `UnitSpeed*`) | `models`, `sounds`, `dcs.condition`/`action`/`triggers` |
+| `compiler/fog_emit.py` | Spec `fog_dynamics` → ONCE `TimeAfter` + `DoScriptFile` (`fog_dynamics.lua` resource; curated `setFogAnimation`) | `fog_dynamics`, `models`, `dcs.*` |
 
 Four table namespaces share one DB file on purpose:
 

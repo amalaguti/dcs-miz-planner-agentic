@@ -6,15 +6,15 @@
 
 ## 2. Compiler
 
-- [x] 2.1 Emit ONCE `time_more` → `DoScript` from fog_dynamics
+- [x] 2.1 Emit ONCE `time_more` → `DoScriptFile` (`fog_dynamics.lua` resource) from fog_dynamics
 - [x] 2.2 Wire into compile path after / with native triggers
 
 ## 3. Tests + example
 
 - [x] 3.1 Hermetic: compiled `.miz` contains `setFogAnimation`
-- [x] 3.2 Example Spec (dawn + burn_off)
-- [ ] 3.3 Optional ME / Instant Action smoke (fog changes over time)
+- [x] 3.2 Example Spec (`sea_fog` + burn_off)
+- [x] 3.3 ME smoke (2026-08-06): DictKey DoScript empty → `DoScriptFile`; `sea_fog` ~1 km burn-off visible on Manston ramp
 
 ## 4. Docs
 
-- [x] 4.1 LESSONS: DoScript + setFogAnimation pitfalls if found
+- [x] 4.1 LESSONS: DoScript DictKey + setFogAnimation / sea_fog demo pitfalls

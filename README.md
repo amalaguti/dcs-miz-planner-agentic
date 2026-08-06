@@ -30,8 +30,9 @@ Bf-109 bounce (accepted in-game 2026-08-02). Compile writes squadron-commander b
 into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; accepted in-game
 2026-08-02). Weather presets: `sunny_clear`, `dawn_clear`, `marginal_vfr`, plus campaign-seeded
 gallery patterns (`light_scattered_vfr`, `high_scattered`, `broken_channel`,
-`overcast_low`, `rain_overcast`, `scattered_summer`; examples
-`manston_broken_channel.yaml` / `manston_rain_overcast.yaml`). Seeded Spec rerolls:
+`overcast_low`, `rain_overcast`, `scattered_summer`, `sea_fog`; examples
+`manston_broken_channel.yaml` / `manston_rain_overcast.yaml` /
+`manston_dawn_fog_burnoff.yaml` with Spec `fog_dynamics`). Seeded Spec rerolls:
 `dcs-miz randomize <spec> --seed N` (weather/time/geometry/opposition; same seed → same Spec).
 Interactive multi-turn
 chat (`dcs-miz chat`) plans Specs with `/accept` before write (accepted CLI 2026-08-01).
@@ -72,8 +73,9 @@ hermetic.
 **Release:** **v0.3** is the pre–mission-designer baseline (immersion floor, R1/R2 audits,
 `set_flag_random`, hermetic GitHub Actions CI). Designer shelves (`#30e`) and Spec
 `dynamics` expand (`#30f`), Channel weather patterns (`#17a`), invent weather
-jitter (`#17e`), and re-weather overwrite (`#17d`) are done. **Building:** `#17c`
-mid-sortie fog dynamics. Optional later: `#15a` recon, `#15b` squadron flight.
+jitter (`#17e`), re-weather overwrite (`#17d`), and mid-sortie fog dynamics
+(`#17c` / `fog_dynamics` + `sea_fog` example) are done. Optional later: `#15a`
+recon, `#15b` squadron flight.
 See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 ## Stack
 

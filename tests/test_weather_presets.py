@@ -32,6 +32,7 @@ def test_registry_lists_weather_presets() -> None:
     assert set(names) >= {
         "sunny_clear",
         "dawn_clear",
+        "sea_fog",
         "marginal_vfr",
         "light_scattered_vfr",
         "high_scattered",

@@ -41,6 +41,7 @@ class StartType(str, Enum):
 class WeatherPreset(str, Enum):
     SUNNY_CLEAR = "sunny_clear"
     DAWN_CLEAR = "dawn_clear"
+    SEA_FOG = "sea_fog"
     MARGINAL_VFR = "marginal_vfr"
     LIGHT_SCATTERED_VFR = "light_scattered_vfr"
     HIGH_SCATTERED = "high_scattered"

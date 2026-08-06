@@ -3,14 +3,16 @@ mission_type: free_flight
 theatre: TheChannel
 name: Manston Dawn Fog Burn-Off
 description: >-
-  Cold start at Manston at first light under dawn_clear haze. After ten minutes,
-  curated fog animation burns the fog off over twenty minutes (setFogAnimation).
+  Cold start at Manston at first light in dense sea fog (~1 km). After ten
+  minutes, curated fog animation burns the fog off over twenty minutes
+  (setFogAnimation). Stay low or on the ramp — high altitude sits above the
+  fog layer and the change is easy to miss.
 date:
   year: 1944
   month: 6
   day: 6
 start_time: "06:00"
-weather: dawn_clear
+weather: sea_fog
 weather_opts:
   seed: 42
 fog_dynamics:

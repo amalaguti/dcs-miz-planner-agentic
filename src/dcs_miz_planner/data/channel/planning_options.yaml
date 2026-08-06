@@ -59,6 +59,12 @@ options:
     support: supported
 
   - family: weather
+    id: sea_fog
+    label: Sea fog
+    description: Dense Channel sea fog; visibility about 1 km near the surface.
+    support: supported
+
+  - family: weather
     id: marginal_vfr
     label: Marginal VFR
     description: Broken to overcast cloud; visibility about 5–8 km (marginal VFR).

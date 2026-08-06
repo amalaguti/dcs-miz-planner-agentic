@@ -46,20 +46,20 @@ def test_fog_dynamics_example_validates_and_compiles(tmp_path: Path) -> None:
         load_mission_spec(EXAMPLE), tmp_path / "fog.miz", voice="raf"
     )
     with zipfile.ZipFile(miz) as z:
-        mission = z.read("mission").decode("utf-8")
-        # Script body lives in dictionary / mission strings.
-        blob = mission
-        for name in z.namelist():
-            if "l10n" in name or name.endswith(".lua"):
-                blob += z.read(name).decode("utf-8", errors="ignore")
-        # Dict keys may hold the script; scan whole zip textually.
+        names = z.namelist()
         texts = []
-        for name in z.namelist():
+        for name in names:
             raw = z.read(name)
             try:
                 texts.append(raw.decode("utf-8"))
             except UnicodeDecodeError:
                 continue
         joined = "\n".join(texts)
+        lua_names = [n for n in names if n.endswith("fog_dynamics.lua")]
+        assert lua_names, f"missing fog_dynamics.lua in {names}"
+        lua_body = z.read(lua_names[0]).decode("utf-8")
     assert "setFogAnimation" in joined
     assert "1200" in joined
+    assert "a_do_script_file" in joined or "do_script_file" in joined
+    assert "setFogAnimation" in lua_body
+    assert "DictKey_Translation_" not in lua_body
