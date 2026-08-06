@@ -7,6 +7,22 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## GitHub CLI + hermetic CI (no Windows/DCS on runners) (2026-08-05)
+
+- **Date:** 2026-08-05
+- **Lesson:** Product CI does **not** need a Windows runner or DCS installed.
+  Hermetic pytest (fake Channel inventory + golden normalizers) runs on
+  `ubuntu-latest`. Install `gh` via winget (`GitHub.cli`); auth with
+  `gh auth login` (HTTPS device flow) as the GitHub user that owns the remote.
+  On PowerShell, do **not** use bash heredoc for `git commit` — use multiple
+  `-m` flags. Prefer `gh pr create` / `gh pr merge` / `gh run watch` for remote
+  CI; first green suite needed: (1) `tests/conftest.py` patches
+  `validation.get_inventory`, (2) strip `livery_id` from both sides of golden
+  compare, (3) always call `_registry_dcs_paths()` so Linux can monkeypatch it.
+  Keep PR/push CI for the hermetic suite; in-game / live LLM stay local.
+- **Code:** `.github/workflows/ci.yml`, `tests/conftest.py`,
+  `fixtures_support.normalize_mission`.
+
 ## CI needs hermetic inventory; strip install-local liveries (2026-08-05)
 
 - **Date:** 2026-08-05

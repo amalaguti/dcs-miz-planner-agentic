@@ -371,3 +371,152 @@ options:
       behaviours: [sound_flag_chain]
       source: sound + flag enrichment sample
       mission_types: [free_flight, intercept]
+
+  # --- Mission-designer shelves (palette for co-authoring; dynamics emit = #30f) ---
+  # Layer A = dcs-miz randomize (new Spec day). Layer B = dynamics_mode (play-time
+  # variation inside one .miz once Spec dynamics ships).
+
+  - family: dynamics_mode
+    id: fixed
+    label: Fixed sortie
+    description: >
+      Same play every load — no raid dice or F10 spawn menus. Hand triggers and
+      late groups still allowed. Layer B off; use Layer A (randomize CLI) if you
+      want a different authored day.
+    support: advisory
+    meta:
+      layer: play_time
+      intended_emit: none
+      note: Palette only until Spec dynamics (#30f); not a Spec field today.
+
+  - family: dynamics_mode
+    id: live
+    label: Live dice
+    description: >
+      Play-time surprise: native set_flag_random (and flag branches) to wake late
+      pools / messages differently each load of the same .miz.
+    support: advisory
+    meta:
+      layer: play_time
+      intended_emit: [set_flag_random, activate_group, message]
+      related_behaviours: [sound_flag_chain, radio_late_activation]
+      note: Palette only until Spec dynamics (#30f); hand-author flag_random today.
+
+  - family: dynamics_mode
+    id: choose
+    label: Player chooses (F10)
+    description: >
+      On-the-fly player choice via F10 radio + late_activation pools (difficulty /
+      when bandits appear) — not Mist mid-mission rewrites.
+    support: advisory
+    meta:
+      layer: play_time
+      intended_emit: [radio_item_add, activate_group, message]
+      related_behaviours: [radio_late_activation]
+      note: Palette only until Spec dynamics (#30f); use radio_late_activation today.
+
+  - family: dynamics_mode
+    id: hybrid
+    label: Hybrid (dice + F10)
+    description: >
+      Combine live dice with an F10 menu — e.g. player picks difficulty while raid
+      composition still rolls. Prefer exclusive pools so both layers do not double-spawn.
+    support: advisory
+    meta:
+      layer: play_time
+      intended_emit: [set_flag_random, radio_item_add, activate_group, message]
+      related_behaviours: [radio_late_activation, sound_flag_chain]
+      note: Palette only until Spec dynamics (#30f).
+
+  - family: strike_target_class
+    id: soft_vehicles
+    label: Soft vehicles / trucks
+    description: >
+      Land soft targets (trucks, light cars) on Axis-held French/Belgian coast —
+      not UK home ground, not water. Spitfire bomb payloads; prefer 2×250 + slipper
+      for Channel crossing.
+    support: supported
+    meta:
+      domain: land
+      unit_ids: [Blitz_36-6700A, Kubelwagen_82, Bedford_MWD]
+      payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
+      mission_types: [ground_attack]
+
+  - family: strike_target_class
+    id: aaa_guns
+    label: AAA / AT guns
+    description: >
+      Land flak and Pak positions inland/coastal Axis territory. Same payload guidance
+      as soft vehicles; expect denser AAA around Dunkirk–Calais belts.
+    support: supported
+    meta:
+      domain: land
+      unit_ids: [flak18, flak36, Pak40]
+      payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
+      mission_types: [ground_attack]
+
+  - family: strike_target_class
+    id: sea_craft
+    label: Boats / ships
+    description: >
+      Mid-Channel or coastal water targets — ships.yaml ids only; never place land
+      vehicles at sea. Prefer bomb payloads; large ships may need 500 lb.
+    support: supported
+    meta:
+      domain: sea
+      ship_ids: [Schnellboot_type_S130, Uboat_VIIC, Dry-cargo ship-1]
+      payload_families: [spitfire_1x500, spitfire_2x250_slipper, spitfire_2x250]
+      mission_types: [ground_attack]
+
+  - family: strike_target_class
+    id: hard_infrastructure
+    label: Hard / infrastructure (buildings, bridges, airfields)
+    description: >
+      Large fixed targets (buildings, bridges, airfield infrastructure). No verified
+      Channel static unit ids in the registry yet — do not invent DCS ids; use zones /
+      marks and advisory planning until units are packaged.
+    support: future
+    meta:
+      domain: land
+      unit_ids: []
+      payload_families: [spitfire_1x500, spitfire_2x250_slipper]
+      mission_types: [ground_attack]
+      note: Future shelf — not compile-backed as unit targets today.
+
+  - family: channel_place
+    id: manston_home
+    label: Manston (home field)
+    description: >
+      RAF Manston — default Channel Spitfire start for free flight, scramble, and
+      Channel-crossing strikes.
+    support: advisory
+    meta:
+      airfield: Manston
+      role: home_base
+      mission_types: [free_flight, intercept, cap, ground_attack, escort]
+
+  - family: channel_place
+    id: french_coast_strike_belt
+    label: French coast strike belt
+    description: >
+      Axis-held French/Belgian coastal belt (Dunkirk–Calais area) for land GA targets —
+      place soft/AAA inland of the coast, not on UK soil or mid-Channel water.
+    support: advisory
+    meta:
+      domain: land
+      geometry_hint: inland_near_dunkirk
+      related_classes: [soft_vehicles, aaa_guns]
+      mission_types: [ground_attack]
+
+  - family: channel_place
+    id: mid_channel_shipping
+    label: Mid-Channel shipping lane
+    description: >
+      Over-water Channel corridor for E-boat / U-boat / cargo ship strikes — sea_craft
+      class only; keep land vehicles off the water.
+    support: advisory
+    meta:
+      domain: sea
+      geometry_hint: mid_channel
+      related_classes: [sea_craft]
+      mission_types: [ground_attack]

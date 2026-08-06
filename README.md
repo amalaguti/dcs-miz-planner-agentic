@@ -51,6 +51,7 @@ Player altitude/speed gates with flag cooldown re-warn
 re-warn polish 2026-08-05). Trigger-rich examples above are also pinned by structural
 goldens (not string-smoke only).
 Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
+mission-designer shelves (`dynamics_mode`, `strike_target_class`, `channel_place`),
 `research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
 `Mods/campaigns` `.miz` / `.cmp` / Doc PDFs — filenames by default; opt-in
 `include_doc_text` for short cached PDF excerpts) for creative planning inspiration.
@@ -63,18 +64,20 @@ inspiration, not imported as Spec; stub LLM + offline research fixtures keep tes
 hermetic.
 
 **MVP acceptance:** Spitfire LF Mk IX, Channel map, cold start free flight at Manston, 09:00, sunny.
-**Release:** **v0.3** marks the pre–mission-designer baseline (immersion floor, R1/R2 audits,
-`set_flag_random`). **Next:** catalog shelves for dynamics / strike composition / places +
-agent co-design. See [`docs/BACKLOG.md`](docs/BACKLOG.md).
+**Release:** **v0.3** is the pre–mission-designer baseline (immersion floor, R1/R2 audits,
+`set_flag_random`, hermetic GitHub Actions CI). **Next:** `#30f`
+`mission-dynamics-pack` — Spec `dynamics` expand from the `#30e` designer shelves
+(dynamics modes / strike classes / Channel places). Optional later: `#15a` recon.
+See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Stack
 
 - Python 3.12 + uv
 - Mission Spec (Pydantic) → shared validation → compiler via PyDCS (behind `CompilerInterface`)
 - OpenSpec (`npx openspec`) for SDD
-- GitHub Actions CI: ruff + hermetic pytest on PRs/pushes to `master`/`main`
-- Local pre-commit: ruff + branch/hygiene hooks (`pre-commit install`)
-- pre-commit (blocks commits on `master`/`main`; runs Ruff lint + format on Python)
+- GitHub Actions CI (Ubuntu): ruff + hermetic pytest on PR/push — no DCS install or Windows
+  runner required (`tests/conftest.py` fake inventory; liveries stripped from goldens)
+- Local pre-commit: blocks `master`/`main`; runs Ruff lint + format (`pre-commit install`)
 
 ## Validate and compile examples
 

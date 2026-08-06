@@ -93,6 +93,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 | 13 | `mission-type-cap` | Patrol station, engagement rules | `done` (accepted in-game 2026-08-01) |
 | 14 | `mission-type-ground-attack` | Ground targets, payload selection | `done` (accepted in-game 2026-08-02; Dunkirk inland + slipper) |
 | 15 | `mission-type-escort` | Escort a friendly package | `done` (accepted in-game 2026-08-02; Mosquito package + bounce) |
+| 15a | `mission-type-recon` | Locate / observe a place or contact (GA-like geometry + marks/zones) **without** strike/payload attack; win on find/RTB rather than destroy | `idea` (after `#30e`/`#30f`; may stay GA+behaviours until Spec needs a distinct type) |
 
 ---
 
@@ -139,7 +140,7 @@ the trigger/script text itself is human-authored, versioned, and tested.
 | 30b | `eval-agent-creativity` | Periodic live vague-ask harness (Cursor skill) to regression creative agent behaviour → LESSONS / OpenSpec | `done` (skill + prompt catalog; re-run after agent changes) |
 | 30c | `agent-assertive-behaviours` | Close live-eval + adversarial gaps for *agent behaviour*: vague free_flight applies 1–2 behaviours; fix `SPEC_SHAPE_REMINDER` “triggers must be []”; schema examples include immersion variants; complete radio+late-act recipes (pair with `#32`); prefer campaigns/Doc *filenames* until `#40`; discourage randomize-as-authoring; stop `infer_creative` rewarding half-recipes; optional hard behaviour floor when immersion unspecified | `done` (2026-08-05) |
 | 30d | `agent-immersion-floor` | Soft host immersion nudge + immersion-first schema examples + drop invent `randomize_mission` (live eval 2026-08-05 follow-up) | `done` (2026-08-05) |
-| 30e | `mission-designer-catalog` | Catalog shelves for mission-designer co-authoring: dynamics modes (live/choose/hybrid/fixed), strike target classes ↔ payload/domain, curated Channel places; agent prompts query catalog then recommend | `building` (after v0.3) |
+| 30e | `mission-designer-catalog` | Catalog shelves for mission-designer co-authoring: dynamics modes (live/choose/hybrid/fixed), strike target classes ↔ payload/domain, curated Channel places; agent prompts query catalog then recommend | `done` (2026-08-05; shelves + co-author prompts; `#30f` consumes) |
 | 30f | `mission-dynamics-pack` | Spec `dynamics` expand pack (pools + modes) emitting set_flag_random / F10 / activate_group — follows `#30e` palette | `idea` |
 | 24 | `cockpit-state-triggers` | Optional interactive/training missions driven by Spitfire cockpit arguments (promotes research R4 once verified in-game) | `idea` |
 

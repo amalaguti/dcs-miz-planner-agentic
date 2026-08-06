@@ -217,6 +217,13 @@ def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
     inspirations = service.list_rows("planning_options", family="mission_inspiration")
     assert any(r["id"] == "low_level_channel_hop" for r in inspirations)
 
+    dynamics = service.list_rows("planning_options", family="dynamics_mode")
+    assert {r["id"] for r in dynamics} >= {"fixed", "live", "choose", "hybrid"}
+    strikes = service.list_rows("planning_options", family="strike_target_class")
+    assert any(r["id"] == "soft_vehicles" for r in strikes)
+    places = service.list_rows("planning_options", family="channel_place")
+    assert any(r["id"] == "manston_home" for r in places)
+
     buf = io.StringIO()
     with redirect_stdout(buf):
         assert (
