@@ -221,6 +221,15 @@ known presets.
 - **WHEN** a Spec uses `weather: dawn_clear` on Channel with known player assets
 - **THEN** validation MUST succeed for weather
 
+### Requirement: Weather SoT parity includes expanded patterns
+Weather SoT parity checks MUST require enum, YAML preset keys, planning_options
+weather ids, and compiler-supported presets to stay aligned when patterns are
+added.
+
+#### Scenario: Parity green after expand
+- **WHEN** `collect_weather_sot` / weather parity tests run after this change
+- **THEN** all surfaces MUST list the same expanded weather id set
+
 ### Requirement: Randomized Specs use shared validation
 A Spec produced by seeded randomization MUST be subject to the same shared validation
 engine as any other Mission Spec before compile. The system MUST NOT provide a compile

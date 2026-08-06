@@ -97,6 +97,16 @@ with support level `supported` (compile-backed), alongside existing `sunny_clear
 - **WHEN** `list_mission_options` (or equivalent) is invoked
 - **THEN** weather options MUST include `dawn_clear` and `marginal_vfr` as `supported`
 
+### Requirement: Planning options list expanded weather patterns
+Packaged planning options for family `weather` MUST include the expanded pattern
+ids as `supported` (or honestly labeled) with descriptions aligned to registry
+weather descriptions after catalog sync.
+
+#### Scenario: Expanded weather listable
+- **WHEN** `list_mission_options` runs after catalog sync
+- **THEN** results MUST include the new weather pattern ids as well as the
+  original trio
+
 ### Requirement: Seeded reroll planning option
 The packaged Channel planning options SHALL include a `randomization` family entry that
 describes seeded Spec rerolls (tool/CLI), with support level at least `advisory` once the
