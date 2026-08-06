@@ -86,7 +86,7 @@ def _reweather_cmd(args: argparse.Namespace) -> int:
         print(exc, file=sys.stderr)
         return 2
     print(
-        f"Re-weathered {result['miz_path']} → {result['weather']} "
+        f"Re-weathered {result['miz_path']} -> {result['weather']} "
         f"(mode={result['mode']}, seed={result.get('seed')})"
     )
     if result.get("note"):
