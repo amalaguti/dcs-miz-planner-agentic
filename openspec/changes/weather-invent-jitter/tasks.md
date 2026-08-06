@@ -19,7 +19,7 @@
 
 - [x] 4.1 Hermetic tests: same seed stable; different seeds differ; rain stays rainy family; sunny no rain gallery
 - [x] 4.2 Pin `weather_opts.seed` on examples/goldens that need stable emit
-- [ ] 4.3 Optional ME smoke: two seeds same pattern, confirm weather differs in ME
+- [x] 4.3 Optional ME smoke: two seeds same pattern, confirm weather differs in ME — accepted 2026-08-06 (Broken 5 vs 6; fog/other differ; look differs)
 
 ## 5. Docs
 
