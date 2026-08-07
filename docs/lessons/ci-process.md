@@ -5,6 +5,19 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## OpenSpec CLI invoke: use `npx`, not `uv` (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Lesson:** OpenSpec in this repo is the **npm** package `@fission-ai/openspec`
+  (see `package.json` / `node_modules/.bin/openspec`). It is **not** a `uv`
+  subcommand or Python tool. `uv openspec` → unrecognized subcommand;
+  `uv run openspec` / `uvx openspec` → not found. Prefer **`npx openspec …`**
+  (or `npx --yes openspec …`). After `npm install`,
+  `.\node_modules\.bin\openspec.cmd …` also works. Do not hunt PATH for a global
+  `openspec` binary first.
+- **Code / notes:** README Stack; hook `protect-master.py` already allows
+  `npx openspec …` read-only on master; skills `openspec-*` / `dcs-dev-ci-process`.
+
 ## Install inventory: SQLite cache, never execute DCS Lua
 
 - **Date:** 2026-07-26

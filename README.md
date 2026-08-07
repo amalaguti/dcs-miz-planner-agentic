@@ -88,7 +88,7 @@ See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 - Python 3.12 + uv
 - Mission Spec (Pydantic) → shared validation → compiler via PyDCS (behind `CompilerInterface`)
-- OpenSpec (`npx openspec`) for SDD
+- OpenSpec (`npx openspec`; npm `@fission-ai/openspec` — not `uv openspec`) for SDD
 - GitHub Actions CI (Ubuntu): ruff + hermetic pytest on PR/push — no DCS install or Windows
   runner required (`tests/conftest.py` fake inventory; liveries stripped from goldens)
 - Local pre-commit: blocks `master`/`main`; runs Ruff lint + format (`pre-commit install`)

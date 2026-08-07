@@ -5,6 +5,19 @@ description: Keep OpenSpec work off master/main by creating a branch named after
 
 # OpenSpec git branch hygiene
 
+## CLI invoke (this repo)
+
+OpenSpec is **npm** `@fission-ai/openspec`, not a uv tool. Run:
+
+```bash
+npx openspec <args>
+# or: npx --yes openspec <args>
+# or: .\node_modules\.bin\openspec.cmd <args>
+```
+
+Do **not** use `uv openspec` / `uv run openspec` — they fail. See
+`docs/lessons/ci-process.md` (OpenSpec CLI invoke).
+
 ## Hard rule
 
 Do **not** create, edit, or commit project changes on `master` or `main`.

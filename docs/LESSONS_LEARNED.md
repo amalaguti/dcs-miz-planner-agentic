@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-07 | [OpenSpec CLI invoke: use `npx`, not `uv`](lessons/ci-process.md#openspec-cli-invoke-use-npx-not-uv-2026-08-07) | `ci-process` |
 | 2026-08-07 | [F10 section orders (`player.flight.orders`)](lessons/player-flight.md#f10-section-orders-playerflightorders-2026-08-07) | `player-flight` |
 | 2026-08-07 | [Aircraft failures via ME Failures table](lessons/triggers-me.md#aircraft-failures-via-me-failures-table-2026-08-07) | `triggers-me` |
 | 2026-08-07 | [Aircraft failures via ME SetFailure triggers](lessons/triggers-me.md#aircraft-failures-via-me-setfailure-triggers-2026-08-07) | `triggers-me` |

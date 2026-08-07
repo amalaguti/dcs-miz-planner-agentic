@@ -20,6 +20,8 @@ description: >-
 3. Install inventory: SQLite cache under LocalAppData; **never execute DCS Lua** to probe.
 4. OpenSpec work stays off `master`/`main`; finish = docs → commit → sync → archive →
    commit → ask merge (`openspec-finish-change`).
+5. **OpenSpec CLI:** `npx openspec …` (npm `@fission-ai/openspec`). Not `uv openspec`
+   / `uv run openspec`. Fallback: `.\node_modules\.bin\openspec.cmd`.
 
 ## Code touchpoints
 
