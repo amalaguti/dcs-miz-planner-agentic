@@ -96,7 +96,8 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 |--------|----------------|------------|
 | `cli.py` | `validate` / `compile` / `theatres` / `catalog` / `prefs` / `feedback` / `plan`; legacy spec path | `loader`, `validation`, `compiler`, `install`, `catalog`, `memory`, `agent` |
 | `loader.py` | YAML → `MissionSpec`; raises `SpecLoadError` with readable messages | `models`, `pyyaml` |
-| `models.py` | The public contract: `MissionSpec` + enums. Free flight through escort; optional `player.flight` (2–4 ship lead/wingman); weather trio; typed `zones`/`triggers` (no Lua; native emit incl. sound, numeric flags, `group_life_less`, `mark`/`smoke`, player altitude/speed gates); optional `narrative.enabled`; optional `dynamics` (play-time pools) | `pydantic` |
+| `models.py` | The public contract: `MissionSpec` + enums. Free flight through recon; optional `player.flight` (2–4 ship lead/wingman); weather trio; typed `zones`/`triggers` (no Lua; native emit incl. sound, numeric flags, `group_life_less`, `mark`/`smoke`, player altitude/speed gates); optional `narrative.enabled`; optional `dynamics` (play-time pools) | `pydantic` |
+| `recon.py` | Recon AOI find pack → inject zone + mark/find message triggers before compile | `models` |
 | `narrative.py` | Opt-in CAP/intercept/escort/GA pack → materialise zones/triggers (squadron-voice message text); runs before validate/compile | `models`, `agent.voice` |
 | `dynamics.py` | Opt-in play-time Layer B pack (`fixed`/`live`/`choose`/`hybrid` + pools) → typed triggers; XOR with narrative; runs after narrative expand | `models` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules + sound `asset_id` + group life indices/percent); multi-error result | `models`, `registry`, `sounds`, `install` |
@@ -118,7 +119,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; theatre + aircraft-module inventory (folder harvest); `campaigns` index; SQLite cache on `--refresh` | `registry`, stdlib `sqlite3` |
 | `compiler/base.py` | `CompilerInterface` — the seam that keeps PyDCS swappable | `models` |
-| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Expands narrative/dynamics if needed, validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce), emits native zones/triggers + optional fog_dynamics + optional aircraft failures, writes briefing `l10n` + `.miz` | `models`, `narrative`, `dynamics`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `compiler.fog_emit`, `compiler.failures_emit`, `dcs.*` |
+| `compiler/pydcs_compiler.py` | **Only** module allowed to import PyDCS. Expands narrative/dynamics/recon-find if needed, validates via shared engine, places player (intercept enemies / CAP orbit+ROE / ground-attack loadout+strike+enemy vehicles / escort package+EscortTaskAction+optional bounce / recon Reconnaissance+AOI contacts), emits native zones/triggers + optional fog_dynamics + optional aircraft failures, writes briefing `l10n` + `.miz` | `models`, `narrative`, `recon`, `dynamics`, `validation`, `registry`, `briefing`, `compiler.triggers_emit`, `compiler.fog_emit`, `compiler.failures_emit`, `dcs.*` |
 | `compiler/triggers_emit.py` | Spec zones/triggers → PyDCS `add_triggerzone` + `TriggerOnce`/`Continious` rules (incl. `SoundToAll`, numeric flags, `GroupLifeLess`, `MarkToAll`, `ExplodeWPMarker`, player `UnitAltitude*` / `UnitSpeed*`) | `models`, `sounds`, `dcs.condition`/`action`/`triggers` |
 | `compiler/fog_emit.py` | Spec `fog_dynamics` → ONCE `TimeAfter` + `DoScriptFile` (`fog_dynamics.lua` resource; curated `setFogAnimation`) | `fog_dynamics`, `models`, `dcs.*` |
 | `compiler/failures_emit.py` | Spec `failures` → mission-root Failures table (`enable`/`hh`/`mm`/`mmint`/`prob`; Within minutes, min 1) | `models` |
@@ -251,7 +252,7 @@ Two boundaries worth respecting:
 | Path | What lives there |
 |------|------------------|
 | `src/dcs_miz_planner/` | Product code (the modules above) |
-| `examples/` | Checked-in Mission Specs; free-flight, intercept, CAP, ground-attack, and escort Manston examples |
+| `examples/` | Checked-in Mission Specs; free-flight, intercept, CAP, ground-attack, escort, and recon Manston examples |
 | `tests/` | pytest: schema, registry, install, catalog, memory, tools, agent, validation, goldens |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |

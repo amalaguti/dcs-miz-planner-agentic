@@ -1,4 +1,4 @@
-"""PyDCS-backed compiler for free-flight through escort missions.
+"""PyDCS-backed compiler for free-flight through recon missions.
 
 Boundary rule: this module is the only place allowed to import PyDCS.
 The rest of the app depends on `MissionSpec` and `CompilerInterface`.
@@ -52,6 +52,10 @@ _ESCORT_SPEED_KMH = 400
 _ESCORT_PACKAGE_START_M = 8000.0
 _ESCORT_BOUNCE_OFFSET_M_X = 2500.0
 _ESCORT_BOUNCE_OFFSET_M_Y = -1500.0
+
+# Recon ingress (km/h) and contact spread (metres).
+_RECON_SPEED_KMH = 400
+_RECON_CONTACT_SPREAD_M = 80.0
 
 # Wingman join-up: AI lead outbound + player Follow (metres / km/h).
 _JOINUP_OUTBOUND_BEARING_DEG = 120.0
@@ -135,6 +139,11 @@ class PyDCSCompiler(CompilerInterface):
             raise ValueError(f"{exc.path}: {exc.message}") from exc
 
         self._validate(spec)
+
+        if spec.mission_type is MissionType.RECON:
+            from ..recon import expand_recon_find_pack
+
+            spec = expand_recon_find_pack(spec)
 
         aircraft_type = plane_map.get(spec.player.aircraft)
         if aircraft_type is None:
@@ -277,6 +286,10 @@ class PyDCSCompiler(CompilerInterface):
                 spec,
                 package_types,
                 enemy_types,
+            )
+        elif spec.mission_type is MissionType.RECON:
+            target_group_ids = self._apply_recon(
+                mission, countries, registry, task_group, airport, spec
             )
 
         self._apply_zones_and_triggers(
@@ -596,6 +609,80 @@ class PyDCSCompiler(CompilerInterface):
                 vg = mission.vehicle_group(
                     country=country,
                     name=f"Target {tgt.unit}",
+                    _type=vehicle_type,
+                    position=pos,
+                    group_size=tgt.count,
+                )
+                for unit in vg.units:
+                    unit.skill = skill
+                if tgt.late_activation:
+                    vg.late_activation = True
+                group_ids.append(vg.id)
+        return group_ids
+
+    def _apply_recon(
+        self,
+        mission,
+        countries_mod,
+        registry,
+        group,
+        airport,
+        spec: MissionSpec,
+    ) -> list[int]:
+        from dcs.task import OptROE, Reconnaissance
+
+        assert spec.recon is not None
+        recon = spec.recon
+        group.task = Reconnaissance.name
+
+        aoi = airport.position.point_from_heading(recon.bearing_deg, recon.distance_km * 1000.0)
+        group.add_waypoint(
+            airport.position.point_from_heading(recon.bearing_deg, 5000.0),
+            altitude=min(recon.altitude_m, 1500.0),
+            speed=_RECON_SPEED_KMH,
+            name="Climb",
+        )
+        observe = group.add_waypoint(
+            aoi,
+            altitude=recon.altitude_m,
+            speed=_RECON_SPEED_KMH,
+            name="Observe",
+        )
+        observe.add_task(OptROE(_opt_roe_value(Engagement.WEAPONS_HOLD)))
+
+        group_ids: list[int] = []
+        for i, tgt in enumerate(spec.targets):
+            strike_unit = registry.get_strike_unit(tgt.unit)
+            country = self._ensure_country(mission, countries_mod, tgt.country, tgt.coalition.value)
+            pos = aoi.point_from_heading(90.0 + i * 25.0, _RECON_CONTACT_SPREAD_M * (i + 1))
+            skill = _skill_from_name(tgt.skill)
+            if strike_unit.domain == "sea":
+                from dcs.ships import ship_map
+
+                ship_type = ship_map.get(tgt.unit)
+                if ship_type is None:
+                    raise ValueError(f"Unknown PyDCS ship id: {tgt.unit}")
+                sg = mission.ship_group(
+                    country=country,
+                    name=f"Contact {tgt.unit}",
+                    _type=ship_type,
+                    position=pos,
+                    group_size=tgt.count,
+                )
+                for unit in sg.units:
+                    unit.skill = skill
+                if tgt.late_activation:
+                    sg.late_activation = True
+                group_ids.append(sg.id)
+            else:
+                from dcs.vehicles import vehicle_map
+
+                vehicle_type = vehicle_map.get(tgt.unit)
+                if vehicle_type is None:
+                    raise ValueError(f"Unknown PyDCS vehicle id: {tgt.unit}")
+                vg = mission.vehicle_group(
+                    country=country,
+                    name=f"Contact {tgt.unit}",
                     _type=vehicle_type,
                     position=pos,
                     group_size=tgt.count,

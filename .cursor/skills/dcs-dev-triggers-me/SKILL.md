@@ -29,8 +29,12 @@ entries). Index: [`docs/LESSONS_LEARNED.md`](../../../docs/LESSONS_LEARNED.md).
    `setFogAnimation` via `DoScriptFile`, not `DoScript(mission.string(...))`
    (DictKey empty → Lua parse error). Prefer `sea_fog` for demos.
 5. **Narrative XOR dynamics** expand before validate/compile; empty hand triggers.
+6. **Recon find pack** — `mission_type: recon` requires empty zones/triggers; after
+   validate, `recon.expand_recon_find_pack` injects `recon_aoi` + mark/find once
+   triggers (flag **830**). Do not hand-author recon immersion in v1.
 
 ## Code touchpoints
 
 `compiler/triggers_emit.py`, `compiler/failures_emit.py`, `compiler/fog_emit.py`,
-`narrative.py`, `dynamics.py`, `models.py` zones/triggers.
+`narrative.py`, `recon.py`, `dynamics.py`, `models.py` zones/triggers.
+`examples/manston_recon.yaml`.

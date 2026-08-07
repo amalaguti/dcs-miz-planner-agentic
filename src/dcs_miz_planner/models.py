@@ -27,6 +27,7 @@ class MissionType(str, Enum):
     CAP = "cap"
     GROUND_ATTACK = "ground_attack"
     ESCORT = "escort"
+    RECON = "recon"
 
 
 class Coalition(str, Enum):
@@ -88,6 +89,7 @@ class ObjectiveType(str, Enum):
     PATROL = "patrol"
     ATTACK_GROUND = "attack_ground"
     ESCORT_PACKAGE = "escort_package"
+    RECON_AREA = "recon_area"
 
 
 class CapPattern(str, Enum):
@@ -269,6 +271,16 @@ class Escort(SpecModel):
     distance_km: float = Field(gt=0)
     altitude_m: float = Field(gt=0)
     engagement: Engagement
+
+
+class Recon(SpecModel):
+    """Recon AOI relative to the player departure airfield (observe, not strike)."""
+
+    bearing_deg: float = Field(ge=0, le=360)
+    distance_km: float = Field(gt=0)
+    altitude_m: float = Field(gt=0)
+    radius_m: float = Field(default=3000.0, ge=500, le=15_000)
+    mark: bool = True
 
 
 class Objective(SpecModel):
@@ -638,7 +650,7 @@ def opposing_coalition(coalition: Coalition) -> Coalition:
 
 
 class MissionSpec(SpecModel):
-    """Declarative mission specification (free flight through escort).
+    """Declarative mission specification (free flight through recon).
 
     Optional ``zones`` / ``triggers`` use the typed mission-triggers model (no Lua);
     validated graphs emit as native ME trigger tables. Optional ``narrative.enabled``
@@ -669,6 +681,7 @@ class MissionSpec(SpecModel):
     cap: Cap | None = None
     strike: Strike | None = None
     escort: Escort | None = None
+    recon: Recon | None = None
     narrative: NarrativeSpec | None = None
     dynamics: DynamicsSpec | None = None
 
@@ -705,6 +718,8 @@ class MissionSpec(SpecModel):
                 raise ValueError("strike not supported for free_flight: omit the strike block")
             if self.escort is not None:
                 raise ValueError("escort not supported for free_flight: omit the escort block")
+            if self.recon is not None:
+                raise ValueError("recon not supported for free_flight: omit the recon block")
             if self.player.payload is not None:
                 raise ValueError("player.payload not supported for free_flight: omit payload")
             used = [
@@ -716,7 +731,7 @@ class MissionSpec(SpecModel):
                 raise ValueError(
                     f"{', '.join(used)} not supported for free_flight: "
                     "combat extension points must be empty "
-                    "(use mission_type intercept, cap, ground_attack, or escort)"
+                    "(use mission_type intercept, cap, ground_attack, escort, or recon)"
                 )
             return self
 
@@ -727,11 +742,13 @@ class MissionSpec(SpecModel):
                 raise ValueError("strike not supported for intercept: omit the strike block")
             if self.escort is not None:
                 raise ValueError("escort not supported for intercept: omit the escort block")
+            if self.recon is not None:
+                raise ValueError("recon not supported for intercept: omit the recon block")
             if self.player.payload is not None:
                 raise ValueError("player.payload not supported for intercept: omit payload")
             if self.targets:
                 raise ValueError(
-                    "targets not supported for intercept: use mission_type ground_attack"
+                    "targets not supported for intercept: use mission_type ground_attack or recon"
                 )
             if self.package:
                 raise ValueError("package not supported for intercept: use mission_type escort")
@@ -746,10 +763,14 @@ class MissionSpec(SpecModel):
                 raise ValueError("strike not supported for cap: omit the strike block")
             if self.escort is not None:
                 raise ValueError("escort not supported for cap: omit the escort block")
+            if self.recon is not None:
+                raise ValueError("recon not supported for cap: omit the recon block")
             if self.player.payload is not None:
                 raise ValueError("player.payload not supported for cap: omit payload")
             if self.targets:
-                raise ValueError("targets not supported for cap: use mission_type ground_attack")
+                raise ValueError(
+                    "targets not supported for cap: use mission_type ground_attack or recon"
+                )
             if self.package:
                 raise ValueError("package not supported for cap: use mission_type escort")
             if self.cap is None:
@@ -765,6 +786,8 @@ class MissionSpec(SpecModel):
                 raise ValueError("cap not supported for ground_attack: omit the cap block")
             if self.escort is not None:
                 raise ValueError("escort not supported for ground_attack: omit the escort block")
+            if self.recon is not None:
+                raise ValueError("recon not supported for ground_attack: omit the recon block")
             if self.package:
                 raise ValueError("package not supported for ground_attack: use mission_type escort")
             if self.strike is None:
@@ -802,12 +825,16 @@ class MissionSpec(SpecModel):
                 raise ValueError("cap not supported for escort: omit the cap block")
             if self.strike is not None:
                 raise ValueError("strike not supported for escort: omit the strike block")
+            if self.recon is not None:
+                raise ValueError("recon not supported for escort: omit the recon block")
             if self.escort is None:
                 raise ValueError("escort missions require a nested escort block")
             if self.player.payload is not None:
                 raise ValueError("player.payload not supported for escort: omit payload")
             if self.targets:
-                raise ValueError("targets not supported for escort: use mission_type ground_attack")
+                raise ValueError(
+                    "targets not supported for escort: use mission_type ground_attack or recon"
+                )
             if not self.package:
                 raise ValueError("escort missions require a non-empty package list")
             if not self.objectives:
@@ -820,6 +847,43 @@ class MissionSpec(SpecModel):
                         f"package[{i}].coalition must match player coalition "
                         f"({self.player.coalition.value!r}); got {flight.coalition.value!r} "
                         "(escort package must be friendly)"
+                    )
+            return self
+
+        if self.mission_type is MissionType.RECON:
+            if self.cap is not None:
+                raise ValueError("cap not supported for recon: omit the cap block")
+            if self.strike is not None:
+                raise ValueError("strike not supported for recon: omit the strike block")
+            if self.escort is not None:
+                raise ValueError("escort not supported for recon: omit the escort block")
+            if self.package:
+                raise ValueError("package not supported for recon: use mission_type escort")
+            if self.recon is None:
+                raise ValueError("recon missions require a nested recon block")
+            if self.player.payload is not None:
+                raise ValueError("player.payload not supported for recon: omit payload")
+            if self.enemies:
+                raise ValueError(
+                    "air enemies not supported for recon in schema_version 1: use empty enemies"
+                )
+            if not self.objectives:
+                raise ValueError("recon missions require a non-empty objectives list")
+            if not any(o.type is ObjectiveType.RECON_AREA for o in self.objectives):
+                raise ValueError("recon missions require at least one recon_area objective")
+            for i, obj in enumerate(self.objectives):
+                if obj.type is not ObjectiveType.RECON_AREA:
+                    raise ValueError(
+                        f"Unsupported objective type {obj.type.value!r} for recon "
+                        "(supported: recon_area)"
+                    )
+            expected = opposing_coalition(self.player.coalition)
+            for i, tgt in enumerate(self.targets):
+                if tgt.coalition is not expected:
+                    raise ValueError(
+                        f"targets[{i}].coalition must be opposing player coalition "
+                        f"({self.player.coalition.value!r}; expected {expected.value!r}, "
+                        f"got {tgt.coalition.value!r}) — recon contacts are observe-only enemies"
                     )
             return self
 

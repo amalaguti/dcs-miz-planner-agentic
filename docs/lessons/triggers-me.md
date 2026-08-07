@@ -5,6 +5,20 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Recon AOI find pack (`mission_type: recon`) (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Lesson:** Recon Specs MUST keep `zones`/`triggers` empty in v1. After validate,
+  `recon.expand_recon_find_pack` injects zone `recon_aoi` plus once-triggers
+  `recon_aoi_mark` (T+1s → F10 mark) and `recon_area_observed` (player coalition in
+  zone → message + flag **830**). Flag 830 sits above section orders (800+) and
+  discipline (820+). Compiler uses PyDCS `Reconnaissance` + OptROE WeaponHold;
+  optional `targets` are observe-only contacts (no Bombing).
+- **Do not:** hand-author zones/triggers on recon v1; reuse strike/payload; treat
+  contacts as destroy objectives.
+- **Code:** `recon.py`, `compiler/pydcs_compiler.py` (`_apply_recon`),
+  `examples/manston_recon.yaml`.
+
 ## Aircraft failures via ME Failures table (2026-08-07)
 
 - **Date:** 2026-08-07

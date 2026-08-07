@@ -7,7 +7,7 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 ## Status
 
 Channel Spitfire MVP through M6: Mission Spec (`schema_version: "1"`, unknown fields
-rejected) covers free_flight, intercept, CAP, ground_attack, and escort, plus native ME
+rejected) covers free_flight, intercept, CAP, ground_attack, escort, and recon, plus native ME
 triggers (zones, flags, radio, late activation, sound, markers, altitude/speed gates).
 Manston cold free flight was the first accepted-in-game slice. Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
@@ -36,7 +36,9 @@ Manston with engagement/ROE (accepted in-game 2026-08-01). Ground-attack Spec
 (`examples/manston_ground_attack.yaml`) crosses the Channel with 2×250 lb + slipper
 tank against enemy trucks inland near Dunkirk (accepted in-game 2026-08-02). Escort Spec
 (`examples/manston_escort.yaml`) covers a Mosquito package SE of Manston with optional
-Bf-109 bounce (accepted in-game 2026-08-02). Compile writes squadron-commander briefing text
+Bf-109 bounce (accepted in-game 2026-08-02). Recon Spec (`examples/manston_recon.yaml`)
+observes an AOI inland near Dunkirk with optional truck contacts (no bombs; find beat).
+Compile writes squadron-commander briefing text
 into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; accepted in-game
 2026-08-02). Weather presets: `sunny_clear`, `dawn_clear`, `marginal_vfr`, plus campaign-seeded
 gallery patterns (`light_scattered_vfr`, `high_scattered`, `broken_channel`,
@@ -119,6 +121,10 @@ uv run dcs-miz examples/manston_ground_attack.yaml
 uv run dcs-miz validate examples/manston_escort.yaml
 uv run dcs-miz examples/manston_escort.yaml
 # -> out/manston_escort.miz
+
+uv run dcs-miz validate examples/manston_recon.yaml
+uv run dcs-miz examples/manston_recon.yaml
+# -> out/manston_recon.miz
 
 # Seeded reroll (same seed → same Spec), then compile:
 uv run dcs-miz randomize examples/manston_cap.yaml --seed 42

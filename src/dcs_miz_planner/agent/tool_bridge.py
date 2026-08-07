@@ -99,7 +99,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "name": "get_mission_spec_schema",
             "description": (
                 "Get a compact Mission Spec JSON example plus notes/anti-patterns for a "
-                "mission_type (free_flight, intercept, cap, ground_attack, or escort). "
+                "mission_type (free_flight, intercept, cap, ground_attack, escort, or recon). "
                 "Call before emitting Spec JSON."
             ),
             "parameters": {

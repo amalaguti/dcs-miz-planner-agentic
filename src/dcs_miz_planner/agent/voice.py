@@ -269,6 +269,29 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
             "mid-air near the formation, and navigation over water; honour ROE and "
             "do not leave the package alone to chase."
         )
+    elif mt == "recon":
+        recon = spec.recon
+        aoi = (
+            f"bearing {recon.bearing_deg:g}°, {recon.distance_km:g} km, "
+            f"{recon.altitude_m:g} m, radius {recon.radius_m:g} m"
+            if recon is not None
+            else "assigned recon AOI"
+        )
+        tgt_bits = [f"{t.count}× {t.unit}" for t in spec.targets]
+        contacts = ", ".join(tgt_bits) if tgt_bits else "no fixed contacts (area recon)"
+        tactics = (
+            f"Reconnaissance of {aoi}. Visual contacts briefed: {contacts}. "
+            "Locate and observe only — weapons hold. Do not treat this as a bomb run."
+        )
+        procedures = (
+            "Cold start as briefed; climb toward the AOI bearing; enter the observe area; "
+            "identify contacts if present; when the area is observed, RTB when ready."
+        )
+        watch = (
+            "Watch navigation over the Channel, fuel for the outbound and return, "
+            "flak or fighters near the coast, and the temptation to strafe contacts; "
+            "report and recover — leave strike for a tasked ground-attack sortie."
+        )
     else:
         tactics = (
             "Free flight: treat this as a familiarisation / local area hop. "

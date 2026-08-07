@@ -1,0 +1,18 @@
+dictionary=
+{
+	["DictKey_Translation_1"]="Cold start at Manston. Cross toward the French coast AOI near Dunkirk to locate and observe soft enemy truck contacts. Weapons hold — report the area and RTB. No bomb loadout.\
+\
+Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather Clear skies, excellent visibility, start cold_parking.\
+METAR (synthetic): EGMH 060900Z 00000KT 10SM CLR 15/11 A2992 NOSIG RMK SIM\
+\
+Watch navigation over the Channel, fuel for the outbound and return, flak or fighters near the coast, and the temptation to strafe contacts; report and recover — leave strike for a tasked ground-attack sortie.",
+	["DictKey_Translation_2"]="Reconnaissance of bearing 125°, 76 km, 2000 m, radius 3000 m. Visual contacts briefed: 3× Blitz_36-6700A. Locate and observe only — weapons hold. Do not treat this as a bomb run.\
+\
+Cold start as briefed; climb toward the AOI bearing; enter the observe area; identify contacts if present; when the area is observed, RTB when ready.\
+\
+Keep a sharp lookout, mind your fuel state, and RTB with the kite intact.",
+	["DictKey_Translation_3"]="",
+	["DictKey_Translation_4"]="Manston Channel Recon",
+	["DictKey_Translation_5"]="Recon AOI",
+	["DictKey_Translation_6"]="Area observed — RTB when ready."
+}

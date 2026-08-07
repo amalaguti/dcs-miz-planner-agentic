@@ -19,6 +19,7 @@ INTERCEPT_SPEC = REPO_ROOT / "examples" / "manston_dawn_intercept.yaml"
 CAP_SPEC = REPO_ROOT / "examples" / "manston_cap.yaml"
 GROUND_ATTACK_SPEC = REPO_ROOT / "examples" / "manston_ground_attack.yaml"
 ESCORT_SPEC = REPO_ROOT / "examples" / "manston_escort.yaml"
+RECON_SPEC = REPO_ROOT / "examples" / "manston_recon.yaml"
 RADIO_SPEC = REPO_ROOT / "examples" / "manston_dawn_intercept_radio.yaml"
 GATES_SPEC = REPO_ROOT / "examples" / "manston_freeflight_altitude_speed_gates.yaml"
 MARKERS_SPEC = REPO_ROOT / "examples" / "manston_ground_attack_markers.yaml"
@@ -28,6 +29,7 @@ INTERCEPT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_
 CAP_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_cap"
 GA_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_ground_attack"
 ESCORT_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_escort"
+RECON_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_recon"
 RADIO_FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "manston_dawn_intercept_radio"
 GATES_FIXTURE_DIR = (
     Path(__file__).resolve().parent / "fixtures" / "manston_freeflight_altitude_speed_gates"
@@ -97,6 +99,20 @@ ESCORT_MISSION_CONTRACTS = (
     '["task"]="Escort"',
     "groupId",
     '["value"]=0',  # OptROE WeaponFree
+)
+RECON_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    '["airdromeId"]=5',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+    "Reconnaissance",
+    "Blitz_36-6700A",
+    "recon_aoi",
+    "recon_area_observed",
+    "a_out_text_delay",
+    '["value"]=4',  # OptROE WeaponHold
 )
 RADIO_MISSION_CONTRACTS = (
     "SpitfireLFMkIX",
@@ -211,6 +227,13 @@ def compile_escort(output_path: Path) -> Path:
     )
 
 
+def compile_recon(output_path: Path) -> Path:
+    spec = load_mission_spec(RECON_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 def _compile_example(spec_path: Path, output_path: Path) -> Path:
     spec = load_mission_spec(spec_path)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(
@@ -313,6 +336,15 @@ def write_escort_golden(miz_path: Path, fixture_dir: Path = ESCORT_FIXTURE_DIR) 
         fixture_dir,
         source_spec="examples/manston_escort.yaml",
         mission_contracts=ESCORT_MISSION_CONTRACTS,
+    )
+
+
+def write_recon_golden(miz_path: Path, fixture_dir: Path = RECON_FIXTURE_DIR) -> None:
+    write_golden(
+        miz_path,
+        fixture_dir,
+        source_spec="examples/manston_recon.yaml",
+        mission_contracts=RECON_MISSION_CONTRACTS,
     )
 
 

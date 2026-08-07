@@ -42,6 +42,7 @@ def test_build_snapshot_includes_enums_and_registry() -> None:
         "cap",
         "ground_attack",
         "escort",
+        "recon",
     }
     assert {c.value for c in snap.countries} == {"ThirdReich", "UK"}
     assert snap.source == "channel_yaml+spec_enums"

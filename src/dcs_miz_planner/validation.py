@@ -562,6 +562,133 @@ def _validate_escort(
     _validate_enemy_aircraft(spec, registry, errors)
 
 
+def _validate_recon(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+) -> None:
+    if spec.recon is None:
+        errors.append(
+            ValidationError(
+                code="recon_required",
+                path="recon",
+                message="recon missions require a nested recon block",
+            )
+        )
+    if spec.cap is not None:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="cap",
+                message="cap not supported for recon: omit the cap block",
+            )
+        )
+    if spec.strike is not None:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="strike",
+                message="strike not supported for recon: omit the strike block",
+            )
+        )
+    if spec.escort is not None:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="escort",
+                message="escort not supported for recon: omit the escort block",
+            )
+        )
+    if spec.package:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="package",
+                message="package not supported for recon: use mission_type escort",
+            )
+        )
+    if spec.player.payload is not None:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="player.payload",
+                message="player.payload not supported for recon: omit payload",
+            )
+        )
+    if spec.enemies:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="enemies",
+                message="air enemies not supported for recon in schema_version 1",
+            )
+        )
+    if spec.zones or spec.triggers:
+        errors.append(
+            ValidationError(
+                code="extension_not_supported",
+                path="zones" if spec.zones else "triggers",
+                message=(
+                    "recon v1 requires empty zones/triggers (compiler injects the AOI find beat)"
+                ),
+                hint="Clear zones/triggers; custom recon immersion can come later",
+            )
+        )
+
+    if not spec.objectives:
+        errors.append(
+            ValidationError(
+                code="objectives_required",
+                path="objectives",
+                message="recon missions require a non-empty objectives list",
+            )
+        )
+    else:
+        if not any(o.type is ObjectiveType.RECON_AREA for o in spec.objectives):
+            errors.append(
+                ValidationError(
+                    code="objectives_required",
+                    path="objectives",
+                    message="recon missions require at least one recon_area objective",
+                )
+            )
+        for i, obj in enumerate(spec.objectives):
+            if obj.type is not ObjectiveType.RECON_AREA:
+                errors.append(
+                    ValidationError(
+                        code="unknown_objective",
+                        path=f"objectives[{i}].type",
+                        message=f"Unsupported objective type {obj.type.value!r} for recon",
+                        hint="Supported: recon_area",
+                    )
+                )
+
+    expected = opposing_coalition(spec.player.coalition)
+    for i, tgt in enumerate(spec.targets):
+        try:
+            registry.get_strike_unit(tgt.unit)
+        except RegistryError:
+            errors.append(
+                ValidationError(
+                    code="unknown_strike_unit",
+                    path=f"targets[{i}].unit",
+                    message=f"Unknown strike target '{tgt.unit}'",
+                    hint=f"Known: {registry.list_strike_units()}",
+                )
+            )
+        if tgt.coalition is not expected:
+            errors.append(
+                ValidationError(
+                    code="friendly_contact",
+                    path=f"targets[{i}].coalition",
+                    message=(
+                        "Recon contacts must oppose the player coalition "
+                        f"(player {spec.player.coalition.value}, got {tgt.coalition.value})"
+                    ),
+                )
+            )
+
+
 @dataclass(frozen=True)
 class ValidationError:
     """One validation finding."""
@@ -942,13 +1069,14 @@ def validate_mission_spec(
         MissionType.CAP,
         MissionType.GROUND_ATTACK,
         MissionType.ESCORT,
+        MissionType.RECON,
     ):
         errors.append(
             ValidationError(
                 code="unsupported_mission_type",
                 path="mission_type",
                 message=f"Unsupported mission_type {spec.mission_type.value!r}",
-                hint="Supported: free_flight, intercept, cap, ground_attack, escort",
+                hint="Supported: free_flight, intercept, cap, ground_attack, escort, recon",
             )
         )
 
@@ -1145,6 +1273,8 @@ def validate_mission_spec(
         _validate_ground_attack(spec, registry, errors)
     elif spec.mission_type is MissionType.ESCORT:
         _validate_escort(spec, registry, errors)
+    elif spec.mission_type is MissionType.RECON:
+        _validate_recon(spec, registry, errors)
 
     inv: TheatreInventory | None = None
     if not registry.has_theatre(spec.theatre):

@@ -38,6 +38,14 @@ options:
       engagement rules; optional enemy bounce.
     support: supported
 
+  - family: mission_type
+    id: recon
+    label: Recon / locate
+    description: >
+      Locate or observe an airfield-relative AOI (optional visual contacts) without
+      strike payload; find message then RTB.
+    support: supported
+
   - family: start_type
     id: cold_parking
     label: Cold parking

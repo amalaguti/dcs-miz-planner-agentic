@@ -21,6 +21,7 @@ _EXAMPLE_FILES: dict[str, str] = {
     MissionType.CAP.value: "manston_cap.yaml",
     MissionType.GROUND_ATTACK.value: "manston_ground_attack.yaml",
     MissionType.ESCORT.value: "manston_escort.yaml",
+    MissionType.RECON.value: "manston_recon.yaml",
 }
 
 # Preferred examples for get_mission_spec_schema / invent (immersion-first).
@@ -30,6 +31,7 @@ _AGENT_EXAMPLE_FILES: dict[str, str] = {
     MissionType.CAP.value: "manston_cap_narrative.yaml",
     MissionType.GROUND_ATTACK.value: "manston_ground_attack_markers.yaml",
     MissionType.ESCORT.value: "manston_escort_narrative.yaml",
+    MissionType.RECON.value: "manston_recon.yaml",
 }
 
 ANTI_PATTERNS: tuple[str, ...] = (
@@ -114,12 +116,23 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         ),
         'objectives must include {"type":"escort_package"}; enemies optional (bounce).',
         "destination is airfield-relative bearing/distance — never invent raw map x/y.",
-        "omit strike, targets, cap, and player.payload.",
+        "omit strike, targets, cap, recon, and player.payload.",
         (
             "optional narrative.enabled true: expands to typed zones/triggers (push / "
             "with-package / bounce-down win). Requires empty zones/triggers, escort, "
             "package, and enemies; conflicts with hand-authored triggers."
         ),
+    ),
+    MissionType.RECON.value: (
+        ("nested recon is required (bearing_deg, distance_km, altitude_m, radius_m?, mark?)."),
+        'objectives must include {"type":"recon_area"}; omit player.payload.',
+        (
+            "optional targets = observe-only enemy contacts (opposing coalition; land or "
+            "sea registry ids). Empty targets = area recon."
+        ),
+        "AOI is airfield-relative — never invent raw map x/y. enemies must be empty.",
+        "omit strike, cap, escort, package. zones/triggers must stay empty (find beat injected).",
+        "Not a bomb run — weapons hold; report AOI then RTB.",
     ),
 }
 
@@ -271,7 +284,7 @@ def format_spec_schema_fragment(view: SpecSchemaView) -> str:
 SPEC_SHAPE_REMINDER = """\
 Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
-(free_flight | intercept | cap | ground_attack | escort) and copy that example's structure.
+(free_flight | intercept | cap | ground_attack | escort | recon) and copy that example's structure.
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user
 left challenge unspecified — see schema notes for example YAML paths.
