@@ -16,6 +16,7 @@ from .install.aircraft_modules import missing_aircraft_module_messages
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
 from .models import (
+    DISCIPLINE_HARD_IDS,
     SECTION_ORDER_IDS,
     ActivateGroupAction,
     CoalitionInZoneCondition,
@@ -31,6 +32,7 @@ from .models import (
     MissionSpec,
     MissionType,
     ObjectiveType,
+    PlayerFlightRole,
     RadioItemAddAction,
     RadioItemRemoveAction,
     SetFlagAction,
@@ -201,6 +203,39 @@ def _validate_player_flight(spec: MissionSpec, errors: list[ValidationError]) ->
             )
         else:
             seen.add(oid)
+    if flight.discipline is not None:
+        disc = flight.discipline
+        if flight.role is not PlayerFlightRole.WINGMAN or not flight.join_up:
+            errors.append(
+                ValidationError(
+                    code="discipline_requires_wingman_join_up",
+                    path="player.flight.discipline",
+                    message=("player.flight.discipline requires role wingman and join_up true"),
+                    hint="Omit discipline for lead/solo, or set role: wingman and join_up: true",
+                )
+            )
+        hard_id = disc.hard.value if hasattr(disc.hard, "value") else str(disc.hard)
+        if hard_id not in DISCIPLINE_HARD_IDS:
+            errors.append(
+                ValidationError(
+                    code="unknown_discipline_hard",
+                    path="player.flight.discipline.hard",
+                    message=f"Unknown discipline hard action {hard_id!r}",
+                    hint=f"Known: {', '.join(sorted(DISCIPLINE_HARD_IDS))}",
+                )
+            )
+        if disc.hard_after_s < disc.soft_after_s:
+            errors.append(
+                ValidationError(
+                    code="discipline_hard_before_soft",
+                    path="player.flight.discipline.hard_after_s",
+                    message=(
+                        f"hard_after_s ({disc.hard_after_s}) must be >= soft_after_s "
+                        f"({disc.soft_after_s})"
+                    ),
+                    hint="Use total outside time for hard >= soft warn threshold",
+                )
+            )
 
 
 def _validate_aircraft_failures(

@@ -131,10 +131,13 @@ _COMMON_NOTES: tuple[str, ...] = (
     ),
     (
         "Optional player.flight on any mission type: {size: 2-4, role: lead|wingman, "
-        "ai_skill, join_up, orders?}; omit for solo. Human skill must stay Player; mates use "
+        "ai_skill, join_up, orders?, discipline?}; omit for solo. Human skill must stay Player; mates use "
         "ai_skill. Wingman join_up (default true) → Follow AI lead + shared route. "
         "Optional orders: curated list [rejoin|engage|orbit|rtb|break] → F10 Section:… "
-        "menus (list_mission_options family player_flight_order)."
+        "menus (list_mission_options family player_flight_order). "
+        "Optional discipline (wingman+join_up only): {radius_m?, soft_after_s?, "
+        "hard_after_s?, hard: message_end|mission_end|section_rtb} — omit = off; "
+        "{} = defaults (family player_flight_discipline)."
     ),
     (
         "Optional top-level failures list (omit/[] = none): each entry "

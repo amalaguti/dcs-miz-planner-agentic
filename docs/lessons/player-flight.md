@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Fail-to-follow discipline (`player.flight.discipline`) (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Lesson:** Opt-in `player.flight.discipline` (wingman + `join_up` only) emits a
+  hidden moving zone on the AI lead unit and `UnitOutsideMovingZone` soft/hard
+  progressive triggers. Arm only after player AGL ≥ ~150 m so parking does not
+  fire. Flags **820–823** (orders keep 800–819). Soft warn may `SetFlag(801)` when
+  `orders` includes `rejoin`. Hard curated: `message_end` | `mission_end` |
+  `section_rtb`. Omit discipline = off; `{}` = defaults.
+- **Code / notes:** `compiler/discipline_emit.py`; example
+  `manston_cap_flight_discipline.yaml`; backlog `#15e`.
+
 ## F10 section orders (`player.flight.orders`) (2026-08-07)
 
 - **Date:** 2026-08-07

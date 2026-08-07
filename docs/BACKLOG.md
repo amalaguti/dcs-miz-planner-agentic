@@ -85,7 +85,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#15e` `player-flight-discipline`
+**Next promote / in proposal:** (pick next from backlog — M4 squadron slice done through `#15e`)
 
 **Do soon (not blocking next promote):**
 - `#15c` join-up: Instant Action `out/manston_cap_flight_wingman.miz` (or recompile
@@ -96,6 +96,10 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
   F10 `Section: Rejoin` and `Section: Engage` (Orbit/RTB/Break optional) while
   airborne so Follow/ROE packs are visible in flight. ME + cold-start F10/ack
   accepted 2026-08-07; airborne smoke deferred.
+- `#15e` discipline: Instant Action `out/manston_cap_flight_discipline.miz` (or
+  recompile `examples/manston_cap_flight_discipline.yaml`) — **take off**, leave
+  section bubble → soft rejoin warn (~45 s), optional hard `message_end` (~120 s).
+  ME triggers/zone accepted 2026-08-07; airborne smoke deferred.
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -107,7 +111,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 | 15b | `player-flight-squadron` | Break solo-only player sorties: Spec + compiler support for a **player flight** (2–4 Spits) so the human can fly as **flight lead** (AI wingmen) or as a **wingman** in an AI-led section. Placement + skills + brief; join-up/Follow deferred to `#15c`. Escort `package` remains friendly AI only, not the player’s section. | `done` (accepted ME smoke 2026-08-07; lead 4-ship + wingman 4-ship via separate AI lead group) |
 | 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead; put CAP/GA/escort tasking on the AI lead when `role: wingman` + `join_up`. Prefer native ME Follow + waypoints; no LLM Lua. | `done` (accepted 2026-08-07; **do-soon smoke:** `manston_cap_flight_wingman` after takeoff) |
 | 15d | `player-flight-orders` | Curated **section orders** the player (or Spec triggers) can issue: rejoin/form up, engage, cover, orbit, RTB, break, etc. Prefer stock DCS lead→wingman radio when `role: lead` (same group); extend with F10 / flag→AI-task packs for wingman separate groups and scripted beats. Spec selects named orders only — no free-form chat→Lua. After `#15b`; pairs with `#15c` for cohesion. | `done` (accepted 2026-08-07; ME + F10/ack; **do-soon:** airborne Rejoin/Engage on `manston_cap_flight_orders`) |
-| 15e | `player-flight-discipline` | Opt-in **fail-to-follow** consequences when wingman+join_up: if the player stays outside a section bubble (distance/time) after takeoff — soft radio “rejoin”, then stronger beats (flag / message / abort or RTB / mission_end). Prefer native zones+flags+messages; curated snippet only if range-to-group needs Lua. After `#15c`; pairs with `#15d` rejoin orders. | `idea` (2026-08-07) |
+| 15e | `player-flight-discipline` | Opt-in **fail-to-follow** consequences when wingman+join_up: if the player stays outside a section bubble (distance/time) after takeoff — soft radio “rejoin”, then stronger beats (flag / message / abort or RTB / mission_end). Prefer native zones+flags+messages; curated snippet only if range-to-group needs Lua. After `#15c`; pairs with `#15d` rejoin orders. | `done` (accepted 2026-08-07; ME triggers/zone OK; **do-soon:** airborne soft/hard on `manston_cap_flight_discipline`) |
 
 ---
 
@@ -132,7 +136,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#15e` `player-flight-discipline`; `#22` only if native insufficient; R8 when bumping pydcs
+**Next promote / in proposal:** (see M4 — squadron `#15e` done); `#22` only if native insufficient; R8 when bumping pydcs
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -326,7 +330,7 @@ Resolve these inside the relevant proposal, not here.
 | Aircraft failures Spec shape (`#22b`) | **Closed 2026-08-07:** opt-in `failures[]` → ME Failures panel (`enable`/After/Within min 1/`prob`); curated Spitfire ids; brief honesty when armed |
 
 | Section orders Spec shape (`#15d`) | **Closed 2026-08-07:** optional `player.flight.orders` curated ids → F10 `Section:…` + flags 800+ → `AITaskPush`/`GroupStop`; wingman→AI lead, lead→player group; example `manston_cap_flight_orders` |
-| Section discipline Spec shape (`#15e`) | M4 — open: opt-in after join_up; distance/time thresholds; soft warn vs hard fail/RTB; moving zone vs unit-distance (Lua?); default off so free-flight practice stays free |
+| Section discipline Spec shape (`#15e`) | **Closed 2026-08-07:** optional `player.flight.discipline` (wingman+join_up); moving zone + soft/hard; flags 820+; hard `message_end`\|`mission_end`\|`section_rtb`; example `manston_cap_flight_discipline` |
 
 ---
 

@@ -126,6 +126,26 @@ class SectionOrder(str, Enum):
 SECTION_ORDER_IDS: frozenset[str] = frozenset(o.value for o in SectionOrder)
 
 
+class DisciplineHardAction(str, Enum):
+    """Curated hard beat when wingman stays outside the section bubble (#15e)."""
+
+    MESSAGE_END = "message_end"
+    MISSION_END = "mission_end"
+    SECTION_RTB = "section_rtb"
+
+
+DISCIPLINE_HARD_IDS: frozenset[str] = frozenset(a.value for a in DisciplineHardAction)
+
+
+class PlayerFlightDiscipline(SpecModel):
+    """Opt-in fail-to-follow (omit on flight = off). Empty `{}` uses defaults (= armed)."""
+
+    radius_m: int = Field(default=2500, ge=500)
+    soft_after_s: int = Field(default=45, ge=10)
+    hard_after_s: int = Field(default=120, ge=10)
+    hard: DisciplineHardAction = DisciplineHardAction.MESSAGE_END
+
+
 class PlayerFlight(SpecModel):
     """Optional multi-ship player section (omit = solo)."""
 
@@ -134,6 +154,7 @@ class PlayerFlight(SpecModel):
     ai_skill: str = "Average"  # AI mates only; not Player/Client
     join_up: bool = True  # wingman: Follow AI lead + shared route (no-op for lead)
     orders: list[SectionOrder] = Field(default_factory=list)  # F10 section orders; omit/[] = none
+    discipline: PlayerFlightDiscipline | None = None  # fail-to-follow; omit = off
 
 
 class Player(SpecModel):

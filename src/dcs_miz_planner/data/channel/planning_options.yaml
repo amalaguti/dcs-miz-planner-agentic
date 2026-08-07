@@ -161,6 +161,47 @@ options:
     meta:
       order_id: break
 
+  - family: player_flight_discipline
+    id: defaults
+    label: Section discipline (defaults)
+    description: >
+      Opt-in fail-to-follow for wingman+join_up. Empty discipline:{} uses radius
+      2500 m, soft warn at 45 s outside, hard message_end at 120 s. Spec:
+      player.flight.discipline: {}. Example: manston_cap_flight_discipline.yaml.
+    support: supported
+    meta:
+      example: examples/manston_cap_flight_discipline.yaml
+
+  - family: player_flight_discipline
+    id: message_end
+    label: Discipline hard = message only
+    description: >
+      Soft rejoin warn then a final message (no mission_end). Spec:
+      player.flight.discipline.hard: message_end
+    support: supported
+    meta:
+      hard: message_end
+
+  - family: player_flight_discipline
+    id: mission_end
+    label: Discipline hard = mission end
+    description: >
+      Soft warn then EndMission if still outside the section bubble. Spec:
+      player.flight.discipline.hard: mission_end
+    support: supported
+    meta:
+      hard: mission_end
+
+  - family: player_flight_discipline
+    id: section_rtb
+    label: Discipline hard = section RTB
+    description: >
+      Soft warn then push AI lead Land/RTB. Spec:
+      player.flight.discipline.hard: section_rtb
+    support: supported
+    meta:
+      hard: section_rtb
+
   - family: weather
     id: sunny_clear
     label: Sunny clear

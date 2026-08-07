@@ -14,7 +14,8 @@ Manston cold free flight was the first accepted-in-game slice. Optional
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
 `manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
 `#15c`, CAP example `manston_cap_flight_wingman.yaml`; optional `orders` F10
-Section menus `#15d`, example `manston_cap_flight_orders.yaml`). Optional Spec `failures`
+Section menus `#15d`, example `manston_cap_flight_orders.yaml`; optional
+`discipline` fail-to-follow `#15e`, example `manston_cap_flight_discipline.yaml`). Optional Spec `failures`
 (curated Spitfire ME Set Failure ids; example `manston_freeflight_magneto_failure.yaml`).
 Channel DCS facts
 (airfields, aircraft, radio, weather presets incl. `showers_scattered`) live in packaged YAML under

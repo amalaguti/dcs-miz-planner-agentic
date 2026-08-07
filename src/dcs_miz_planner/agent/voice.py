@@ -297,6 +297,12 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
         labels = ", ".join(o.value for o in flight.orders)
         procedures = f"{procedures} F10 Other → Section orders available: {labels}."
 
+    if flight is not None and flight.discipline is not None:
+        procedures = (
+            f"{procedures} Stay with the section after airborne — leaving the "
+            "bubble triggers a rejoin warning, then harder consequences."
+        )
+
     if spec.failures:
         watch = (
             f"{watch} Expect possible aircraft system failures on this sortie — "

@@ -290,6 +290,9 @@ class PyDCSCompiler(CompilerInterface):
         self._apply_section_orders(
             mission, spec, player_group=group, lead_group=lead_group, airport=airport
         )
+        self._apply_flight_discipline(
+            mission, spec, player_group=group, lead_group=lead_group, airport=airport
+        )
         self._apply_fog_dynamics(mission, spec)
         self._apply_aircraft_failures(mission, spec)
         self._apply_briefing(mission, spec, voice)
@@ -324,6 +327,25 @@ class PyDCSCompiler(CompilerInterface):
         from .section_orders_emit import apply_section_orders
 
         apply_section_orders(
+            mission,
+            spec,
+            player_group=player_group,
+            lead_group=lead_group,
+            airport=airport,
+        )
+
+    @staticmethod
+    def _apply_flight_discipline(
+        mission,
+        spec: MissionSpec,
+        *,
+        player_group,
+        lead_group,
+        airport,
+    ) -> None:
+        from .discipline_emit import apply_flight_discipline
+
+        apply_flight_discipline(
             mission,
             spec,
             player_group=player_group,

@@ -119,3 +119,13 @@ gallery id MUST still produce a valid METAR-looking line (e.g. `CLR` clouds).
 - **WHEN** synthetic METAR is generated during brief or compile
 - **THEN** the implementation MUST NOT fetch aviationweather, CheckWX, Open-Meteo,
   or any other live meteo endpoint
+
+### Requirement: Brief mentions discipline when armed
+When `player.flight.discipline` is armed, generated briefing/voice text SHALL
+mention that leaving the section may trigger rejoin warnings or mission
+consequences. Specs without discipline MUST keep prior brief behaviour for this
+topic.
+
+#### Scenario: Discipline brief note
+- **WHEN** briefing a Spec with discipline armed
+- **THEN** Procedures or Watch-outs MUST indicate section-discipline / rejoin expectations

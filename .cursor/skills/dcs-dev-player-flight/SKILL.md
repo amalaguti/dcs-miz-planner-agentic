@@ -3,7 +3,8 @@ name: dcs-dev-player-flight
 description: >-
   Player section / squadron flight compile rules for DCS single-player. Use when
   implementing or debugging player.flight, lead vs wingman groups, join_up /
-  Follow, F10 section orders (orders[]), or multi-ship Player parking.
+  Follow, F10 section orders (orders[]), fail-to-follow discipline, or multi-ship
+  Player parking.
 ---
 
 # Player flight (section)
@@ -27,10 +28,14 @@ description: >-
    `AITaskPush` / `GroupStop` on the **section AI group** (wingman → lead group;
    lead → player group). Flags **800+**. Rejoin as lead = message only (native
    formation). Prefer CAP/intercept Specs with AI tasking already on that group.
-6. Prefer **Manston** for size-4 parking.
+6. **`player.flight.discipline`** (optional, wingman+join_up only): moving zone on
+   AI lead; after airborne (AGL gate), soft warn then hard beat. Flags **820+**.
+   Soft may set rejoin flag **801** when `orders` includes `rejoin`. Omit = off.
+7. Prefer **Manston** for size-4 parking.
 
 ## Code touchpoints
 
 `player_flight_*` helpers in `models.py`; `compiler/section_orders_emit.py`;
-`compiler/pydcs_compiler.py`; examples `manston_freeflight_flight_*.yaml`,
-`manston_cap_flight_wingman.yaml`, `manston_cap_flight_orders.yaml`.
+`compiler/discipline_emit.py`; `compiler/pydcs_compiler.py`; examples
+`manston_freeflight_flight_*.yaml`, `manston_cap_flight_wingman.yaml`,
+`manston_cap_flight_orders.yaml`, `manston_cap_flight_discipline.yaml`.
