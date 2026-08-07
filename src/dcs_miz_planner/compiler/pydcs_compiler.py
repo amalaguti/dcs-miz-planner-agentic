@@ -16,6 +16,9 @@ from ..models import (
     MissionSpec,
     MissionType,
     StartType,
+    player_ai_lead_group_size,
+    player_flight_is_wingman,
+    player_group_size,
 )
 from ..registry import RegistryError, get_channel_registry
 from ..validation import MissionValidationError, validate_mission_spec
@@ -179,20 +182,50 @@ class PyDCSCompiler(CompilerInterface):
         start_type_map = {StartType.COLD_PARKING: DcsStartType.Cold}
         start_type = start_type_map[spec.player.start]
 
-        group = mission.flight_group_from_airport(
-            country=country,
-            name=spec.name,
-            aircraft_type=aircraft_type,
-            airport=airport,
-            start_type=start_type,
-            group_size=1,
-        )
-        group.units[0].skill = _skill_from_name(spec.player.skill)
+        flight = spec.player.flight
+        human_skill = _skill_from_name(spec.player.skill)
+        mate_skill = _skill_from_name(flight.ai_skill if flight is not None else "Average")
 
-        # PyDCS defaults groups to 251 MHz, outside the WWII VHF bands; DCS
-        # refuses the flight with a radio warning. Assigning the group
-        # frequency is enough — DCS tunes the first radio channel from it.
-        group.frequency = radio_mhz
+        # Wingman: separate AI lead group + size-1 Player group. DCS single-player
+        # only hands control to Skill=Player on the first unit of a group — putting
+        # Player on units[1+] leaves the human as a spectator while AI flies.
+        if player_flight_is_wingman(flight):
+            lead_size = player_ai_lead_group_size(flight)
+            lead_group = mission.flight_group_from_airport(
+                country=country,
+                name=f"{spec.name} Lead",
+                aircraft_type=aircraft_type,
+                airport=airport,
+                start_type=start_type,
+                group_size=lead_size,
+            )
+            for unit in lead_group.units:
+                unit.skill = mate_skill
+            lead_group.frequency = radio_mhz
+
+            group = mission.flight_group_from_airport(
+                country=country,
+                name=spec.name,
+                aircraft_type=aircraft_type,
+                airport=airport,
+                start_type=start_type,
+                group_size=1,
+            )
+            group.units[0].skill = human_skill
+            group.frequency = radio_mhz
+        else:
+            group_size = player_group_size(flight)
+            group = mission.flight_group_from_airport(
+                country=country,
+                name=spec.name,
+                aircraft_type=aircraft_type,
+                airport=airport,
+                start_type=start_type,
+                group_size=group_size,
+            )
+            for i, unit in enumerate(group.units):
+                unit.skill = human_skill if i == 0 else mate_skill
+            group.frequency = radio_mhz
 
         enemy_group_ids: list[int] = []
         target_group_ids: list[int] = []

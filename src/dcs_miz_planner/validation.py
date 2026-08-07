@@ -4,7 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .allowlists import KNOWN_COUNTRIES, KNOWN_SKILLS, country_hint, skill_hint
+from .allowlists import (
+    AI_FLIGHT_SKILLS,
+    KNOWN_COUNTRIES,
+    KNOWN_SKILLS,
+    ai_flight_skill_hint,
+    country_hint,
+    skill_hint,
+)
 from .install.aircraft_modules import missing_aircraft_module_messages
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
@@ -143,6 +150,32 @@ def _validate_countries_and_skills(spec: MissionSpec, errors: list[ValidationErr
             country_path=f"package[{i}].country",
             skill_path=f"package[{i}].skill",
             errors=errors,
+        )
+
+
+def _validate_player_flight(spec: MissionSpec, errors: list[ValidationError]) -> None:
+    flight = spec.player.flight
+    if flight is None:
+        return
+    if spec.player.skill != "Player":
+        errors.append(
+            ValidationError(
+                code="player_flight_skill",
+                path="player.skill",
+                message=(
+                    f"player.flight requires player.skill 'Player' (got {spec.player.skill!r})"
+                ),
+                hint="Use skill Player for the human slot; set ai_skill for wingmen",
+            )
+        )
+    if flight.ai_skill not in AI_FLIGHT_SKILLS:
+        errors.append(
+            ValidationError(
+                code="player_flight_ai_skill",
+                path="player.flight.ai_skill",
+                message=f"Invalid player.flight.ai_skill {flight.ai_skill!r}",
+                hint=ai_flight_skill_hint(flight.ai_skill),
+            )
         )
 
 
@@ -831,6 +864,7 @@ def validate_mission_spec(
 
     _validate_triggers_and_zones(spec, errors)
     _validate_countries_and_skills(spec, errors)
+    _validate_player_flight(spec, errors)
 
     if spec.mission_type is MissionType.FREE_FLIGHT:
         if spec.cap is not None:

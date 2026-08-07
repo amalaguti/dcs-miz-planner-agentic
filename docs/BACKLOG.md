@@ -85,7 +85,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** (see M6 — prefer narrative events / snippets as needed)
+**Next promote / in proposal:** `#15c` `player-flight-joinup` (Follow/shared route) or `#22b` aircraft-failures
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -94,7 +94,8 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 | 14 | `mission-type-ground-attack` | Ground targets, payload selection | `done` (accepted in-game 2026-08-02; Dunkirk inland + slipper) |
 | 15 | `mission-type-escort` | Escort a friendly package | `done` (accepted in-game 2026-08-02; Mosquito package + bounce) |
 | 15a | `mission-type-recon` | Locate / observe a place or contact (GA-like geometry + marks/zones) **without** strike/payload attack; win on find/RTB rather than destroy | `idea` (after `#30e`/`#30f`; may stay GA+behaviours until Spec needs a distinct type) |
-| 15b | `player-flight-squadron` | Break solo-only player sorties: Spec + compiler support for a **player flight** (2–4 Spits) so the human can fly as **flight lead** (AI wingmen) or as a **wingman** in an AI-led section. Covers formation takeoff/join-up, tasking with the flight (CAP/intercept/GA/escort), and brief language that matches multi-ship ops. Today player is always a single Skill=Player unit; escort `package` is friendly AI only, not the player’s section. Research: campaign multi-ship groups + PyDCS multi-unit player groups | `idea` (2026-08-06) |
+| 15b | `player-flight-squadron` | Break solo-only player sorties: Spec + compiler support for a **player flight** (2–4 Spits) so the human can fly as **flight lead** (AI wingmen) or as a **wingman** in an AI-led section. Placement + skills + brief; join-up/Follow deferred to `#15c`. Escort `package` remains friendly AI only, not the player’s section. | `done` (accepted ME smoke 2026-08-07; lead 4-ship + wingman 4-ship via separate AI lead group) |
+| 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead (or lead tasks + mates stick); put CAP/GA/escort tasking on the AI lead when `role: wingman`; optional formation options / section radio beats. Prefer native ME Follow + waypoints; no LLM Lua. | `idea` (2026-08-07) |
 
 ---
 
@@ -275,7 +276,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Same mission file, change weather after fly/ME load | **M5** `#17d` `weather-reweather-miz` — overwrite `.miz` (Spec recompile or weather-table patch) |
 | Within-pattern variance (wind/fog/turb not identical every time) | **M5** `#17e` `weather-invent-jitter` — seeded; climatology bands; not ME Dynamic |
 | Mid-flight weather story (sunny→rain / fog burn-off) | **M5** `#17c` fog-only via curated Lua (`#22`); cloud/rain mid-mission **not** feasible (no DCS API) |
-| Fly with a squadron / as lead or wingman (not solo only) | **M4** `#15b` `player-flight-squadron` — player flight of 2–4; lead or wingman roles |
+| Fly with a squadron / as lead or wingman (not solo only) | **M4** `#15b` done (placement); cohesion Follow/shared route → `#15c` `player-flight-joinup` |
 | Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — native ME `SetFailure`; curated ids; opt-in Spec |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |

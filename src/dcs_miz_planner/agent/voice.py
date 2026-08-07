@@ -117,22 +117,28 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
     weather = _weather_phrase(spec)
     start = spec.start_time
     start_type = spec.player.start.value
+    flight = spec.player.flight
+    if flight is not None:
+        role_phrase = "as flight lead" if flight.role.value == "lead" else "as wingman"
+        section_phrase = f" in a section of {flight.size}, {role_phrase}"
+    else:
+        section_phrase = ""
 
     if voice == VOICE_USAAF:
         opener = (
-            f"Listen up. Sortie from {airfield} in the {aircraft}, "
+            f"Listen up. Sortie from {airfield} in the {aircraft}{section_phrase}, "
             f"{start} local, weather {weather}, start {start_type}."
         )
         closing = "Fly smart, keep your head on a swivel, and bring it home."
     elif voice == VOICE_RAF:
         opener = (
-            f"Right. You're away from {airfield} in the {aircraft}, "
+            f"Right. You're away from {airfield} in the {aircraft}{section_phrase}, "
             f"{start} hours, weather {weather}, start {start_type}."
         )
         closing = "Keep a sharp lookout, mind your fuel state, and RTB with the kite intact."
     else:
         opener = (
-            f"Mission: {mt} from {airfield} ({aircraft}), "
+            f"Mission: {mt} from {airfield} ({aircraft}){section_phrase}, "
             f"start {start}, weather {weather}, start type {start_type}."
         )
         closing = "Review the plan, fly the procedures, and abort early if unsafe."

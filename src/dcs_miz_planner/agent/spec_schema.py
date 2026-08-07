@@ -49,6 +49,12 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "omit player.payload."
         ),
         (
+            "optional player.flight: size 2–4, role lead|wingman (default lead), "
+            "ai_skill for mates (default Average). Omit for solo. Wingman emits a "
+            "separate AI lead group plus your Player ship (SP cannot Player-on-slot-2). "
+            "See manston_freeflight_flight_lead.yaml / manston_freeflight_flight_wingman.yaml."
+        ),
+        (
             "Immersion OK: non-empty triggers/zones for altitude_speed_gates or "
             "sound_flag_chain (see manston_freeflight_altitude_speed_gates.yaml / "
             "manston_freeflight_sound_flags.yaml)."
@@ -120,6 +126,10 @@ _COMMON_NOTES: tuple[str, ...] = (
     (
         "Required envelope: schema_version, mission_type, theatre, date, start_time, "
         "weather, player; enemies/objectives/triggers/zones default to empty lists."
+    ),
+    (
+        "Optional player.flight on any mission type: {size: 2-4, role: lead|wingman, "
+        "ai_skill}; omit for solo. Human skill must stay Player; mates use ai_skill."
     ),
     (
         "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|"

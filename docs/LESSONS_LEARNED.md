@@ -7,6 +7,22 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Player flight: SP Player must be group unit #1 (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Symptom:** Wingman Spec put `Skill=Player` on `units[1]` of a 2-ship group;
+  in Instant Action the human only got F7 cameras / hangar roof view, no cockpit
+  control; both aircraft taxied under AI.
+- **Cause:** DCS single-player only hands the controllable aircraft to
+  `Skill=Player` on the **first unit of a group**. Player on unit 2+ is ignored
+  for control (spectator).
+- **Fix:** `role: lead` → one multi-unit group, Player on `units[0]`.
+  `role: wingman` → **separate** AI lead group (`"{name} Lead"`, size−1) plus a
+  size-1 Player group. No same-group Player-on-slot-2. Formation Follow / join-up
+  deferred. Prefer Manston for size-4 parking.
+- **Code / notes:** `player_flight_is_wingman`, `player_ai_lead_group_size`,
+  `compiler/pydcs_compiler.py`; examples lead/wingman; backlog `#15b`.
+
 ## In-flight weather: fog yes, clouds/rain no (2026-08-06)
 
 - **Date:** 2026-08-06

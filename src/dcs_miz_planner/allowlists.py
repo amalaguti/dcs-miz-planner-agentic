@@ -18,6 +18,9 @@ KNOWN_SKILLS: frozenset[str] = frozenset(
     }
 )
 
+# Skills allowed for AI wingmen / lead mates on ``player.flight`` (no Player/Client).
+AI_FLIGHT_SKILLS: frozenset[str] = frozenset(KNOWN_SKILLS - {"Player", "Client"})
+
 _COUNTRY_HINTS: dict[str, str] = {
     "Germany": "Channel Axis aircraft use country ThirdReich (Germany is modern blue in PyDCS)",
 }
@@ -33,3 +36,7 @@ def country_hint(name: str) -> str | None:
 
 def skill_hint(name: str) -> str:
     return f"Known skills: {', '.join(sorted(KNOWN_SKILLS))}"
+
+
+def ai_flight_skill_hint(name: str) -> str:
+    return f"AI flight skills: {', '.join(sorted(AI_FLIGHT_SKILLS))}"

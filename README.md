@@ -9,7 +9,11 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 Channel Spitfire MVP through M6: Mission Spec (`schema_version: "1"`, unknown fields
 rejected) covers free_flight, intercept, CAP, ground_attack, and escort, plus native ME
 triggers (zones, flags, radio, late activation, sound, markers, altitude/speed gates).
-Manston cold free flight was the first accepted-in-game slice. Channel DCS facts
+Manston cold free flight was the first accepted-in-game slice. Optional
+`player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
+(accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
+`manston_freeflight_flight_wingman.yaml`; join-up/Follow still `#15c`).
+Channel DCS facts
 (airfields, aircraft, radio, weather presets) live in packaged YAML under
 `src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);

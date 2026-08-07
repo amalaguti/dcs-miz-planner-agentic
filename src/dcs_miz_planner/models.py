@@ -97,6 +97,19 @@ class MissionDate(SpecModel):
     day: int = Field(ge=1, le=31)
 
 
+class PlayerFlightRole(str, Enum):
+    LEAD = "lead"
+    WINGMAN = "wingman"
+
+
+class PlayerFlight(SpecModel):
+    """Optional multi-ship player section (omit = solo)."""
+
+    size: int = Field(ge=2, le=4)
+    role: PlayerFlightRole = PlayerFlightRole.LEAD
+    ai_skill: str = "Average"  # AI mates only; not Player/Client
+
+
 class Player(SpecModel):
     aircraft: str  # exact DCS type id, e.g. SpitfireLFMkIX
     airfield: str  # display name, mapped to airdromeId by the compiler
@@ -105,6 +118,38 @@ class Player(SpecModel):
     skill: str = "Player"
     start: StartType = StartType.COLD_PARKING
     payload: str | None = None  # named Channel payload preset (ground_attack)
+    flight: PlayerFlight | None = None  # multi-ship section; omit = solo
+
+
+def player_group_size(flight: PlayerFlight | None) -> int:
+    """Size of the *player-controlled* flying group.
+
+    Lead (or solo): full section size (1 if omitted).
+    Wingman: always 1 — AI lead ships are a separate group (DCS SP cannot put
+    Skill=Player on a non-first unit in a mixed group).
+    """
+    if flight is None:
+        return 1
+    if flight.role is PlayerFlightRole.WINGMAN:
+        return 1
+    return int(flight.size)
+
+
+def player_ai_lead_group_size(flight: PlayerFlight | None) -> int:
+    """AI lead section size when role is wingman; otherwise 0."""
+    if flight is None or flight.role is not PlayerFlightRole.WINGMAN:
+        return 0
+    return int(flight.size) - 1
+
+
+def player_human_unit_index(flight: PlayerFlight | None) -> int:
+    """0-based index of Skill=Player within the player flying group (always 0)."""
+    _ = flight
+    return 0
+
+
+def player_flight_is_wingman(flight: PlayerFlight | None) -> bool:
+    return flight is not None and flight.role is PlayerFlightRole.WINGMAN
 
 
 class EnemyFlight(SpecModel):

@@ -44,6 +44,56 @@ options:
     description: Start from parking cold (DCS TakeOffParking).
     support: supported
 
+  - family: player_flight_size
+    id: solo
+    label: Solo
+    description: Single Skill=Player aircraft (omit player.flight).
+    support: supported
+    meta:
+      omit_flight: true
+
+  - family: player_flight_size
+    id: pair
+    label: Pair (2)
+    description: Two-ship player section via player.flight.size 2.
+    support: supported
+    meta:
+      size: 2
+
+  - family: player_flight_size
+    id: three_ship
+    label: Three-ship
+    description: Three-ship player section via player.flight.size 3.
+    support: supported
+    meta:
+      size: 3
+
+  - family: player_flight_size
+    id: four_ship
+    label: Four-ship
+    description: Four-ship player section via player.flight.size 4 (prefer Manston parking).
+    support: supported
+    meta:
+      size: 4
+
+  - family: player_flight_role
+    id: lead
+    label: Flight lead
+    description: Human is Skill=Player on the first unit; AI wingmen fill the rest.
+    support: supported
+    meta:
+      role: lead
+
+  - family: player_flight_role
+    id: wingman
+    label: Wingman
+    description: >
+      Human flies a size-1 Player group beside a separate AI lead group (size−1).
+      DCS single-player cannot put Player on unit 2 of a mixed group.
+    support: supported
+    meta:
+      role: wingman
+
   - family: weather
     id: sunny_clear
     label: Sunny clear
