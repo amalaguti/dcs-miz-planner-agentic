@@ -96,6 +96,8 @@ Read `out/creative_eval/report.json` for machine summary.
 ### 5. Turn gaps into durable work
 
 **LESSONS_LEARNED** (`keep-lessons-learned`): append only for non-obvious agent/product
+pitfalls (topic file + index row; update matching `dcs-dev-*` skill if procedure
+changes).
 pitfalls (e.g. incomplete radio+late-act combo, free-flight never inventing gates). Skip
 one-off model flakiness.
 
