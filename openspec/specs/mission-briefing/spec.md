@@ -75,3 +75,12 @@ section lead after takeoff (wording may vary by voice).
 #### Scenario: Wingman join brief
 - **WHEN** briefing a wingman Spec with join-up enabled
 - **THEN** Situation or Procedures MUST indicate join-up / follow the lead
+
+### Requirement: Brief honesty when failures armed
+When `failures` is non-empty, generated briefing/voice text SHALL mention that
+system failures may occur (training / keep-honest wording). Solo Specs without
+failures MUST keep prior brief behaviour.
+
+#### Scenario: Failures brief note
+- **WHEN** briefing a Spec with at least one failure entry
+- **THEN** Situation or Watch-outs MUST indicate possible aircraft system failures

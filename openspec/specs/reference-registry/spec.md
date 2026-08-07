@@ -140,3 +140,13 @@ priors. Recipe centers remain the default numeric baseline.
 - **WHEN** registry loads weather presets after this change
 - **THEN** the broken-channel pattern (or equivalent) MUST expose a non-empty
   allowed gallery family list of Broken-class preset ids
+
+### Requirement: Channel aircraft failure catalog
+The Channel reference data SHALL include a curated catalog of DCS failure ids for
+supported player aircraft (at least `SpitfireLFMkIX` in v1), exposed via the registry
+API for validation and agent listing. Catalog entries MUST use exact DCS ids from
+verified Spitfire mission/ME sources.
+
+#### Scenario: Spitfire magneto id known
+- **WHEN** a client queries known failures for `SpitfireLFMkIX`
+- **THEN** the catalog MUST include `ENG0_MAGNETO0` (and other curated v1 ids)
