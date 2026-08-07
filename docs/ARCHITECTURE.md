@@ -109,6 +109,11 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `memory/` | User prefs, generation history, satisfaction feedback (`user_*` tables; never wiped by catalog sync) | `install.default_db_path`, stdlib `sqlite3` |
 | `tools/` | Agent-facing callables: catalog lookups, `get_mission_spec_schema`, validate/compile, `randomize_mission`, prefs/history/feedback, research_guidance (`focus=mission_design`), `list_installed_campaigns` | `catalog`, `memory`, `validation`, `compiler`, `loader`, `randomize`, `install.campaigns`, `agent/spec_schema` |
 | `briefing.py` | Spec → plain-text Sortie / Description / Blue|Red Task for `.miz` `l10n` (splits commander brief; lazy-imports voice) | `models`, `agent.voice` |
+| `weather_invent.py` | Seeded invent snapshot from Spec weather pattern + date/time | `models`, `registry` |
+| `weather_apply.py` | Apply invent snapshot to PyDCS `Mission.weather` | `weather_invent`, `weather_gallery`, `dcs.weather` |
+| `weather_gallery.py` | Packaged gallery decode + `CloudPreset` resolve (incl. ME-only rainy light ids) | `data/channel/weather_gallery.yaml` |
+| `weather_metar.py` | Offline synthetic METAR from invent snapshot (`EGMH` + `RMK SIM`) | `weather_invent`, `weather_gallery` |
+| `weather_sot.py` | Enum / YAML / planning / compiler weather-id parity sets | `models`, `registry` |
 | `randomize.py` | Seeded Spec→Spec variation (weather/time/geometry/opposition); compiler stays deterministic | `models`, `registry` |
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |
 | `install/` | Read-only DCS install probe; theatre + aircraft-module inventory (folder harvest); `campaigns` index; SQLite cache on `--refresh` | `registry`, stdlib `sqlite3` |

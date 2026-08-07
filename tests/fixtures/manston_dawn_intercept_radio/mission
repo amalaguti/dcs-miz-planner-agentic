@@ -193,7 +193,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="403 RCAF Beurling",
 										["name"]="Manston Dawn Intercept (Radio Difficulty) Pilot #1",
 										["onboard_num"]="<num>",
 										["parking"]=9,
@@ -395,7 +394,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="Bf-109 K4 Jagdgeschwader 53",
 										["name"]="Enemy Bf-109K-4 Pilot #1",
 										["onboard_num"]="<num>",
 										["payload"]=
@@ -514,7 +512,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="Bf-109 K4 Jagdgeschwader 53",
 										["name"]="Enemy Bf-109K-4 Pilot #1",
 										["onboard_num"]="<num>",
 										["payload"]=
@@ -553,7 +550,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="Bf-109 K4 Jagdgeschwader 53",
 										["name"]="Enemy Bf-109K-4 Pilot #2",
 										["onboard_num"]="<num>",
 										["payload"]=
@@ -672,7 +668,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="Bf-109 K4 Jagdgeschwader 53",
 										["name"]="Enemy Bf-109K-4 Pilot #1",
 										["onboard_num"]="<num>",
 										["payload"]=
@@ -711,7 +706,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="Bf-109 K4 Jagdgeschwader 53",
 										["name"]="Enemy Bf-109K-4 Pilot #2",
 										["onboard_num"]="<num>",
 										["payload"]=
@@ -750,7 +744,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="Bf-109 K4 Jagdgeschwader 53",
 										["name"]="Enemy Bf-109K-4 Pilot #3",
 										["onboard_num"]="<num>",
 										["payload"]=
@@ -789,7 +782,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="Bf-109 K4 Jagdgeschwader 53",
 										["name"]="Enemy Bf-109K-4 Pilot #4",
 										["onboard_num"]="<num>",
 										["payload"]=

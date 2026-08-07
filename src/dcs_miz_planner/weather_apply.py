@@ -7,7 +7,9 @@ from .weather_invent import WeatherSnapshot
 
 def apply_weather_snapshot(mission, snap: WeatherSnapshot) -> None:
     """Write a resolved invent snapshot into ``mission.weather`` (static)."""
-    from dcs.weather import CloudPreset, Weather, Wind
+    from dcs.weather import Weather, Wind
+
+    from .weather_gallery import resolve_cloud_preset
 
     w = mission.weather
     w.atmosphere_type = 0
@@ -55,8 +57,8 @@ def apply_weather_snapshot(mission, snap: WeatherSnapshot) -> None:
 
     if snap.cloud_preset:
         try:
-            gallery = CloudPreset.by_name(snap.cloud_preset)
-        except Exception as exc:
+            gallery = resolve_cloud_preset(snap.cloud_preset)
+        except ValueError as exc:
             raise ValueError(
                 f"Unknown weather cloud_preset {snap.cloud_preset!r} for {snap.pattern}"
             ) from exc

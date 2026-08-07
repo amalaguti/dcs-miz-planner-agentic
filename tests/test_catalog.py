@@ -211,6 +211,7 @@ def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
         "marginal_vfr",
         "broken_channel",
         "rain_overcast",
+        "showers_scattered",
     }
 
     behaviours = service.list_rows(

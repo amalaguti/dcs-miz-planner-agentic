@@ -332,7 +332,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=2.2015524662911,
-										["livery_id"]="403 RCAF Beurling",
 										["name"]="Manston Channel Ground Attack Pilot #1",
 										["onboard_num"]="<num>",
 										["parking"]=9,

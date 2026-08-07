@@ -21,7 +21,8 @@
   ],
   "source_spec": "examples/manston_escort.yaml",
   "normalized_fields": [
-    "onboard_num"
+    "onboard_num",
+    "livery_id"
   ],
   "briefing_voice": "raf"
 }

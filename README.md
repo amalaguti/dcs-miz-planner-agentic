@@ -17,7 +17,9 @@ Manston cold free flight was the first accepted-in-game slice. Optional
 Section menus `#15d`, example `manston_cap_flight_orders.yaml`). Optional Spec `failures`
 (curated Spitfire ME Set Failure ids; example `manston_freeflight_magneto_failure.yaml`).
 Channel DCS facts
-(airfields, aircraft, radio, weather presets) live in packaged YAML under
+(airfields, aircraft, radio, weather presets incl. `showers_scattered`) live in packaged YAML under
+`src/dcs_miz_planner/data/channel/`. Commander briefs include an offline synthetic
+METAR (`EGMH` + `RMK SIM`) from invent weather — never live meteo APIs.
 `src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
 refresh with `dcs-miz theatres --refresh` (caches theatres **and** aircraft module

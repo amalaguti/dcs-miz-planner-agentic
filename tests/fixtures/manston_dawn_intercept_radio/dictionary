@@ -3,6 +3,7 @@ dictionary=
 	["DictKey_Translation_1"]="Cold start at Manston at dawn. Use F10 Other radio to pick Easy / Medium / Hard opposition; each choice activates one late Bf-109 flight on the Dover approaches. Choose one difficulty in play (selecting multiple activates multiple groups).\
 \
 Right. You're away from Manston in the SpitfireLFMkIX, 06:00 hours, weather Clear skies, excellent visibility, start cold_parking.\
+METAR (synthetic): EGMH 060600Z 00000KT 10SM CLR 15/11 A2992 NOSIG RMK SIM\
 \
 Watch for escort fighters above the bombers or bounce from cloud; guard your six in the merge; mind Channel over-water navigation and fuel; do not press into flak or numbers you cannot handle.",
 	["DictKey_Translation_10"]="Hard opposition airborne — four Bf-109s. Weapons free.",

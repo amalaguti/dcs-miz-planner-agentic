@@ -1,0 +1,22 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Free Flight (Showers Scattered)
+description: >-
+  Cold start at Manston in light rain / showery Channel weather
+  (RainyPreset4 family) — fills the gap between broken VFR and rain overcast.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "10:00"
+weather: showers_scattered
+weather_opts:
+  seed: 42
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking

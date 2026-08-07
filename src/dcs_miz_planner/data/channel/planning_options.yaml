@@ -228,6 +228,15 @@ options:
       cloud_preset: RainyPreset1
 
   - family: weather
+    id: showers_scattered
+    label: Showers scattered
+    description: >-
+      Scattered to broken cloud with light rain or showers; flyable Channel day.
+    support: supported
+    meta:
+      cloud_preset: RainyPreset4
+
+  - family: weather
     id: scattered_summer
     label: Scattered summer
     description: Summer scattered cloud; warmer day, fair visibility.

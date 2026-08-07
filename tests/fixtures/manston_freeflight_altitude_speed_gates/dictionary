@@ -3,6 +3,7 @@ dictionary=
 	["DictKey_Translation_1"]="Same Manston cold free flight as the acceptance example, plus ingress-discipline gates: stay below 300 m AGL and under 450 km/h after T+30s. Warnings use a flag cooldown so a missed callout can repeat while you stay out of limits, without flooding every ME tick.\
 \
 Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather Clear skies, excellent visibility, start cold_parking.\
+METAR (synthetic): EGMH 060900Z 00000KT 10SM CLR 15/11 A2992 NOSIG RMK SIM\
 \
 Watch weather deterioration and cloud base, mid-air conflict near the field, fuel state on the way home, and Channel ditching risk if you wander offshore.",
 	["DictKey_Translation_2"]="Free flight: treat this as a familiarisation / local area hop. Build situational awareness, practise gentle handling, and keep clear of known flak belts and crowded corridors unless tasked.\

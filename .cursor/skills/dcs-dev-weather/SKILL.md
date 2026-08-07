@@ -22,8 +22,13 @@ description: >-
    jitter without gallery; stable derived seed when `weather_opts` omitted at compile;
    `draw=True` only when writing Spec YAML for persisted seed.
 5. Keep **weather_sot** / planning_options / registry presets in parity.
+6. **Rainy light gallery** (`RainyPreset4`–`6` / `NEWRAINPRESET4`) is not in PyDCS
+   `CloudPreset.by_name` — use `weather_gallery.resolve_cloud_preset` (construct from
+   packaged min/max). Never invent live METAR; briefs use offline
+   `format_synthetic_metar` + `RMK SIM`.
 
 ## Code touchpoints
 
-`weather_invent.py`, `weather_sot.py`, `fog_dynamics.py`, `compiler/fog_emit.py`,
-`registry` weather presets, `reweather.py`.
+`weather_invent.py`, `weather_apply.py`, `weather_gallery.py`, `weather_metar.py`,
+`weather_sot.py`, `fog_dynamics.py`, `compiler/fog_emit.py`, `registry` weather presets,
+`reweather.py`, `agent/voice.py`.

@@ -5,6 +5,21 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Synthetic METAR + rainy light gallery beyond PyDCS (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Lesson:** Briefs can emit a deterministic ICAO-style METAR from invent
+  `WeatherSnapshot` (`weather_metar.format_synthetic_metar`) without live APIs —
+  always mark `NOSIG RMK SIM` and use a fixed Channel station (`EGMH`). Separately,
+  PyDCS `CloudPreset.by_name` (0.15.x) only knows `Preset1`–`27` + `RainyPreset1`–`3`.
+  DCS ME still accepts rainy light ids (`RainyPreset4`–`6`, `NEWRAINPRESET4`) used by
+  dcs-real-weather. For `showers_scattered`, package min/max + METAR decode in
+  `weather_gallery.yaml` and construct a `CloudPreset` when `by_name` fails so
+  `_make_cloud_dict` writes the gallery string. Do not silently fold light-rain into
+  `rain_overcast` (`RainyPreset1`–`3`).
+- **Code:** `weather_metar.py`, `weather_gallery.py`, `weather_apply.resolve_cloud_preset`,
+  `agent/voice.py`, `data/channel/weather_gallery.yaml`.
+
 ## In-flight weather: fog yes, clouds/rain no (2026-08-06)
 
 - **Date:** 2026-08-06

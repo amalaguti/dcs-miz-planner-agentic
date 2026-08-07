@@ -48,6 +48,7 @@ class WeatherPreset(str, Enum):
     BROKEN_CHANNEL = "broken_channel"
     OVERCAST_LOW = "overcast_low"
     RAIN_OVERCAST = "rain_overcast"
+    SHOWERS_SCATTERED = "showers_scattered"
     SCATTERED_SUMMER = "scattered_summer"
 
 

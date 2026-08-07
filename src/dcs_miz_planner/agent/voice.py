@@ -109,12 +109,23 @@ def _weather_phrase(spec: MissionSpec) -> str:
         return spec.weather.value
 
 
+def _synthetic_metar_line(spec: MissionSpec) -> str:
+    """Offline METAR from invent snapshot (shared by CLI brief and compile l10n)."""
+    from ..weather_invent import ensure_weather_seed, resolve_weather_snapshot
+    from ..weather_metar import format_synthetic_metar
+
+    seeded = ensure_weather_seed(spec)
+    snap = resolve_weather_snapshot(seeded)
+    return format_synthetic_metar(snap, seeded)
+
+
 def build_commander_brief(spec: MissionSpec, voice: str) -> str:
     """Deterministic host brief with Situation / Tactics / Procedures / Watch-outs."""
     mt = spec.mission_type.value
     airfield = spec.player.airfield
     aircraft = spec.player.aircraft
     weather = _weather_phrase(spec)
+    metar = _synthetic_metar_line(spec)
     start = spec.start_time
     start_type = spec.player.start.value
     flight = spec.player.flight
@@ -127,19 +138,22 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
     if voice == VOICE_USAAF:
         opener = (
             f"Listen up. Sortie from {airfield} in the {aircraft}{section_phrase}, "
-            f"{start} local, weather {weather}, start {start_type}."
+            f"{start} local, weather {weather}, start {start_type}.\n"
+            f"METAR (synthetic): {metar}"
         )
         closing = "Fly smart, keep your head on a swivel, and bring it home."
     elif voice == VOICE_RAF:
         opener = (
             f"Right. You're away from {airfield} in the {aircraft}{section_phrase}, "
-            f"{start} hours, weather {weather}, start {start_type}."
+            f"{start} hours, weather {weather}, start {start_type}.\n"
+            f"METAR (synthetic): {metar}"
         )
         closing = "Keep a sharp lookout, mind your fuel state, and RTB with the kite intact."
     else:
         opener = (
             f"Mission: {mt} from {airfield} ({aircraft}){section_phrase}, "
-            f"start {start}, weather {weather}, start type {start_type}."
+            f"start {start}, weather {weather}, start type {start_type}.\n"
+            f"METAR (synthetic): {metar}"
         )
         closing = "Review the plan, fly the procedures, and abort early if unsafe."
 

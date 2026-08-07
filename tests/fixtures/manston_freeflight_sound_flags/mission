@@ -193,7 +193,6 @@ mission=
 										},
 										["hardpoint_racks"]=true,
 										["heading"]=0.0,
-										["livery_id"]="403 RCAF Beurling",
 										["name"]="Manston Free Flight (sound + flags sample) Pilot #1",
 										["onboard_num"]="<num>",
 										["parking"]=9,

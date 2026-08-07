@@ -130,6 +130,25 @@ presets:
     wind_ground_speed_ms: 3.1
     wind_ground_dir_deg: 0
 
+  # Light rain / Channel showery day (upstream SCT+RA / BKN+RA / light OVC+RA)
+  showers_scattered:
+    description: Scattered to broken cloud with light rain or showers; flyable Channel day
+    cloud_preset: RainyPreset4
+    gallery_family:
+      [RainyPreset4, NEWRAINPRESET4, RainyPreset5, RainyPreset6]
+    clouds_base_m: 1400
+    clouds_thickness_m: 200
+    clouds_density: 0
+    enable_fog: true
+    fog_thickness: 100
+    fog_visibility: 5000
+    visibility_distance: 80000
+    temperature_c: 12
+    qnh_mmhg: 762
+    turbulence: 8.0
+    wind_ground_speed_ms: 4.5
+    wind_ground_dir_deg: 240
+
   scattered_summer:
     description: Summer scattered cloud; warmer day, fair visibility
     cloud_preset: Preset9

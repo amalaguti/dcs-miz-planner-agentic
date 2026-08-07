@@ -3,6 +3,7 @@ dictionary=
 	["DictKey_Translation_1"]="Same Manston cold free flight as the acceptance example, plus a curated sound callout and a small numeric flag chain for Spec/validation/ME coverage.\
 \
 Right. You're away from Manston in the SpitfireLFMkIX, 09:00 hours, weather Clear skies, excellent visibility, start cold_parking.\
+METAR (synthetic): EGMH 060900Z 00000KT 10SM CLR 15/11 A2992 NOSIG RMK SIM\
 \
 Watch weather deterioration and cloud base, mid-air conflict near the field, fuel state on the way home, and Channel ditching risk if you wander offshore.",
 	["DictKey_Translation_2"]="Free flight: treat this as a familiarisation / local area hop. Build situational awareness, practise gentle handling, and keep clear of known flak belts and crowded corridors unless tasked.\
