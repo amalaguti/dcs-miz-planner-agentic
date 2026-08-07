@@ -116,3 +116,13 @@ population is performed at compile time via the shared brief builder (`mission-b
 #### Scenario: Escort brief branch
 - **WHEN** `build_commander_brief` is invoked for a valid escort Spec with voice enabled
 - **THEN** the brief MUST include escort-oriented tactics/procedures/watch-outs
+
+### Requirement: Voice aware of player flight
+Squadron-commander voice helpers SHALL accept Spec `player.flight` context so brief
+phrases can refer to section size and lead/wingman role without inventing aircraft or
+skill ids.
+
+#### Scenario: Wingman phrasing available
+- **WHEN** voice brief generation runs for a Spec with `role: wingman`
+- **THEN** the generated copy MUST be able to state the player flies as wingman in the
+  section (not as solo)
