@@ -324,3 +324,12 @@ containing the failure id and an enabled Failures panel table row (not
 #### Scenario: Failure example golden smoke
 - **WHEN** the suite compiles the checked-in failures example
 - **THEN** asserts MUST find the failure id and enabled Failures table wiring
+
+### Requirement: Structural asserts for section orders
+Tests SHALL assert that a Spec with curated `player.flight.orders` compiles to
+mission content containing radio-item / section-order wiring and does not invent
+Lua for this feature.
+
+#### Scenario: Orders example golden smoke
+- **WHEN** the suite compiles the checked-in section-orders example
+- **THEN** asserts MUST find radio / order flag wiring for a selected order id
