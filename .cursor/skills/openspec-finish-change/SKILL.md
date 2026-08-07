@@ -30,7 +30,8 @@ means `master` receives one coherent state: code, synced specs, archived change.
 - Tick remaining `tasks.md` boxes, including acceptance tasks; note in-game findings inline.
 - Flip the item's status in `docs/BACKLOG.md` (`building` → `done`).
 - Refresh `README.md` status if it still claims work is pending (`keep-readme-updated`).
-- Add any non-obvious pitfall to `docs/LESSONS_LEARNED.md` (`keep-lessons-learned`).
+- Add any non-obvious pitfall via `keep-lessons-learned` (topic file + index +
+  update matching `dcs-dev-*` skill when procedure changes).
 - Run the test suite before committing: `uv run pytest -q`.
 
 **2. Commit the implementation**

@@ -1,43 +1,80 @@
 ---
 name: keep-lessons-learned
-description: Maintain and consult docs/LESSONS_LEARNED.md so known PyDCS/DCS/compiler pitfalls are not repeated. Use when starting compiler or PyDCS work, debugging DCS/.miz/payload/weather/airfield issues, finishing an OpenSpec apply slice, or after fixing a non-obvious bug or wrong assumption.
+description: >-
+  Maintain docs/LESSONS_LEARNED.md (index), docs/lessons/*.md topic files, and
+  matching dcs-dev-* skills so PyDCS/DCS/compiler pitfalls are not repeated. Use
+  when starting compiler or PyDCS work, debugging DCS/.miz/payload/weather/
+  airfield/trigger/failures issues, finishing an OpenSpec apply slice, or after
+  fixing a non-obvious bug or wrong assumption.
 ---
 
 # Keep Lessons Learned
 
-Canonical file: `docs/LESSONS_LEARNED.md` (repo root)
+## Layout
+
+| Path | Role |
+|------|------|
+| [`docs/LESSONS_LEARNED.md`](../../../docs/LESSONS_LEARNED.md) | **Index** — how to use + newest-first table of links |
+| [`docs/lessons/*.md`](../../../docs/lessons/) | **Full entries** by topic (newest first within file) |
+| `.cursor/skills/dcs-dev-*/SKILL.md` | **Procedures** distilled from topic clusters |
+
+Durable product contracts stay in OpenSpec specs — not here.
 
 ## When to read
 
-**Before** working on any of:
+**Do not** read the whole index end-to-end. Pick the topic / skill:
 
-- PyDCS, `.miz` compile/save, payloads, weather, parking/start types
-- DCS type ids, theatres, `airdromeId`, Channel airfields
-- Compiler interface or Mission Spec ↔ backend mapping
+| Work | Topic file | Skill |
+|------|------------|-------|
+| Triggers, failures, ME behaviour, fog scripts | `triggers-me` | `dcs-dev-triggers-me` |
+| `player.flight` / wingman / Follow | `player-flight` | `dcs-dev-player-flight` |
+| Weather presets, invent, fog_dynamics | `weather` | `dcs-dev-weather` |
+| Aircraft/country/airfield/radio ids | `channel-ids` | `dcs-dev-channel-ids` |
+| Compiler, payloads, goldens, theatre zip | `pydcs-compile` | `dcs-dev-pydcs-compile` |
+| Agent, catalog, memory, research | `agent-tooling` | `dcs-dev-agent-tooling` |
+| CI, inventory cache, OpenSpec process | `ci-process` | `dcs-dev-ci-process` |
 
 Skim matching entries first; do not rediscover known KeyErrors / enum mistakes.
 
-## When to write
+## When to write (always both log + skill check)
 
-Append (or update) an entry when **any** of these happen:
+Append when **any** of these happen:
 
-- A non-obvious bug is fixed (especially third-party / PyDCS / DCS install interaction)
+- A non-obvious bug is fixed (especially third-party / PyDCS / DCS install)
 - An assumption about DCS ids or `.miz` layout was wrong
-- A workaround is added that future agents must preserve
-- Acceptance testing reveals a tweak that should not be forgotten
+- A workaround must be preserved
+- Acceptance testing reveals a durable tweak
 
-Do **not** log routine typos, lint noise, or OpenSpec checkbox edits.
+**Do not** log routine typos, lint noise, or OpenSpec checkbox edits.
 
-## Entry rules
+### Write steps (required order)
 
-- Newest entries near the **top** of the lesson list
-- Use the existing format: title, date, symptom → cause → fix, code touchpoint
-- Keep entries short and actionable
-- This file is agent memory, not the product contract — durable requirements stay in OpenSpec specs
+1. **Topic file** — prepend a full entry at the top of the matching
+   `docs/lessons/<topic>.md` (below the header/`---`), newest first.
+2. **Index** — add one row at the top of the Index table in
+   `docs/LESSONS_LEARNED.md` (date | linked title | topic).
+3. **Skill** — if the pitfall changes a **procedure** agents must follow, update
+   the matching `dcs-dev-*` skill Hard rules (keep skills short; link to the
+   topic file for narrative). If a new cluster appears (3+ related entries with
+   no skill), propose a new `dcs-dev-*` skill rather than bloating the index.
+
+## Entry format (topic files)
+
+```markdown
+## Short title (YYYY-MM-DD)
+
+- **Date:** YYYY-MM-DD
+- **Symptom:** …
+- **Cause:** …
+- **Fix:** …
+- **Code / notes:** …
+```
+
+Or a short **Lesson:** bullet when there is no bug narrative.
 
 ## Related
 
-- README stays brief (`keep-readme-updated`); do not dump lessons into README — link if needed
-- Research samples stay in gitignored `research/`; promote durable facts here or into the registry/specs
-- Live agent creativity regressions: skill `eval-agent-creativity` (vague-ask suite → LESSONS /
-  OpenSpec). Append agent-behaviour pitfalls found there when they are durable.
+- README stays brief (`keep-readme-updated`) — link the index, not every lesson
+- Research samples stay gitignored `research/`; promote durable facts into
+  topic files / registry / OpenSpec
+- Creativity regressions: `eval-agent-creativity` → append here when durable

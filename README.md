@@ -13,7 +13,8 @@ Manston cold free flight was the first accepted-in-game slice. Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
 `manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
-`#15c`, CAP example `manston_cap_flight_wingman.yaml`).
+`#15c`, CAP example `manston_cap_flight_wingman.yaml`). Optional Spec `failures`
+(curated Spitfire ME Set Failure ids; example `manston_freeflight_magneto_failure.yaml`).
 Channel DCS facts
 (airfields, aircraft, radio, weather presets) live in packaged YAML under
 `src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
@@ -80,7 +81,7 @@ hermetic.
 `dynamics` expand (`#30f`), Channel weather patterns (`#17a`), invent weather
 jitter (`#17e`), re-weather overwrite (`#17d`), and mid-sortie fog dynamics
 (`#17c` / `fog_dynamics` + `sea_fog` example) are done. Optional later: `#15a`
-recon, `#15b` squadron flight.
+recon. `#22b` aircraft failures accepted (Failures panel; magneto example).
 See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 ## Stack
 
@@ -309,6 +310,7 @@ Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blo
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
 - Architecture / module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Roadmap / backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md)
-- Agent lessons (PyDCS/DCS pitfalls): [`docs/LESSONS_LEARNED.md`](docs/LESSONS_LEARNED.md)
+- Agent lessons index + topic files: [`docs/LESSONS_LEARNED.md`](docs/LESSONS_LEARNED.md)
+  (skills: `dcs-dev-*` under `.cursor/skills/`)
 - OpenSpec config: [`openspec/config.yaml`](openspec/config.yaml)
 - Local research samples are gitignored (`research/`)

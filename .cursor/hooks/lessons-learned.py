@@ -1,6 +1,6 @@
-"""Remind the agent to consult / update docs/LESSONS_LEARNED.md.
+"""Remind the agent to consult / update lessons + dcs-dev skills.
 
-sessionStart: inject context to skim the file when doing compiler/DCS work.
+sessionStart: inject context to skim topic files / skills for compiler/DCS work.
 beforeShellExecution (git push): soft reminder to append new lessons before push.
 Always allows the action; never blocks.
 """
@@ -12,15 +12,19 @@ import re
 import sys
 
 SESSION_CONTEXT = (
-    "Project memory: skim docs/LESSONS_LEARNED.md before PyDCS / compiler / "
-    ".miz / DCS-id work this session (skill: keep-lessons-learned). "
-    "After fixing a non-obvious bug or wrong DCS/PyDCS assumption, append an entry."
+    "Project memory: before PyDCS / compiler / .miz / DCS-id work, skim the "
+    "matching docs/lessons/<topic>.md or dcs-dev-* skill (index: "
+    "docs/LESSONS_LEARNED.md; workflow: keep-lessons-learned). After a "
+    "non-obvious bug or wrong DCS/PyDCS assumption: append to the topic file, "
+    "add an index row, and update the matching dcs-dev-* skill if procedure "
+    "changed."
 )
 
 PUSH_REMINDER = (
     "Before pushing: if this session fixed a non-obvious PyDCS/DCS/compiler "
-    "bug or wrong assumption, append it to docs/LESSONS_LEARNED.md "
-    "(skill: keep-lessons-learned) and include that update in what you push."
+    "bug or wrong assumption, update docs/lessons/<topic>.md + "
+    "docs/LESSONS_LEARNED.md index (+ dcs-dev-* skill if needed) via "
+    "keep-lessons-learned, and include those updates in what you push."
 )
 
 

@@ -1,0 +1,52 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Free Flight Magneto Failure
+description: >-
+  Cold start at Manston. Training drill: after airborne, switch Magneto 2 OFF and
+  fly on Mag 1 only. At T+60/T+110 messages; Mag 1 is armed on the ME Failures
+  panel (After 0:02, Within 1 min, 100%) so expect the cut between ~2–3 minutes —
+  practise the forced landing.
+
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+failures:
+  - id: ENG0_MAGNETO0
+    start_after_s: 120
+    probability: 100
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+zones: []
+triggers:
+  - name: magneto_drill_setup
+    once: true
+    when:
+      - type: time_more
+        seconds: 60
+    then:
+      - type: message
+        text: >-
+          Manston Ops — switch Magneto 2 OFF now and fly Mag 1 only. Mag 1 will
+          fail later; leave Mag 2 off for the drill.
+        duration_s: 12
+  - name: magneto_warning
+    once: true
+    when:
+      - type: time_more
+        seconds: 110
+    then:
+      - type: message
+        text: >-
+          Manston Ops — Magneto 2 should already be OFF (Mag 1 only). Mag 1 fails
+          in about ten seconds — expect the engine and prop to die. Keep airspeed
+          and pick a field.
+        duration_s: 12

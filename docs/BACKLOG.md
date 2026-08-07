@@ -85,7 +85,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#15d` section orders, `#15e` discipline, or `#22b` aircraft-failures
+**Next promote / in proposal:** `#15d` / `#15e`
 
 **Do soon (not blocking next promote):** ME smoke `out/manston_cap_flight_wingman.miz`
 (or recompile `examples/manston_cap_flight_wingman.yaml`) — after takeoff, confirm AI
@@ -125,7 +125,7 @@ lead flies CAP and player Follow/join works. Deferred from `#15c` accept 2026-08
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#22` only if native insufficient; R8 when bumping pydcs; R1/R2 deep `.miz` audits
+**Next promote / in proposal:** `#15d` / `#15e`; `#22` only if native insufficient; R8 when bumping pydcs
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -140,7 +140,7 @@ the trigger/script text itself is human-authored, versioned, and tested.
 | 21 | `trigger-compiler-native` | Compile the declared trigger model into native `.miz` trigger tables via PyDCS; golden-fixture asserts on emitted structure | `done` (accepted in-game 2026-08-02; sample message ~T+120) |
 | 22 | `script-snippet-library` | Curated, parameterised Lua snippets (human-written, tested, version-pinned) that the compiler injects for behaviour PyDCS triggers can't express; agent may only select + fill declared params. **Grow on demand** (see Pending decisions) — do not pre-build a speculative library | `idea` |
 | 22a | `trigger-flag-random` | Spec action for ME Set Flag Random (`a_set_flag_random`) so “dynamic” raid dice stay native (R1 Version_2 / community BoB) — prefer before Mist/`#22` | `done` (2026-08-05) |
-| 22b | `aircraft-failures` | Optional player aircraft **failures** (engine, controls, etc.): omit = none; **fixed** schedule (what / when / how) via ME `a_set_failure` (PyDCS `SetFailure`); **random** via probability / random pause / flag-random gates. Curated Channel aircraft failure ids only — no free-form strings, no LLM Lua. Research Spitfire ME failure list before promote | `idea` |
+| 22b | `aircraft-failures` | Optional player aircraft **failures** (engine, controls, etc.): omit = none; **fixed** schedule via ME Failures panel table (`enable`/`hh`/`mm`/`mmint`/`prob`); Within minutes (min 1). Curated Channel Spitfire ids only — no free-form strings, no LLM Lua. | `done` (accepted Instant Action 2026-08-07; magneto drill Mag2 OFF + Mag1 panel) |
 | 23 | `mission-events-narrative` | Use 20–22 for immersion: bandit callouts, tasking updates, RTB clearance, success/failure outcomes — in squadron-commander voice | `done` (accepted in-game 2026-08-03; ME shows three CAP narrative rules) |
 | 23a | `narrative-pack-ground-attack` | Opt-in GA narrative (push / ingress / targets-down via `target_dead`) | `done` (accepted in-game 2026-08-04; ME shows three GA narrative rules) |
 | 25 | `trigger-radio-late-activation` | F10 radio menu items + late-activated enemy/target groups (Dawn Raid–style difficulty / spawn options); native ME only | `done` (accepted in-game 2026-08-04; ME radio + late activation) |
@@ -283,7 +283,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Within-pattern variance (wind/fog/turb not identical every time) | **M5** `#17e` `weather-invent-jitter` — seeded; climatology bands; not ME Dynamic |
 | Mid-flight weather story (sunny→rain / fog burn-off) | **M5** `#17c` fog-only via curated Lua (`#22`); cloud/rain mid-mission **not** feasible (no DCS API) |
 | Fly with a squadron / as lead or wingman (not solo only) | **M4** `#15b` done; cohesion `#15c`; orders `#15d`; **fail-to-follow discipline** → `#15e` `player-flight-discipline` |
-| Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — native ME `SetFailure`; curated ids; opt-in Spec |
+| Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — ME Failures panel table; curated ids; opt-in Spec (**done** 2026-08-07) |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
 | Adversarial “prove it wrong” findings (false-green validate, tool trust, docs honesty, CI…) | **Adversarial review track** `#31`–`#42` + expand `#30c`; notes in `docs/adversarial-review-2026-08-05.md` |
@@ -316,7 +316,8 @@ Resolve these inside the relevant proposal, not here.
 | Spec sidecar for re-weather | **M5 `#17d` — decided: write YAML alongside `.miz`**; agent discovers sibling path or accepts explicit Spec/`.miz` path |
 | Season/date → climatology priors for weather numerics | **M5 `#17e` — decided: hybrid** — within-family gallery pick weighted by date/season (+ time-of-day cues) **plus** soft numeric nudge, then always-on seeded jitter. No silent cross-family gallery swaps (agent changes `weather` pattern for that). **Place bias (Dover vs Cotentin etc.) — out of scope**; date/time + jitter enough |
 | Spec shape for weather seed | **M5 `#17e` — decided:** `weather` enum + optional `weather_opts.seed`; **auto-write seed into sidecar YAML when omitted**. If reproducibility ever feels wrong, **re-weather with a new seed** (simple recovery; not a big deal). Re-weather that changes pattern also draws a new seed by default |
-| Aircraft failures Spec shape (`#22b`) | M6 — open: opt-in `failures` / `failure_opts` (omit = none); **scheduled** list (failure id + `start_after_s` + optional severity) vs **random** (probability / `random_pause` / pool + `#22a` flag dice); Spitfire-specific curated id catalog vs cross-aircraft; briefing honesty when failures are armed |
+| Aircraft failures Spec shape (`#22b`) | **Closed 2026-08-07:** opt-in `failures[]` → ME Failures panel (`enable`/After/Within min 1/`prob`); curated Spitfire ids; brief honesty when armed |
+
 | Section orders Spec shape (`#15d`) | M4 — open: named order catalog (rejoin / engage / cover / orbit / RTB / …); F10 vs auto-trigger vs rely on stock lead radio; which orders need `#15c` Follow first; wingman (two-group) vs lead (same-group) emit paths |
 | Section discipline Spec shape (`#15e`) | M4 — open: opt-in after join_up; distance/time thresholds; soft warn vs hard fail/RTB; moving zone vs unit-distance (Lua?); default off so free-flight practice stays free |
 

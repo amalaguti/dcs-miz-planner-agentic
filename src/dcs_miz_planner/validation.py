@@ -179,6 +179,37 @@ def _validate_player_flight(spec: MissionSpec, errors: list[ValidationError]) ->
         )
 
 
+def _validate_aircraft_failures(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+) -> None:
+    if not spec.failures:
+        return
+    catalog = registry.list_failures(spec.player.aircraft)
+    if not catalog:
+        errors.append(
+            ValidationError(
+                code="failures_unsupported_aircraft",
+                path="failures",
+                message=(f"No failure catalog for player aircraft {spec.player.aircraft!r}"),
+                hint="Channel v1 failures support SpitfireLFMkIX only",
+            )
+        )
+        return
+    known = {f.id for f in catalog}
+    for i, event in enumerate(spec.failures):
+        if event.id not in known:
+            errors.append(
+                ValidationError(
+                    code="unknown_failure_id",
+                    path=f"failures[{i}].id",
+                    message=f"Unknown failure id {event.id!r} for {spec.player.aircraft}",
+                    hint=f"Known: {', '.join(sorted(known))}",
+                )
+            )
+
+
 def _validate_ground_attack(
     spec: MissionSpec,
     registry: ChannelRegistry,
@@ -865,6 +896,7 @@ def validate_mission_spec(
     _validate_triggers_and_zones(spec, errors)
     _validate_countries_and_skills(spec, errors)
     _validate_player_flight(spec, errors)
+    _validate_aircraft_failures(spec, registry, errors)
 
     if spec.mission_type is MissionType.FREE_FLIGHT:
         if spec.cap is not None:

@@ -1,0 +1,32 @@
+# Curated DCS ME Set Failure ids for Channel player aircraft.
+# Exact strings from stock Spitfire .miz failures tables — do not invent.
+# Expand later without Spec schema bump.
+aircraft:
+  SpitfireLFMkIX:
+    - id: ENG0_MAGNETO0
+      label: Magneto 1 failure
+      family: engine
+    - id: ENG0_MAGNETO1
+      label: Magneto 2 failure
+      family: engine
+    - id: ENG0_WATER_RADIATOR_0_MAJOR_LEAK
+      label: Coolant radiator major leak
+      family: engine
+    - id: ENG0_WATER_RADIATOR_0_MINOR_LEAK
+      label: Coolant radiator minor leak
+      family: engine
+    - id: CTRL_AILERON_ROD_MAJOR_DAMAGE
+      label: Aileron rod major damage
+      family: controls
+    - id: CTRL_ELEVATOR_ROD_MAJOR_DAMAGE
+      label: Elevator rod major damage
+      family: controls
+    - id: CTRL_RUDDER_ROD_MAJOR_DAMAGE
+      label: Rudder rod major damage
+      family: controls
+    - id: FUEL_ENGINE0_FUEL_PUMP_FAILURE
+      label: Engine fuel pump failure
+      family: fuel
+    - id: HYDR_PUMP_FAILURE
+      label: Hydraulic pump failure
+      family: hydraulics
