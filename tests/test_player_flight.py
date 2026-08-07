@@ -22,6 +22,7 @@ from dcs_miz_planner.models import (
     WeatherPreset,
     player_ai_lead_group_size,
     player_flight_is_wingman,
+    player_flight_join_up_enabled,
     player_group_size,
     player_human_unit_index,
 )
@@ -30,6 +31,7 @@ from dcs_miz_planner.validation import validate_mission_spec
 REPO = Path(__file__).resolve().parents[1]
 LEAD_EXAMPLE = REPO / "examples" / "manston_freeflight_flight_lead.yaml"
 WINGMAN_EXAMPLE = REPO / "examples" / "manston_freeflight_flight_wingman.yaml"
+CAP_WINGMAN_EXAMPLE = REPO / "examples" / "manston_cap_flight_wingman.yaml"
 
 
 def _base_player(**overrides) -> Player:
@@ -66,6 +68,27 @@ def test_helpers_lead_and_wingman_indexes() -> None:
     assert player_human_unit_index(wing) == 0
     assert player_flight_is_wingman(wing)
     assert not player_flight_is_wingman(lead)
+    assert wing.join_up is True
+    assert player_flight_join_up_enabled(wing)
+    assert not player_flight_join_up_enabled(lead)
+    assert not player_flight_join_up_enabled(
+        PlayerFlight(size=2, role=PlayerFlightRole.WINGMAN, join_up=False)
+    )
+
+
+def test_join_up_default_and_opt_out_load() -> None:
+    assert PlayerFlight(size=2, role=PlayerFlightRole.WINGMAN).join_up is True
+    opt_out = PlayerFlight(size=2, role=PlayerFlightRole.WINGMAN, join_up=False)
+    assert opt_out.join_up is False
+
+
+def test_lead_with_join_up_validates() -> None:
+    inv = channel_available_inventory()
+    spec = _free_flight(
+        _base_player(flight=PlayerFlight(size=2, role=PlayerFlightRole.LEAD, join_up=True))
+    )
+    result = validate_mission_spec(spec, inventory=inv)
+    assert result.ok, result.errors
 
 
 def test_flight_lead_example_validates() -> None:
@@ -150,6 +173,36 @@ def test_compile_wingman_pair(tmp_path: Path) -> None:
     assert skills.count("Player") == 1
     assert skills.count("Average") >= 3
     assert skills[:4] == ["Average", "Average", "Average", "Player"]
+    assert "Follow" in text or "follow" in text.lower()
+    assert "groupId" in text or "groupid" in text.lower()
+    assert "Section outbound" in text or "Join" in text
+
+
+def test_compile_wingman_join_up_opt_out_no_follow(tmp_path: Path) -> None:
+    inv = channel_available_inventory()
+    spec = _free_flight(
+        _base_player(
+            flight=PlayerFlight(
+                size=2, role=PlayerFlightRole.WINGMAN, join_up=False, ai_skill="Average"
+            )
+        )
+    )
+    miz = PyDCSCompiler(inventory=inv).compile(spec, tmp_path / "nojoin.miz", voice="raf")
+    text = _mission_text(miz)
+    assert "Lead" in text
+    assert "Follow" not in text
+
+
+def test_compile_cap_wingman_follow_and_cap_on_lead(tmp_path: Path) -> None:
+    inv = channel_available_inventory()
+    assert validate_mission_spec(load_mission_spec(CAP_WINGMAN_EXAMPLE), inventory=inv).ok
+    miz = PyDCSCompiler(inventory=inv).compile(
+        load_mission_spec(CAP_WINGMAN_EXAMPLE), tmp_path / "cap_wing.miz", voice="raf"
+    )
+    text = _mission_text(miz)
+    assert "Follow" in text or "follow" in text.lower()
+    assert '["task"]="CAP"' in text or "CAP" in text
+    assert "Orbit" in text or "orbit" in text.lower()
 
 
 def test_brief_mentions_four_ship_lead() -> None:
@@ -162,3 +215,4 @@ def test_brief_mentions_wingman() -> None:
     brief = build_commander_brief(load_mission_spec(WINGMAN_EXAMPLE), "raf")
     assert "section of 4" in brief
     assert "wingman" in brief
+    assert "Follow" in brief or "join up" in brief.lower()

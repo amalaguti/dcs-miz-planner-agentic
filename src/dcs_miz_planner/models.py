@@ -108,6 +108,7 @@ class PlayerFlight(SpecModel):
     size: int = Field(ge=2, le=4)
     role: PlayerFlightRole = PlayerFlightRole.LEAD
     ai_skill: str = "Average"  # AI mates only; not Player/Client
+    join_up: bool = True  # wingman: Follow AI lead + shared route (no-op for lead)
 
 
 class Player(SpecModel):
@@ -150,6 +151,11 @@ def player_human_unit_index(flight: PlayerFlight | None) -> int:
 
 def player_flight_is_wingman(flight: PlayerFlight | None) -> bool:
     return flight is not None and flight.role is PlayerFlightRole.WINGMAN
+
+
+def player_flight_join_up_enabled(flight: PlayerFlight | None) -> bool:
+    """True when wingman should Follow the AI lead and share the lead's route."""
+    return flight is not None and flight.role is PlayerFlightRole.WINGMAN and bool(flight.join_up)
 
 
 class EnemyFlight(SpecModel):

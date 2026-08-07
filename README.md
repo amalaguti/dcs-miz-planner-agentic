@@ -12,7 +12,8 @@ triggers (zones, flags, radio, late activation, sound, markers, altitude/speed g
 Manston cold free flight was the first accepted-in-game slice. Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
-`manston_freeflight_flight_wingman.yaml`; join-up/Follow still `#15c`).
+`manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
+`#15c`, CAP example `manston_cap_flight_wingman.yaml`).
 Channel DCS facts
 (airfields, aircraft, radio, weather presets) live in packaged YAML under
 `src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map

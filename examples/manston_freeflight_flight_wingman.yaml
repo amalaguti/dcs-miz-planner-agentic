@@ -5,8 +5,8 @@ name: Manston Flight Wingman
 description: >
   Cold start at Manston in a four-ship section. Fly as wingman: you are
   Skill=Player in your own aircraft; a three-ship AI flight lead starts in a
-  separate group (DCS single-player cannot put the player on unit 2 of a mixed
-  group). Free flight over the Channel.
+  separate group. join_up (default true) puts the section route on the AI lead
+  and a Follow task on you after climb. Free flight over the Channel.
 date:
   year: 1944
   month: 6
@@ -24,3 +24,4 @@ player:
     size: 4
     role: wingman
     ai_skill: Average
+    join_up: true

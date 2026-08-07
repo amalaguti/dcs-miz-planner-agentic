@@ -7,6 +7,19 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Player flight wingman Follow / join-up (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Lesson:** Wingman + `join_up` (default true): mission route/tasking goes on the
+  **AI lead** group; the size-1 Player group gets climb + PyDCS `Follow(lead.id)`.
+  Cold-start Follow engages after airborne — join-up smoke after takeoff, not in
+  the hangar. Free-flight/intercept give the lead a short “Section outbound” leg
+  so Follow has a moving target. `join_up: false` keeps `#15b` independent groups.
+  Lead same-group mates need no Follow.
+- **Code / notes:** `player_flight_join_up_enabled`, `_apply_player_follow_lead`,
+  `_apply_wingman_lead_outbound`; examples wingman free-flight +
+  `manston_cap_flight_wingman.yaml`; backlog `#15c`.
+
 ## Player flight: SP Player must be group unit #1 (2026-08-07)
 
 - **Date:** 2026-08-07

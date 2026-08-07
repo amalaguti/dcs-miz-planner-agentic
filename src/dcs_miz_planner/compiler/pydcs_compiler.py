@@ -18,6 +18,7 @@ from ..models import (
     StartType,
     player_ai_lead_group_size,
     player_flight_is_wingman,
+    player_flight_join_up_enabled,
     player_group_size,
 )
 from ..registry import RegistryError, get_channel_registry
@@ -51,6 +52,16 @@ _ESCORT_SPEED_KMH = 400
 _ESCORT_PACKAGE_START_M = 8000.0
 _ESCORT_BOUNCE_OFFSET_M_X = 2500.0
 _ESCORT_BOUNCE_OFFSET_M_Y = -1500.0
+
+# Wingman join-up: AI lead outbound + player Follow (metres / km/h).
+_JOINUP_OUTBOUND_BEARING_DEG = 120.0
+_JOINUP_OUTBOUND_M = 12_000.0
+_JOINUP_CLIMB_M = 5_000.0
+_JOINUP_JOIN_M = 8_000.0
+_JOINUP_ALT_M = 1500.0
+_JOINUP_SPEED_KMH = 400
+_JOINUP_FOLLOW_OFFSET_X = -200.0
+_JOINUP_FOLLOW_ALT_DIFF_M = -100.0
 
 
 def _disable_payload_scan(*unit_types) -> None:
@@ -189,6 +200,7 @@ class PyDCSCompiler(CompilerInterface):
         # Wingman: separate AI lead group + size-1 Player group. DCS single-player
         # only hands control to Skill=Player on the first unit of a group — putting
         # Player on units[1+] leaves the human as a spectator while AI flies.
+        lead_group = None
         if player_flight_is_wingman(flight):
             lead_size = player_ai_lead_group_size(flight)
             lead_group = mission.flight_group_from_airport(
@@ -227,23 +239,44 @@ class PyDCSCompiler(CompilerInterface):
                 unit.skill = human_skill if i == 0 else mate_skill
             group.frequency = radio_mhz
 
+        join_up = player_flight_join_up_enabled(flight)
+        task_group = lead_group if join_up else group
+        assert task_group is not None
+
+        if join_up:
+            assert lead_group is not None
+            if spec.mission_type is MissionType.FREE_FLIGHT:
+                self._apply_wingman_lead_outbound(lead_group, airport)
+            elif spec.mission_type is MissionType.INTERCEPT:
+                # Intercept has no player route today — give the lead a short leg
+                # so Follow has a moving section to join after scramble.
+                self._apply_wingman_lead_outbound(lead_group, airport)
+            self._apply_player_follow_lead(group, lead_group, airport)
+
         enemy_group_ids: list[int] = []
         target_group_ids: list[int] = []
         if spec.mission_type is MissionType.INTERCEPT:
             enemy_group_ids = self._place_enemies(mission, countries, registry, spec, enemy_types)
         elif spec.mission_type is MissionType.CAP:
-            self._apply_cap(mission, group, airport, spec)
+            self._apply_cap(mission, task_group, airport, spec)
             if spec.enemies:
                 enemy_group_ids = self._place_cap_enemies(
                     mission, countries, registry, spec, enemy_types, airport
                 )
         elif spec.mission_type is MissionType.GROUND_ATTACK:
             target_group_ids = self._apply_ground_attack(
-                mission, countries, registry, group, airport, spec
+                mission, countries, registry, task_group, airport, spec
             )
         elif spec.mission_type is MissionType.ESCORT:
             enemy_group_ids = self._apply_escort(
-                mission, countries, registry, group, airport, spec, package_types, enemy_types
+                mission,
+                countries,
+                registry,
+                task_group,
+                airport,
+                spec,
+                package_types,
+                enemy_types,
             )
 
         self._apply_zones_and_triggers(
@@ -268,6 +301,45 @@ class PyDCSCompiler(CompilerInterface):
         from .fog_emit import apply_fog_dynamics
 
         apply_fog_dynamics(mission, spec)
+
+    @staticmethod
+    def _apply_wingman_lead_outbound(lead_group, airport) -> None:
+        """Give the AI lead a short outbound leg so Follow has a moving target."""
+        outbound = airport.position.point_from_heading(
+            _JOINUP_OUTBOUND_BEARING_DEG, _JOINUP_OUTBOUND_M
+        )
+        lead_group.add_waypoint(
+            outbound,
+            altitude=_JOINUP_ALT_M,
+            speed=_JOINUP_SPEED_KMH,
+            name="Section outbound",
+        )
+
+    @staticmethod
+    def _apply_player_follow_lead(player_group, lead_group, airport) -> None:
+        """Climb then Follow the AI lead (cold-start Follow engages after airborne)."""
+        from dcs.mapping import Vector2
+        from dcs.task import Follow
+
+        player_group.add_waypoint(
+            airport.position.point_from_heading(_JOINUP_OUTBOUND_BEARING_DEG, _JOINUP_CLIMB_M),
+            altitude=_JOINUP_ALT_M,
+            speed=_JOINUP_SPEED_KMH,
+            name="Climb",
+        )
+        join_wp = player_group.add_waypoint(
+            airport.position.point_from_heading(_JOINUP_OUTBOUND_BEARING_DEG, _JOINUP_JOIN_M),
+            altitude=_JOINUP_ALT_M,
+            speed=_JOINUP_SPEED_KMH,
+            name="Join",
+        )
+        join_wp.add_task(
+            Follow(
+                groupid=lead_group.id,
+                group_offset=Vector2(_JOINUP_FOLLOW_OFFSET_X, 0.0),
+                altitude_difference=_JOINUP_FOLLOW_ALT_DIFF_M,
+            )
+        )
 
     @staticmethod
     def _apply_zones_and_triggers(

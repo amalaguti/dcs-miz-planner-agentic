@@ -271,6 +271,14 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
             "fuel state on the way home, and Channel ditching risk if you wander offshore."
         )
 
+    from ..models import player_flight_join_up_enabled
+
+    if player_flight_join_up_enabled(flight):
+        procedures = (
+            f"{procedures} After takeoff, climb and join up — Follow the AI section "
+            "lead on the briefed route; do not leave the section unless ordered."
+        )
+
     return (
         f"## Situation / sortie\n{opener}\n\n"
         f"## Tactics\n{tactics}\n\n"

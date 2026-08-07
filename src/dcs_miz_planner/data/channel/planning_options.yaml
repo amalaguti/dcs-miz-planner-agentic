@@ -89,10 +89,30 @@ options:
     label: Wingman
     description: >
       Human flies a size-1 Player group beside a separate AI lead group (size−1).
-      DCS single-player cannot put Player on unit 2 of a mixed group.
+      DCS single-player cannot put Player on unit 2 of a mixed group. With join_up
+      (default true) the lead flies the route and you Follow after climb.
     support: supported
     meta:
       role: wingman
+
+  - family: player_flight_join_up
+    id: join_up
+    label: Join up / Follow lead
+    description: >
+      Wingman only: AI lead flies the section route; player Follows after takeoff.
+      Lead role ignores this (same-group mates already stick). Set join_up false to
+      disable Follow/shared route.
+    support: supported
+    meta:
+      join_up: true
+
+  - family: player_flight_join_up
+    id: independent
+    label: Independent (no Follow)
+    description: Wingman groups without Follow — player and AI lead fly separately.
+    support: supported
+    meta:
+      join_up: false
 
   - family: weather
     id: sunny_clear
