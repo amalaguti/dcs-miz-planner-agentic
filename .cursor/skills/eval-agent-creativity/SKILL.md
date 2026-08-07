@@ -96,9 +96,8 @@ Read `out/creative_eval/report.json` for machine summary.
 ### 5. Turn gaps into durable work
 
 **LESSONS_LEARNED** (`keep-lessons-learned`): append only for non-obvious agent/product
-pitfalls (topic file + index row; update matching `dcs-dev-*` skill if procedure
-changes).
-pitfalls (e.g. incomplete radio+late-act combo, free-flight never inventing gates). Skip
+pitfalls (e.g. incomplete radio+late-act combo, free-flight never inventing gates) —
+topic file + index row; update matching `dcs-dev-*` skill if procedure changes. Skip
 one-off model flakiness.
 
 **OpenSpec**: if the gap is product behaviour (prompts, tools, validation of incomplete
@@ -122,5 +121,5 @@ When adding a `mission_behaviour` / inspiration card or agent tool:
 
 - [prompt-catalog.md](prompt-catalog.md) — vague asks + expectations (maintain this)
 - [scripts/run_eval.py](scripts/run_eval.py) — live harness
-- `keep-lessons-learned` — when to append `docs/LESSONS_LEARNED.md`
+- `keep-lessons-learned` — topic file + index + `dcs-dev-*` skills
 - `openspec-propose` / `openspec-git-branch` — for fix/extend changes
