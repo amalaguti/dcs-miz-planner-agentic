@@ -647,3 +647,57 @@ options:
       geometry_hint: mid_channel
       related_classes: [sea_craft]
       mission_types: [ground_attack]
+
+  # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
+  - family: aircraft_failure
+    id: magneto_training
+    label: Magneto failure (training)
+    description: >
+      Schedule ENG0_MAGNETO0 via Spec failures (TimeAfter + Set Failure). Example:
+      examples/manston_freeflight_magneto_failure.yaml (T+120). SpitfireLFMkIX only.
+    support: supported
+    meta:
+      aircraft: SpitfireLFMkIX
+      failure_id: ENG0_MAGNETO0
+      family: engine
+      example: examples/manston_freeflight_magneto_failure.yaml
+      mission_types: [free_flight, intercept, cap, ground_attack, escort]
+
+  - family: aircraft_failure
+    id: coolant_radiator_leak
+    label: Coolant radiator major leak
+    description: >
+      Spec failures id ENG0_WATER_RADIATOR_0_MAJOR_LEAK — curated Channel Spitfire
+      Set Failure string; do not invent ids.
+    support: supported
+    meta:
+      aircraft: SpitfireLFMkIX
+      failure_id: ENG0_WATER_RADIATOR_0_MAJOR_LEAK
+      family: engine
+
+  - family: aircraft_failure
+    id: control_rod_damage
+    label: Control rod major damage
+    description: >
+      Curated control failures: CTRL_AILERON_ROD_MAJOR_DAMAGE,
+      CTRL_ELEVATOR_ROD_MAJOR_DAMAGE, CTRL_RUDDER_ROD_MAJOR_DAMAGE.
+    support: supported
+    meta:
+      aircraft: SpitfireLFMkIX
+      failure_ids:
+        - CTRL_AILERON_ROD_MAJOR_DAMAGE
+        - CTRL_ELEVATOR_ROD_MAJOR_DAMAGE
+        - CTRL_RUDDER_ROD_MAJOR_DAMAGE
+      family: controls
+
+  - family: aircraft_failure
+    id: fuel_or_hydraulic_pump
+    label: Fuel or hydraulic pump failure
+    description: >
+      Spec failures ids FUEL_ENGINE0_FUEL_PUMP_FAILURE or HYDR_PUMP_FAILURE from the
+      Channel aircraft_failures catalog.
+    support: supported
+    meta:
+      aircraft: SpitfireLFMkIX
+      failure_ids: [FUEL_ENGINE0_FUEL_PUMP_FAILURE, HYDR_PUMP_FAILURE]
+      family: systems

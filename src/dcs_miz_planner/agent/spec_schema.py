@@ -135,6 +135,15 @@ _COMMON_NOTES: tuple[str, ...] = (
         "ai_skill. Wingman join_up (default true) → Follow AI lead + shared route."
     ),
     (
+        "Optional top-level failures list (omit/[] = none): each entry "
+        "{id, start_after_s, probability?, random_pause_s?} with curated Channel "
+        "SpitfireLFMkIX failure ids only (ENG0_MAGNETO0, radiator leaks, control rod "
+        "damage, fuel/hydraulic pumps — see list_mission_options family "
+        "aircraft_failure and aircraft_failures.yaml). Compiler writes the ME "
+        "Failures panel table (After/Within minutes; Within 0 never fires). "
+        "Never invent ids or Lua. Example: manston_freeflight_magneto_failure.yaml."
+    ),
+    (
         "Optional typed zones/triggers (no Lua): conditions time_more|flag_is|"
         "flag_equals|flag_more|flag_less|time_since_flag|unit_dead|target_dead|"
         "group_life_less|coalition_in_zone|unit_altitude_higher|unit_altitude_lower|"
@@ -162,7 +171,9 @@ _COMMON_NOTES: tuple[str, ...] = (
         "recipes with meta.recipe / Spec types / example paths). For co-design of "
         "play-time variation, strike targets, or Channel places: also consult "
         "dynamics_mode, strike_target_class, and channel_place (dynamics_mode maps "
-        "to Spec dynamics.mode + pools; do not invent unit/ship ids). Optionally "
+        "to Spec dynamics.mode + pools; do not invent unit/ship ids). For training "
+        "system failures: aircraft_failure (curated Spitfire Set Failure ids → Spec "
+        "failures). Optionally "
         "research_guidance(focus=mission_design) and list_installed_campaigns "
         "(Doc filenames by default; include_doc_text for cached PDF excerpts). "
         "Map ideas onto packaged "

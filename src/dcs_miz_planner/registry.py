@@ -27,6 +27,15 @@ class AircraftRef:
 
 
 @dataclass(frozen=True)
+class AircraftFailureRef:
+    """Curated ME Set Failure id for a known aircraft."""
+
+    id: str
+    label: str
+    family: str = ""
+
+
+@dataclass(frozen=True)
 class WeatherPresetRef:
     """Named weather preset known to the Mission Spec (optional compile recipe)."""
 
@@ -131,6 +140,7 @@ class ChannelRegistry:
         ground_units: dict[str, GroundUnitRef] | None = None,
         ships: dict[str, ShipRef] | None = None,
         planning_options: tuple[PlanningOptionRef, ...] | None = None,
+        aircraft_failures: dict[str, tuple[AircraftFailureRef, ...]] | None = None,
     ) -> None:
         self._airfields = dict(airfields)
         self._aircraft = dict(aircraft)
@@ -140,6 +150,7 @@ class ChannelRegistry:
         self._ground_units = dict(ground_units or {})
         self._ships = dict(ships or {})
         self._planning_options = tuple(planning_options or ())
+        self._aircraft_failures = {str(k): tuple(v) for k, v in (aircraft_failures or {}).items()}
 
     @classmethod
     def from_packaged_yaml(cls) -> ChannelRegistry:
@@ -200,6 +211,17 @@ class ChannelRegistry:
             raise RegistryError("planning_options.yaml: 'options' must be a list")
         planning_options = tuple(_parse_planning_option(row) for row in options_raw)
 
+        failures_raw = _load_yaml("aircraft_failures.yaml").get("aircraft") or {}
+        if not isinstance(failures_raw, dict):
+            raise RegistryError("aircraft_failures.yaml: 'aircraft' must be a mapping")
+        aircraft_failures: dict[str, tuple[AircraftFailureRef, ...]] = {}
+        for aircraft_id, rows in failures_raw.items():
+            if not isinstance(rows, list):
+                raise RegistryError(f"aircraft_failures.yaml: {aircraft_id!r} must map to a list")
+            aircraft_failures[str(aircraft_id)] = tuple(
+                _parse_aircraft_failure(row) for row in rows
+            )
+
         return cls(
             airfields=airfields,
             aircraft=aircraft,
@@ -209,6 +231,7 @@ class ChannelRegistry:
             ground_units=ground_units,
             ships=ships,
             planning_options=planning_options,
+            aircraft_failures=aircraft_failures,
         )
 
     def airdrome_id(self, name: str) -> int:
@@ -238,6 +261,21 @@ class ChannelRegistry:
 
     def known_aircraft(self) -> frozenset[str]:
         return frozenset(self._aircraft)
+
+    def list_failures(self, aircraft_id: str) -> tuple[AircraftFailureRef, ...]:
+        return self._aircraft_failures.get(aircraft_id, ())
+
+    def is_known_failure(self, aircraft_id: str, failure_id: str) -> bool:
+        return any(f.id == failure_id for f in self.list_failures(aircraft_id))
+
+    def get_failure(self, aircraft_id: str, failure_id: str) -> AircraftFailureRef:
+        for ref in self.list_failures(aircraft_id):
+            if ref.id == failure_id:
+                return ref
+        known = [f.id for f in self.list_failures(aircraft_id)]
+        raise RegistryError(
+            f"Unknown failure {failure_id!r} for aircraft {aircraft_id!r}. Known: {known}"
+        )
 
     def has_theatre(self, theatre_id: str) -> bool:
         return theatre_id in self._theatres
@@ -387,6 +425,19 @@ def _parse_ship(ship_id: str, meta: Any) -> ShipRef:
     if domain != "sea":
         raise RegistryError(f"ships.yaml: {ship_id!r} domain must be 'sea'")
     return ShipRef(id=ship_id, label=str(meta.get("label") or ""), domain="sea")
+
+
+def _parse_aircraft_failure(meta: Any) -> AircraftFailureRef:
+    if not isinstance(meta, dict):
+        raise RegistryError("aircraft_failures.yaml: each entry must be a mapping")
+    failure_id = str(meta.get("id") or "").strip()
+    if not failure_id:
+        raise RegistryError("aircraft_failures.yaml: entry requires id")
+    return AircraftFailureRef(
+        id=failure_id,
+        label=str(meta.get("label") or failure_id),
+        family=str(meta.get("family") or ""),
+    )
 
 
 def _parse_payload(name: str, meta: Any) -> PayloadRef:

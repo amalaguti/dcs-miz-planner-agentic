@@ -288,6 +288,7 @@ class PyDCSCompiler(CompilerInterface):
             player_unit_id=group.units[0].id,
         )
         self._apply_fog_dynamics(mission, spec)
+        self._apply_aircraft_failures(mission, spec)
         self._apply_briefing(mission, spec, voice)
 
         out = Path(output_path)
@@ -301,6 +302,12 @@ class PyDCSCompiler(CompilerInterface):
         from .fog_emit import apply_fog_dynamics
 
         apply_fog_dynamics(mission, spec)
+
+    @staticmethod
+    def _apply_aircraft_failures(mission, spec: MissionSpec) -> None:
+        from .failures_emit import apply_aircraft_failures
+
+        apply_aircraft_failures(mission, spec)
 
     @staticmethod
     def _apply_wingman_lead_outbound(lead_group, airport) -> None:

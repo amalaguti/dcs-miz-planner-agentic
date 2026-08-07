@@ -7,6 +7,31 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 
 ---
 
+## Aircraft failures via ME Failures table (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Symptom:** Compiled `a_set_failure` / ME Set Failure with Within=0 never
+  failed Mag 1 in Instant Action; messages still fired; manual Mag switch worked.
+- **Cause:** ME **Within (mm)** is **minutes**. Within `0` is a zero-width window
+  (never fires); ED stock defaults `mmint=1`. Stock Spitfire missions arm failures
+  via mission-root `failures` (`enable`/`hh`/`mm`/`mmint`/`prob`), not
+  `a_set_failure` (none found in stock Mods). Options → Misc → **Random System
+  Failures** is separate MTBF noise — not required for scripted Failures panel
+  entries, and not a substitute for them.
+- **Fix:** Emit Spec `failures` into `mission.failures` (PyDCS `mission.failures`);
+  After = `start_after_s` floored to minutes; Within = max(1, ceil(random_pause_s/60)).
+  Mag-cut drill: Mag 2 OFF + Mag 1 armed.
+- **Code / notes:** `compiler/failures_emit.py`; example
+  `manston_freeflight_magneto_failure.yaml`; backlog `#22b`.
+
+## Aircraft failures via ME SetFailure triggers (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Lesson:** Prefer Spec `failures[]` → mission Failures table (see entry above).
+  Earlier assumption that ONCE `TimeAfter` + PyDCS `SetFailure` was the stock path
+  was wrong for Spitfire; Within minutes semantics also bite if left at 0.
+- **Code / notes:** superseded by Failures-table emit; backlog `#22b`.
+
 ## Player flight wingman Follow / join-up (2026-08-07)
 
 - **Date:** 2026-08-07

@@ -279,6 +279,13 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
             "lead on the briefed route; do not leave the section unless ordered."
         )
 
+    if spec.failures:
+        watch = (
+            f"{watch} Expect possible aircraft system failures on this sortie — "
+            "keep a cool head, diagnose early, and abort or RTB if the kite will "
+            "not stay airborne."
+        )
+
     return (
         f"## Situation / sortie\n{opener}\n\n"
         f"## Tactics\n{tactics}\n\n"
