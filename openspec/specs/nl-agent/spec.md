@@ -353,3 +353,11 @@ without inventing free-form skill or aircraft fields.
 - **WHEN** a client requests the Mission Spec shape for invent
 - **THEN** the shape MUST include optional `player.flight` with size 2–4 and role
   lead/wingman
+
+### Requirement: Schema notes join-up
+Agent Spec schema notes SHALL document optional `player.flight.join_up` (default
+true for wingman Follow/shared route).
+
+#### Scenario: Schema mentions join_up
+- **WHEN** requesting Spec shape for invent
+- **THEN** notes or example guidance MUST mention `join_up`

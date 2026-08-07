@@ -67,3 +67,11 @@ language. Solo Specs (no `player.flight`) MUST keep existing brief behaviour.
 - **WHEN** briefing a Spec with `player.flight.size: 4` and `role: lead`
 - **THEN** Sortie/Description or Task text MUST indicate a four-ship section led by the
   player (wording may vary by voice)
+
+### Requirement: Brief mentions join-up for wingman
+When wingman + join_up, briefing/voice SHALL mention joining / following the AI
+section lead after takeoff (wording may vary by voice).
+
+#### Scenario: Wingman join brief
+- **WHEN** briefing a wingman Spec with join-up enabled
+- **THEN** Situation or Procedures MUST indicate join-up / follow the lead
