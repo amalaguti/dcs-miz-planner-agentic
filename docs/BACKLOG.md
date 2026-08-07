@@ -87,6 +87,10 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 **Next promote / in proposal:** `#15d` section orders, `#15e` discipline, or `#22b` aircraft-failures
 
+**Do soon (not blocking next promote):** ME smoke `out/manston_cap_flight_wingman.miz`
+(or recompile `examples/manston_cap_flight_wingman.yaml`) — after takeoff, confirm AI
+lead flies CAP and player Follow/join works. Deferred from `#15c` accept 2026-08-07.
+
 | # | Item | Goal | Status |
 |---|------|------|--------|
 | 12 | `mission-type-intercept` | Dawn Manston intercept vs Bf-109K-4 (the concept doc's example) | `done` (accepted in-game 2026-07-26; ThirdReich/red) |
@@ -95,7 +99,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 | 15 | `mission-type-escort` | Escort a friendly package | `done` (accepted in-game 2026-08-02; Mosquito package + bounce) |
 | 15a | `mission-type-recon` | Locate / observe a place or contact (GA-like geometry + marks/zones) **without** strike/payload attack; win on find/RTB rather than destroy | `idea` (after `#30e`/`#30f`; may stay GA+behaviours until Spec needs a distinct type) |
 | 15b | `player-flight-squadron` | Break solo-only player sorties: Spec + compiler support for a **player flight** (2–4 Spits) so the human can fly as **flight lead** (AI wingmen) or as a **wingman** in an AI-led section. Placement + skills + brief; join-up/Follow deferred to `#15c`. Escort `package` remains friendly AI only, not the player’s section. | `done` (accepted ME smoke 2026-08-07; lead 4-ship + wingman 4-ship via separate AI lead group) |
-| 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead; put CAP/GA/escort tasking on the AI lead when `role: wingman` + `join_up`. Prefer native ME Follow + waypoints; no LLM Lua. | `done` (accepted 2026-08-07; optional deeper after-takeoff Follow smoke later) |
+| 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead; put CAP/GA/escort tasking on the AI lead when `role: wingman` + `join_up`. Prefer native ME Follow + waypoints; no LLM Lua. | `done` (accepted 2026-08-07; **do-soon smoke:** `manston_cap_flight_wingman` after takeoff) |
 | 15d | `player-flight-orders` | Curated **section orders** the player (or Spec triggers) can issue: rejoin/form up, engage, cover, orbit, RTB, break, etc. Prefer stock DCS lead→wingman radio when `role: lead` (same group); extend with F10 / flag→AI-task packs for wingman separate groups and scripted beats. Spec selects named orders only — no free-form chat→Lua. After `#15b`; pairs with `#15c` for cohesion. | `idea` (2026-08-07) |
 | 15e | `player-flight-discipline` | Opt-in **fail-to-follow** consequences when wingman+join_up: if the player stays outside a section bubble (distance/time) after takeoff — soft radio “rejoin”, then stronger beats (flag / message / abort or RTB / mission_end). Prefer native zones+flags+messages; curated snippet only if range-to-group needs Lua. After `#15c`; pairs with `#15d` rejoin orders. | `idea` (2026-08-07) |
 
