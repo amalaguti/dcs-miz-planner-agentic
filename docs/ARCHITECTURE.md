@@ -117,6 +117,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `compiler/triggers_emit.py` | Spec zones/triggers → PyDCS `add_triggerzone` + `TriggerOnce`/`Continious` rules (incl. `SoundToAll`, numeric flags, `GroupLifeLess`, `MarkToAll`, `ExplodeWPMarker`, player `UnitAltitude*` / `UnitSpeed*`) | `models`, `sounds`, `dcs.condition`/`action`/`triggers` |
 | `compiler/fog_emit.py` | Spec `fog_dynamics` → ONCE `TimeAfter` + `DoScriptFile` (`fog_dynamics.lua` resource; curated `setFogAnimation`) | `fog_dynamics`, `models`, `dcs.*` |
 | `compiler/failures_emit.py` | Spec `failures` → mission-root Failures table (`enable`/`hh`/`mm`/`mmint`/`prob`; Within minutes, min 1) | `models` |
+| `compiler/section_orders_emit.py` | Spec `player.flight.orders` → F10 Section:… + flag→`AITaskPush` / `GroupStop` | `models`, `dcs.*` |
 
 Four table namespaces share one DB file on purpose:
 

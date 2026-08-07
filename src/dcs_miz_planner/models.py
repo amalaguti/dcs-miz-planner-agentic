@@ -112,6 +112,19 @@ class PlayerFlightRole(str, Enum):
     WINGMAN = "wingman"
 
 
+class SectionOrder(str, Enum):
+    """Curated F10 section orders (#15d). No free-form strings."""
+
+    REJOIN = "rejoin"
+    ENGAGE = "engage"
+    ORBIT = "orbit"
+    RTB = "rtb"
+    BREAK = "break"
+
+
+SECTION_ORDER_IDS: frozenset[str] = frozenset(o.value for o in SectionOrder)
+
+
 class PlayerFlight(SpecModel):
     """Optional multi-ship player section (omit = solo)."""
 
@@ -119,6 +132,7 @@ class PlayerFlight(SpecModel):
     role: PlayerFlightRole = PlayerFlightRole.LEAD
     ai_skill: str = "Average"  # AI mates only; not Player/Client
     join_up: bool = True  # wingman: Follow AI lead + shared route (no-op for lead)
+    orders: list[SectionOrder] = Field(default_factory=list)  # F10 section orders; omit/[] = none
 
 
 class Player(SpecModel):

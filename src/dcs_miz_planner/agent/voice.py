@@ -279,6 +279,10 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
             "lead on the briefed route; do not leave the section unless ordered."
         )
 
+    if flight is not None and flight.orders:
+        labels = ", ".join(o.value for o in flight.orders)
+        procedures = f"{procedures} F10 Other → Section orders available: {labels}."
+
     if spec.failures:
         watch = (
             f"{watch} Expect possible aircraft system failures on this sortie — "

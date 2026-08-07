@@ -85,11 +85,17 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#15d` / `#15e`
+**Next promote / in proposal:** `#15e` `player-flight-discipline`
 
-**Do soon (not blocking next promote):** ME smoke `out/manston_cap_flight_wingman.miz`
-(or recompile `examples/manston_cap_flight_wingman.yaml`) — after takeoff, confirm AI
-lead flies CAP and player Follow/join works. Deferred from `#15c` accept 2026-08-07.
+**Do soon (not blocking next promote):**
+- `#15c` join-up: Instant Action `out/manston_cap_flight_wingman.miz` (or recompile
+  `examples/manston_cap_flight_wingman.yaml`) — after takeoff, confirm AI lead flies
+  CAP and player Follow/join works. Deferred from `#15c` accept 2026-08-07.
+- `#15d` section orders: Instant Action `out/manston_cap_flight_orders.miz` (or
+  recompile `examples/manston_cap_flight_orders.yaml`) — **take off**, then exercise
+  F10 `Section: Rejoin` and `Section: Engage` (Orbit/RTB/Break optional) while
+  airborne so Follow/ROE packs are visible in flight. ME + cold-start F10/ack
+  accepted 2026-08-07; airborne smoke deferred.
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -100,7 +106,7 @@ lead flies CAP and player Follow/join works. Deferred from `#15c` accept 2026-08
 | 15a | `mission-type-recon` | Locate / observe a place or contact (GA-like geometry + marks/zones) **without** strike/payload attack; win on find/RTB rather than destroy | `idea` (after `#30e`/`#30f`; may stay GA+behaviours until Spec needs a distinct type) |
 | 15b | `player-flight-squadron` | Break solo-only player sorties: Spec + compiler support for a **player flight** (2–4 Spits) so the human can fly as **flight lead** (AI wingmen) or as a **wingman** in an AI-led section. Placement + skills + brief; join-up/Follow deferred to `#15c`. Escort `package` remains friendly AI only, not the player’s section. | `done` (accepted ME smoke 2026-08-07; lead 4-ship + wingman 4-ship via separate AI lead group) |
 | 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead; put CAP/GA/escort tasking on the AI lead when `role: wingman` + `join_up`. Prefer native ME Follow + waypoints; no LLM Lua. | `done` (accepted 2026-08-07; **do-soon smoke:** `manston_cap_flight_wingman` after takeoff) |
-| 15d | `player-flight-orders` | Curated **section orders** the player (or Spec triggers) can issue: rejoin/form up, engage, cover, orbit, RTB, break, etc. Prefer stock DCS lead→wingman radio when `role: lead` (same group); extend with F10 / flag→AI-task packs for wingman separate groups and scripted beats. Spec selects named orders only — no free-form chat→Lua. After `#15b`; pairs with `#15c` for cohesion. | `idea` (2026-08-07) |
+| 15d | `player-flight-orders` | Curated **section orders** the player (or Spec triggers) can issue: rejoin/form up, engage, cover, orbit, RTB, break, etc. Prefer stock DCS lead→wingman radio when `role: lead` (same group); extend with F10 / flag→AI-task packs for wingman separate groups and scripted beats. Spec selects named orders only — no free-form chat→Lua. After `#15b`; pairs with `#15c` for cohesion. | `done` (accepted 2026-08-07; ME + F10/ack; **do-soon:** airborne Rejoin/Engage on `manston_cap_flight_orders`) |
 | 15e | `player-flight-discipline` | Opt-in **fail-to-follow** consequences when wingman+join_up: if the player stays outside a section bubble (distance/time) after takeoff — soft radio “rejoin”, then stronger beats (flag / message / abort or RTB / mission_end). Prefer native zones+flags+messages; curated snippet only if range-to-group needs Lua. After `#15c`; pairs with `#15d` rejoin orders. | `idea` (2026-08-07) |
 
 ---
@@ -125,7 +131,7 @@ lead flies CAP and player Follow/join works. Deferred from `#15c` accept 2026-08
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** `#15d` / `#15e`; `#22` only if native insufficient; R8 when bumping pydcs
+**Next promote / in proposal:** `#15e` `player-flight-discipline`; `#22` only if native insufficient; R8 when bumping pydcs
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -318,7 +324,7 @@ Resolve these inside the relevant proposal, not here.
 | Spec shape for weather seed | **M5 `#17e` — decided:** `weather` enum + optional `weather_opts.seed`; **auto-write seed into sidecar YAML when omitted**. If reproducibility ever feels wrong, **re-weather with a new seed** (simple recovery; not a big deal). Re-weather that changes pattern also draws a new seed by default |
 | Aircraft failures Spec shape (`#22b`) | **Closed 2026-08-07:** opt-in `failures[]` → ME Failures panel (`enable`/After/Within min 1/`prob`); curated Spitfire ids; brief honesty when armed |
 
-| Section orders Spec shape (`#15d`) | M4 — open: named order catalog (rejoin / engage / cover / orbit / RTB / …); F10 vs auto-trigger vs rely on stock lead radio; which orders need `#15c` Follow first; wingman (two-group) vs lead (same-group) emit paths |
+| Section orders Spec shape (`#15d`) | **Closed 2026-08-07:** optional `player.flight.orders` curated ids → F10 `Section:…` + flags 800+ → `AITaskPush`/`GroupStop`; wingman→AI lead, lead→player group; example `manston_cap_flight_orders` |
 | Section discipline Spec shape (`#15e`) | M4 — open: opt-in after join_up; distance/time thresholds; soft warn vs hard fail/RTB; moving zone vs unit-distance (Lua?); default off so free-flight practice stays free |
 
 ---

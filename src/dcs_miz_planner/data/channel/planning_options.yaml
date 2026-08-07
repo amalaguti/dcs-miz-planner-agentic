@@ -114,6 +114,53 @@ options:
     meta:
       join_up: false
 
+  - family: player_flight_order
+    id: rejoin
+    label: Section rejoin / form up
+    description: >
+      F10 "Section: Rejoin" — wingman re-Follows AI lead; lead same-group is advisory
+      (native formation). Spec: player.flight.orders include rejoin.
+    support: supported
+    meta:
+      order_id: rejoin
+      example: examples/manston_cap_flight_orders.yaml
+
+  - family: player_flight_order
+    id: engage
+    label: Section engage
+    description: >
+      F10 "Section: Engage" — AI section ROE weapons free.
+    support: supported
+    meta:
+      order_id: engage
+
+  - family: player_flight_order
+    id: orbit
+    label: Section orbit
+    description: >
+      F10 "Section: Orbit" — AI section holds a circle orbit.
+    support: supported
+    meta:
+      order_id: orbit
+
+  - family: player_flight_order
+    id: rtb
+    label: Section RTB
+    description: >
+      F10 "Section: RTB" — AI section lands at home airfield.
+    support: supported
+    meta:
+      order_id: rtb
+
+  - family: player_flight_order
+    id: break
+    label: Section break
+    description: >
+      F10 "Section: Break" — stop AI section tasking / leave formation push.
+    support: supported
+    meta:
+      order_id: break
+
   - family: weather
     id: sunny_clear
     label: Sunny clear

@@ -5,6 +5,20 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## F10 section orders (`player.flight.orders`) (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Lesson:** Optional Spec `player.flight.orders: [rejoin|engage|orbit|rtb|break]`
+  emits F10 Other radio items (`Section: …`) that set reserved flags **800+**,
+  then continuous triggers push AI tasks (`Orbit`, `AttackGroup`, `Land`,
+  `Follow`, or `GroupStop`) onto the **section AI group**. Wingman → AI lead
+  group; lead → player multi-unit group. Rejoin as lead is **message-only**
+  (mates already share the group / formation). Prefer Specs that already put
+  CAP/intercept tasking on that group so Engage/Orbit have useful context.
+  Do not collide Spec `triggers` flags into 800+.
+- **Code / notes:** `compiler/section_orders_emit.py`; planning options
+  `player_flight_order_*`; example `manston_cap_flight_orders.yaml`; backlog `#15d`.
+
 ## Player flight wingman Follow / join-up (2026-08-07)
 
 - **Date:** 2026-08-07

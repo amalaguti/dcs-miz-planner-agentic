@@ -16,6 +16,7 @@ from .install.aircraft_modules import missing_aircraft_module_messages
 from .install.models import AvailabilityState, TheatreInventory
 from .install.service import get_inventory
 from .models import (
+    SECTION_ORDER_IDS,
     ActivateGroupAction,
     CoalitionInZoneCondition,
     DeactivateGroupAction,
@@ -177,6 +178,29 @@ def _validate_player_flight(spec: MissionSpec, errors: list[ValidationError]) ->
                 hint=ai_flight_skill_hint(flight.ai_skill),
             )
         )
+    seen: set[str] = set()
+    for i, order in enumerate(flight.orders):
+        oid = order.value if hasattr(order, "value") else str(order)
+        if oid not in SECTION_ORDER_IDS:
+            errors.append(
+                ValidationError(
+                    code="unknown_section_order",
+                    path=f"player.flight.orders[{i}]",
+                    message=f"Unknown section order {oid!r}",
+                    hint=f"Known: {', '.join(sorted(SECTION_ORDER_IDS))}",
+                )
+            )
+        elif oid in seen:
+            errors.append(
+                ValidationError(
+                    code="duplicate_section_order",
+                    path=f"player.flight.orders[{i}]",
+                    message=f"Duplicate section order {oid!r}",
+                    hint="List each order id at most once",
+                )
+            )
+        else:
+            seen.add(oid)
 
 
 def _validate_aircraft_failures(
