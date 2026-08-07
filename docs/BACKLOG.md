@@ -85,7 +85,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#15c` `player-flight-joinup` (Follow/shared route) or `#22b` aircraft-failures
+**Next promote / in proposal:** `#15c` join-up, `#15d` section orders, or `#22b` aircraft-failures
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -96,6 +96,7 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 | 15a | `mission-type-recon` | Locate / observe a place or contact (GA-like geometry + marks/zones) **without** strike/payload attack; win on find/RTB rather than destroy | `idea` (after `#30e`/`#30f`; may stay GA+behaviours until Spec needs a distinct type) |
 | 15b | `player-flight-squadron` | Break solo-only player sorties: Spec + compiler support for a **player flight** (2–4 Spits) so the human can fly as **flight lead** (AI wingmen) or as a **wingman** in an AI-led section. Placement + skills + brief; join-up/Follow deferred to `#15c`. Escort `package` remains friendly AI only, not the player’s section. | `done` (accepted ME smoke 2026-08-07; lead 4-ship + wingman 4-ship via separate AI lead group) |
 | 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead (or lead tasks + mates stick); put CAP/GA/escort tasking on the AI lead when `role: wingman`; optional formation options / section radio beats. Prefer native ME Follow + waypoints; no LLM Lua. | `idea` (2026-08-07) |
+| 15d | `player-flight-orders` | Curated **section orders** the player (or Spec triggers) can issue: rejoin/form up, engage, cover, orbit, RTB, break, etc. Prefer stock DCS lead→wingman radio when `role: lead` (same group); extend with F10 / flag→AI-task packs for wingman separate groups and scripted beats. Spec selects named orders only — no free-form chat→Lua. After `#15b`; pairs with `#15c` for cohesion. | `idea` (2026-08-07) |
 
 ---
 
@@ -276,7 +277,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Same mission file, change weather after fly/ME load | **M5** `#17d` `weather-reweather-miz` — overwrite `.miz` (Spec recompile or weather-table patch) |
 | Within-pattern variance (wind/fog/turb not identical every time) | **M5** `#17e` `weather-invent-jitter` — seeded; climatology bands; not ME Dynamic |
 | Mid-flight weather story (sunny→rain / fog burn-off) | **M5** `#17c` fog-only via curated Lua (`#22`); cloud/rain mid-mission **not** feasible (no DCS API) |
-| Fly with a squadron / as lead or wingman (not solo only) | **M4** `#15b` done (placement); cohesion Follow/shared route → `#15c` `player-flight-joinup` |
+| Fly with a squadron / as lead or wingman (not solo only) | **M4** `#15b` done (placement); cohesion → `#15c`; **section orders** → `#15d` `player-flight-orders` |
 | Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — native ME `SetFailure`; curated ids; opt-in Spec |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
@@ -311,6 +312,7 @@ Resolve these inside the relevant proposal, not here.
 | Season/date → climatology priors for weather numerics | **M5 `#17e` — decided: hybrid** — within-family gallery pick weighted by date/season (+ time-of-day cues) **plus** soft numeric nudge, then always-on seeded jitter. No silent cross-family gallery swaps (agent changes `weather` pattern for that). **Place bias (Dover vs Cotentin etc.) — out of scope**; date/time + jitter enough |
 | Spec shape for weather seed | **M5 `#17e` — decided:** `weather` enum + optional `weather_opts.seed`; **auto-write seed into sidecar YAML when omitted**. If reproducibility ever feels wrong, **re-weather with a new seed** (simple recovery; not a big deal). Re-weather that changes pattern also draws a new seed by default |
 | Aircraft failures Spec shape (`#22b`) | M6 — open: opt-in `failures` / `failure_opts` (omit = none); **scheduled** list (failure id + `start_after_s` + optional severity) vs **random** (probability / `random_pause` / pool + `#22a` flag dice); Spitfire-specific curated id catalog vs cross-aircraft; briefing honesty when failures are armed |
+| Section orders Spec shape (`#15d`) | M4 — open: named order catalog (rejoin / engage / cover / orbit / RTB / …); F10 vs auto-trigger vs rely on stock lead radio; which orders need `#15c` Follow first; wingman (two-group) vs lead (same-group) emit paths |
 
 ---
 
