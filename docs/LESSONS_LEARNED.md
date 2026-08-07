@@ -21,6 +21,9 @@ Format per entry: short title, date, symptom → cause → fix/workaround, optio
 - **Fix:** Emit Spec `failures` into `mission.failures` (PyDCS `mission.failures`);
   After = `start_after_s` floored to minutes; Within = max(1, ceil(random_pause_s/60)).
   Mag-cut drill: Mag 2 OFF + Mag 1 armed.
+- **Debrief:** After the mission, Debriefing shows Event **failure** with Details
+  like **Magneto No. 1 failure** when the Failures-panel cut actually applied
+  (useful acceptance check beyond cockpit feel).
 - **Code / notes:** `compiler/failures_emit.py`; example
   `manston_freeflight_magneto_failure.yaml`; backlog `#22b`.
 
