@@ -289,10 +289,10 @@ smoke checklist in that file.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#15h` ME do-soon; R13 campaign unit inventory
-for more shelf candidates. Follow
-[`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel class spine
-`#8h`–`#8m` done (radar `#8l` included).
+**Next promote / in proposal:** `#15h` ME do-soon; optional shelf expand from
+R13 shortlist (`flak41`, Quadmount, Tiger/Panther, LST/Chase — via `#8e`).
+Follow [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel class
+spine `#8h`–`#8m` + R13 inventory done.
 
 **Do soon (not blocking next promote):**
 - `#15h` ME smoke: Instant Action
@@ -450,14 +450,25 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R11 | `research-theatre-content-expand` | **Per-map content audit** to expand planner capabilities beyond Channel: for each owned/installed theatre, inventory airfields, era, typical aircraft, land/sea/static unit shelves (WWII Assets Pack vs free vs modern), campaigns, and what a theatre registry slice would need (YAML + PyDCS binding + domain heuristics). Feed multi-theatre promote + `#8c` class expansion. Notes in gitignored `research/theatres/`. **Do not** auto-promote into product SoT. | `idea` (draft 2026-08-08 — see notes; user map fleet below) |
 | R12 | `research-ai-options-by-domain` | Document **Air vs Ground vs Naval** AI option sets (Hoggit `AI.Option.*` + current DCS ME on Spitfire / truck / U-boat / E-boat). Confirm which ME WP options actually stick per domain; naval beyond ROE; Formation interval / AAA restrict / ARM evade PyDCS emit. Feeds `#15h` allowlists. Notes in `research/ai-options-domain.md` (gitignored). | `done` (ME 2026-08-08; desk+smoke — see notes) |
 | R12b | `research-ai-options-unit-matrix` | Expand R12 beyond Channel smoke samples: ME WP Options matrix for **representative units** across airplanes, helicopters (same Air enum — verify ME), ships (E-boat / cargo / warship), and ground classes (armor, infantry, radar/SAM, soft, AAA). Record ME list vs meaningful capability (Spit ECM lesson). Append to `research/ai-options-domain.md`. **Not blocking `#15h`.** Promote when helo / armor / multi-theatre shelves need allowlists. | `idea` (draft 2026-08-08) |
-| R13 | `research-campaign-unit-inventory` | Mine installed **Spitfire Channel campaign** `.miz` (same corpus as R2/R10: Beware / FoD / Epsom / Big Show) for **ground / AAA / sea / helo** unit `type` frequencies. Notes in gitignored `research/campaign-units.md` (or harness under `research/`). Feed `#8e` promote candidates for shelves (`#8k`+). **Do not** auto-promote into YAML / catalog; helos likely confirm “none for Channel MVP.” | `idea` (draft 2026-08-08) |
+| R13 | `research-campaign-unit-inventory` | Mine installed **Spitfire Channel campaign** `.miz` (Beware / FoD / Epsom / Big Show; 60 missions) for **ground / AAA / sea / helo** unit `type` frequencies. Notes: gitignored `research/campaign-units.md` + harness `research/audit_campaign_units_r13.py`. Feed `#8e` promote candidates. **Do not** auto-promote. | `done` (2026-08-08; see notes below) |
 
-**`R13` `research-campaign-unit-inventory` — draft (2026-08-08):**
+**`R13` `research-campaign-unit-inventory` — done (2026-08-08):**
 
-Same pattern as R10 weather / R2 triggers: scan local campaign missions → research notes →
-human promote via [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Not an agent
-tool and not install→YAML scrape. Cross-check each candidate against PyDCS + domain +
-era before shelving.
+Scanned 60 Spitfire Channel campaign `.miz` (regex on `mission` Lua; PyDCS load
+failed on `zones`). Headlines:
+
+- **Helos:** none — no Channel MVP helo shelf from this corpus.
+- **Already shelved well:** soft / halftrack / most AAA / troops / common sea
+  (Blitz, Sd_Kfz_251, flak30/37/38, KDO, Bedford, U-boat, E-boat, …).
+- **Top promote candidates (verify + `#8e`):** `flak41`, `M45_Quadmount`,
+  `QF_37_AA`, `Allies_Director`, `Tiger_I`, `SturmPzIV`, `Pz_V_Panther_G`,
+  `JagdPz_IV` / `Jagdpanther_G1`; sea `LST_Mk2`, `USS_Samuel_Chase` (Allied
+  landing — era OK, not Axis coastal default).
+- **Absent from campaigns but shelved:** `FuMG-401` / `FuSe-65`, `Stug_III`,
+  German loco/wagons (campaigns use sparse `Coach *` instead).
+- **Skip:** modern leftovers (`M978 HEMTT Tanker`, …).
+
+Follow-on shelf expand idea: park as needed — not auto-opened.
 
 Desk + ME WP Options smoke (truck convoy, Flak 18, Uboat_VIIC, Spitfire). Notes in
 `research/ai-options-domain.md`. Headlines:
@@ -612,7 +623,8 @@ Resolve these inside the relevant proposal, not here.
 | Invent path + harbour harden (`#8g`) | **Done 2026-08-08:** path clamp + harbour 120/68; live invent 6/6 |
 | Theatre / target promote checklist (`#8e`) | **Done 2026-08-08:** [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md) |
 | Channel unit shelf expand (`#8h`) | **Done 2026-08-08:** soft + AAA + sea harbour ids; ME do-soon |
-| Channel strike class shelves (`#8h`–`#8m`) | **Done** — soft/AAA/sea, halftracks, armor, troops, trains, radar; R13 for more candidates |
+| Channel strike class shelves (`#8h`–`#8m`) | **Done** — soft/AAA/sea, halftracks, armor, troops, trains, radar |
+| Campaign unit frequency inventory | **Research R13 done** — shortlist in BACKLOG; notes gitignored `research/campaign-units.md` |
 | Target motion Spec shape (`#15g`) | **Closed in proposal `strike-target-motion`:** default static; optional `patrol` / short `path`; sea + soft land; harbour + AAA static; trains later; Bombing stays at strike point v1; speed bands in `target_motion.yaml` + seeded cruise / waypoint jitter; threat stop/escape deferred |
 | Target threat reaction under fire (`#15g`) | **Closed for disperse:** moving land → ME Disperse Under Fire (option 8, default 180s). Further stop/dash scripting still deferred |
 | Ground waypoint actions: On Road vs Off Road + formations | Folded into **`#15h`** draft (with ROE/Alarm/Engage air/…) |

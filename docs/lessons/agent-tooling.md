@@ -5,6 +5,16 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Spitfire campaign unit inventory (R13) (2026-08-08)
+
+- **Date:** 2026-08-08
+- **Lesson:** Mine Channel Spitfire campaign `.miz` with zip + regex on
+  `["type"]` (PyDCS `Mission.load_file` may KeyError on `zones`). Filter
+  waypoint/action strings (`Turning Point`, TakeOff*, …). Helos: **none** in
+  Beware/FoD/Epsom/Big Show. Promote from frequency shortlist via `#8e` only —
+  never auto-YAML. Notes: gitignored `research/campaign-units.md`.
+- **Code / notes:** `research/audit_campaign_units_r13.py` (local).
+
 ## Train corridor is curated path deltas, not rail-mesh snap (2026-08-08)
 
 - **Date:** 2026-08-08

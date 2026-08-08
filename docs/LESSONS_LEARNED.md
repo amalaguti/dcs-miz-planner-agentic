@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-08 | [Spitfire campaign unit inventory (R13)](lessons/agent-tooling.md#spitfire-campaign-unit-inventory-r13-2026-08-08) | `agent-tooling` |
 | 2026-08-08 | [Train corridor is curated path deltas, not rail-mesh snap](lessons/agent-tooling.md#train-corridor-is-curated-path-deltas-not-rail-mesh-snap-2026-08-08) | `agent-tooling` |
 | 2026-08-08 | [Promote theatres/targets via checklist, not ME dump](lessons/agent-tooling.md#promote-theatrestargets-via-checklist-not-me-dump-2026-08-08) | `agent-tooling` |
 | 2026-08-08 | [Invent place recipes + path clamp (harbour 120/68)](lessons/agent-tooling.md#invent-place-recipes-fix-most-domain-misses-path-points-still-drift-2026-08-08) | `agent-tooling` |
