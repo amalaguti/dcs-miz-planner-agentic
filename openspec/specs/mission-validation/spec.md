@@ -529,6 +529,17 @@ MUST fail validation.
 - **WHEN** a land soft-vehicle target has a short inland path
 - **THEN** validation MUST succeed
 
+### Requirement: Path domain mismatch remains validated
+Validate SHALL continue to reject land path waypoints whose map samples are not
+land (and sea path samples not sea) with motion_domain_mismatch (or an equally
+specific path-point domain code). Host invent clamp MUST NOT weaken this check
+for CLI validate.
+
+#### Scenario: Off-domain land path point fails validate
+- **WHEN** a land soft-vehicle target has a path point over Channel water
+- **THEN** validate MUST fail with a motion domain mismatch referencing the
+  path sample
+
 ### Requirement: Validate target AI options by domain and class
 Validation MUST expand presets, then enforce allowlists by registry domain and
 unit class heuristic (soft land vs AAA land vs sea per R12). Soft land MUST

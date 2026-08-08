@@ -77,7 +77,7 @@ re-warn polish 2026-08-05). Trigger-rich examples above are also pinned by struc
 goldens (not string-smoke only).
 Agent capability catalog: `mission_behaviour` / `mission_inspiration` planning options,
 mission-designer shelves (`dynamics_mode` → Spec `dynamics`, `strike_target_class`,
-`channel_place` with Manston-relative geometry recipes),
+`channel_place` with Manston-relative geometry recipes and invent path clamp),
 `research_guidance(focus=mission_design)`, and `list_installed_campaigns` (local
 `Mods/campaigns` `.miz` / `.cmp` / Doc PDFs — filenames by default; opt-in
 `include_doc_text` for short cached PDF excerpts) for creative planning inspiration.
