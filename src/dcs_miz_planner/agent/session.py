@@ -27,7 +27,7 @@ from ..tools.surface import list_mission_options, research_guidance
 from ..validation import validate_mission_spec
 from .immersion import host_harbour_unit_nudge, host_immersion_repair_nudge
 from .llm import LLMClient, default_tools
-from .path_clamp import try_clamp_after_path_domain_fail
+from .path_clamp import try_clamp_land_paths_if_needed
 from .planner import (
     diagnose_mission_spec_parse,
     load_prefs,
@@ -377,7 +377,7 @@ class PlanSession:
         do_compile = compile_after or self.compile_on_accept
         vresult = validate_mission_spec(spec, inventory=self.inventory)
         if not vresult.ok:
-            clamped = try_clamp_after_path_domain_fail(spec, list(vresult.errors))
+            clamped = try_clamp_land_paths_if_needed(spec, list(vresult.errors))
             if clamped is not None:
                 v2 = validate_mission_spec(clamped, inventory=self.inventory)
                 if v2.ok:
@@ -386,6 +386,14 @@ class PlanSession:
                     self.draft_spec = clamped
                     vresult = v2
                     vlog(self.verbose, "[verbose] host clamped land path onto strike deltas")
+        elif (clamped := try_clamp_land_paths_if_needed(spec)) is not None:
+            v2 = validate_mission_spec(clamped, inventory=self.inventory)
+            if v2.ok:
+                spec = clamped
+                self.proposed_spec = clamped
+                self.draft_spec = clamped
+                vresult = v2
+                vlog(self.verbose, "[verbose] host clamped divergent land path onto strike deltas")
         if not vresult.ok:
             errors = [
                 {

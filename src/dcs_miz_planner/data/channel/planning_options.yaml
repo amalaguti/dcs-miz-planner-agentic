@@ -899,15 +899,14 @@ options:
       preferred_ai_preset: harbour_static
       cues: [harbour, harbor, dock, tied up, alongside, port]
       sea_units_only: true
-      # Near Dunkirk approach water (coast), not Manston pattern (~4 km) and not inland land.
-      # Dunkirk Mardyck ≈ 120° / 72 km — use slightly shorter for near-coast water.
+      # Near Dunkirk approach water (coast): 120/70 is land; 120/68 is coastal sea.
       strike_bearing_deg: 120
-      strike_distance_km: 70
+      strike_distance_km: 68
       strike_altitude_m: 2000
       example: examples/manston_uboat_hunt.yaml
       note: >
         Sea/coastal water + sea_craft only. Never land soft vehicles; never place
-        harbour strikes a few km from Manston.
+        harbour strikes a few km from Manston. Use ~120°/68 km (70 km is often land).
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

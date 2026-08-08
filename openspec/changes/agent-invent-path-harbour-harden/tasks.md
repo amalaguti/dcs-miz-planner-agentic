@@ -17,7 +17,8 @@
 
 - [x] 3.1 Hermetic tests: path deltas, harbour sea guidance, repair path
       example, clamp behaviour
-- [ ] 3.2 BACKLOG `#8g` building→done when accepted; next = `#8e` shelf expand
+- [x] 3.2 BACKLOG `#8g` building→done when accepted; next = `#8e` shelf expand
 - [x] 3.3 Ruff + full pytest green
-- [ ] 3.4 Accept: hermetic green; live invent convoy + harbour prefer pass
-      (CLI/API; ME not required)
+- [x] 3.4 Accept: hermetic green; live invent convoy + harbour prefer pass
+      (CLI/API; ME not required) — live suite 2026-08-08 PASS 6/6 after
+      harbour 120/68 + divergent path clamp

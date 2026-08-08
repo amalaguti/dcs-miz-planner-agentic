@@ -121,14 +121,64 @@ def clamp_land_paths(
     return spec.model_copy(update={"targets": new_targets}), True
 
 
+def _bearing_delta_deg(a: float, b: float) -> float:
+    """Smallest absolute bearing difference in degrees."""
+    d = abs(a - b) % 360.0
+    return min(d, 360.0 - d)
+
+
+def land_path_diverges_from_strike(
+    spec: MissionSpec,
+    *,
+    registry: ChannelRegistry | None = None,
+    max_bearing_delta_deg: float = 10.0,
+    max_distance_delta_km: float = 5.0,
+) -> bool:
+    """True when a land path target has waypoints far from strike/AOI."""
+    center = _strike_or_recon_point(spec)
+    if center is None or not spec.targets:
+        return False
+    bearing_deg, distance_km = center
+    reg = registry or get_channel_registry()
+    for tgt in spec.targets:
+        if ground_target_motion(tgt) is not TargetMotion.PATH or not tgt.path:
+            continue
+        try:
+            unit = reg.get_strike_unit(tgt.unit)
+        except RegistryError:
+            continue
+        if unit.domain != "land":
+            continue
+        for pt in tgt.path:
+            if _bearing_delta_deg(float(pt.bearing_deg), bearing_deg) > max_bearing_delta_deg:
+                return True
+            if abs(float(pt.distance_km) - distance_km) > max_distance_delta_km:
+                return True
+    return False
+
+
+def try_clamp_land_paths_if_needed(
+    spec: MissionSpec,
+    errors: list[Any] | None = None,
+    *,
+    registry: ChannelRegistry | None = None,
+) -> MissionSpec | None:
+    """Clamp land paths after domain fail, or when invent path diverges from strike."""
+    need = bool(
+        (errors and errors_are_land_path_domain_only(errors))
+        or land_path_diverges_from_strike(spec, registry=registry)
+    )
+    if not need:
+        return None
+    clamped, changed = clamp_land_paths(spec, registry=registry)
+    return clamped if changed else None
+
+
 def try_clamp_after_path_domain_fail(
     spec: MissionSpec,
     errors: list[Any],
     *,
     registry: ChannelRegistry | None = None,
 ) -> MissionSpec | None:
-    """If errors look like land path domain fails, return clamped Spec; else None."""
-    if not errors_are_land_path_domain_only(errors):
-        return None
-    clamped, changed = clamp_land_paths(spec, registry=registry)
-    return clamped if changed else None
+    """Compat wrapper — prefer ``try_clamp_land_paths_if_needed``."""
+    return try_clamp_land_paths_if_needed(spec, errors, registry=registry)

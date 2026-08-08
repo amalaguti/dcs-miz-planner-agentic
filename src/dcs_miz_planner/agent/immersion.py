@@ -221,7 +221,7 @@ def host_harbour_unit_nudge(
         "[Host] Harbour/dock invent: your Spec uses land units "
         f"({shown}) but harbour asks need sea_craft only. Call "
         "list_strike_targets(domain=sea), use channel_place coastal_harbour "
-        "(~120° / 70 km coastal water), motion static, ai_preset harbour_static "
+        "(~120° / 68 km coastal water), motion static, ai_preset harbour_static "
         "(e.g. Uboat_VIIC or Dry-cargo — never Blitz/Bedford trucks). "
         "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
     )

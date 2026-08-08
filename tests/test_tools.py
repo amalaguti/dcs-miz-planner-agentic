@@ -150,7 +150,7 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("channel_place", "french_coast_strike_belt")]["meta"]["strike_distance_km"] == 76
     assert by_key[("channel_place", "mid_channel_shipping")]["meta"]["domain"] == "sea"
     assert by_key[("channel_place", "mid_channel_shipping")]["meta"]["strike_bearing_deg"] == 140
-    assert by_key[("channel_place", "coastal_harbour")]["meta"]["strike_distance_km"] == 70
+    assert by_key[("channel_place", "coastal_harbour")]["meta"]["strike_distance_km"] == 68
     assert "recon" in by_key[("channel_place", "mid_channel_shipping")]["meta"]["mission_types"]
     insp = by_key[("mission_inspiration", "low_level_channel_hop")]
     uboat = by_key[("mission_inspiration", "uboat_surfaced_hunt")]

@@ -108,7 +108,7 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "ship_under_way; harbour/dock → list_strike_targets(domain=sea) + "
             "static + harbour_static (never soft land trucks). Copy "
             "channel_place strike_bearing_deg/strike_distance_km (french coast ~125/76 "
-            "inland; mid-Channel ~140/40 water; coastal_harbour ~120/70). Land paths: "
+            "inland; mid-Channel ~140/40 water; coastal_harbour ~120/68). Land paths: "
             "prefer 2–3 points from french_coast path_point_deltas near strike "
             "(e.g. 125/76, 128/77, 122/78) — not mid-Channel. Combat: opposing "
             "coalition; land on Axis continent for Channel WWII; water = ships. Practice "
@@ -119,7 +119,7 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "Surfaced U-boat / sea hunt: use sea_craft ids from list_strike_targets "
             "(e.g. Uboat_VIIC) on mid-Channel water (manston_uboat_hunt.yaml; ~140°/40 km). "
             "Prefer motion: patrol + ai_preset ship_under_way when under way; harbour/dock → "
-            "list_strike_targets(domain=sea) + coastal_harbour (~120°/70 km) + static + "
+            "list_strike_targets(domain=sea) + coastal_harbour (~120°/68 km) + static + "
             "harbour_static. Attack while surfaced — not ASW."
         ),
         (

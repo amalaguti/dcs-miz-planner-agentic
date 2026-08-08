@@ -170,7 +170,7 @@ def test_host_spec_repair_nudge_domain_mismatch_includes_geometry() -> None:
     assert "motion_domain_mismatch" in nudge or "domain mismatch" in nudge.lower()
     assert "125" in nudge or "french_coast" in nudge
     assert "140" in nudge or "mid_channel" in nudge
-    assert "coastal_harbour" in nudge or "70" in nudge
+    assert "coastal_harbour" in nudge or "68" in nudge or "70" in nudge
     assert "path:" in nudge or "128" in nudge
 
 

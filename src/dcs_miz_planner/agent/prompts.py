@@ -38,7 +38,7 @@ Rules:
   (call list_strike_targets with domain=sea — never soft land trucks).
 - Channel geometry: copy channel_place meta strike_bearing_deg / strike_distance_km
   (and aoi_* for recon) from french_coast_strike_belt (~125°/76 km inland),
-  mid_channel_shipping (~140°/40 km water), or coastal_harbour (~120°/70 km coastal
+  mid_channel_shipping (~140°/40 km water), or coastal_harbour (~120°/68 km coastal
   water). Land path: prefer 2–3 points from french_coast path_point_deltas (strike
   + deltas, e.g. 125/76, 128/77, 122/78) — never mid-Channel distances for trucks.
   Sea targets need water geometry — never a few km from Manston for harbour/shipping.
@@ -240,7 +240,7 @@ def host_spec_repair_nudge(
             "  Rewrite path only; keep strike inland — not mid-Channel water.\n"
             "- Mid-Channel sea under way: mid_channel_shipping — ~140° / 40 km water; "
             "patrol + ship_under_way.\n"
-            "- Harbour/dock sea: coastal_harbour — ~120° / 70 km coastal water; "
+            "- Harbour/dock sea: coastal_harbour — ~120° / 68 km coastal water; "
             "list_strike_targets(domain=sea) only; static + harbour_static. "
             "Never land trucks; never place harbour a few km from Manston.\n"
             "- Distances ~65 km toward Dunkirk are still Channel water for land units.\n"
@@ -248,7 +248,7 @@ def host_spec_repair_nudge(
     elif "harbour" in err_l or "harbor" in err_l:
         geometry_hint = (
             "\n\nHarbour invent: sea units only via list_strike_targets(domain=sea), "
-            "coastal_harbour ~120°/70 km, static + harbour_static.\n"
+            "coastal_harbour ~120°/68 km, static + harbour_static.\n"
         )
     return (
         f"[Host] Your last Spec JSON failed to load:\n{parse_err}\n"

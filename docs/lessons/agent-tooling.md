@@ -10,12 +10,11 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 - **Date:** 2026-08-08
 - **Lesson:** `#8f` ships Manston-relative `channel_place` recipes
   (`french_coast_strike_belt` ~125°/76 km, `mid_channel_shipping` ~140°/40 km,
-  `coastal_harbour` ~120°/70 km) plus domain-mismatch repair nudges. Live invent
-  re-eval: flak / U-boat / honest FF pass; convoy can still place some **path**
-  points over water; harbour may validate with coastal geometry but wrong land
-  units. Follow-on: path clamp / fewer points; harbour domain cue harden — before
-  assuming shelf expand will fix invent.
-- **Code / notes:** `planning_options.yaml` place meta; `host_spec_repair_nudge`;
+  `coastal_harbour` ~120°/68 km — **not** 70 km: 120/70 classifies as land).
+  `#8g` invent/chat clamps land paths that fail domain **or** diverge from strike
+  (near-Manston path + inland strike was validating). Live invent suite 6/6 after
+  those fixes. CLI validate does not auto-clamp.
+- **Code / notes:** `planning_options.yaml` place meta; `agent/path_clamp.py`;
   `out/target_invent_eval/`.
 
 ## Strike unit catalog is curated YAML, not ME dump (2026-08-08)

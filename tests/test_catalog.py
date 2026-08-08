@@ -243,7 +243,7 @@ def test_channel_place_geometry_recipes_after_sync(tmp_path: Path) -> None:
 
     harbour = json.loads(by_key[("channel_place", "coastal_harbour")].meta_json)
     assert harbour["strike_bearing_deg"] == 120
-    assert harbour["strike_distance_km"] == 70
+    assert harbour["strike_distance_km"] == 68
     assert harbour["preferred_ai_preset"] == "harbour_static"
     assert harbour["domain"] == "sea"
     assert harbour.get("sea_units_only") is True

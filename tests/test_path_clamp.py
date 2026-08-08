@@ -102,6 +102,40 @@ def test_repair_nudge_includes_path_yaml_example() -> None:
     assert "list_strike_targets(domain=sea)" in nudge or "domain=sea" in nudge
 
 
+def test_clamp_rewrites_divergent_near_airfield_path() -> None:
+    """Land path near Manston while strike inland must be rewritten even if domain OK."""
+    inv = channel_available_inventory()
+    spec = load_mission_spec(CONVOY)
+    bad = spec.model_copy(
+        update={
+            "targets": [
+                GroundTarget(
+                    unit="Blitz_36-6700A",
+                    count=3,
+                    motion=TargetMotion.PATH,
+                    path=[
+                        TargetPathPoint(bearing_deg=125, distance_km=1),
+                        TargetPathPoint(bearing_deg=122, distance_km=2),
+                        TargetPathPoint(bearing_deg=126, distance_km=3),
+                    ],
+                    ai_preset="convoy_transit",
+                )
+            ]
+        }
+    )
+    assert validate_mission_spec(bad, inventory=inv).ok
+    from dcs_miz_planner.agent.path_clamp import (
+        land_path_diverges_from_strike,
+        try_clamp_land_paths_if_needed,
+    )
+
+    assert land_path_diverges_from_strike(bad)
+    clamped = try_clamp_land_paths_if_needed(bad)
+    assert clamped is not None
+    assert validate_mission_spec(clamped, inventory=inv).ok
+    assert clamped.targets[0].path[0].distance_km == 76
+
+
 def test_harbour_unit_nudge_for_land_trucks() -> None:
     spec = load_mission_spec(CONVOY)
     nudge = host_harbour_unit_nudge("GA on harbour dock shipping at Dunkirk", spec)
