@@ -73,7 +73,7 @@ One OpenSpec change per coherent batch (e.g. “Channel soft + AAA expand” or
 
 Expand registry over time; invent plans around these classes. **Shipped Channel
 ids** live in `ground_units.yaml` / `ships.yaml` (`#8h` soft/AAA/sea; `#8i`
-halftracks; `#8j` armor; `#8k` troops).
+halftracks; `#8j` armor; `#8k` troops; `#8m` trains + rail corridor place).
 
 | Class id | Domain | Motion default | Notes |
 |----------|--------|----------------|-------|
@@ -84,7 +84,7 @@ halftracks; `#8j` armor; `#8k` troops).
 | `aaa_guns` | land | **static** | Flak / AT / searchlight as `#8h` |
 | `artillery` | land | static (rare relocate) | Verify before shelving |
 | `radar_c3` | land | **static** | → `#8l` |
-| `trains` | land | **path** on curated rail | → `#8m` (needs corridor) |
+| `trains` | land | **path** on curated rail | Loco + wagons as `#8m`; `french_coast_rail_corridor` (no mesh snap) |
 | `sea_craft` | sea | patrol / path; harbour → static | Ships / U-boat / cargo / tug as `#8h` |
 | `hard_infrastructure` | land | **static** | Often `#17b` statics — not vehicle groups |
 

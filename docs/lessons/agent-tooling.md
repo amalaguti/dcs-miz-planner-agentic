@@ -5,6 +5,17 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Train corridor is curated path deltas, not rail-mesh snap (2026-08-08)
+
+- **Date:** 2026-08-08
+- **Lesson:** `#8m` ships `trains` class + `french_coast_rail_corridor` place with
+  elongated `path_point_deltas` near the Dunkirk inland band. Invent must copy
+  that recipe only — never free-form rail routes. Compiler still places vehicles
+  on ordinary waypoints; there is **no** DCS rail-mesh snap. ME Instant Action
+  may show trains off the visible track; that is expected for v1.
+- **Code / notes:** `planning_options.yaml` (`trains`, `french_coast_rail_corridor`);
+  `examples/manston_ground_attack_train.yaml`.
+
 ## Promote theatres/targets via checklist, not ME dump (2026-08-08)
 
 - **Date:** 2026-08-08

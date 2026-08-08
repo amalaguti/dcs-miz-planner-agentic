@@ -51,6 +51,18 @@ ground_units:
   soldier_wwii_us:
     label: WWII US infantry (Allied — practice ranges / UK-side)
     domain: land
+  Locomotive:
+    label: Steam locomotive
+    domain: land
+  German_covered_wagon_G10:
+    label: German covered wagon G10
+    domain: land
+  German_tank_wagon:
+    label: German tank wagon
+    domain: land
+  DR_50Ton_Flat_Wagon:
+    label: 50-ton flat wagon
+    domain: land
   flak18:
     label: Flak 18
     domain: land

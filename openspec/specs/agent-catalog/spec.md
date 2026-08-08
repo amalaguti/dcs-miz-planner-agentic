@@ -173,3 +173,11 @@ promoted Channel infantry unit ids.
 #### Scenario: Filter by troops
 - **WHEN** list_strike_targets is called with class_id troops
 - **THEN** the result MUST include soldier_mauser98 among unit_ids
+
+### Requirement: Catalog lists trains strike units
+After catalog sync, `list_strike_targets` with class_id `trains` SHALL return the
+promoted Channel train unit ids.
+
+#### Scenario: Filter by trains
+- **WHEN** list_strike_targets is called with class_id trains
+- **THEN** the result MUST include Locomotive among unit_ids

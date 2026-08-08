@@ -21,6 +21,10 @@ profiles:
     label: Infantry on foot
     min_kmh: 3
     max_kmh: 8
+  train:
+    label: Locomotive / wagons
+    min_kmh: 25
+    max_kmh: 55
   sea_u_boat:
     label: Surfaced U-boat
     min_kmh: 10
@@ -60,6 +64,10 @@ units:
   soldier_mauser98: troops
   soldier_wwii_br_01: troops
   soldier_wwii_us: troops
+  Locomotive: train
+  German_covered_wagon_G10: train
+  German_tank_wagon: train
+  DR_50Ton_Flat_Wagon: train
   Uboat_VIIC: sea_u_boat
   Schnellboot_type_S130: sea_e_boat
   Higgins_boat: sea_e_boat
@@ -67,4 +75,4 @@ units:
   Dry-cargo ship-2: sea_cargo
   HarborTug: sea_cargo
   # Future registry shelves (ready when YAML units exist):
-  # (radar_c3 / trains — #8l / #8m)
+  # (radar_c3 — #8l)

@@ -749,6 +749,27 @@ options:
       cues: [infantry, troops, soldiers, patrol, mauser, foot]
 
   - family: strike_target_class
+    id: trains
+    label: Trains / rolling stock
+    description: >
+      Land locomotives and wagons on Axis-held French/Belgian coast — not UK home
+      ground, not water. Prefer motion path along channel_place
+      french_coast_rail_corridor path_point_deltas only — never invent free rail
+      routes or claim DCS rail-mesh snap. Reuse convoy_transit AI. Prefer 2×250 +
+      slipper or 1×500. Example: manston_ground_attack_train.
+    support: supported
+    meta:
+      domain: land
+      unit_ids:
+        [Locomotive, German_covered_wagon_G10, German_tank_wagon, DR_50Ton_Flat_Wagon]
+      payload_families: [spitfire_2x250_slipper, spitfire_1x500, spitfire_2x250]
+      mission_types: [ground_attack]
+      preferred_motion: path
+      preferred_ai_preset: convoy_transit
+      preferred_place: french_coast_rail_corridor
+      cues: [train, railway, railroad, loco, locomotive, wagon, rolling stock, rail]
+
+  - family: strike_target_class
     id: aaa_guns
     label: AAA / AT guns
     description: >
@@ -924,6 +945,36 @@ options:
       note: >
         Land only. Invent path = strike + path_point_deltas (prefer 2–3 points).
         Do not invent path points at mid-Channel distances.
+
+  - family: channel_place
+    id: french_coast_rail_corridor
+    label: French coast rail corridor
+    description: >
+      Curated inland rail-ish path recipe near the Dunkirk–Calais belt for trains
+      class only. Copy strike_bearing_deg / strike_distance_km and build path from
+      path_point_deltas — do not invent free rail routes and do not claim DCS
+      rail-mesh snap. Land domain only.
+    support: advisory
+    meta:
+      domain: land
+      geometry_hint: inland_rail_near_dunkirk
+      related_classes: [trains]
+      mission_types: [ground_attack]
+      cues: [train, railway, railroad, loco, wagon, rail corridor]
+      preferred_motion: path
+      preferred_ai_preset: convoy_transit
+      strike_bearing_deg: 125
+      strike_distance_km: 76
+      strike_altitude_m: 2000
+      example: examples/manston_ground_attack_train.yaml
+      path_point_deltas:
+        - {bearing_delta_deg: 0, distance_delta_km: 0}
+        - {bearing_delta_deg: 1, distance_delta_km: 1.5}
+        - {bearing_delta_deg: 2, distance_delta_km: 3}
+        - {bearing_delta_deg: 3, distance_delta_km: 4.5}
+      note: >
+        Trains only. Invent path = strike + these deltas (elongated corridor).
+        Not true rail alignment; no mesh snap.
 
   - family: channel_place
     id: mid_channel_shipping
