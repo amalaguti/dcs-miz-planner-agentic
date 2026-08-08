@@ -19,6 +19,7 @@ from .models import (
     CatalogPayload,
     CatalogPlanningOption,
     CatalogSnapshot,
+    CatalogStrikeUnit,
     CatalogTheatre,
     CatalogWeatherPreset,
 )
@@ -27,6 +28,30 @@ from .models import (
 _KNOWN_COUNTRIES = ("UK", "ThirdReich")
 
 SOURCE_LABEL = "channel_yaml+spec_enums"
+
+
+def _class_ids_by_unit(planning_options: tuple[CatalogPlanningOption, ...]) -> dict[str, list[str]]:
+    """Invert strike_target_class meta unit_ids/ship_ids → class id list per unit."""
+    by_unit: dict[str, list[str]] = {}
+    for opt in planning_options:
+        if opt.family != "strike_target_class":
+            continue
+        try:
+            meta = json.loads(opt.meta_json) if opt.meta_json else {}
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(meta, dict):
+            continue
+        ids: list[str] = []
+        for key in ("unit_ids", "ship_ids"):
+            raw = meta.get(key) or []
+            if isinstance(raw, list):
+                ids.extend(str(x) for x in raw)
+        for unit_id in ids:
+            bucket = by_unit.setdefault(unit_id, [])
+            if opt.id not in bucket:
+                bucket.append(opt.id)
+    return by_unit
 
 
 def build_snapshot_from_registry(
@@ -70,6 +95,18 @@ def build_snapshot_from_registry(
         )
         for opt in registry.list_planning_options()
     )
+    class_map = _class_ids_by_unit(planning_options)
+    strike_units = tuple(
+        CatalogStrikeUnit(
+            unit_id=uid,
+            label=ref.label or uid,
+            domain=ref.domain,
+            theatre_id=theatre_id,
+            class_ids_json=json.dumps(class_map.get(uid, []), sort_keys=True),
+        )
+        for uid in registry.list_strike_units()
+        for ref in (registry.get_strike_unit(uid),)
+    )
 
     return CatalogSnapshot(
         synced_at=synced_at,
@@ -80,6 +117,7 @@ def build_snapshot_from_registry(
         weather_presets=weather,
         payloads=payloads,
         planning_options=planning_options,
+        strike_units=strike_units,
         mission_types=tuple(CatalogEnumRow(m.value) for m in MissionType),
         start_types=tuple(CatalogEnumRow(s.value) for s in StartType),
         coalitions=tuple(CatalogEnumRow(c.value) for c in Coalition),

@@ -80,6 +80,60 @@ def get_aircraft_details(
     )
 
 
+def list_strike_targets(
+    *,
+    domain: str | None = None,
+    class_id: str | None = None,
+    q: str | None = None,
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """List known Channel strike/recon units from catalog SQLite (after sync).
+
+    Optional filters: ``domain`` (``land``|``sea``), ``class_id`` (strike_target_class
+    id), and case-insensitive substring ``q`` on unit_id/label. Does not read
+    registry YAML or PyDCS at call time.
+    """
+    domain_f = (domain or "").strip().casefold() or None
+    if domain_f is not None and domain_f not in {"land", "sea"}:
+        return err_result(
+            "domain must be 'land' or 'sea' when set",
+            code="invalid_query",
+            domain=domain,
+        )
+    class_f = (class_id or "").strip() or None
+    needle = (q or "").strip().casefold() or None
+
+    service = _catalog(db_path)
+    rows = service.list_rows("strike_units")
+    units: list[dict[str, Any]] = []
+    for row in rows:
+        row_domain = str(row["domain"])
+        if domain_f is not None and row_domain.casefold() != domain_f:
+            continue
+        class_ids = row.get("class_ids")
+        if not isinstance(class_ids, list):
+            class_ids = []
+        class_ids_s = [str(c) for c in class_ids]
+        if class_f is not None and class_f not in class_ids_s:
+            continue
+        unit_id = str(row["unit_id"])
+        label = str(row["label"])
+        if needle is not None and (
+            needle not in unit_id.casefold() and needle not in label.casefold()
+        ):
+            continue
+        units.append(
+            {
+                "unit_id": unit_id,
+                "label": label,
+                "domain": row_domain,
+                "class_ids": class_ids_s,
+                "theatre": str(row["theatre_id"]),
+            }
+        )
+    return ok_result(units=units)
+
+
 def list_mission_options(
     *,
     db_path: Path | str | None = None,

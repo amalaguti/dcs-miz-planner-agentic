@@ -5,6 +5,16 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Strike unit catalog is curated YAML, not ME dump (2026-08-08)
+
+- **Date:** 2026-08-08
+- **Lesson:** `#8c` syncs `catalog_strike_units` from packaged `ground_units.yaml` +
+  `ships.yaml` only (class tags inverted from `strike_target_class` meta). ME shows
+  far more land/sea types; there is no epoch auto-filter or install scrape. Grow the
+  shelf by promoting verified PyDCS ids into YAML, then `catalog sync`. Invent uses
+  `list_strike_targets` (SQLite) — compile/validate stay registry SoT.
+- **Code:** `catalog/sync.py`, `tools/surface.list_strike_targets`, schema v5.
+
 ## Soft immersion floor for vague invent (2026-08-05)
 
 - **Date:** 2026-08-05

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from ..install.models import (
@@ -24,6 +25,7 @@ LIST_TYPES = (
     "weather",
     "payloads",
     "planning_options",
+    "strike_units",
     "mission_types",
     "start_types",
     "coalitions",
@@ -269,6 +271,26 @@ class CatalogService:
                     }
                 )
             return rows
+        if resource_type == "strike_units":
+            out: list[dict[str, object]] = []
+            for u in snap.strike_units:
+                try:
+                    class_ids = json.loads(u.class_ids_json) if u.class_ids_json else []
+                except json.JSONDecodeError:
+                    class_ids = []
+                if not isinstance(class_ids, list):
+                    class_ids = []
+                out.append(
+                    {
+                        "unit_id": u.unit_id,
+                        "label": u.label,
+                        "domain": u.domain,
+                        "theatre_id": u.theatre_id,
+                        "class_ids": [str(c) for c in class_ids],
+                        "class_ids_json": u.class_ids_json,
+                    }
+                )
+            return out
         enum_map = {
             "mission_types": snap.mission_types,
             "start_types": snap.start_types,

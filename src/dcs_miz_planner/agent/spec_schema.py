@@ -100,9 +100,11 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "Channel crossings)."
         ),
         (
-            "targets must be non-empty. Combat: opposing coalition; land on Axis continent "
-            "for Channel WWII; water = ships. Practice (strike.practice true): same-coalition "
-            "/ UK-side targets allowed for bombing practice narrative."
+            "targets must be non-empty. Call list_strike_targets before inventing "
+            "targets[] and prefer returned exact DCS unit_ids. Combat: opposing "
+            "coalition; land on Axis continent for Channel WWII; water = ships. "
+            "Practice (strike.practice true): same-coalition / UK-side targets "
+            "allowed for bombing practice narrative."
         ),
         (
             "Surfaced U-boat / sea hunt: use sea_craft ids (e.g. Uboat_VIIC) on mid-Channel "
@@ -150,7 +152,8 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         'objectives must include {"type":"recon_area"}; omit player.payload.',
         (
             "optional targets = observe-only enemy contacts (opposing coalition; land or "
-            "sea registry ids). Empty targets = area recon."
+            "sea registry ids). Call list_strike_targets before inventing contacts; "
+            "prefer returned exact unit_ids. Empty targets = area recon."
         ),
         (
             "Surfaced U-boat locate: mid-Channel water + Uboat_VIIC contact "
@@ -221,7 +224,8 @@ _COMMON_NOTES: tuple[str, ...] = (
         "recipes with meta.recipe / Spec types / example paths). For co-design of "
         "play-time variation, strike targets, or Channel places: also consult "
         "dynamics_mode, strike_target_class, and channel_place (dynamics_mode maps "
-        "to Spec dynamics.mode + pools; do not invent unit/ship ids). For training "
+        "to Spec dynamics.mode + pools). For concrete unit ids call list_strike_targets; "
+        "do not invent unit/ship ids. For training "
         "system failures: aircraft_failure (curated Spitfire Set Failure ids → Spec "
         "failures). Optionally "
         "research_guidance(focus=mission_design) and list_installed_campaigns "

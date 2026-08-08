@@ -17,7 +17,8 @@ description: >-
 1. Agent Spec invent uses **derived schema examples**, not hand-maintained skeletons.
 2. Tools return **structured dicts**; no dedicated research CLI required.
 3. Catalog shares `inventory.sqlite` as query layer — Channel YAML remains SoT;
-   schema bumps must clear `synced_at`.
+   schema bumps must clear `synced_at`. Strike units are a **curated** YAML shelf
+   (`list_strike_targets`), not an ME/install dump.
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent; soft-warn missing aircraft modules.

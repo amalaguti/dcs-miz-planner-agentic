@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -171,6 +172,31 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert by_key[("roe_seed", "weapons_hold")].support == "supported"
     assert by_key[("mission_type", "cap")].support == "supported"
     assert by_key[("randomization", "seeded_reroll")].support == "advisory"
+    by_unit = {u.unit_id: u for u in snap.strike_units}
+    assert by_unit["Uboat_VIIC"].domain == "sea"
+    assert by_unit["Blitz_36-6700A"].domain == "land"
+    uboat_classes = json.loads(by_unit["Uboat_VIIC"].class_ids_json)
+    assert "sea_craft" in uboat_classes
+    assert "soft_vehicles" in json.loads(by_unit["Blitz_36-6700A"].class_ids_json)
+    assert "aaa_guns" in json.loads(by_unit["flak18"].class_ids_json)
+
+
+def test_catalog_list_strike_units_cli(tmp_path: Path) -> None:
+    import io
+    from contextlib import redirect_stdout
+
+    db = tmp_path / "planner.sqlite"
+    assert main(["catalog", "sync", "--db", str(db)]) == 0
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        assert main(["catalog", "list", "--type", "strike_units", "--db", str(db), "--json"]) == 0
+    payload = json.loads(buf.getvalue())
+    ids = {r["unit_id"] for r in payload["rows"]}
+    assert "Uboat_VIIC" in ids
+    assert "Blitz_36-6700A" in ids
+    uboat = next(r for r in payload["rows"] if r["unit_id"] == "Uboat_VIIC")
+    assert uboat["domain"] == "sea"
+    assert "sea_craft" in uboat["class_ids"]
 
 
 def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:

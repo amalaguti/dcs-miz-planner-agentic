@@ -47,6 +47,18 @@ class CatalogPlanningOption:
 
 
 @dataclass(frozen=True)
+class CatalogStrikeUnit:
+    """Known Channel strike/recon unit for agent suggestion (#8c)."""
+
+    unit_id: str
+    label: str
+    domain: str
+    theatre_id: str
+    #: JSON list of strike_target_class ids (may be empty ``[]``).
+    class_ids_json: str
+
+
+@dataclass(frozen=True)
 class CatalogEnumRow:
     value: str
 
@@ -90,6 +102,7 @@ class CatalogSnapshot:
     weather_presets: tuple[CatalogWeatherPreset, ...]
     payloads: tuple[CatalogPayload, ...]
     planning_options: tuple[CatalogPlanningOption, ...]
+    strike_units: tuple[CatalogStrikeUnit, ...]
     mission_types: tuple[CatalogEnumRow, ...]
     start_types: tuple[CatalogEnumRow, ...]
     coalitions: tuple[CatalogEnumRow, ...]

@@ -25,7 +25,8 @@ METAR (`EGMH` + `RMK SIM`) from invent weather — never live meteo APIs.
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
 refresh with `dcs-miz theatres --refresh` (caches theatres **and** aircraft module
 folders). Known agent catalog (`catalog_*` tables in the
-same DB) syncs from Channel YAML + Spec enums via `dcs-miz catalog sync`. Shared validation
+same DB) syncs from Channel YAML + Spec enums via `dcs-miz catalog sync` (airfields,
+aircraft, planning options, **strike/recon units**). Shared validation
 (`dcs-miz validate` / compile) checks registry + local theatre inventory.
 Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
 (refresh: `uv run python tests/refresh_manston_golden.py`; trigger-rich examples:
@@ -225,12 +226,15 @@ uv run dcs-miz catalog list --type planning_options --json
 uv run dcs-miz catalog list --type planning_options --family weather --support supported
 uv run dcs-miz catalog list --type planning_options --family mission_behaviour --support supported
 uv run dcs-miz catalog list --type planning_options --family mission_inspiration
+uv run dcs-miz catalog list --type strike_units --json
 ```
 
 To grow **known** entries: edit `src/dcs_miz_planner/data/channel/*.yaml` (and Spec enums
 when needed), accept in DCS when compile-supported, then `catalog sync`. Planning knobs live
 in `planning_options.yaml` with support levels (`supported` / `advisory` / `future`), including
-`mission_behaviour` (Spec recipes) and `mission_inspiration` (advisory patterns). Deep
+`mission_behaviour` (Spec recipes) and `mission_inspiration` (advisory patterns). Strike/recon
+target units sync into `catalog_strike_units` from `ground_units.yaml` + `ships.yaml` (class
+tags from `strike_target_class`). Deep
 community/campaign `.miz` audits remain R1/R2; live research snippets and local campaign
 `Doc/` listing are lighter inspiration channels.
 Discovered install theatres are listed with `known=false` and are not auto-promoted.
@@ -244,6 +248,8 @@ Import from `dcs_miz_planner.tools` (no dedicated tools CLI — pytest is the ac
 - `get_mission_spec_schema(mission_type)` — compact Spec example + notes (from `examples/`)
 - `list_mission_options()` — Spec enums + enriched planning options + offerable theatres
   (includes `mission_behaviour` / `mission_inspiration` capability cards)
+- `list_strike_targets(domain?, class_id?, q?)` — known land/sea strike units from SQLite
+  (prefer before inventing GA/recon `targets[]`)
 - `list_installed_campaigns(include_doc_text=False)` — local `Mods/campaigns` names,
   `.miz` files, `Doc/` PDFs (filenames by default; set `include_doc_text=true` for
   short excerpts cached by mtime/size). Inspiration only; no `.miz`→Spec import

@@ -15,6 +15,7 @@ from ..tools import (
     list_generation_history,
     list_installed_campaigns,
     list_mission_options,
+    list_strike_targets,
     randomize_mission,
     record_feedback,
     record_generation,
@@ -66,6 +67,36 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "mode, strike composition, and Channel places."
             ),
             "parameters": {"type": "object", "properties": {}},
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_strike_targets",
+            "description": (
+                "List known Channel strike/recon unit targets from the catalog "
+                "(land + sea). Call before inventing ground_attack or recon "
+                "targets[]. Optional filters: domain (land|sea), class_id "
+                "(strike_target_class id e.g. soft_vehicles, aaa_guns, sea_craft), "
+                "q (substring on unit_id/label). Prefer returned exact DCS unit_ids."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "domain": {
+                        "type": "string",
+                        "description": "Optional land | sea",
+                    },
+                    "class_id": {
+                        "type": "string",
+                        "description": "Optional strike_target_class id",
+                    },
+                    "q": {
+                        "type": "string",
+                        "description": "Optional substring match on unit_id or label",
+                    },
+                },
+            },
         },
     },
     {
@@ -382,6 +413,13 @@ def dispatch_tool(
         return get_aircraft_details(str(args.get("aircraft_id", "")), db_path=db_path)
     if name == "list_mission_options":
         return list_mission_options(db_path=db_path)
+    if name == "list_strike_targets":
+        return list_strike_targets(
+            domain=args.get("domain"),
+            class_id=args.get("class_id"),
+            q=args.get("q"),
+            db_path=db_path,
+        )
     if name == "list_installed_campaigns":
         include_doc_text = bool(args.get("include_doc_text", False))
         return list_installed_campaigns(db_path=db_path, include_doc_text=include_doc_text)

@@ -13,11 +13,12 @@ from .models import (
     CatalogPayload,
     CatalogPlanningOption,
     CatalogSnapshot,
+    CatalogStrikeUnit,
     CatalogTheatre,
     CatalogWeatherPreset,
 )
 
-CATALOG_SCHEMA_VERSION = 4
+CATALOG_SCHEMA_VERSION = 5
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS catalog_meta (
@@ -53,6 +54,13 @@ CREATE TABLE IF NOT EXISTS catalog_planning_options (
     meta_json TEXT NOT NULL,
     PRIMARY KEY (family, id)
 );
+CREATE TABLE IF NOT EXISTS catalog_strike_units (
+    unit_id TEXT PRIMARY KEY,
+    label TEXT NOT NULL,
+    domain TEXT NOT NULL,
+    theatre_id TEXT NOT NULL,
+    class_ids_json TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS catalog_mission_types (
     value TEXT PRIMARY KEY
 );
@@ -77,6 +85,7 @@ _KNOWN_TABLES = (
     "catalog_weather_presets",
     "catalog_payloads",
     "catalog_planning_options",
+    "catalog_strike_units",
     "catalog_mission_types",
     "catalog_start_types",
     "catalog_coalitions",
@@ -156,6 +165,14 @@ class CatalogStore:
                     for o in snapshot.planning_options
                 ],
             )
+            conn.executemany(
+                "INSERT INTO catalog_strike_units"
+                "(unit_id, label, domain, theatre_id, class_ids_json) VALUES (?, ?, ?, ?, ?)",
+                [
+                    (u.unit_id, u.label, u.domain, u.theatre_id, u.class_ids_json)
+                    for u in snapshot.strike_units
+                ],
+            )
             for table, rows in (
                 ("catalog_mission_types", snapshot.mission_types),
                 ("catalog_start_types", snapshot.start_types),
@@ -231,6 +248,19 @@ class CatalogStore:
                     "FROM catalog_planning_options ORDER BY family, id"
                 )
             )
+            strike_units = tuple(
+                CatalogStrikeUnit(
+                    row["unit_id"],
+                    row["label"],
+                    row["domain"],
+                    row["theatre_id"],
+                    row["class_ids_json"],
+                )
+                for row in conn.execute(
+                    "SELECT unit_id, label, domain, theatre_id, class_ids_json "
+                    "FROM catalog_strike_units ORDER BY unit_id"
+                )
+            )
 
             def enum_rows(table: str) -> tuple[CatalogEnumRow, ...]:
                 return tuple(
@@ -247,6 +277,7 @@ class CatalogStore:
                 weather_presets=weather,
                 payloads=payloads,
                 planning_options=planning_options,
+                strike_units=strike_units,
                 mission_types=enum_rows("catalog_mission_types"),
                 start_types=enum_rows("catalog_start_types"),
                 coalitions=enum_rows("catalog_coalitions"),

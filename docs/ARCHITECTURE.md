@@ -108,9 +108,9 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
 | `sounds.py` | Sound-asset registry lookup + path materialization for `.miz` embed | `data/sounds`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
-| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options; joins install inventory for theatres **and** aircraft modules (`known` / `installed` / `offerable`; discovered-only never promoted) | `registry`, `install`, stdlib `sqlite3` |
+| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options + strike units; joins install inventory for theatres **and** aircraft modules (`known` / `installed` / `offerable`; discovered-only never promoted) | `registry`, `install`, stdlib `sqlite3` |
 | `memory/` | User prefs, generation history, satisfaction feedback (`user_*` tables; never wiped by catalog sync) | `install.default_db_path`, stdlib `sqlite3` |
-| `tools/` | Agent-facing callables: catalog lookups, `get_mission_spec_schema`, validate/compile, `randomize_mission`, prefs/history/feedback, research_guidance (`focus=mission_design`), `list_installed_campaigns` | `catalog`, `memory`, `validation`, `compiler`, `loader`, `randomize`, `install.campaigns`, `agent/spec_schema` |
+| `tools/` | Agent-facing callables: catalog lookups (`list_strike_targets`, …), `get_mission_spec_schema`, validate/compile, `randomize_mission`, prefs/history/feedback, research_guidance (`focus=mission_design`), `list_installed_campaigns` | `catalog`, `memory`, `validation`, `compiler`, `loader`, `randomize`, `install.campaigns`, `agent/spec_schema` |
 | `briefing.py` | Spec → plain-text Sortie / Description / Blue|Red Task for `.miz` `l10n` (splits commander brief; lazy-imports voice) | `models`, `agent.voice` |
 | `weather_invent.py` | Seeded invent snapshot from Spec weather pattern + date/time | `models`, `registry` |
 | `weather_apply.py` | Apply invent snapshot to PyDCS `Mission.weather` | `weather_invent`, `weather_gallery`, `dcs.weather` |
@@ -221,7 +221,7 @@ flowchart TB
 | Rescan install | `cli._theatres_cmd` (`--refresh`) → `InventoryService.refresh` → `probe.probe_installations` + `aircraft_modules.harvest_aircraft_modules` → `InventoryStore.replace` |
 | Read cache | `InventoryService.get` / `has_cache`; `CatalogService.ensure_synced` |
 | Join list | `CatalogService.list_theatres` / `list_aircraft` → `join_theatre_views` / `join_aircraft_views` → `TheatreAvailabilityView` / `AircraftAvailabilityView` |
-| Agent lookups | `tools.surface.get_aircraft_details`, `list_mission_options`, `find_airfield` (known catalog; not discovered-only) |
+| Agent lookups | `tools.surface.get_aircraft_details`, `list_mission_options`, `list_strike_targets`, `find_airfield` (known catalog; not discovered-only) |
 | Missing known pack | `aircraft_modules.missing_aircraft_module_messages` (validate soft-warn) |
 | Chat host summary | `agent.session.PlanSession._catalog` → `list_mission_options` (offerable theatres + known aircraft ids) |
 

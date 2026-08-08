@@ -19,6 +19,7 @@ from dcs_miz_planner.tools import (
     get_user_prefs,
     list_generation_history,
     list_mission_options,
+    list_strike_targets,
     record_feedback,
     record_generation,
     research_guidance,
@@ -31,6 +32,7 @@ def test_tools_export_surface() -> None:
     assert callable(find_airfield)
     assert callable(get_aircraft_details)
     assert callable(list_mission_options)
+    assert callable(list_strike_targets)
     assert callable(get_mission_spec_schema)
     assert callable(validate_mission_spec)
     assert callable(compile_mission)
@@ -159,6 +161,40 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
         by_key[("payload_family", pid)]["support"]
         for pid in ("spitfire_2x250_slipper", "spitfire_2x250", "spitfire_1x500")
     }
+
+
+def test_list_strike_targets_sea_and_aaa(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+
+    sea = list_strike_targets(domain="sea", db_path=db)
+    assert sea["ok"] is True
+    sea_ids = {u["unit_id"] for u in sea["units"]}
+    assert "Uboat_VIIC" in sea_ids
+    assert all(u["domain"] == "sea" for u in sea["units"])
+
+    aaa = list_strike_targets(class_id="aaa_guns", db_path=db)
+    assert aaa["ok"] is True
+    aaa_ids = {u["unit_id"] for u in aaa["units"]}
+    assert "flak18" in aaa_ids
+    assert "Blitz_36-6700A" not in aaa_ids
+    assert all("aaa_guns" in u["class_ids"] for u in aaa["units"])
+
+    q = list_strike_targets(q="uboat", db_path=db)
+    assert q["ok"] is True
+    assert any(u["unit_id"] == "Uboat_VIIC" for u in q["units"])
+
+
+def test_dispatch_list_strike_targets(tmp_path: Path) -> None:
+    from dcs_miz_planner.agent.tool_bridge import TOOL_DEFINITIONS, dispatch_tool
+
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    names = {t["function"]["name"] for t in TOOL_DEFINITIONS}
+    assert "list_strike_targets" in names
+    result = dispatch_tool("list_strike_targets", {"domain": "sea"}, db_path=db)
+    assert result["ok"] is True
+    assert any(u["unit_id"] == "Uboat_VIIC" for u in result["units"])
 
 
 def test_validate_and_compile_manston(tmp_path: Path) -> None:
@@ -435,6 +471,7 @@ def test_prompts_mention_capability_catalog() -> None:
     prompt = compose_system_prompt("raf")
     assert "mission_behaviour" in prompt
     assert "mission_inspiration" in prompt
+    assert "list_strike_targets" in prompt
     assert "dynamics_mode" in prompt
     assert "dynamics" in prompt
     assert "strike_target_class" in prompt
@@ -445,13 +482,17 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "mission_design" in prompt
     assert "briefing themes" not in prompt.lower()
     assert "include_doc_text" in prompt or "Doc/" in prompt
-    schema = build_spec_schema("free_flight")
+    schema = build_spec_schema("ground_attack")
     joined = " ".join(schema.notes)
-    assert "mission_behaviour" in joined
-    assert "dynamics_mode" in joined
-    assert "strike_target_class" in joined
-    assert "list_installed_campaigns" in joined
-    assert "briefing themes" not in joined.lower()
+    assert "list_strike_targets" in joined
+    schema_ff = build_spec_schema("free_flight")
+    joined_ff = " ".join(schema_ff.notes)
+    assert "mission_behaviour" in joined_ff
+    assert "dynamics_mode" in joined_ff
+    assert "strike_target_class" in joined_ff
+    assert "list_strike_targets" in joined_ff
+    assert "list_installed_campaigns" in joined_ff
+    assert "briefing themes" not in joined_ff.lower()
     options_tool = next(
         t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_mission_options"
     )
@@ -459,6 +500,10 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "dynamics_mode" in opt_desc
     assert "strike_target_class" in opt_desc
     assert "channel_place" in opt_desc
+    strike_tool = next(
+        t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_strike_targets"
+    )
+    assert "targets[]" in strike_tool["function"]["description"]
     camp_tool = next(
         t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_installed_campaigns"
     )

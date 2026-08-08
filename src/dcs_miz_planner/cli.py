@@ -267,7 +267,8 @@ def _catalog_sync_cmd(args: argparse.Namespace) -> int:
     print(
         f"  theatres={len(snap.theatres)} airfields={len(snap.airfields)} "
         f"aircraft={len(snap.aircraft)} weather={len(snap.weather_presets)} "
-        f"payloads={len(snap.payloads)} planning_options={len(snap.planning_options)}"
+        f"payloads={len(snap.payloads)} planning_options={len(snap.planning_options)} "
+        f"strike_units={len(snap.strike_units)}"
     )
     return 0
 
