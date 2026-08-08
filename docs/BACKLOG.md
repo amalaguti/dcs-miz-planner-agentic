@@ -71,7 +71,7 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 8e | `theatre-target-promote-checklist` | Durable **human/agent checklist** for adding a new theatre slice and/or expanding strike/recon target shelves (not auto-scrape). See [`docs/THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Feeds R11 + registry growth after `#8d`/`#8g`. | `done` (docs 2026-08-08) |
 | 8h | `channel-unit-shelf-expand` | First curated Channel strike/recon **unit shelf expand** (soft + AAA + harbour/coastal sea) following `#8e` checklist — verified PyDCS ids only; class shelves + motion + AAA AI allowlist; examples. **Non-goals:** armor/troops/radar classes; ME scrape. | `done` (CLI/API 2026-08-08; ME do-soon) |
 | 8i | `channel-shelf-halftracks` | Promote **halftracks_apc** class + verified ids (`Sd_Kfz_251`, `Sd_Kfz_7`, `M2A1_halftrack`) per `#8e`: YAML, class shelf, motion halftrack band, invent cues, example. Reuses convoy_transit (soft AI). | `done` (CLI/API 2026-08-08; ME do-soon) |
-| 8j | `channel-shelf-armor` | Promote **armor** class + era-filtered AFVs (e.g. `Pz_IV_H`, `Stug_III`; optional Allied `Cromwell_IV` / `M4_Sherman`) per `#8e`. New preferred_motion/AI heuristics; example GA. | `idea` (deferred from `#8h` 2026-08-08) |
+| 8j | `channel-shelf-armor` | Promote **armor** class + verified AFVs (`Pz_IV_H`, `Stug_III`, `Cromwell_IV`, `M4_Sherman`) per `#8e`. Reuses convoy_transit (soft AI); motion armor band; invent cues; example GA. | `done` (CLI/API 2026-08-08; ME do-soon) |
 | 8k | `channel-shelf-troops` | Promote **troops** class + verified infantry ids (e.g. `soldier_mauser98`, Allied WWII soldiers) per `#8e`. Slow motion band; invent cues. | `idea` (deferred from `#8h` 2026-08-08) |
 | 8l | `channel-shelf-radar-c3` | Promote **radar_c3** static shelf (e.g. `FuMG-401`, `FuSe-65`) per `#8e` — emplaced only; invent cues for radar/C3 hunts. | `idea` (deferred from `#8h` 2026-08-08) |
 | 8m | `channel-shelf-trains` | Promote **trains** + curated Channel **rail corridor** place (not free-form path) per `#8e` / `#15g` note. Later than armor/troops. | `idea` (deferred; needs corridor shelf) |
@@ -106,7 +106,7 @@ has the SoT (`get_strike_unit` / `list_strike_units`); compile must keep using r
 |---------------------|--------|----------------|----------------|-------------------|
 | `soft_vehicles` | land | path / patrol | Blitz, Kubel, Bedford, Sd_Kfz_2, Horch, Willys (`#8h`) | more soft as needed |
 | `halftracks_apc` | land | path / patrol | Sd_Kfz_251, Sd_Kfz_7, M2A1 (`#8i`) | more APC as needed |
-| `armor` | land | path / patrol (static if dug-in) | — | **`#8j`** Pz_IV_H, Stug_III, … |
+| `armor` | land | path / patrol (static if dug-in) | Pz_IV_H, Stug_III, Cromwell, Sherman (`#8j`) | heavies later |
 | `troops` | land | path / patrol (static if dug-in) | — | **`#8k`** soldier_mauser98, … |
 | `aaa_guns` | land | **static** | flak18/30/36/37/38, Pak40, searchlight, KDO, bofors (`#8h`) | more AAA as needed |
 | `artillery` | land | static (or rare relocate path) | — | verify before shelving |
@@ -290,9 +290,9 @@ smoke checklist in that file.
 ## M4 — Mission types
 
 **Next promote / in proposal:** `#15h` ME do-soon, or next class shelf
-(`#8j` armor → `#8k` troops; radar `#8l` / trains `#8m` later). Follow
-[`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel halftracks
-`#8i` done.
+(`#8k` troops; radar `#8l` / trains `#8m` later). Follow
+[`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel armor `#8j`
+done.
 
 **Do soon (not blocking next promote):**
 - `#15h` ME smoke: Instant Action
@@ -605,7 +605,7 @@ Resolve these inside the relevant proposal, not here.
 | Invent path + harbour harden (`#8g`) | **Done 2026-08-08:** path clamp + harbour 120/68; live invent 6/6 |
 | Theatre / target promote checklist (`#8e`) | **Done 2026-08-08:** [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md) |
 | Channel unit shelf expand (`#8h`) | **Done 2026-08-08:** soft + AAA + sea harbour ids; ME do-soon |
-| Halftracks shelf | **Done** `#8i` — armor/troops/radar/trains remain `#8j`–`#8m` |
+| Halftracks / armor shelves | **Done** `#8i`/`#8j` — troops/radar/trains remain `#8k`–`#8m` |
 | Target motion Spec shape (`#15g`) | **Closed in proposal `strike-target-motion`:** default static; optional `patrol` / short `path`; sea + soft land; harbour + AAA static; trains later; Bombing stays at strike point v1; speed bands in `target_motion.yaml` + seeded cruise / waypoint jitter; threat stop/escape deferred |
 | Target threat reaction under fire (`#15g`) | **Closed for disperse:** moving land → ME Disperse Under Fire (option 8, default 180s). Further stop/dash scripting still deferred |
 | Ground waypoint actions: On Road vs Off Road + formations | Folded into **`#15h`** draft (with ROE/Alarm/Engage air/…) |

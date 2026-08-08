@@ -30,6 +30,18 @@ ground_units:
   M2A1_halftrack:
     label: M2A1 halftrack (Allied — practice ranges / UK-side)
     domain: land
+  Pz_IV_H:
+    label: Pz.Kpfw. IV Ausf. H
+    domain: land
+  Stug_III:
+    label: StuG III assault gun
+    domain: land
+  Cromwell_IV:
+    label: Cromwell IV (Allied — practice ranges / UK-side)
+    domain: land
+  M4_Sherman:
+    label: M4 Sherman (Allied — practice ranges / UK-side)
+    domain: land
   flak18:
     label: Flak 18
     domain: land

@@ -53,6 +53,10 @@ units:
   Sd_Kfz_251: halftrack
   Sd_Kfz_7: halftrack
   M2A1_halftrack: halftrack
+  Pz_IV_H: armor
+  Stug_III: armor
+  Cromwell_IV: armor
+  M4_Sherman: armor
   Uboat_VIIC: sea_u_boat
   Schnellboot_type_S130: sea_e_boat
   Higgins_boat: sea_e_boat
@@ -60,5 +64,4 @@ units:
   Dry-cargo ship-2: sea_cargo
   HarborTug: sea_cargo
   # Future registry shelves (ready when YAML units exist):
-  # Pz_IV_H: armor
   # soldier_mauser98: troops

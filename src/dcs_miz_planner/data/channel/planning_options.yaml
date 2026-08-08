@@ -713,6 +713,24 @@ options:
       cues: [halftrack, half-track, spw, apc, 251, sdkfz 7, m2a1]
 
   - family: strike_target_class
+    id: armor
+    label: Armor / AFVs
+    description: >
+      Land tanks and assault guns on Axis-held French/Belgian coast — not UK home
+      ground, not water. Prefer motion path or patrol; dug-in may use static.
+      Reuse convoy_transit AI (soft class). Prefer 2×250 + slipper or 1×500 for
+      harder AFVs. Example: manston_ground_attack_armor.
+    support: supported
+    meta:
+      domain: land
+      unit_ids: [Pz_IV_H, Stug_III, Cromwell_IV, M4_Sherman]
+      payload_families: [spitfire_2x250_slipper, spitfire_1x500, spitfire_2x250]
+      mission_types: [ground_attack]
+      preferred_motion: path
+      preferred_ai_preset: convoy_transit
+      cues: [tank, armor, armour, panzer, stug, stug iii, sherman, cromwell, afv]
+
+  - family: strike_target_class
     id: aaa_guns
     label: AAA / AT guns
     description: >
@@ -871,9 +889,9 @@ options:
     meta:
       domain: land
       geometry_hint: inland_near_dunkirk
-      related_classes: [soft_vehicles, halftracks_apc, aaa_guns]
+      related_classes: [soft_vehicles, halftracks_apc, armor, aaa_guns]
       mission_types: [ground_attack]
-      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, flak]
+      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, tank, flak]
       preferred_ai_preset_soft: convoy_transit
       preferred_ai_preset_aaa: aaa_alert
       # From examples/manston_ground_attack.yaml / convoy / flak_alert
