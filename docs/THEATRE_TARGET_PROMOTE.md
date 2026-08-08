@@ -79,15 +79,16 @@ AAA/searchlight/KDO, harbour tug / cargo / Higgins — see OpenSpec
 | Class id | Domain | Motion default | Notes |
 |----------|--------|----------------|-------|
 | `soft_vehicles` | land | path / patrol | Trucks / light cars |
-| `halftracks_apc` | land | path / patrol | Promote when verified |
-| `armor` | land | path / patrol (static if dug-in) | Era-filter |
-| `troops` | land | path / patrol (static if dug-in) | Era-filter |
-| `aaa_guns` | land | **static** | Flak / AT as today |
+| `halftracks_apc` | land | path / patrol | Promote when verified → BACKLOG `#8i` |
+| `armor` | land | path / patrol (static if dug-in) | Era-filter → `#8j` |
+| `troops` | land | path / patrol (static if dug-in) | Era-filter → `#8k` |
+| `aaa_guns` | land | **static** | Flak / AT / searchlight as `#8h` |
 | `artillery` | land | static (rare relocate) | Verify before shelving |
-| `radar_c3` | land | **static** | e.g. FuMG when verified |
-| `trains` | land | **path** on curated rail | Needs corridor shelf |
-| `sea_craft` | sea | patrol / path; harbour → static | Ships / U-boat / cargo |
+| `radar_c3` | land | **static** | → `#8l` |
+| `trains` | land | **path** on curated rail | → `#8m` (needs corridor) |
+| `sea_craft` | sea | patrol / path; harbour → static | Ships / U-boat / cargo / tug as `#8h` |
 | `hard_infrastructure` | land | **static** | Often `#17b` statics — not vehicle groups |
+| `soft_vehicles` | land | path / patrol | Trucks / light cars as `#8h` |
 
 Era caution: prefer BoB / Channel-front plausible Axis/Allied sets when promoting.
 
