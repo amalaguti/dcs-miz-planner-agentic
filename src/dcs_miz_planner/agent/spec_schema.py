@@ -105,11 +105,13 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "targets[]; prefer returned exact DCS unit_ids and allowlisted ai_preset only. "
             "Cue table: inland truck/convoy → soft + path + convoy_transit; flak/AAA → "
             "aaa + static + aaa_alert; mid-Channel under way → sea + patrol + "
-            "ship_under_way; harbour/dock → sea + static + harbour_static. Copy "
+            "ship_under_way; harbour/dock → list_strike_targets(domain=sea) + "
+            "static + harbour_static (never soft land trucks). Copy "
             "channel_place strike_bearing_deg/strike_distance_km (french coast ~125/76 "
-            "inland; mid-Channel ~140/40 water; coastal_harbour ~120/70). Land paths must "
-            "stay on land near strike — not mid-Channel. Combat: opposing coalition; "
-            "land on Axis continent for Channel WWII; water = ships. Practice "
+            "inland; mid-Channel ~140/40 water; coastal_harbour ~120/70). Land paths: "
+            "prefer 2–3 points from french_coast path_point_deltas near strike "
+            "(e.g. 125/76, 128/77, 122/78) — not mid-Channel. Combat: opposing "
+            "coalition; land on Axis continent for Channel WWII; water = ships. Practice "
             "(strike.practice true): same-coalition / UK-side targets allowed for "
             "bombing practice narrative."
         ),
@@ -117,12 +119,13 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "Surfaced U-boat / sea hunt: use sea_craft ids from list_strike_targets "
             "(e.g. Uboat_VIIC) on mid-Channel water (manston_uboat_hunt.yaml; ~140°/40 km). "
             "Prefer motion: patrol + ai_preset ship_under_way when under way; harbour/dock → "
-            "coastal_harbour place (~120°/70 km) + static + harbour_static. Attack while "
-            "surfaced — not ASW."
+            "list_strike_targets(domain=sea) + coastal_harbour (~120°/70 km) + static + "
+            "harbour_static. Attack while surfaced — not ASW."
         ),
         (
             "Optional targets[].motion: static|patrol|path. Soft vehicles often path/patrol; "
-            "AAA stay static. Path = 2–6 airfield-relative points (manston_ground_attack_convoy). "
+            "AAA stay static. Invent path = prefer 2–3 airfield-relative points from "
+            "path_point_deltas (manston_ground_attack_convoy). "
             "Optional speed_kmh within curated unit band; omit for seeded cruise + waypoint jitter. "
             "Moving land groups default Disperse Under Fire 180s (disperse_under_fire_s; 0=off)."
         ),
@@ -164,14 +167,15 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "Call list_mission_options then list_strike_targets before inventing "
             "contacts; prefer returned exact unit_ids. Same cue table as GA "
             "(convoy/flak/U-boat/harbour → class + motion + ai_preset). Copy "
-            "channel_place aoi_*/strike_* geometry (mid-Channel ~140/40). Empty "
+            "channel_place aoi_*/strike_* geometry (mid-Channel ~140/40). Harbour → "
+            "list_strike_targets(domain=sea) + coastal_harbour. Empty "
             "targets = area recon."
         ),
         (
             "Surfaced U-boat locate: mid-Channel water + Uboat_VIIC contact "
             "(manston_uboat_recon.yaml; ~140°/40 km); prefer motion: patrol + ai_preset "
-            "ship_under_way when under way; harbour → coastal_harbour + static + "
-            "harbour_static; weapons hold — not depth-charge ASW."
+            "ship_under_way when under way; harbour → list_strike_targets(domain=sea) + "
+            "coastal_harbour + static + harbour_static; weapons hold — not depth-charge ASW."
         ),
         (
             "Optional targets[].motion (static|patrol|path) same as ground_attack — "

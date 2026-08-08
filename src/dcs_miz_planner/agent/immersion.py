@@ -5,6 +5,12 @@ from __future__ import annotations
 import re
 
 from ..models import MissionSpec, MissionType
+from ..registry import ChannelRegistry, RegistryError, get_channel_registry
+
+_HARBOUR_CUE = re.compile(
+    r"\b(harbour|harbor|dock|alongside|tied\s*up|in\s+port|at\s+port)\b",
+    re.IGNORECASE,
+)
 
 # Prompt cues → (behaviour_id, example path, human reason)
 _CUE_RULES: tuple[tuple[re.Pattern[str], str, str, str], ...] = (
@@ -177,5 +183,45 @@ def host_immersion_repair_nudge(prompt: str, spec: MissionSpec) -> str | None:
         "Call list_mission_options / get_mission_spec_schema if needed. "
         "If the ask named a campaign, call list_installed_campaigns first and map "
         "themes onto behaviours — never import .miz. "
+        "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
+    )
+
+
+def harbour_prompt_cues(prompt: str) -> bool:
+    """True when the pilot ask mentions harbour/dock shipping."""
+    return bool(_HARBOUR_CUE.search(prompt or ""))
+
+
+def host_harbour_unit_nudge(
+    prompt: str,
+    spec: MissionSpec,
+    *,
+    registry: ChannelRegistry | None = None,
+) -> str | None:
+    """Nudge when harbour cues conflict with land-domain targets (no unit auto-swap)."""
+    if not harbour_prompt_cues(prompt):
+        return None
+    if spec.mission_type not in {MissionType.GROUND_ATTACK, MissionType.RECON}:
+        return None
+    if not spec.targets:
+        return None
+    reg = registry or get_channel_registry()
+    land_ids: list[str] = []
+    for tgt in spec.targets:
+        try:
+            unit = reg.get_strike_unit(tgt.unit)
+        except RegistryError:
+            continue
+        if unit.domain == "land":
+            land_ids.append(tgt.unit)
+    if not land_ids:
+        return None
+    shown = ", ".join(land_ids[:4])
+    return (
+        "[Host] Harbour/dock invent: your Spec uses land units "
+        f"({shown}) but harbour asks need sea_craft only. Call "
+        "list_strike_targets(domain=sea), use channel_place coastal_harbour "
+        "(~120° / 70 km coastal water), motion static, ai_preset harbour_static "
+        "(e.g. Uboat_VIIC or Dry-cargo — never Blitz/Bedford trucks). "
         "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
     )

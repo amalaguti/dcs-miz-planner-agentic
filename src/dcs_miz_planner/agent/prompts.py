@@ -34,13 +34,15 @@ Rules:
   inland truck/convoy → soft_vehicles + motion path + ai_preset convoy_transit;
   flak/AAA/guns → aaa_guns + static + aaa_alert;
   mid-Channel U-boat/shipping under way → sea_craft + patrol + ship_under_way;
-  harbour/dock shipping → sea_craft + static + harbour_static.
+  harbour/dock shipping → sea_craft + static + harbour_static
+  (call list_strike_targets with domain=sea — never soft land trucks).
 - Channel geometry: copy channel_place meta strike_bearing_deg / strike_distance_km
   (and aoi_* for recon) from french_coast_strike_belt (~125°/76 km inland),
   mid_channel_shipping (~140°/40 km water), or coastal_harbour (~120°/70 km coastal
-  water). Land path waypoints must stay on land near the strike — never mid-Channel
-  distances for trucks. Sea targets need water geometry — never a few km from Manston
-  for harbour/shipping. Distances ~65 km toward Dunkirk are still water.
+  water). Land path: prefer 2–3 points from french_coast path_point_deltas (strike
+  + deltas, e.g. 125/76, 128/77, 122/78) — never mid-Channel distances for trucks.
+  Sea targets need water geometry — never a few km from Manston for harbour/shipping.
+  Distances ~65 km toward Dunkirk are still water.
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
   list_mission_options for families dynamics_mode, strike_target_class, and
@@ -138,13 +140,15 @@ Rules:
   vehicles on enemy-held territory (Channel WWII: Axis French/Belgian coast). Mid-Channel
   water MUST use ship/boat registry ids (e.g. surfaced Uboat_VIIC on mid-Channel —
   manston_uboat_hunt; not ASW/depth charges). Optional per-target motion: omit/static
-  (harbour, AAA); patrol+patrol_radius_m (open sea); or path with 2–6 airfield-relative
-  points (truck convoy — manston_ground_attack_convoy). Optional ai_preset
+  (harbour, AAA); patrol+patrol_radius_m (open sea); or path with prefer 2–3
+  (max 6) airfield-relative points from french_coast path_point_deltas near strike
+  (truck convoy — manston_ground_attack_convoy). Optional ai_preset
   (convoy_transit|aaa_alert|ship_under_way|harbour_static) and/or ai
   {roe,alarm_state,engage_air_weapons,restrict_targets,interception_range} plus
   land move_formation (off_road|on_road|rank|cone|vee|…). Soft trucks cannot set
   interception_range; sea cannot set move_formation. Never invent free-form Opt*.
-  AAA example: manston_ground_attack_flak_alert. Practice (strike.practice true):
+  Harbour/dock: list_strike_targets(domain=sea) + coastal_harbour + static +
+  harbour_static — never Blitz/Bedford. AAA example: manston_ground_attack_flak_alert. Practice (strike.practice true):
   same-coalition / home-territory targets allowed for bombing practice (e.g. UK-side
   range). objectives include {"type":"attack_ground"}. enemies must be empty. Optional
   narrative.enabled true expands curated GA immersion (push / ingress / targets-down win)
@@ -228,13 +232,23 @@ def host_spec_repair_nudge(
         geometry_hint = (
             "\n\nChannel geometry repair (domain mismatch):\n"
             "- Land soft/AAA: use channel_place french_coast_strike_belt — "
-            "strike ~bearing 125° / distance 76 km from Manston (inland). Path "
-            "waypoints must stay on land near that strike — not mid-Channel water.\n"
+            "strike ~bearing 125° / distance 76 km from Manston (inland).\n"
+            "- Land path: prefer 2–3 points from path_point_deltas near strike, e.g.\n"
+            "  path: [{bearing_deg: 125, distance_km: 76}, "
+            "{bearing_deg: 128, distance_km: 77}, "
+            "{bearing_deg: 122, distance_km: 78}]\n"
+            "  Rewrite path only; keep strike inland — not mid-Channel water.\n"
             "- Mid-Channel sea under way: mid_channel_shipping — ~140° / 40 km water; "
             "patrol + ship_under_way.\n"
             "- Harbour/dock sea: coastal_harbour — ~120° / 70 km coastal water; "
-            "static + harbour_static. Never place harbour a few km from Manston.\n"
+            "list_strike_targets(domain=sea) only; static + harbour_static. "
+            "Never land trucks; never place harbour a few km from Manston.\n"
             "- Distances ~65 km toward Dunkirk are still Channel water for land units.\n"
+        )
+    elif "harbour" in err_l or "harbor" in err_l:
+        geometry_hint = (
+            "\n\nHarbour invent: sea units only via list_strike_targets(domain=sea), "
+            "coastal_harbour ~120°/70 km, static + harbour_static.\n"
         )
     return (
         f"[Host] Your last Spec JSON failed to load:\n{parse_err}\n"

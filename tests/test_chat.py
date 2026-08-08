@@ -171,6 +171,19 @@ def test_host_spec_repair_nudge_domain_mismatch_includes_geometry() -> None:
     assert "125" in nudge or "french_coast" in nudge
     assert "140" in nudge or "mid_channel" in nudge
     assert "coastal_harbour" in nudge or "70" in nudge
+    assert "path:" in nudge or "128" in nudge
+
+
+def test_host_spec_repair_nudge_path_example_on_path_mismatch() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    payload = (
+        '[{"code": "motion_domain_mismatch", "message": '
+        '"Target x is domain land but motion sample path[1] is sea"}]'
+    )
+    nudge = host_spec_repair_nudge(payload, mission_type="ground_attack")
+    assert "bearing_deg: 125" in nudge
+    assert "distance_km: 76" in nudge
 
 
 def test_invalid_embedded_spec_injects_shape_nudge(tmp_path: Path) -> None:

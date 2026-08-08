@@ -233,6 +233,8 @@ def test_channel_place_geometry_recipes_after_sync(tmp_path: Path) -> None:
     assert inland["strike_bearing_deg"] == 125
     assert inland["strike_distance_km"] == 76
     assert inland["domain"] == "land"
+    assert isinstance(inland.get("path_point_deltas"), list)
+    assert len(inland["path_point_deltas"]) >= 2
 
     mid = json.loads(by_key[("channel_place", "mid_channel_shipping")].meta_json)
     assert mid["strike_bearing_deg"] == 140
@@ -244,6 +246,7 @@ def test_channel_place_geometry_recipes_after_sync(tmp_path: Path) -> None:
     assert harbour["strike_distance_km"] == 70
     assert harbour["preferred_ai_preset"] == "harbour_static"
     assert harbour["domain"] == "sea"
+    assert harbour.get("sea_units_only") is True
 
 
 def test_catalog_list_strike_units_cli(tmp_path: Path) -> None:

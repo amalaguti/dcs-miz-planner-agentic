@@ -65,10 +65,12 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "mission-designer shelves dynamics_mode (Spec dynamics.mode), "
                 "strike_target_class, ground_ai_preset, and channel_place. channel_place "
                 "meta includes strike_bearing_deg/strike_distance_km (and aoi_*) recipes "
-                "— copy those for GA/recon geometry. For targets[] invent: call this "
-                "first (preferred_motion / preferred_ai_preset / cues / geometry), then "
-                "list_strike_targets, then emit allowlisted unit + motion + ai_preset "
-                "only — no free-form ME Opt*."
+                "plus french_coast path_point_deltas for short land paths — copy those "
+                "for GA/recon geometry. Harbour/dock → coastal_harbour + sea units only. "
+                "For targets[] invent: call this first (preferred_motion / "
+                "preferred_ai_preset / cues / geometry), then list_strike_targets "
+                "(domain=sea for harbour), then emit allowlisted unit + motion + "
+                "ai_preset only — no free-form ME Opt*."
             ),
             "parameters": {"type": "object", "properties": {}},
         },
@@ -82,9 +84,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "(land + sea). Call after list_mission_options and before inventing "
                 "ground_attack or recon targets[]. Optional filters: domain "
                 "(land|sea), class_id (soft_vehicles, aaa_guns, sea_craft, …), "
-                "q (substring on unit_id/label). Prefer returned exact DCS unit_ids; "
-                "pair with shelf preferred_motion / preferred_ai_preset "
-                "(convoy_transit, aaa_alert, ship_under_way, harbour_static)."
+                "q (substring on unit_id/label). Harbour/dock asks MUST use domain=sea. "
+                "Prefer returned exact DCS unit_ids; pair with shelf preferred_motion / "
+                "preferred_ai_preset (convoy_transit, aaa_alert, ship_under_way, "
+                "harbour_static)."
             ),
             "parameters": {
                 "type": "object",

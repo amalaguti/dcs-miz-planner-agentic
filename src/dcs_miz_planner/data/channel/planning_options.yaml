@@ -827,8 +827,9 @@ options:
     description: >
       Axis-held French/Belgian coastal belt (Dunkirk–Calais area) for land GA targets —
       place soft/AAA inland of the coast, not on UK soil or mid-Channel water.
-      Copy strike_bearing_deg / strike_distance_km for Spec strike (and nearby path
-      points). Distances under ~70 km toward Dunkirk are still Channel water.
+      Copy strike_bearing_deg / strike_distance_km for Spec strike. For soft path
+      invent, prefer 2–3 points from path_point_deltas (strike + each delta) — do not
+      invent long free routes or mid-Channel path distances.
     support: advisory
     meta:
       domain: land
@@ -848,8 +849,8 @@ options:
         - {bearing_delta_deg: 3, distance_delta_km: 1}
         - {bearing_delta_deg: -3, distance_delta_km: 2}
       note: >
-        Land only. Keep path waypoints within a few km of strike on land —
-        do not invent path points at mid-Channel distances.
+        Land only. Invent path = strike + path_point_deltas (prefer 2–3 points).
+        Do not invent path points at mid-Channel distances.
 
   - family: channel_place
     id: mid_channel_shipping
@@ -884,8 +885,9 @@ options:
     id: coastal_harbour
     label: Coastal harbour / dock
     description: >
-      Near-coast harbour or dock shipping (tied up) — sea_craft on water close to the
-      French/Belgian coast, not mid-Channel under way and not UK home waters.
+      Near-coast harbour or dock shipping (tied up) — sea_craft / sea-domain units
+      only (call list_strike_targets with domain=sea). Never soft land trucks
+      (Blitz/Bedford). Not mid-Channel under way and not UK home waters.
       Use harbour_static + static motion. Copy strike geometry from meta.
     support: advisory
     meta:
@@ -896,6 +898,7 @@ options:
       preferred_motion: static
       preferred_ai_preset: harbour_static
       cues: [harbour, harbor, dock, tied up, alongside, port]
+      sea_units_only: true
       # Near Dunkirk approach water (coast), not Manston pattern (~4 km) and not inland land.
       # Dunkirk Mardyck ≈ 120° / 72 km — use slightly shorter for near-coast water.
       strike_bearing_deg: 120
@@ -903,7 +906,8 @@ options:
       strike_altitude_m: 2000
       example: examples/manston_uboat_hunt.yaml
       note: >
-        Sea/coastal water. Never place harbour strikes a few km from Manston.
+        Sea/coastal water + sea_craft only. Never land soft vehicles; never place
+        harbour strikes a few km from Manston.
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

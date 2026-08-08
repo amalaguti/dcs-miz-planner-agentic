@@ -24,8 +24,9 @@ from ..memory import (
 )
 from ..models import MissionSpec
 from ..validation import validate_mission_spec
-from .immersion import host_immersion_repair_nudge
+from .immersion import host_harbour_unit_nudge, host_immersion_repair_nudge
 from .llm import LLMClient, default_tools
+from .path_clamp import try_clamp_after_path_domain_fail
 from .prompts import compose_system_prompt, host_spec_repair_nudge
 from .realism import channel_date_realism_warnings
 from .turn import complete_with_tools
@@ -213,8 +214,21 @@ def plan_mission(
             continue
 
         vresult = validate_mission_spec(spec, inventory=inventory)
+        if not vresult.ok:
+            clamped = try_clamp_after_path_domain_fail(spec, list(vresult.errors))
+            if clamped is not None:
+                v2 = validate_mission_spec(clamped, inventory=inventory)
+                if v2.ok:
+                    spec = clamped
+                    vresult = v2
+                    vlog(verbose, "[verbose] host clamped land path onto strike deltas")
         if vresult.ok:
             if not immersion_repair_used:
+                harbour_nudge = host_harbour_unit_nudge(prompt, spec)
+                if harbour_nudge:
+                    immersion_repair_used = True
+                    messages.append({"role": "user", "content": harbour_nudge})
+                    continue
                 nudge = host_immersion_repair_nudge(prompt, spec)
                 if nudge:
                     immersion_repair_used = True

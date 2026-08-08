@@ -482,6 +482,7 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "cue table" in prompt.lower() or "inland truck" in prompt.lower()
     assert "125" in prompt or "76" in prompt or "channel_place" in prompt
     assert "coastal_harbour" in prompt or "140" in prompt
+    assert "path_point_deltas" in prompt or "2–3" in prompt or "2-3" in prompt
     assert "dynamics_mode" in prompt
     assert "dynamics" in prompt
     assert "strike_target_class" in prompt
@@ -497,6 +498,7 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "list_strike_targets" in joined
     assert "125" in joined or "76" in joined or "channel_place" in joined
     assert "list_mission_options" in joined
+    assert "domain=sea" in prompt or "domain=sea" in joined
     assert "convoy_transit" in joined
     assert "aaa_alert" in joined
     assert "ship_under_way" in joined

@@ -25,8 +25,9 @@ from ..models import MissionSpec
 from ..tools.research import format_research_host_message, format_research_lines
 from ..tools.surface import list_mission_options, research_guidance
 from ..validation import validate_mission_spec
-from .immersion import host_immersion_repair_nudge
+from .immersion import host_harbour_unit_nudge, host_immersion_repair_nudge
 from .llm import LLMClient, default_tools
+from .path_clamp import try_clamp_after_path_domain_fail
 from .planner import (
     diagnose_mission_spec_parse,
     load_prefs,
@@ -148,6 +149,17 @@ class PlanSession:
         content = (resp.content or "").strip() or "(no reply)"
         parsed, parse_err = diagnose_mission_spec_parse(resp.content)
         if parsed is not None:
+            harbour_nudge = host_harbour_unit_nudge(user_text, parsed)
+            if harbour_nudge and not getattr(self, "_harbour_nudge_used", False):
+                self._harbour_nudge_used = True
+                self.messages.append({"role": "user", "content": harbour_nudge})
+                return SlashResult(
+                    output=(
+                        content + "\n\n[Host] Harbour ask used land units — "
+                        "commander nudged to pick sea_craft via list_strike_targets"
+                        "(domain=sea). Await a revised Spec JSON, then /accept."
+                    )
+                )
             nudge = host_immersion_repair_nudge(user_text, parsed)
             if nudge and not getattr(self, "_immersion_nudge_used", False):
                 self._immersion_nudge_used = True
@@ -364,6 +376,16 @@ class PlanSession:
             return msg
         do_compile = compile_after or self.compile_on_accept
         vresult = validate_mission_spec(spec, inventory=self.inventory)
+        if not vresult.ok:
+            clamped = try_clamp_after_path_domain_fail(spec, list(vresult.errors))
+            if clamped is not None:
+                v2 = validate_mission_spec(clamped, inventory=self.inventory)
+                if v2.ok:
+                    spec = clamped
+                    self.proposed_spec = clamped
+                    self.draft_spec = clamped
+                    vresult = v2
+                    vlog(self.verbose, "[verbose] host clamped land path onto strike deltas")
         if not vresult.ok:
             errors = [
                 {
