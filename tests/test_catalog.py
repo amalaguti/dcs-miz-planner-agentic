@@ -223,6 +223,29 @@ def test_invent_heuristic_meta_after_sync(tmp_path: Path) -> None:
     assert mid["preferred_motion"] == "patrol"
 
 
+def test_channel_place_geometry_recipes_after_sync(tmp_path: Path) -> None:
+    """#8f: numeric Manston-relative recipes on channel_place cards."""
+    db = tmp_path / "inventory.sqlite"
+    snap = CatalogService(db_path=db).sync()
+    by_key = {(o.family, o.id): o for o in snap.planning_options}
+
+    inland = json.loads(by_key[("channel_place", "french_coast_strike_belt")].meta_json)
+    assert inland["strike_bearing_deg"] == 125
+    assert inland["strike_distance_km"] == 76
+    assert inland["domain"] == "land"
+
+    mid = json.loads(by_key[("channel_place", "mid_channel_shipping")].meta_json)
+    assert mid["strike_bearing_deg"] == 140
+    assert mid["strike_distance_km"] == 40
+    assert mid["domain"] == "sea"
+
+    harbour = json.loads(by_key[("channel_place", "coastal_harbour")].meta_json)
+    assert harbour["strike_bearing_deg"] == 120
+    assert harbour["strike_distance_km"] == 70
+    assert harbour["preferred_ai_preset"] == "harbour_static"
+    assert harbour["domain"] == "sea"
+
+
 def test_catalog_list_strike_units_cli(tmp_path: Path) -> None:
     import io
     from contextlib import redirect_stdout

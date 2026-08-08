@@ -69,7 +69,7 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 8c | `agent-strike-target-catalog` | **Prebuilt** SQLite catalog of Channel strike/recon **unit targets** (land + sea) for agent suggestion — sync from registry YAML (`ground_units.yaml` + `ships.yaml`) at `dcs-miz catalog sync` time (same async path as `#8a`/`#9`); agent **queries SQLite only** during invent/chat (never scan YAML/PyDCS mid-turn). Tool e.g. `list_strike_targets(domain?, class?, q?)` → exact DCS ids + labels + domain for recon contacts / GA targets. Join or tag with `strike_target_class` / `channel_place` shelves. Compile/validate stay registry SoT. Pairs with `#15a`/`#15f` so “search/recon” can recommend e.g. `Uboat_VIIC`. Feeds **`#8d`** invent heuristics. | `done` (CLI/API accepted 2026-08-08; ME not required) |
 | 8d | `agent-target-option-heuristics` | Make invent/chat **smart at picking targets + motion + `#15h` AI presets** from pilot intent (not free-form Opt*). Decision table / tool guidance: place (`channel_place`) × class (`strike_target_class`) × ask type (convoy / flak / U-boat / harbour) → unit ids (via `#8c`), `motion`, `ai_preset` / `move_formation`. Enrich planning_options + prompts/schema so the model calls catalog tools then emits only allowlisted fields. Optional: few-shot invent tests (“truck column inland” → Blitz + path + `convoy_transit`). **Depends on** `#15h` shelf + preferably `#8c` query tool. **Non-goals:** dumping ME Options; inventing DCS ids; learning from flight telemetry. | `done` (CLI/API accepted 2026-08-08; no ME) |
 | 8e | `theatre-target-promote-checklist` | Durable **human/agent checklist** for adding a new theatre slice and/or expanding strike/recon target shelves (not auto-scrape). See notes below. Feeds R11 + registry growth after `#8d`. | `idea` (draft 2026-08-08) |
-| 8f | `agent-channel-geometry-invent` | Fix invent **placement**: `channel_place` numeric recipes (bearing/distance bands from Manston examples), path/patrol domain coherence, stronger validation **repair nudges** for `motion_domain_mismatch` / `strike_domain_mismatch`. Live invent eval 2026-08-08: unit/preset cues OK; inland convoy paths over water, harbour ~4 km from Manston, U-boat GA domain fails. **Before** shelf expand. | `idea` (draft 2026-08-08 — next promote) |
+| 8f | `agent-channel-geometry-invent` | Fix invent **placement**: `channel_place` numeric recipes (bearing/distance bands from Manston examples), path/patrol domain coherence, stronger validation **repair nudges** for `motion_domain_mismatch` / `strike_domain_mismatch`. Live invent eval 2026-08-08: unit/preset cues OK; inland convoy paths over water, harbour ~4 km from Manston, U-boat GA domain fails. **Before** shelf expand. | `done` (CLI/API 2026-08-08; live invent re-eval optional) |
 | 8b | `user-prefs-and-history` | Store user preferences, mission-generation history (Spec path, outcome), and post-flight / post-gen satisfaction surveys; agent tools to read prefs and record feedback | `done` (CLI/API accepted 2026-08-01) |
 | 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling (uses catalog + prefs/history tools) | `done` (stub Spec accepted 2026-08-01; live needs OPENAI_API_KEY) |
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
@@ -308,9 +308,8 @@ smoke checklist in that file.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#8f` `agent-channel-geometry-invent` (place
-recipes + domain repair). Then shelf expand / `#8e` checklist; `#15h` ME do-soon
-anytime.
+**Next promote / in proposal:** Channel unit shelf expand (follow `#8e`
+checklist) and/or `#15h` ME do-soon. Invent geometry `#8f` done.
 
 **Do soon (not blocking next promote):**
 - `#15h` ME smoke: Instant Action
@@ -619,7 +618,7 @@ Resolve these inside the relevant proposal, not here.
 | Section discipline Spec shape (`#15e`) | **Closed 2026-08-07:** optional `player.flight.discipline` (wingman+join_up); moving zone + soft/hard; flags 820+; hard `message_end`\|`mission_end`\|`section_rtb`; example `manston_cap_flight_discipline` |
 | Strike/recon target catalog for agent (`#8c`) | **Done 2026-08-08:** `catalog_strike_units` + `list_strike_targets`; invent prompts prefer catalog ids; registry remains compile SoT |
 | Agent target + option invent heuristics (`#8d`) | **Done 2026-08-08:** cue table + preferred_* meta + invent call order; hermetic tests |
-| Channel invent geometry (`#8f`) | **Draft 2026-08-08:** place recipes + domain repair nudges; next after `#8d` (live eval geometry gaps) |
+| Channel invent geometry (`#8f`) | **Done 2026-08-08:** place recipes + domain repair nudges; coastal_harbour place |
 | Theatre / target promote checklist (`#8e`) | **Draft 2026-08-08:** steps for new maps + new units — after geometry invent is solid |
 | Target motion Spec shape (`#15g`) | **Closed in proposal `strike-target-motion`:** default static; optional `patrol` / short `path`; sea + soft land; harbour + AAA static; trains later; Bombing stays at strike point v1; speed bands in `target_motion.yaml` + seeded cruise / waypoint jitter; threat stop/escape deferred |
 | Target threat reaction under fire (`#15g`) | **Closed for disperse:** moving land → ME Disperse Under Fire (option 8, default 180s). Further stop/dash scripting still deferred |

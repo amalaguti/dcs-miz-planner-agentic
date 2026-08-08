@@ -63,10 +63,12 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "options with support levels (supported|advisory|future). Includes "
                 "mission_behaviour / mission_inspiration (immersion recipes), plus "
                 "mission-designer shelves dynamics_mode (Spec dynamics.mode), "
-                "strike_target_class, ground_ai_preset, and channel_place. For "
-                "GA/recon targets[] invent: call this first (read preferred_motion / "
-                "preferred_ai_preset / cues), then list_strike_targets, then emit "
-                "allowlisted unit + motion + ai_preset only — no free-form ME Opt*."
+                "strike_target_class, ground_ai_preset, and channel_place. channel_place "
+                "meta includes strike_bearing_deg/strike_distance_km (and aoi_*) recipes "
+                "— copy those for GA/recon geometry. For targets[] invent: call this "
+                "first (preferred_motion / preferred_ai_preset / cues / geometry), then "
+                "list_strike_targets, then emit allowlisted unit + motion + ai_preset "
+                "only — no free-form ME Opt*."
             ),
             "parameters": {"type": "object", "properties": {}},
         },

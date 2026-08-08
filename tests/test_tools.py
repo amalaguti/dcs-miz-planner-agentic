@@ -147,7 +147,10 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("strike_target_class", "hard_infrastructure")]["support"] == "future"
     assert by_key[("channel_place", "manston_home")]["meta"]["airfield"] == "Manston"
     assert by_key[("channel_place", "french_coast_strike_belt")]["meta"]["domain"] == "land"
+    assert by_key[("channel_place", "french_coast_strike_belt")]["meta"]["strike_distance_km"] == 76
     assert by_key[("channel_place", "mid_channel_shipping")]["meta"]["domain"] == "sea"
+    assert by_key[("channel_place", "mid_channel_shipping")]["meta"]["strike_bearing_deg"] == 140
+    assert by_key[("channel_place", "coastal_harbour")]["meta"]["strike_distance_km"] == 70
     assert "recon" in by_key[("channel_place", "mid_channel_shipping")]["meta"]["mission_types"]
     insp = by_key[("mission_inspiration", "low_level_channel_hop")]
     uboat = by_key[("mission_inspiration", "uboat_surfaced_hunt")]
@@ -477,6 +480,8 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "ship_under_way" in prompt
     assert "harbour_static" in prompt
     assert "cue table" in prompt.lower() or "inland truck" in prompt.lower()
+    assert "125" in prompt or "76" in prompt or "channel_place" in prompt
+    assert "coastal_harbour" in prompt or "140" in prompt
     assert "dynamics_mode" in prompt
     assert "dynamics" in prompt
     assert "strike_target_class" in prompt
@@ -490,6 +495,7 @@ def test_prompts_mention_capability_catalog() -> None:
     schema = build_spec_schema("ground_attack")
     joined = " ".join(schema.notes)
     assert "list_strike_targets" in joined
+    assert "125" in joined or "76" in joined or "channel_place" in joined
     assert "list_mission_options" in joined
     assert "convoy_transit" in joined
     assert "aaa_alert" in joined
@@ -512,6 +518,7 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "channel_place" in opt_desc
     assert "ground_ai_preset" in opt_desc
     assert "list_strike_targets" in opt_desc
+    assert "strike_bearing_deg" in opt_desc or "geometry" in opt_desc
     strike_tool = next(
         t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_strike_targets"
     )

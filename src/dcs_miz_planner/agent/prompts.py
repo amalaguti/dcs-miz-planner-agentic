@@ -35,6 +35,12 @@ Rules:
   flak/AAA/guns → aaa_guns + static + aaa_alert;
   mid-Channel U-boat/shipping under way → sea_craft + patrol + ship_under_way;
   harbour/dock shipping → sea_craft + static + harbour_static.
+- Channel geometry: copy channel_place meta strike_bearing_deg / strike_distance_km
+  (and aoi_* for recon) from french_coast_strike_belt (~125°/76 km inland),
+  mid_channel_shipping (~140°/40 km water), or coastal_harbour (~120°/70 km coastal
+  water). Land path waypoints must stay on land near the strike — never mid-Channel
+  distances for trucks. Sea targets need water geometry — never a few km from Manston
+  for harbour/shipping. Distances ~65 km toward Dunkirk are still water.
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
   list_mission_options for families dynamics_mode, strike_target_class, and
@@ -216,8 +222,23 @@ def host_spec_repair_nudge(
         fragment = format_spec_schema_fragment(build_spec_schema(mt))
     except (ValueError, FileNotFoundError, OSError):
         fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
+    geometry_hint = ""
+    err_l = (parse_err or "").lower()
+    if "motion_domain_mismatch" in err_l or "strike_domain_mismatch" in err_l:
+        geometry_hint = (
+            "\n\nChannel geometry repair (domain mismatch):\n"
+            "- Land soft/AAA: use channel_place french_coast_strike_belt — "
+            "strike ~bearing 125° / distance 76 km from Manston (inland). Path "
+            "waypoints must stay on land near that strike — not mid-Channel water.\n"
+            "- Mid-Channel sea under way: mid_channel_shipping — ~140° / 40 km water; "
+            "patrol + ship_under_way.\n"
+            "- Harbour/dock sea: coastal_harbour — ~120° / 70 km coastal water; "
+            "static + harbour_static. Never place harbour a few km from Manston.\n"
+            "- Distances ~65 km toward Dunkirk are still Channel water for land units.\n"
+        )
     return (
-        f"[Host] Your last Spec JSON failed to load:\n{parse_err}\n\n"
+        f"[Host] Your last Spec JSON failed to load:\n{parse_err}\n"
+        f"{geometry_hint}\n"
         "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences). "
         "Match this derived example structure exactly:\n\n"
         f"{fragment}"

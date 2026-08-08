@@ -827,6 +827,8 @@ options:
     description: >
       Axis-held French/Belgian coastal belt (Dunkirk–Calais area) for land GA targets —
       place soft/AAA inland of the coast, not on UK soil or mid-Channel water.
+      Copy strike_bearing_deg / strike_distance_km for Spec strike (and nearby path
+      points). Distances under ~70 km toward Dunkirk are still Channel water.
     support: advisory
     meta:
       domain: land
@@ -834,9 +836,20 @@ options:
       related_classes: [soft_vehicles, aaa_guns]
       mission_types: [ground_attack]
       cues: [dunkirk, calais, french coast, inland, convoy, flak]
-      # Class-dependent: soft → convoy_transit + path; aaa → aaa_alert + static
       preferred_ai_preset_soft: convoy_transit
       preferred_ai_preset_aaa: aaa_alert
+      # From examples/manston_ground_attack.yaml / convoy / flak_alert
+      strike_bearing_deg: 125
+      strike_distance_km: 76
+      strike_altitude_m: 2000
+      example: examples/manston_ground_attack.yaml
+      path_point_deltas:
+        - {bearing_delta_deg: 0, distance_delta_km: 0}
+        - {bearing_delta_deg: 3, distance_delta_km: 1}
+        - {bearing_delta_deg: -3, distance_delta_km: 2}
+      note: >
+        Land only. Keep path waypoints within a few km of strike on land —
+        do not invent path points at mid-Channel distances.
 
   - family: channel_place
     id: mid_channel_shipping
@@ -844,7 +857,7 @@ options:
     description: >
       Over-water Channel corridor for E-boat / U-boat / cargo ship strikes — sea_craft
       class only; keep land vehicles off the water. Prefer under-way motion (patrol).
-      Also fits recon contacts (observe).
+      Also fits recon contacts (observe). Copy strike/AOI bearing+distance from meta.
     support: advisory
     meta:
       domain: sea
@@ -854,9 +867,43 @@ options:
       preferred_motion: patrol
       preferred_ai_preset: ship_under_way
       cues: [mid-channel, shipping, uboat, e-boat, under way]
-      # Harbour/dock asks: use harbour_static + static instead of this place's defaults
       harbour_ai_preset: harbour_static
       harbour_motion: static
+      # From examples/manston_uboat_hunt.yaml / manston_uboat_recon.yaml
+      strike_bearing_deg: 140
+      strike_distance_km: 40
+      strike_altitude_m: 2000
+      aoi_bearing_deg: 140
+      aoi_distance_km: 40
+      aoi_altitude_m: 2000
+      example: examples/manston_uboat_hunt.yaml
+      note: >
+        Water only. Do not use french_coast inland distances for sea craft.
+
+  - family: channel_place
+    id: coastal_harbour
+    label: Coastal harbour / dock
+    description: >
+      Near-coast harbour or dock shipping (tied up) — sea_craft on water close to the
+      French/Belgian coast, not mid-Channel under way and not UK home waters.
+      Use harbour_static + static motion. Copy strike geometry from meta.
+    support: advisory
+    meta:
+      domain: sea
+      geometry_hint: coastal_harbour
+      related_classes: [sea_craft]
+      mission_types: [ground_attack, recon]
+      preferred_motion: static
+      preferred_ai_preset: harbour_static
+      cues: [harbour, harbor, dock, tied up, alongside, port]
+      # Near Dunkirk approach water (coast), not Manston pattern (~4 km) and not inland land.
+      # Dunkirk Mardyck ≈ 120° / 72 km — use slightly shorter for near-coast water.
+      strike_bearing_deg: 120
+      strike_distance_km: 70
+      strike_altitude_m: 2000
+      example: examples/manston_uboat_hunt.yaml
+      note: >
+        Sea/coastal water. Never place harbour strikes a few km from Manston.
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

@@ -160,6 +160,19 @@ def test_host_spec_repair_nudge_includes_derived_example() -> None:
     assert "DO NOT emit" in nudge
 
 
+def test_host_spec_repair_nudge_domain_mismatch_includes_geometry() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    payload = (
+        'Validation failed:\n[{"code": "motion_domain_mismatch", "message": "land path over sea"}]'
+    )
+    nudge = host_spec_repair_nudge(payload, mission_type="ground_attack")
+    assert "motion_domain_mismatch" in nudge or "domain mismatch" in nudge.lower()
+    assert "125" in nudge or "french_coast" in nudge
+    assert "140" in nudge or "mid_channel" in nudge
+    assert "coastal_harbour" in nudge or "70" in nudge
+
+
 def test_invalid_embedded_spec_injects_shape_nudge(tmp_path: Path) -> None:
     bad = """Here is the Spec:
 {
