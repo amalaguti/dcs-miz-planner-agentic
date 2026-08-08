@@ -21,7 +21,8 @@ description: >-
    (`list_strike_targets`), not an ME/install dump. Before expanding theatres or
    target shelves, follow [`docs/THEATRE_TARGET_PROMOTE.md`](../../../docs/THEATRE_TARGET_PROMOTE.md)
    (`#8e`). Invent unit/preset cues ≠ geometry — use place recipes + invent path
-   clamp (`#8f`/`#8g`).
+   clamp (`#8f`/`#8g`). Trains use `french_coast_rail_corridor` path deltas only —
+   **no** DCS rail-mesh snap (`#8m`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent; soft-warn missing aircraft modules.
