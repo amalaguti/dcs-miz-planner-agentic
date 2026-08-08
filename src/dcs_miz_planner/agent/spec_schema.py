@@ -115,6 +115,13 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "Optional speed_kmh within curated unit band; omit for seeded cruise + waypoint jitter. "
             "Moving land groups default Disperse Under Fire 180s (disperse_under_fire_s; 0=off)."
         ),
+        (
+            "Optional targets[].ai_preset (convoy_transit|aaa_alert|ship_under_way|harbour_static) "
+            "and/or ai {roe,alarm_state,engage_air_weapons,restrict_targets,interception_range} "
+            "plus land move_formation (off_road|on_road|rank|cone|vee|…). Soft: no interception_range; "
+            "sea: no move_formation/restrict_targets. ME lists ≠ capability. "
+            "Examples: manston_ground_attack_flak_alert, convoy with convoy_transit."
+        ),
         'objectives must include {"type":"attack_ground"}; enemies must be empty.',
         "omit the cap block. Pilot jettisons the slipper tank in the cockpit before attack.",
         (
@@ -152,7 +159,8 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         ),
         (
             "Optional targets[].motion (static|patrol|path) same as ground_attack — "
-            "observe-only contacts may still move."
+            "observe-only contacts may still move. Optional ai_preset/ai/move_formation "
+            "same class rules as GA (e.g. ship_under_way on U-boat)."
         ),
         "AOI is airfield-relative — never invent raw map x/y. enemies must be empty.",
         "omit strike, cap, escort, package. zones/triggers must stay empty (find beat injected).",

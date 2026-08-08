@@ -34,5 +34,6 @@ targets:
     coalition: red
     motion: patrol
     patrol_radius_m: 2000
+    ai_preset: ship_under_way
 objectives:
   - type: attack_ground

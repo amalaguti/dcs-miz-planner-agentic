@@ -41,8 +41,10 @@ observes an AOI inland near Dunkirk with optional truck contacts (no bombs; find
 Surfaced U-boat mid-Channel pair: `examples/manston_uboat_recon.yaml` /
 `manston_uboat_hunt.yaml` (locate then bomb while surfaced — not ASW; accepted ME
 2026-08-08; patrol motion under way; accepted ME 2026-08-08). Soft truck convoy path:
-`examples/manston_ground_attack_convoy.yaml` (Off Road + Disperse Under Fire; ME accepted
-2026-08-08; airborne disperse do-soon).
+`examples/manston_ground_attack_convoy.yaml` (Off Road + Disperse Under Fire +
+`convoy_transit` AI; ME accepted 2026-08-08; airborne disperse do-soon). Emplaced
+Flak alert: `examples/manston_ground_attack_flak_alert.yaml` (`aaa_alert`). Optional
+target AI presets / `move_formation` (`#15h`; ME smoke do-soon).
 Compile writes squadron-commander briefing text
 into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; accepted in-game
 2026-08-02). Weather presets: `sunny_clear`, `dawn_clear`, `marginal_vfr`, plus campaign-seeded

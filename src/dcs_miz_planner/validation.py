@@ -401,6 +401,7 @@ def _validate_ground_attack(
     if spec.strike is not None and spec.targets:
         _validate_strike_domain(spec, registry, errors)
         _validate_target_motion(spec, registry, errors, area="strike")
+        _validate_target_ai(spec, registry, errors)
 
 
 def _validate_strike_domain(
@@ -692,6 +693,7 @@ def _validate_recon(
     if spec.recon is not None and spec.targets:
         _validate_recon_domain(spec, registry, errors)
         _validate_target_motion(spec, registry, errors, area="recon")
+        _validate_target_ai(spec, registry, errors)
 
 
 def _validate_target_motion(
@@ -782,6 +784,59 @@ def _validate_target_motion(
                             f"[{profile.min_kmh:g}, {profile.max_kmh:g}] km/h"
                         ),
                         hint="Omit speed_kmh for a seeded pick inside the band, or clamp it",
+                    )
+                )
+
+
+def _validate_target_ai(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+) -> None:
+    """Class/domain allowlists for ai_preset / ai / move_formation (R12 / #15h)."""
+    from .target_ai import allowed_ai_keys, resolve_target_ai, target_ai_class
+
+    for i, tgt in enumerate(spec.targets):
+        if tgt.ai_preset is None and tgt.ai is None and tgt.move_formation is None:
+            continue
+        try:
+            unit = registry.get_strike_unit(tgt.unit)
+        except RegistryError:
+            continue
+        ai_class = target_ai_class(tgt.unit, domain=unit.domain)
+        allowed = allowed_ai_keys(ai_class)
+        resolved = resolve_target_ai(tgt)
+        path = f"targets[{i}]"
+
+        if resolved.move_formation is not None and unit.domain != "land":
+            errors.append(
+                ValidationError(
+                    code="target_ai_class_mismatch",
+                    path=f"{path}.move_formation",
+                    message="move_formation is land-only (not valid for sea targets)",
+                )
+            )
+
+        checks: list[tuple[str, object | None]] = [
+            ("roe", resolved.roe),
+            ("alarm_state", resolved.alarm_state),
+            ("engage_air_weapons", resolved.engage_air_weapons),
+            ("restrict_targets", resolved.restrict_targets),
+            ("interception_range", resolved.interception_range),
+        ]
+        for key, value in checks:
+            if value is None:
+                continue
+            if key not in allowed:
+                errors.append(
+                    ValidationError(
+                        code="target_ai_class_mismatch",
+                        path=f"{path}.ai.{key}",
+                        message=(
+                            f"ai.{key} not allowed for {ai_class} targets "
+                            f"(unit {tgt.unit!r}, domain {unit.domain})"
+                        ),
+                        hint=f"Allowed ai keys for {ai_class}: {', '.join(sorted(allowed))}",
                     )
                 )
 

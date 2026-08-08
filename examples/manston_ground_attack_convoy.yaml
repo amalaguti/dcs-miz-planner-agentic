@@ -5,8 +5,8 @@ name: Manston Channel Truck Convoy
 description: >
   Cold start at Manston with 2x250 lb bombs and a slipper tank. Cross to an inland
   strike belt near Dunkirk where soft enemy trucks are moving on a short road-ish
-  path (Disperse Under Fire ~180 s if attacked from the air). Jettison the tank
-  before the attack.
+  path (convoy_transit AI: Alarm Green, Return Fire, Off Road; Disperse Under Fire
+  ~180 s if attacked from the air). Jettison the tank before the attack.
 date:
   year: 1944
   month: 6
@@ -41,5 +41,6 @@ targets:
         distance_km: 77
       - bearing_deg: 122
         distance_km: 78
+    ai_preset: convoy_transit
 objectives:
   - type: attack_ground

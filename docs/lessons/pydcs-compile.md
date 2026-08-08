@@ -5,6 +5,17 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Target AI options: class allowlists, not ME dump (2026-08-08)
+
+- **Date:** 2026-08-08
+- **Lesson:** Ground/sea `targets[]` AI knobs (`ai_preset` / `ai` / `move_formation`)
+  must follow R12 ME visibility by **unit class**: soft trucks reject
+  `interception_range`; sea rejects `move_formation` / `restrict_targets`; AAA may
+  set interception. Land route formation is `PointAction` (On/Off Road, Rank, …),
+  not air `OptFormation`. ME can list options that are useless for a unit (Spit
+  ECM) — never mirror the full Options panel into Spec.
+- **Code:** `target_ai.py`, `validation._validate_target_ai`, `target_motion.apply_target_motion`.
+
 ## Target motion: ship/vehicle waypoints + SwitchWaypoint loop (2026-08-08)
 
 - **Date:** 2026-08-08

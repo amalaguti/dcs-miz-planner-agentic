@@ -706,6 +706,66 @@ options:
       mission_types: [ground_attack]
       preferred_motion: static
 
+  - family: ground_ai_preset
+    id: convoy_transit
+    label: Convoy transit (soft)
+    description: >
+      Soft land targets — Alarm Green, Return Fire, Off Road move_formation.
+      Pair with motion path/patrol. Example: manston_ground_attack_convoy.
+    support: supported
+    meta:
+      domain: land
+      class: soft
+      example: examples/manston_ground_attack_convoy.yaml
+
+  - family: ground_ai_preset
+    id: aaa_alert
+    label: AAA alert
+    description: >
+      Emplaced AAA — Alarm Red, Open Fire, engage air weapons, interception range.
+      Prefer static. Example: manston_ground_attack_flak_alert.
+    support: supported
+    meta:
+      domain: land
+      class: aaa
+      example: examples/manston_ground_attack_flak_alert.yaml
+
+  - family: ground_ai_preset
+    id: ship_under_way
+    label: Ship under way
+    description: >
+      Sea craft — Return Fire + Alarm Green (no disperse / move_formation).
+      Pair with motion patrol/path. Example: manston_uboat_hunt.
+    support: supported
+    meta:
+      domain: sea
+      example: examples/manston_uboat_hunt.yaml
+
+  - family: ground_ai_preset
+    id: harbour_static
+    label: Harbour / dock static
+    description: >
+      Tied-up sea or quiet static posture — Weapons Hold + Alarm Auto.
+    support: supported
+    meta:
+      domain: sea
+
+  - family: target_move_formation
+    id: off_road
+    label: Off Road
+    description: Land waypoint PointAction Off Road (default convoy).
+    support: supported
+    meta:
+      domain: land
+
+  - family: target_move_formation
+    id: on_road
+    label: On Road
+    description: Land waypoint PointAction On Road (use near road mesh).
+    support: supported
+    meta:
+      domain: land
+
   - family: strike_target_class
     id: sea_craft
     label: Boats / ships

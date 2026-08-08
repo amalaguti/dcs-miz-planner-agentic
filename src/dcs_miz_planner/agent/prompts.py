@@ -121,7 +121,12 @@ Rules:
   water MUST use ship/boat registry ids (e.g. surfaced Uboat_VIIC on mid-Channel —
   manston_uboat_hunt; not ASW/depth charges). Optional per-target motion: omit/static
   (harbour, AAA); patrol+patrol_radius_m (open sea); or path with 2–6 airfield-relative
-  points (truck convoy — manston_ground_attack_convoy). Practice (strike.practice true): same-coalition
+  points (truck convoy — manston_ground_attack_convoy). Optional ai_preset
+  (convoy_transit|aaa_alert|ship_under_way|harbour_static) and/or ai
+  {roe,alarm_state,engage_air_weapons,restrict_targets,interception_range} plus
+  land move_formation (off_road|on_road|rank|cone|vee|…). Soft trucks cannot set
+  interception_range; sea cannot set move_formation. AAA example:
+  manston_ground_attack_flak_alert. Practice (strike.practice true): same-coalition
   / home-territory targets allowed for bombing practice (e.g. UK-side range). objectives
   include {"type":"attack_ground"}. enemies must be empty. Optional narrative.enabled
   true expands curated GA immersion (push / ingress / targets-down win) when
@@ -140,7 +145,8 @@ Rules:
   Omit player.payload, strike, cap, escort, package. zones/triggers must stay empty
   (compiler injects AOI find beat). Not a bomb run — locate/observe then RTB.
   Surfaced U-boat locate: mid-Channel + Uboat_VIIC (see manston_uboat_recon); prefer
-  motion: patrol when under way; never invent ASW / depth charges / submerged detect.
+  motion: patrol when under way; optional ai_preset ship_under_way; never invent ASW /
+  depth charges / submerged detect.
 """
 
 ONESHOT_CLOSING = """\

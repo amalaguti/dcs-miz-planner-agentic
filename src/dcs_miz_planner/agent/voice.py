@@ -217,6 +217,15 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
         has_slipper = "slipper" in payload.lower() or "tank" in payload.lower()
         has_uboat = any(t.unit == "Uboat_VIIC" for t in spec.targets)
         moving = any(t.motion is not None and t.motion.value != "static" for t in spec.targets)
+        aaa_alert = any(
+            t.ai_preset == "aaa_alert"
+            or (
+                t.ai is not None
+                and t.ai.alarm_state is not None
+                and t.ai.alarm_state.value == "red"
+            )
+            for t in spec.targets
+        )
         tactics = (
             f"Ground attack on {strike_bits}. Targets: {targets} (enemy only). "
             f"Loadout: {payload}. Run in with a clear abort, release on the briefed "
@@ -224,6 +233,8 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
         )
         if moving:
             tactics = f"{tactics} Some targets are briefed under way — expect movement."
+        if aaa_alert:
+            tactics = f"{tactics} AAA may be alert — expect ready guns."
         if has_uboat:
             tactics = (
                 f"{tactics} U-boat is briefed on the surface — bomb while she is up; "

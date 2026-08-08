@@ -165,8 +165,13 @@ def apply_target_motion(
     seed: int = 0,
     target_index: int = 0,
 ) -> None:
-    """Append looping waypoints for patrol/path; apply disperse on land when configured."""
+    """Append looping waypoints for patrol/path; apply disperse + AI options."""
     from dcs.task import SwitchWaypoint
+
+    from .target_ai import apply_target_ai_options, resolve_target_ai
+
+    resolved_ai = resolve_target_ai(tgt)
+    land_formation = resolved_ai.move_formation if domain == "land" else None
 
     motion = ground_target_motion(tgt)
     if motion is not TargetMotion.STATIC:
@@ -189,6 +194,7 @@ def apply_target_motion(
                     area_center.point_from_heading(heading, radius),
                     domain=domain,
                     speed_kmh=spd,
+                    move_formation=land_formation,
                 )
         else:
             extra = list(tgt.path[1:])
@@ -203,6 +209,7 @@ def apply_target_motion(
                     airport_position.point_from_heading(pt.bearing_deg, pt.distance_km * 1000.0),
                     domain=domain,
                     speed_kmh=spd,
+                    move_formation=land_formation,
                 )
 
         n = len(group.points)
@@ -214,15 +221,31 @@ def apply_target_motion(
     if disperse_s is not None:
         apply_disperse_under_fire(group, disperse_s)
 
+    if resolved_ai.has_emit():
+        apply_target_ai_options(group, resolved_ai, domain=domain)
+
 
 def _set_point_speed_kmh(point: Any, speed_kmh: float) -> None:
     point.speed = float(speed_kmh) / 3.6
 
 
-def _add_wp(group: Any, position: Any, *, domain: str, speed_kmh: float) -> None:
+def _add_wp(
+    group: Any,
+    position: Any,
+    *,
+    domain: str,
+    speed_kmh: float,
+    move_formation=None,
+) -> None:
     from dcs.point import PointAction
+
+    from .models import TargetMoveFormation
+    from .target_ai import point_action_for_formation
 
     if domain == "sea":
         group.add_waypoint(position, speed=speed_kmh)
-    else:
-        group.add_waypoint(position, speed=speed_kmh, move_formation=PointAction.OffRoad)
+        return
+    action = PointAction.OffRoad
+    if isinstance(move_formation, TargetMoveFormation):
+        action = point_action_for_formation(move_formation)
+    group.add_waypoint(position, speed=speed_kmh, move_formation=action)

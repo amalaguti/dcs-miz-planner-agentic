@@ -232,6 +232,54 @@ class TargetPathPoint(SpecModel):
     distance_km: float = Field(gt=0)
 
 
+class TargetRoe(str, Enum):
+    """Ground/sea ROE (WeaponFree not used for targets)."""
+
+    OPEN_FIRE = "open_fire"
+    RETURN_FIRE = "return_fire"
+    WEAPONS_HOLD = "weapons_hold"
+
+
+class TargetAlarmState(str, Enum):
+    AUTO = "auto"
+    GREEN = "green"
+    RED = "red"
+
+
+class TargetRestrictTargets(str, Enum):
+    ALL = "all"
+    AIR_ONLY = "air_only"
+    GROUND_ONLY = "ground_only"
+
+
+class TargetMoveFormation(str, Enum):
+    """Land waypoint PointAction (not air OptFormation)."""
+
+    OFF_ROAD = "off_road"
+    ON_ROAD = "on_road"
+    RANK = "rank"
+    CONE = "cone"
+    VEE = "vee"
+    DIAMOND = "diamond"
+    ECHELON_LEFT = "echelon_left"
+    ECHELON_RIGHT = "echelon_right"
+
+
+class TargetAi(SpecModel):
+    """Allowlisted WP AI options for a ground/sea target (R12 / #15h)."""
+
+    roe: TargetRoe | None = None
+    alarm_state: TargetAlarmState | None = None
+    engage_air_weapons: bool | None = None
+    restrict_targets: TargetRestrictTargets | None = None
+    #: Percent 0–100 for OptInterceptionRange (AAA / sea; not soft trucks).
+    interception_range: int | None = Field(default=None, ge=0, le=100)
+
+
+#: Curated preset ids for ``GroundTarget.ai_preset``.
+TARGET_AI_PRESETS = frozenset({"convoy_transit", "aaa_alert", "ship_under_way", "harbour_static"})
+
+
 class GroundTarget(SpecModel):
     """One enemy strike target group (land vehicle or ship/boat).
 
@@ -241,6 +289,8 @@ class GroundTarget(SpecModel):
 
     Optional motion: omit/`static` = parked; `patrol` + radius; or short looping
     `path` of airfield-relative points (ships under way, truck convoys).
+
+    Optional AI: ``ai_preset`` and/or ``ai`` + land ``move_formation`` (#15h).
     """
 
     unit: str  # exact DCS ground or ship type id
@@ -257,6 +307,9 @@ class GroundTarget(SpecModel):
     #: Disperse Under Fire duration (seconds). Omit = auto 180s for moving land;
     #: ``0`` disables; sea units ignore (ground AI option only).
     disperse_under_fire_s: int | None = Field(default=None, ge=0, le=600)
+    ai_preset: str | None = None
+    ai: TargetAi | None = None
+    move_formation: TargetMoveFormation | None = None
 
     @model_validator(mode="after")
     def _motion_field_rules(self) -> GroundTarget:
@@ -270,18 +323,22 @@ class GroundTarget(SpecModel):
                 raise ValueError("path only valid when motion is path; omit for static")
             if self.speed_kmh is not None:
                 raise ValueError("speed_kmh only valid when motion is patrol or path")
-            return self
-        if motion is TargetMotion.PATROL:
+        elif motion is TargetMotion.PATROL:
             if self.patrol_radius_m is None:
                 raise ValueError("motion patrol requires patrol_radius_m")
             if self.path:
                 raise ValueError("path not valid when motion is patrol")
-            return self
-        # PATH
-        if not (2 <= len(self.path) <= 6):
-            raise ValueError("motion path requires 2–6 airfield-relative path points")
-        if self.patrol_radius_m is not None:
-            raise ValueError("patrol_radius_m not valid when motion is path")
+        else:
+            # PATH
+            if not (2 <= len(self.path) <= 6):
+                raise ValueError("motion path requires 2–6 airfield-relative path points")
+            if self.patrol_radius_m is not None:
+                raise ValueError("patrol_radius_m not valid when motion is path")
+        if self.ai_preset is not None and self.ai_preset not in TARGET_AI_PRESETS:
+            raise ValueError(
+                f"unknown ai_preset {self.ai_preset!r}; "
+                f"allowed: {', '.join(sorted(TARGET_AI_PRESETS))}"
+            )
         return self
 
 
