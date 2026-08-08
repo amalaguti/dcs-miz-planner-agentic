@@ -18,7 +18,8 @@ description: >-
 2. Tools return **structured dicts**; no dedicated research CLI required.
 3. Catalog shares `inventory.sqlite` as query layer — Channel YAML remains SoT;
    schema bumps must clear `synced_at`. Strike units are a **curated** YAML shelf
-   (`list_strike_targets`), not an ME/install dump.
+   (`list_strike_targets`), not an ME/install dump. Invent unit/preset cues ≠
+   geometry — place recipes / domain repair are a separate change (`#8f`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent; soft-warn missing aircraft modules.

@@ -691,6 +691,8 @@ options:
       payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
       mission_types: [ground_attack]
       preferred_motion: path
+      preferred_ai_preset: convoy_transit
+      cues: [truck, convoy, column, soft, blitz]
 
   - family: strike_target_class
     id: aaa_guns
@@ -705,6 +707,8 @@ options:
       payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
       mission_types: [ground_attack]
       preferred_motion: static
+      preferred_ai_preset: aaa_alert
+      cues: [flak, aaa, guns, pak, battery]
 
   - family: ground_ai_preset
     id: convoy_transit
@@ -716,6 +720,7 @@ options:
     meta:
       domain: land
       class: soft
+      preferred_motion: path
       example: examples/manston_ground_attack_convoy.yaml
 
   - family: ground_ai_preset
@@ -728,6 +733,7 @@ options:
     meta:
       domain: land
       class: aaa
+      preferred_motion: static
       example: examples/manston_ground_attack_flak_alert.yaml
 
   - family: ground_ai_preset
@@ -739,6 +745,7 @@ options:
     support: supported
     meta:
       domain: sea
+      preferred_motion: patrol
       example: examples/manston_uboat_hunt.yaml
 
   - family: ground_ai_preset
@@ -749,6 +756,8 @@ options:
     support: supported
     meta:
       domain: sea
+      preferred_motion: static
+      cues: [harbour, harbor, dock, tied up, alongside]
 
   - family: target_move_formation
     id: off_road
@@ -779,6 +788,11 @@ options:
       ship_ids: [Schnellboot_type_S130, Uboat_VIIC, Dry-cargo ship-1]
       payload_families: [spitfire_1x500, spitfire_2x250_slipper, spitfire_2x250]
       mission_types: [ground_attack]
+      preferred_motion: patrol
+      preferred_ai_preset: ship_under_way
+      cues: [uboat, e-boat, shipping, under way, mid-channel]
+      harbour_ai_preset: harbour_static
+      harbour_motion: static
 
   - family: strike_target_class
     id: hard_infrastructure
@@ -819,6 +833,10 @@ options:
       geometry_hint: inland_near_dunkirk
       related_classes: [soft_vehicles, aaa_guns]
       mission_types: [ground_attack]
+      cues: [dunkirk, calais, french coast, inland, convoy, flak]
+      # Class-dependent: soft → convoy_transit + path; aaa → aaa_alert + static
+      preferred_ai_preset_soft: convoy_transit
+      preferred_ai_preset_aaa: aaa_alert
 
   - family: channel_place
     id: mid_channel_shipping
@@ -834,6 +852,11 @@ options:
       related_classes: [sea_craft]
       mission_types: [ground_attack, recon]
       preferred_motion: patrol
+      preferred_ai_preset: ship_under_way
+      cues: [mid-channel, shipping, uboat, e-boat, under way]
+      # Harbour/dock asks: use harbour_static + static instead of this place's defaults
+      harbour_ai_preset: harbour_static
+      harbour_motion: static
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

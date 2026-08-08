@@ -472,6 +472,11 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "mission_behaviour" in prompt
     assert "mission_inspiration" in prompt
     assert "list_strike_targets" in prompt
+    assert "convoy_transit" in prompt
+    assert "aaa_alert" in prompt
+    assert "ship_under_way" in prompt
+    assert "harbour_static" in prompt
+    assert "cue table" in prompt.lower() or "inland truck" in prompt.lower()
     assert "dynamics_mode" in prompt
     assert "dynamics" in prompt
     assert "strike_target_class" in prompt
@@ -485,6 +490,11 @@ def test_prompts_mention_capability_catalog() -> None:
     schema = build_spec_schema("ground_attack")
     joined = " ".join(schema.notes)
     assert "list_strike_targets" in joined
+    assert "list_mission_options" in joined
+    assert "convoy_transit" in joined
+    assert "aaa_alert" in joined
+    assert "ship_under_way" in joined
+    assert "harbour_static" in joined
     schema_ff = build_spec_schema("free_flight")
     joined_ff = " ".join(schema_ff.notes)
     assert "mission_behaviour" in joined_ff
@@ -500,10 +510,15 @@ def test_prompts_mention_capability_catalog() -> None:
     assert "dynamics_mode" in opt_desc
     assert "strike_target_class" in opt_desc
     assert "channel_place" in opt_desc
+    assert "ground_ai_preset" in opt_desc
+    assert "list_strike_targets" in opt_desc
     strike_tool = next(
         t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_strike_targets"
     )
-    assert "targets[]" in strike_tool["function"]["description"]
+    strike_desc = strike_tool["function"]["description"]
+    assert "targets[]" in strike_desc
+    assert "list_mission_options" in strike_desc
+    assert "preferred_ai_preset" in strike_desc or "ai_preset" in strike_desc
     camp_tool = next(
         t for t in TOOL_DEFINITIONS if t["function"]["name"] == "list_installed_campaigns"
     )

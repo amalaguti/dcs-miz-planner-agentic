@@ -25,9 +25,16 @@ Rules:
 - Call list_mission_options and prefer rows with support "supported" or "advisory".
   Treat support "future" as roadmap only — never emit future knobs as Spec fields
   or claim they compile.
-- Before inventing ground_attack or recon targets[], call list_strike_targets
-  (optional domain land|sea, class_id from strike_target_class, or q substring) and
-  prefer returned exact unit_ids. Do not invent unit/ship strings.
+- Before inventing ground_attack or recon targets[]: (1) call list_mission_options
+  for strike_target_class / ground_ai_preset / channel_place (read preferred_motion,
+  preferred_ai_preset, cues); (2) call list_strike_targets (domain/class_id/q) and
+  prefer returned exact unit_ids. Do not invent unit/ship strings or free-form ME
+  Opt* names — only allowlisted ai_preset / ai / move_formation fields.
+- Target invent cue table (use shelf meta; pick unit via list_strike_targets):
+  inland truck/convoy → soft_vehicles + motion path + ai_preset convoy_transit;
+  flak/AAA/guns → aaa_guns + static + aaa_alert;
+  mid-Channel U-boat/shipping under way → sea_craft + patrol + ship_under_way;
+  harbour/dock shipping → sea_craft + static + harbour_static.
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
   list_mission_options for families dynamics_mode, strike_target_class, and
@@ -119,7 +126,9 @@ Rules:
   player.payload.
 - ground_attack: nested strike required (bearing_deg, distance_km, altitude_m from
   player airfield; optional practice bool). player.payload required (named preset).
-  targets non-empty. Combat (practice false/default): opposing coalition only; land
+  targets non-empty — invent via list_mission_options then list_strike_targets using
+  the cue table (convoy/flak/U-boat/harbour → class + motion + ai_preset). Combat
+  (practice false/default): opposing coalition only; land
   vehicles on enemy-held territory (Channel WWII: Axis French/Belgian coast). Mid-Channel
   water MUST use ship/boat registry ids (e.g. surfaced Uboat_VIIC on mid-Channel —
   manston_uboat_hunt; not ASW/depth charges). Optional per-target motion: omit/static
@@ -128,13 +137,13 @@ Rules:
   (convoy_transit|aaa_alert|ship_under_way|harbour_static) and/or ai
   {roe,alarm_state,engage_air_weapons,restrict_targets,interception_range} plus
   land move_formation (off_road|on_road|rank|cone|vee|…). Soft trucks cannot set
-  interception_range; sea cannot set move_formation. AAA example:
-  manston_ground_attack_flak_alert. Practice (strike.practice true): same-coalition
-  / home-territory targets allowed for bombing practice (e.g. UK-side range). objectives
-  include {"type":"attack_ground"}. enemies must be empty. Optional narrative.enabled
-  true expands curated GA immersion (push / ingress / targets-down win) when
-  zones/triggers are empty and strike+targets are set — never with hand-written triggers.
-  Omit cap, escort, and package.
+  interception_range; sea cannot set move_formation. Never invent free-form Opt*.
+  AAA example: manston_ground_attack_flak_alert. Practice (strike.practice true):
+  same-coalition / home-territory targets allowed for bombing practice (e.g. UK-side
+  range). objectives include {"type":"attack_ground"}. enemies must be empty. Optional
+  narrative.enabled true expands curated GA immersion (push / ingress / targets-down win)
+  when zones/triggers are empty and strike+targets are set — never with hand-written
+  triggers. Omit cap, escort, and package.
 - escort: nested escort required (bearing_deg, distance_km, altitude_m from player
   airfield, engagement ROE). package non-empty and same coalition as player (friendly
   only). objectives include {"type":"escort_package"}. enemies optional (bounce).

@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Invent: unit/preset cues ≠ Channel geometry (2026-08-08)
+
+- **Date:** 2026-08-08
+- **Lesson:** After `#8d`, live invent called `list_mission_options` /
+  `list_strike_targets` and often picked right units/presets (e.g. U-boat recon
+  patrol + `ship_under_way`; harbour static + `harbour_static`). Failures were
+  **geometry/domain**: land convoy paths over water (`motion_domain_mismatch`),
+  harbour strike ~4 km from Manston, U-boat GA domain errors — repair nudge did
+  not fix. Next: `#8f` place numeric recipes + stronger domain repair (before
+  shelf expand).
+- **Code / notes:** `out/target_invent_eval/`; `channel_place` still hint-only.
+
 ## Strike unit catalog is curated YAML, not ME dump (2026-08-08)
 
 - **Date:** 2026-08-08

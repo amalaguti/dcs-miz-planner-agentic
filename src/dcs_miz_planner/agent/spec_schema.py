@@ -100,16 +100,21 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "Channel crossings)."
         ),
         (
-            "targets must be non-empty. Call list_strike_targets before inventing "
-            "targets[] and prefer returned exact DCS unit_ids. Combat: opposing "
-            "coalition; land on Axis continent for Channel WWII; water = ships. "
+            "targets must be non-empty. Call list_mission_options (strike_target_class / "
+            "ground_ai_preset / channel_place) then list_strike_targets before inventing "
+            "targets[]; prefer returned exact DCS unit_ids and allowlisted ai_preset only. "
+            "Cue table: inland truck/convoy → soft + path + convoy_transit; flak/AAA → "
+            "aaa + static + aaa_alert; mid-Channel under way → sea + patrol + "
+            "ship_under_way; harbour/dock → sea + static + harbour_static. Combat: "
+            "opposing coalition; land on Axis continent for Channel WWII; water = ships. "
             "Practice (strike.practice true): same-coalition / UK-side targets "
             "allowed for bombing practice narrative."
         ),
         (
-            "Surfaced U-boat / sea hunt: use sea_craft ids (e.g. Uboat_VIIC) on mid-Channel "
-            "water geometry (see manston_uboat_hunt.yaml). Prefer motion: patrol when under "
-            "way; harbour/dock → omit/static. Attack while surfaced — not ASW."
+            "Surfaced U-boat / sea hunt: use sea_craft ids from list_strike_targets "
+            "(e.g. Uboat_VIIC) on mid-Channel water (manston_uboat_hunt.yaml). Prefer "
+            "motion: patrol + ai_preset ship_under_way when under way; harbour/dock → "
+            "static + harbour_static. Attack while surfaced — not ASW."
         ),
         (
             "Optional targets[].motion: static|patrol|path. Soft vehicles often path/patrol; "
@@ -151,13 +156,16 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         ("nested recon is required (bearing_deg, distance_km, altitude_m, radius_m?, mark?)."),
         'objectives must include {"type":"recon_area"}; omit player.payload.',
         (
-            "optional targets = observe-only enemy contacts (opposing coalition; land or "
-            "sea registry ids). Call list_strike_targets before inventing contacts; "
-            "prefer returned exact unit_ids. Empty targets = area recon."
+            "optional targets = observe-only enemy contacts (opposing coalition). "
+            "Call list_mission_options then list_strike_targets before inventing "
+            "contacts; prefer returned exact unit_ids. Same cue table as GA "
+            "(convoy/flak/U-boat/harbour → class + motion + ai_preset). Empty "
+            "targets = area recon."
         ),
         (
             "Surfaced U-boat locate: mid-Channel water + Uboat_VIIC contact "
-            "(manston_uboat_recon.yaml); prefer motion: patrol when under way; "
+            "(manston_uboat_recon.yaml); prefer motion: patrol + ai_preset "
+            "ship_under_way when under way; harbour → static + harbour_static; "
             "weapons hold — not depth-charge ASW."
         ),
         (

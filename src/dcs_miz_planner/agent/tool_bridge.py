@@ -63,8 +63,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "options with support levels (supported|advisory|future). Includes "
                 "mission_behaviour / mission_inspiration (immersion recipes), plus "
                 "mission-designer shelves dynamics_mode (Spec dynamics.mode), "
-                "strike_target_class, and channel_place for co-authoring play-time "
-                "mode, strike composition, and Channel places."
+                "strike_target_class, ground_ai_preset, and channel_place. For "
+                "GA/recon targets[] invent: call this first (read preferred_motion / "
+                "preferred_ai_preset / cues), then list_strike_targets, then emit "
+                "allowlisted unit + motion + ai_preset only — no free-form ME Opt*."
             ),
             "parameters": {"type": "object", "properties": {}},
         },
@@ -75,10 +77,12 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "name": "list_strike_targets",
             "description": (
                 "List known Channel strike/recon unit targets from the catalog "
-                "(land + sea). Call before inventing ground_attack or recon "
-                "targets[]. Optional filters: domain (land|sea), class_id "
-                "(strike_target_class id e.g. soft_vehicles, aaa_guns, sea_craft), "
-                "q (substring on unit_id/label). Prefer returned exact DCS unit_ids."
+                "(land + sea). Call after list_mission_options and before inventing "
+                "ground_attack or recon targets[]. Optional filters: domain "
+                "(land|sea), class_id (soft_vehicles, aaa_guns, sea_craft, …), "
+                "q (substring on unit_id/label). Prefer returned exact DCS unit_ids; "
+                "pair with shelf preferred_motion / preferred_ai_preset "
+                "(convoy_transit, aaa_alert, ship_under_way, harbour_static)."
             ),
             "parameters": {
                 "type": "object",

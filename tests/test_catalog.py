@@ -181,6 +181,48 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert "aaa_guns" in json.loads(by_unit["flak18"].class_ids_json)
 
 
+def test_invent_heuristic_meta_after_sync(tmp_path: Path) -> None:
+    """#8d: preferred_motion / preferred_ai_preset cue mapping in planning_options."""
+    db = tmp_path / "inventory.sqlite"
+    snap = CatalogService(db_path=db).sync()
+    by_key = {(o.family, o.id): o for o in snap.planning_options}
+
+    soft = json.loads(by_key[("strike_target_class", "soft_vehicles")].meta_json)
+    assert soft["preferred_motion"] == "path"
+    assert soft["preferred_ai_preset"] == "convoy_transit"
+
+    aaa = json.loads(by_key[("strike_target_class", "aaa_guns")].meta_json)
+    assert aaa["preferred_motion"] == "static"
+    assert aaa["preferred_ai_preset"] == "aaa_alert"
+
+    sea = json.loads(by_key[("strike_target_class", "sea_craft")].meta_json)
+    assert sea["preferred_motion"] == "patrol"
+    assert sea["preferred_ai_preset"] == "ship_under_way"
+    assert sea["harbour_ai_preset"] == "harbour_static"
+    assert sea["harbour_motion"] == "static"
+
+    assert (
+        json.loads(by_key[("ground_ai_preset", "convoy_transit")].meta_json)["preferred_motion"]
+        == "path"
+    )
+    assert (
+        json.loads(by_key[("ground_ai_preset", "aaa_alert")].meta_json)["preferred_motion"]
+        == "static"
+    )
+    assert (
+        json.loads(by_key[("ground_ai_preset", "ship_under_way")].meta_json)["preferred_motion"]
+        == "patrol"
+    )
+    assert (
+        json.loads(by_key[("ground_ai_preset", "harbour_static")].meta_json)["preferred_motion"]
+        == "static"
+    )
+
+    mid = json.loads(by_key[("channel_place", "mid_channel_shipping")].meta_json)
+    assert mid["preferred_ai_preset"] == "ship_under_way"
+    assert mid["preferred_motion"] == "patrol"
+
+
 def test_catalog_list_strike_units_cli(tmp_path: Path) -> None:
     import io
     from contextlib import redirect_stdout

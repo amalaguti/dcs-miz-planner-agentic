@@ -67,7 +67,9 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 8a.1 | `catalog-discover-modules` | Optional: harvest installed aircraft modules for discovery-only listing (never auto-promote into known YAML) | `done` (2026-08-05; cache on theatres --refresh) |
 | 8a.2 | `install-maintenance-slash` | Host `/maintenance` (or extend `/catalog`): read-only install summary (scan time, theatres, known aircraft installed/missing, discovered-only folders); optional refresh. Not default LLM invent tools — slash/CLI only | `idea` (parked 2026-08-05) |
 | 8c | `agent-strike-target-catalog` | **Prebuilt** SQLite catalog of Channel strike/recon **unit targets** (land + sea) for agent suggestion — sync from registry YAML (`ground_units.yaml` + `ships.yaml`) at `dcs-miz catalog sync` time (same async path as `#8a`/`#9`); agent **queries SQLite only** during invent/chat (never scan YAML/PyDCS mid-turn). Tool e.g. `list_strike_targets(domain?, class?, q?)` → exact DCS ids + labels + domain for recon contacts / GA targets. Join or tag with `strike_target_class` / `channel_place` shelves. Compile/validate stay registry SoT. Pairs with `#15a`/`#15f` so “search/recon” can recommend e.g. `Uboat_VIIC`. Feeds **`#8d`** invent heuristics. | `done` (CLI/API accepted 2026-08-08; ME not required) |
-| 8d | `agent-target-option-heuristics` | Make invent/chat **smart at picking targets + motion + `#15h` AI presets** from pilot intent (not free-form Opt*). Decision table / tool guidance: place (`channel_place`) × class (`strike_target_class`) × ask type (convoy / flak / U-boat / harbour) → unit ids (via `#8c`), `motion`, `ai_preset` / `move_formation`. Enrich planning_options + prompts/schema so the model calls catalog tools then emits only allowlisted fields. Optional: few-shot invent tests (“truck column inland” → Blitz + path + `convoy_transit`). **Depends on** `#15h` shelf + preferably `#8c` query tool. **Non-goals:** dumping ME Options; inventing DCS ids; learning from flight telemetry. | `idea` (draft 2026-08-08 — see notes) |
+| 8d | `agent-target-option-heuristics` | Make invent/chat **smart at picking targets + motion + `#15h` AI presets** from pilot intent (not free-form Opt*). Decision table / tool guidance: place (`channel_place`) × class (`strike_target_class`) × ask type (convoy / flak / U-boat / harbour) → unit ids (via `#8c`), `motion`, `ai_preset` / `move_formation`. Enrich planning_options + prompts/schema so the model calls catalog tools then emits only allowlisted fields. Optional: few-shot invent tests (“truck column inland” → Blitz + path + `convoy_transit`). **Depends on** `#15h` shelf + preferably `#8c` query tool. **Non-goals:** dumping ME Options; inventing DCS ids; learning from flight telemetry. | `done` (CLI/API accepted 2026-08-08; no ME) |
+| 8e | `theatre-target-promote-checklist` | Durable **human/agent checklist** for adding a new theatre slice and/or expanding strike/recon target shelves (not auto-scrape). See notes below. Feeds R11 + registry growth after `#8d`. | `idea` (draft 2026-08-08) |
+| 8f | `agent-channel-geometry-invent` | Fix invent **placement**: `channel_place` numeric recipes (bearing/distance bands from Manston examples), path/patrol domain coherence, stronger validation **repair nudges** for `motion_domain_mismatch` / `strike_domain_mismatch`. Live invent eval 2026-08-08: unit/preset cues OK; inland convoy paths over water, harbour ~4 km from Manston, U-boat GA domain fails. **Before** shelf expand. | `idea` (draft 2026-08-08 — next promote) |
 | 8b | `user-prefs-and-history` | Store user preferences, mission-generation history (Spec path, outcome), and post-flight / post-gen satisfaction surveys; agent tools to read prefs and record feedback | `done` (CLI/API accepted 2026-08-01) |
 | 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling (uses catalog + prefs/history tools) | `done` (stub Spec accepted 2026-08-01; live needs OPENAI_API_KEY) |
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
@@ -160,6 +162,76 @@ hardcoded in prompts. Can thin-ship prompt table before `#8c` if needed.
 **Non-goals:** ME Options dump; inventing DCS ids; RL from flight logs; air/helo
 Option shelves.
 
+**`#8e` `theatre-target-promote-checklist` — draft (2026-08-08):**
+
+When adding a **new map/theatre** or **new strike/recon targets**, do not dump ME
+into YAML. Work the checklist (OpenSpec change per batch). Auto-scrape remains out
+of scope.
+
+### A. New theatre / map slice
+
+1. **Research** — R11-style audit: era, airfields, campaigns, free vs Assets Pack,
+   what we will *not* support yet. Notes in gitignored `research/theatres/`.
+2. **Install probe** — theatre id in inventory join; `planner_supported` only when
+   we ship a registry binding.
+3. **Registry slice** — theatre YAML (airdromeIds, aircraft, weather as needed) +
+   PyDCS terrain binding; countries/coalitions if new.
+4. **Validate/compile** — shared engine accepts theatre; one Manston-equivalent
+   golden/smoke Spec.
+5. **Catalog** — `catalog sync`; offerable theatre appears; invent prompts theatre
+   allow-list if still Channel-only → update when multi-theatre ships.
+6. **Accept** — ME Instant Action on that map for the smoke Spec.
+7. **Docs** — README/ARCHITECTURE/BACKLOG; LESSONS if ids/bindings were surprising.
+
+### B. New strike / recon target units (same or new theatre)
+
+1. **Verify PyDCS id** — exact `vehicle_map` / `ship_map` key; domain land|sea;
+   era-plausible for the theatre (Channel ≠ every WWII id).
+2. **YAML** — `ground_units.yaml` or `ships.yaml` (label + domain); never invent ids.
+3. **Class shelf** — `strike_target_class` `unit_ids`/`ship_ids`; set
+   `preferred_motion` / `preferred_ai_preset` (or new class row + `#15h` allowlist).
+4. **Motion / AI** — speed band in `target_motion.yaml` if moving; preset/class
+   rules if new domain behaviour (R12b if ME options differ).
+5. **Places** — update `channel_place` (or theatre_place) related_classes when the
+   unit belongs to a geography cue.
+6. **Example Spec** — at least one GA or recon example using the unit; compile +
+   golden/assert as needed.
+7. **Catalog** — `dcs-miz catalog sync`; `list_strike_targets` returns the id +
+   class tags.
+8. **Invent** — `#8d` cue table / meta still coherent (extend cues if new class).
+9. **Accept** — ME smoke for new class when motion/AI non-trivial; CLI/API enough
+   for catalog-only adds.
+10. **Docs / LESSONS** — BACKLOG class spine; pitfalls (domain mismatch, Assets Pack).
+
+### Explicit non-goals for promote
+
+- Scraping full ME unit trees into the catalog.
+- Auto-promoting discovered install folders into known YAML.
+- Invent inventing Opt* or unit strings outside allowlists.
+
+**`#8f` `agent-channel-geometry-invent` — draft (2026-08-08):**
+
+Live invent suite after `#8d`: tools + unit/preset cues work; **geometry fails**.
+
+| Failure | Example |
+|---------|---------|
+| Land path over water | Convoy Blitz + path → `motion_domain_mismatch` |
+| Bad strike distance | Harbour shipping strike ~4 km from Manston |
+| Sea/land strike mismatch | U-boat GA fails domain validation after repair |
+
+**Ship as:**
+
+1. Numeric recipes on `channel_place` meta (and/or thin helper): french coast /
+   mid-Channel / harbour bands from accepted examples (e.g. inland ~125°/76 km;
+   mid-Channel ~140°/40 km).
+2. Prompts/schema: copy place geometry; land path near strike on land; sea on water.
+3. Stronger `host_spec_repair_nudge` when codes are `motion_domain_mismatch` /
+   `strike_domain_mismatch` (include recipe + example).
+4. Re-run diverse invent suite; accept = validate + domain-coherent geometry.
+5. Optional later: host clamp of path points (only if LLM repair still fails).
+
+**Non-goals:** full terrain mesh; multi-theatre geometry; expanding unit shelves.
+
 **`#15g` `strike-target-motion` — draft (2026-08-08):**
 
 Today GA/recon `targets[]` are placed once (static) at the strike/AOI point.
@@ -236,7 +308,9 @@ smoke checklist in that file.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#8d` invent heuristics (after `#8c` done; `#15h` presets exist).
+**Next promote / in proposal:** `#8f` `agent-channel-geometry-invent` (place
+recipes + domain repair). Then shelf expand / `#8e` checklist; `#15h` ME do-soon
+anytime.
 
 **Do soon (not blocking next promote):**
 - `#15h` ME smoke: Instant Action
@@ -544,7 +618,9 @@ Resolve these inside the relevant proposal, not here.
 | Section orders Spec shape (`#15d`) | **Closed 2026-08-07:** optional `player.flight.orders` curated ids → F10 `Section:…` + flags 800+ → `AITaskPush`/`GroupStop`; wingman→AI lead, lead→player group; example `manston_cap_flight_orders` |
 | Section discipline Spec shape (`#15e`) | **Closed 2026-08-07:** optional `player.flight.discipline` (wingman+join_up); moving zone + soft/hard; flags 820+; hard `message_end`\|`mission_end`\|`section_rtb`; example `manston_cap_flight_discipline` |
 | Strike/recon target catalog for agent (`#8c`) | **Done 2026-08-08:** `catalog_strike_units` + `list_strike_targets`; invent prompts prefer catalog ids; registry remains compile SoT |
-| Agent target + option invent heuristics (`#8d`) | **Draft 2026-08-08:** place×class×ask → unit (`#8c`) + motion + `ai_preset`; no free-form Opt*; after `#15h` |
+| Agent target + option invent heuristics (`#8d`) | **Done 2026-08-08:** cue table + preferred_* meta + invent call order; hermetic tests |
+| Channel invent geometry (`#8f`) | **Draft 2026-08-08:** place recipes + domain repair nudges; next after `#8d` (live eval geometry gaps) |
+| Theatre / target promote checklist (`#8e`) | **Draft 2026-08-08:** steps for new maps + new units — after geometry invent is solid |
 | Target motion Spec shape (`#15g`) | **Closed in proposal `strike-target-motion`:** default static; optional `patrol` / short `path`; sea + soft land; harbour + AAA static; trains later; Bombing stays at strike point v1; speed bands in `target_motion.yaml` + seeded cruise / waypoint jitter; threat stop/escape deferred |
 | Target threat reaction under fire (`#15g`) | **Closed for disperse:** moving land → ME Disperse Under Fire (option 8, default 180s). Further stop/dash scripting still deferred |
 | Ground waypoint actions: On Road vs Off Road + formations | Folded into **`#15h`** draft (with ROE/Alarm/Engage air/…) |
