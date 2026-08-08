@@ -63,6 +63,12 @@ ground_units:
   DR_50Ton_Flat_Wagon:
     label: 50-ton flat wagon
     domain: land
+  FuMG-401:
+    label: FuMG 401 Freya radar
+    domain: land
+  FuSe-65:
+    label: FuSe 65 Würzburg radar
+    domain: land
   flak18:
     label: Flak 18
     domain: land

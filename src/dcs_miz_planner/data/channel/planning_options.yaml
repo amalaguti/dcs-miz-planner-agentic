@@ -770,6 +770,24 @@ options:
       cues: [train, railway, railroad, loco, locomotive, wagon, rolling stock, rail]
 
   - family: strike_target_class
+    id: radar_c3
+    label: Radar / C3
+    description: >
+      Emplaced land radar / C3 sites on Axis-held French/Belgian coast — not UK
+      home ground, not water. Prefer motion static (emplaced). Reuse convoy_transit
+      AI (soft class — not aaa_alert). Prefer 2×250 + slipper or 1×500.
+      Example: manston_ground_attack_radar.
+    support: supported
+    meta:
+      domain: land
+      unit_ids: [FuMG-401, FuSe-65]
+      payload_families: [spitfire_2x250_slipper, spitfire_1x500, spitfire_2x250]
+      mission_types: [ground_attack]
+      preferred_motion: static
+      preferred_ai_preset: convoy_transit
+      cues: [radar, freya, wurzburg, würzburg, c3, fumg, fuse, early warning]
+
+  - family: strike_target_class
     id: aaa_guns
     label: AAA / AT guns
     description: >
@@ -928,9 +946,9 @@ options:
     meta:
       domain: land
       geometry_hint: inland_near_dunkirk
-      related_classes: [soft_vehicles, halftracks_apc, armor, troops, aaa_guns]
+      related_classes: [soft_vehicles, halftracks_apc, armor, troops, aaa_guns, radar_c3]
       mission_types: [ground_attack]
-      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, tank, troops, flak]
+      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, tank, troops, flak, radar]
       preferred_ai_preset_soft: convoy_transit
       preferred_ai_preset_aaa: aaa_alert
       # From examples/manston_ground_attack.yaml / convoy / flak_alert

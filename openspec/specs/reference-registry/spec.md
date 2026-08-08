@@ -165,6 +165,18 @@ resolvable as a strike unit.
 - **WHEN** the registry is queried for German_covered_wagon_G10
 - **THEN** it MUST return a land-domain strike unit
 
+### Requirement: Channel radar_c3 shelf
+Packaged Channel registry SHALL include land-domain radar ids `FuMG-401` and
+`FuSe-65`, each resolvable as a strike unit.
+
+#### Scenario: FuMG-401 resolvable
+- **WHEN** the registry is queried for FuMG-401
+- **THEN** it MUST return a land-domain strike unit
+
+#### Scenario: FuSe-65 resolvable
+- **WHEN** the registry is queried for FuSe-65
+- **THEN** it MUST return a land-domain strike unit
+
 ### Requirement: Package aircraft in Channel registry
 The Channel reference registry SHALL expose exact DCS aircraft type ids usable as escort
 package aircraft, including at least `MosquitoFBMkVI` with a documented Allied VHF group

@@ -429,3 +429,13 @@ non-empty path_point_deltas for invent to copy (not free-form rail routes).
 - **WHEN** catalog sync loads french_coast_rail_corridor
 - **THEN** meta related_classes MUST include trains and path_point_deltas MUST
   be non-empty
+
+### Requirement: radar_c3 strike target class
+Mission options SHALL expose `strike_target_class` id `radar_c3` with supported
+Channel unit_ids including `FuMG-401` and `FuSe-65`, preferred_motion static, and
+preferred_ai_preset convoy_transit.
+
+#### Scenario: Class shelf lists radar ids
+- **WHEN** catalog sync loads planning options
+- **THEN** strike_target_class radar_c3 meta unit_ids MUST include FuMG-401 and
+  FuSe-65

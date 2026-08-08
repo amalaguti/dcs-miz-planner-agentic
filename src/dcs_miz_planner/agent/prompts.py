@@ -38,6 +38,7 @@ Rules:
   train/rail/loco → trains + path from french_coast_rail_corridor path_point_deltas
   only (never invent free rail geometry; no rail-mesh snap);
   flak/AAA/guns → aaa_guns + static + aaa_alert;
+  radar/C3/Freya/Würzburg → radar_c3 + static + convoy_transit;
   mid-Channel U-boat/shipping under way → sea_craft + patrol + ship_under_way;
   harbour/dock shipping → sea_craft + static + harbour_static
   (call list_strike_targets with domain=sea — never soft land trucks).

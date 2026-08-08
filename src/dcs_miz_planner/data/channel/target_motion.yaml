@@ -74,5 +74,4 @@ units:
   Dry-cargo ship-1: sea_cargo
   Dry-cargo ship-2: sea_cargo
   HarborTug: sea_cargo
-  # Future registry shelves (ready when YAML units exist):
-  # (radar_c3 — #8l)
+  # Future: artillery class when verified (#8e).
