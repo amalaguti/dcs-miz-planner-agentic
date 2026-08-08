@@ -450,8 +450,14 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R11 | `research-theatre-content-expand` | **Per-map content audit** to expand planner capabilities beyond Channel: for each owned/installed theatre, inventory airfields, era, typical aircraft, land/sea/static unit shelves (WWII Assets Pack vs free vs modern), campaigns, and what a theatre registry slice would need (YAML + PyDCS binding + domain heuristics). Feed multi-theatre promote + `#8c` class expansion. Notes in gitignored `research/theatres/`. **Do not** auto-promote into product SoT. | `idea` (draft 2026-08-08 — see notes; user map fleet below) |
 | R12 | `research-ai-options-by-domain` | Document **Air vs Ground vs Naval** AI option sets (Hoggit `AI.Option.*` + current DCS ME on Spitfire / truck / U-boat / E-boat). Confirm which ME WP options actually stick per domain; naval beyond ROE; Formation interval / AAA restrict / ARM evade PyDCS emit. Feeds `#15h` allowlists. Notes in `research/ai-options-domain.md` (gitignored). | `done` (ME 2026-08-08; desk+smoke — see notes) |
 | R12b | `research-ai-options-unit-matrix` | Expand R12 beyond Channel smoke samples: ME WP Options matrix for **representative units** across airplanes, helicopters (same Air enum — verify ME), ships (E-boat / cargo / warship), and ground classes (armor, infantry, radar/SAM, soft, AAA). Record ME list vs meaningful capability (Spit ECM lesson). Append to `research/ai-options-domain.md`. **Not blocking `#15h`.** Promote when helo / armor / multi-theatre shelves need allowlists. | `idea` (draft 2026-08-08) |
+| R13 | `research-campaign-unit-inventory` | Mine installed **Spitfire Channel campaign** `.miz` (same corpus as R2/R10: Beware / FoD / Epsom / Big Show) for **ground / AAA / sea / helo** unit `type` frequencies. Notes in gitignored `research/campaign-units.md` (or harness under `research/`). Feed `#8e` promote candidates for shelves (`#8k`+). **Do not** auto-promote into YAML / catalog; helos likely confirm “none for Channel MVP.” | `idea` (draft 2026-08-08) |
 
-**`R12` `research-ai-options-by-domain` — done (ME 2026-08-08):**
+**`R13` `research-campaign-unit-inventory` — draft (2026-08-08):**
+
+Same pattern as R10 weather / R2 triggers: scan local campaign missions → research notes →
+human promote via [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Not an agent
+tool and not install→YAML scrape. Cross-check each candidate against PyDCS + domain +
+era before shelving.
 
 Desk + ME WP Options smoke (truck convoy, Flak 18, Uboat_VIIC, Spitfire). Notes in
 `research/ai-options-domain.md`. Headlines:
@@ -565,6 +571,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research** R11 `research-theatre-content-expand` — install probe + per-map content notes |
 | Which AI options apply to air vs ground vs ships | **Research** R12 `research-ai-options-by-domain` → `#15h` allowlists (**done**) |
 | Full ME Options matrix (helo, armor, more ships, …) | **Research** R12b `research-ai-options-unit-matrix` — not blocking `#15h` |
+| Which AAA / ground / sea / helo types ED campaigns actually use | **Research** R13 `research-campaign-unit-inventory` — promote via `#8e`; never auto-YAML |
 | Adversarial “prove it wrong” findings (false-green validate, tool trust, docs honesty, CI…) | **Adversarial review track** `#31`–`#42` + expand `#30c`; notes in `docs/adversarial-review-2026-08-05.md` |
 
 ---
