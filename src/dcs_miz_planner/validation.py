@@ -400,6 +400,7 @@ def _validate_ground_attack(
 
     if spec.strike is not None and spec.targets:
         _validate_strike_domain(spec, registry, errors)
+        _validate_target_motion(spec, registry, errors, area="strike")
 
 
 def _validate_strike_domain(
@@ -690,6 +691,99 @@ def _validate_recon(
 
     if spec.recon is not None and spec.targets:
         _validate_recon_domain(spec, registry, errors)
+        _validate_target_motion(spec, registry, errors, area="recon")
+
+
+def _validate_target_motion(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+    *,
+    area: str,
+) -> None:
+    """Domain-check path waypoints and patrol corners vs unit land|sea."""
+    from .channel_domain import classify_channel_domain
+    from .models import TargetMotion, ground_target_motion
+    from .theatre_terrain import terrain_for_theatre
+
+    try:
+        airdrome_id = registry.airdrome_id(spec.player.airfield)
+        terrain = terrain_for_theatre(spec.theatre)
+        airport = terrain.airport_by_id(airdrome_id)
+        if airport is None:
+            raise ValueError(f"Unknown airfield airdromeId {airdrome_id}")
+        if area == "strike":
+            assert spec.strike is not None
+            center = airport.position.point_from_heading(
+                spec.strike.bearing_deg, spec.strike.distance_km * 1000.0
+            )
+        else:
+            assert spec.recon is not None
+            center = airport.position.point_from_heading(
+                spec.recon.bearing_deg, spec.recon.distance_km * 1000.0
+            )
+    except (ValueError, RegistryError, AssertionError) as exc:
+        errors.append(
+            ValidationError(
+                code="motion_center_unresolved",
+                path=area,
+                message=f"Cannot resolve {area} map point for motion: {exc}",
+            )
+        )
+        return
+
+    for i, tgt in enumerate(spec.targets):
+        motion = ground_target_motion(tgt)
+        if motion is TargetMotion.STATIC:
+            continue
+        try:
+            unit = registry.get_strike_unit(tgt.unit)
+        except RegistryError:
+            continue
+
+        sample_points: list[tuple[str, float, float]] = []
+        if motion is TargetMotion.PATROL:
+            assert tgt.patrol_radius_m is not None
+            sample_points.append(("center", float(center.x), float(center.y)))
+            for heading in (0.0, 90.0, 180.0, 270.0):
+                p = center.point_from_heading(heading, float(tgt.patrol_radius_m))
+                sample_points.append((f"patrol_{int(heading)}", float(p.x), float(p.y)))
+        else:
+            for j, pt in enumerate(tgt.path):
+                p = airport.position.point_from_heading(pt.bearing_deg, pt.distance_km * 1000.0)
+                sample_points.append((f"path[{j}]", float(p.x), float(p.y)))
+
+        for label, x, y in sample_points:
+            point_domain = classify_channel_domain(x, y)
+            if point_domain != unit.domain:
+                errors.append(
+                    ValidationError(
+                        code="motion_domain_mismatch",
+                        path=f"targets[{i}].motion",
+                        message=(
+                            f"Target {tgt.unit!r} is domain {unit.domain!r} but motion "
+                            f"sample {label} is {point_domain}"
+                        ),
+                        hint=("Keep path/patrol on matching land or sea, or use static motion"),
+                    )
+                )
+
+        if tgt.speed_kmh is not None:
+            from .target_motion import speed_profile_for_unit
+
+            profile = speed_profile_for_unit(tgt.unit, domain=unit.domain)
+            if tgt.speed_kmh < profile.min_kmh or tgt.speed_kmh > profile.max_kmh:
+                errors.append(
+                    ValidationError(
+                        code="motion_speed_out_of_range",
+                        path=f"targets[{i}].speed_kmh",
+                        message=(
+                            f"speed_kmh {tgt.speed_kmh:g} outside {profile.id} band "
+                            f"[{profile.min_kmh:g}, {profile.max_kmh:g}] km/h"
+                        ),
+                        hint="Omit speed_kmh for a seeded pick inside the band, or clamp it",
+                    )
+                )
 
 
 def _validate_recon_domain(

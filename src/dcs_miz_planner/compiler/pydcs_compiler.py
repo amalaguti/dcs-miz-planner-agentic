@@ -580,7 +580,19 @@ class PyDCSCompiler(CompilerInterface):
             strike_unit = registry.get_strike_unit(tgt.unit)
             country = self._ensure_country(mission, countries_mod, tgt.country, tgt.coalition.value)
             # Slight lateral offset so multi-unit groups are not stacked on one point.
-            pos = target.point_from_heading(90.0 + i * 25.0, _GA_TARGET_SPREAD_M * (i + 1))
+            fallback = target.point_from_heading(90.0 + i * 25.0, _GA_TARGET_SPREAD_M * (i + 1))
+            from ..target_motion import (
+                apply_target_motion,
+                motion_seed_for_spec,
+                spawn_position_for_target,
+            )
+
+            pos = spawn_position_for_target(
+                airport_position=airport.position,
+                area_center=target,
+                tgt=tgt,
+                fallback_pos=fallback,
+            )
             skill = _skill_from_name(tgt.skill)
             if strike_unit.domain == "sea":
                 from dcs.ships import ship_map
@@ -599,6 +611,15 @@ class PyDCSCompiler(CompilerInterface):
                     unit.skill = skill
                 if tgt.late_activation:
                     sg.late_activation = True
+                apply_target_motion(
+                    sg,
+                    airport_position=airport.position,
+                    area_center=target,
+                    tgt=tgt,
+                    domain="sea",
+                    seed=motion_seed_for_spec(spec),
+                    target_index=i,
+                )
                 group_ids.append(sg.id)
             else:
                 from dcs.vehicles import vehicle_map
@@ -617,6 +638,15 @@ class PyDCSCompiler(CompilerInterface):
                     unit.skill = skill
                 if tgt.late_activation:
                     vg.late_activation = True
+                apply_target_motion(
+                    vg,
+                    airport_position=airport.position,
+                    area_center=target,
+                    tgt=tgt,
+                    domain="land",
+                    seed=motion_seed_for_spec(spec),
+                    target_index=i,
+                )
                 group_ids.append(vg.id)
         return group_ids
 
@@ -654,7 +684,19 @@ class PyDCSCompiler(CompilerInterface):
         for i, tgt in enumerate(spec.targets):
             strike_unit = registry.get_strike_unit(tgt.unit)
             country = self._ensure_country(mission, countries_mod, tgt.country, tgt.coalition.value)
-            pos = aoi.point_from_heading(90.0 + i * 25.0, _RECON_CONTACT_SPREAD_M * (i + 1))
+            fallback = aoi.point_from_heading(90.0 + i * 25.0, _RECON_CONTACT_SPREAD_M * (i + 1))
+            from ..target_motion import (
+                apply_target_motion,
+                motion_seed_for_spec,
+                spawn_position_for_target,
+            )
+
+            pos = spawn_position_for_target(
+                airport_position=airport.position,
+                area_center=aoi,
+                tgt=tgt,
+                fallback_pos=fallback,
+            )
             skill = _skill_from_name(tgt.skill)
             if strike_unit.domain == "sea":
                 from dcs.ships import ship_map
@@ -673,6 +715,15 @@ class PyDCSCompiler(CompilerInterface):
                     unit.skill = skill
                 if tgt.late_activation:
                     sg.late_activation = True
+                apply_target_motion(
+                    sg,
+                    airport_position=airport.position,
+                    area_center=aoi,
+                    tgt=tgt,
+                    domain="sea",
+                    seed=motion_seed_for_spec(spec),
+                    target_index=i,
+                )
                 group_ids.append(sg.id)
             else:
                 from dcs.vehicles import vehicle_map
@@ -691,6 +742,15 @@ class PyDCSCompiler(CompilerInterface):
                     unit.skill = skill
                 if tgt.late_activation:
                     vg.late_activation = True
+                apply_target_motion(
+                    vg,
+                    airport_position=airport.position,
+                    area_center=aoi,
+                    tgt=tgt,
+                    domain="land",
+                    seed=motion_seed_for_spec(spec),
+                    target_index=i,
+                )
                 group_ids.append(vg.id)
         return group_ids
 

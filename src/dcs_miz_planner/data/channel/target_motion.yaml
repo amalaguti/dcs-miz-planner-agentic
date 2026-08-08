@@ -1,0 +1,56 @@
+# Curated motion speed bands for Channel strike/recon targets (km/h).
+# PyDCS unit types do not expose MaxSpeed; DCS chassis max_road_velocity is an upper
+# bound (e.g. Blitz ~90 km/h) — mission cruise stays well below that.
+# Invent/compile picks within [min, max] per mission (seeded); path/patrol waypoints
+# can jitter around that cruise. Threat stop/escape under fire is a later pack.
+
+profiles:
+  soft_vehicle:
+    label: Trucks / light cars
+    min_kmh: 20
+    max_kmh: 55
+  armor:
+    label: Tanks / AFVs
+    min_kmh: 12
+    max_kmh: 35
+  halftrack:
+    label: Halftracks / APC
+    min_kmh: 15
+    max_kmh: 40
+  troops:
+    label: Infantry on foot
+    min_kmh: 3
+    max_kmh: 8
+  sea_u_boat:
+    label: Surfaced U-boat
+    min_kmh: 10
+    max_kmh: 22
+  sea_e_boat:
+    label: E-boat / fast attack craft
+    min_kmh: 30
+    max_kmh: 70
+  sea_cargo:
+    label: Merchant / cargo
+    min_kmh: 10
+    max_kmh: 28
+  default_land:
+    label: Generic land mover
+    min_kmh: 18
+    max_kmh: 45
+  default_sea:
+    label: Generic sea craft
+    min_kmh: 12
+    max_kmh: 35
+
+# Exact DCS unit id → profile. Static AAA/guns omitted (no motion).
+units:
+  Blitz_36-6700A: soft_vehicle
+  Kubelwagen_82: soft_vehicle
+  Bedford_MWD: soft_vehicle
+  Uboat_VIIC: sea_u_boat
+  Schnellboot_type_S130: sea_e_boat
+  Dry-cargo ship-1: sea_cargo
+  # Future registry shelves (ready when YAML units exist):
+  # Pz_IV_H: armor
+  # Sd_Kfz_251: halftrack
+  # soldier_mauser98: troops

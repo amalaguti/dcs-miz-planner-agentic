@@ -33,5 +33,7 @@ targets:
     skill: Average
     country: ThirdReich
     coalition: red
+    motion: patrol
+    patrol_radius_m: 2000
 objectives:
   - type: recon_area

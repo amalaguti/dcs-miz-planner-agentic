@@ -164,11 +164,42 @@ default and the right choice for fixed sites.
 Tanks/troops/trains need unit ids + classes before examples; motion Spec can
 ship first for trucks + ships.
 
+**`#15h` `ground-target-ai-options` — draft (2026-08-08):**
+
+DCS splits AI options by domain (`AI.Option.Air` / `.Ground` / `.Naval` — Hoggit
+`DCS_enum_AI`). ME shows a mixed list; **not every Opt applies to every unit**.
+
+| Domain | Documented option ids (adopt filter) |
+|--------|--------------------------------------|
+| **Ground** | ROE (0), Formation (5), Disperse on attack (8), Alarm state (9), Engage air weapons (20), AC engagement range (24), Restrict AAA min/max (27/29), Restrict targets (28), Formation interval (30), Evasion of ARM (31) |
+| **Air** | ROE, React on threat, Radar, Flare, Formation, RTB bingo/ammo, Silence, ECM, Prohibit AA/AG/jett/AB, Missile attack, radio usage, jett empty tanks, forced attack, prefer vertical, formation side swap, … |
+| **Naval** | **ROE only** in published enum (as of Hoggit page) — thin surface; **research** whether ships get more options in current DCS / ME than the wiki lists |
+
+ME WP **options** (not triggers) — PyDCS `Opt*` keys vs domain:
+
+| Adopt? | ME / behaviour | Domain | PyDCS | Notes |
+|--------|----------------|--------|-------|--------|
+| **yes (shipped `#15g`)** | Disperse Under Fire | ground | `OptDisparseUnderFire` (8) | Moving land default 180s |
+| **yes** | ROE | ground (+ air/naval variants) | `OptROE` (0) | Soft hold vs AAA return/open fire |
+| **yes** | Alarm State | ground | `OptAlarmState` (9) | Convoy green in transit / red when set |
+| **yes** | Engage air weapons | ground | `OptEngageAirWeapons` (20) | Flak/SAM columns |
+| **yes** | Restrict targets | ground | `OptRestrictTargets` (28) | Narrow engage set |
+| **yes** | Interception / AC engage range | ground | `OptInterceptionRange` (24) | Commit distance |
+| **maybe** | Formation interval; AAA alt restrict; ARM evade | ground | confirm PyDCS | Spacing / AAA belts |
+| **research** | On Road / Off Road / Rank·Cone·Vee… | ground PointAction | `PointAction.*` | v1 = Off Road only |
+| **research** | Naval options beyond ROE | **sea** | ? | Ships/U-boat: wiki naval = ROE only — verify in ME on Channel ships |
+| **skip for ground targets** | React on threat, radar, chaff, RTB bingo, ECM, afterburner, jettison, AA missile range, radio usage… | **air** | various | Aircraft-centric; don’t dump on trucks |
+
+Draft Spec: optional `targets[].ai` or named presets (`convoy_transit`, `aaa_alert`) →
+allowlisted options on WP0 **filtered by unit domain**. Catalog family e.g.
+`ground_ai_preset` (+ later `naval_ai_preset` if ME exposes more). Pair with
+research **R12** for live ME/PyDCS parity on Air vs Ground vs Naval option sets.
+
 ---
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** (`#15g` target motion and/or `#8c` target catalog)
+**Next promote / in proposal:** (`#15h` ground AI options and/or `#8c` target catalog)
 
 **Do soon (not blocking next promote):**
 - `#15c` join-up: Instant Action `out/manston_cap_flight_wingman.miz` (or recompile
@@ -183,6 +214,10 @@ ship first for trucks + ships.
   recompile `examples/manston_cap_flight_discipline.yaml`) — **take off**, leave
   section bubble → soft rejoin warn (~45 s), optional hard `message_end` (~120 s).
   ME triggers/zone accepted 2026-08-07; airborne smoke deferred.
+- `#15g` convoy fly: Instant Action `out/manston_ground_attack_convoy.miz` (or
+  recompile `examples/manston_ground_attack_convoy.yaml`) — ME OK 2026-08-08 (trucks
+  moving Off Road + Disperse Under Fire on WP options). **Later:** airborne attack
+  pass — confirm disperse / scatter under fire; optional On Road follow-up via `#15h`.
 
 | # | Item | Goal | Status |
 |---|------|------|--------|
@@ -192,7 +227,8 @@ ship first for trucks + ships.
 | 15 | `mission-type-escort` | Escort a friendly package | `done` (accepted in-game 2026-08-02; Mosquito package + bounce) |
 | 15a | `mission-type-recon` | Locate / observe a place or contact (GA-like geometry + marks/zones) **without** strike/payload attack; win on find/RTB rather than destroy | `done` (accepted ME 2026-08-07; Reconnaissance + AOI find beat) |
 | 15f | `channel-uboat-recon-hunt` | Channel **surfaced** U-boat locate + hunt on top of `#15a` recon + existing GA `sea_craft` / `Uboat_VIIC`: mid-Channel recon example (sea contacts, observe/find, weapons hold), GA U-boat strike example (bomb payload while surfaced; mid-Channel or harbour geometry), catalog `mission_inspiration` + place/class cards, agent briefs that say “bomb on the surface / before crash-dive.” Prefer two Specs (recon then GA) and optional late-act/radio drama via existing `#25`/`#30f`. **Non-goals:** true ASW (submerged detect, depth charges, sonobuoys — DCS bombs vanish underwater); new `asw` mission type; armed recon / find-then-kill in one Spec (defer to a later change if wanted). Agent target *suggestion* from full unit catalog → **`#8c`** (SQLite). Moving sea contacts → **`#15g`**. | `done` (accepted ME 2026-08-08; surfaced Uboat_VIIC recon + hunt) |
-| 15g | `strike-target-motion` | Optional **motion** on `targets[]` / recon contacts (land **and** sea): default **static** (harbour/dock, emplaced AAA/AT, dug-in). Prefer **patrol** (radius) or short looping **path** (airfield-relative waypoints) for ships under way, truck/vehicle convoys, and (when registry has them) tanks/troops. Trains later via curated Channel rail corridors — not free-form. Compiler: native ME waypoints on ship/vehicle groups (no Lua). Agent heuristics by place/class. Applies to GA + recon. **Non-goals v1:** ASW/crash-dive; auto rail-mesh snap; LLM free routes. | `idea` (draft 2026-08-08 — see notes below; promote after `#15f`) |
+| 15g | `strike-target-motion` | Optional **motion** on `targets[]` / recon contacts (land **and** sea): default **static** (harbour/dock, emplaced AAA/AT, dug-in). Prefer **patrol** (radius) or short looping **path** (airfield-relative waypoints) for ships under way, truck/vehicle convoys, and (when registry has them) tanks/troops. Trains later via curated Channel rail corridors — not free-form. Compiler: native ME waypoints on ship/vehicle groups (no Lua). Agent heuristics by place/class. Applies to GA + recon. **Non-goals v1:** ASW/crash-dive; auto rail-mesh snap; LLM free routes. Ground AI option shelf → **`#15h`**. | `done` (accepted ME 2026-08-08; U-boat patrol + convoy path + Disperse Under Fire; airborne disperse do-soon) |
+| 15h | `ground-target-ai-options` | Spec shelf for **ground/sea target WP AI options** (curated ids → PyDCS `Opt*`, not free-form). After `#15g`: expose useful ME options beyond Disperse — ROE, Alarm State, Engage air weapons, Restrict targets, Interception range, Formation interval; research **On Road** vs Off Road + formation PointActions (Rank/Cone/Vee/…). Defaults by class (AAA vs soft convoy). Planning_options cards + validate allowlist. **Non-goals:** Lua AI; every aircraft Opt*. See draft notes below. | `idea` (draft 2026-08-08 — promote after `#15g`) |
 | 15b | `player-flight-squadron` | Break solo-only player sorties: Spec + compiler support for a **player flight** (2–4 Spits) so the human can fly as **flight lead** (AI wingmen) or as a **wingman** in an AI-led section. Placement + skills + brief; join-up/Follow deferred to `#15c`. Escort `package` remains friendly AI only, not the player’s section. | `done` (accepted ME smoke 2026-08-07; lead 4-ship + wingman 4-ship via separate AI lead group) |
 | 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead; put CAP/GA/escort tasking on the AI lead when `role: wingman` + `join_up`. Prefer native ME Follow + waypoints; no LLM Lua. | `done` (accepted 2026-08-07; **do-soon smoke:** `manston_cap_flight_wingman` after takeoff) |
 | 15d | `player-flight-orders` | Curated **section orders** the player (or Spec triggers) can issue: rejoin/form up, engage, cover, orbit, RTB, break, etc. Prefer stock DCS lead→wingman radio when `role: lead` (same group); extend with F10 / flag→AI-task packs for wingman separate groups and scripted beats. Spec selects named orders only — no free-form chat→Lua. After `#15b`; pairs with `#15c` for cohesion. | `done` (accepted 2026-08-07; ME + F10/ack; **do-soon:** airborne Rejoin/Engage on `manston_cap_flight_orders`) |
@@ -314,6 +350,7 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R9 | `research-dcs-user-manual-me` | Inventory ME features we could map into Spec/compiler/agent; notes under `research/`; promote durable gaps into backlog / LESSONS. **Sources (use together):** (1) local `docs/DCS_User_Manual_EN_2020.pdf` (gitignored; [official EN download](https://www.digitalcombatsimulator.com/en/downloads/documentation/dcs-user_manual_en/) — still the 2020 file for DCS **2.5**; ME chapter ToC ~p.83 / Set Rules for Triggers — *baseline only*); (2) community [TEMPEST.114 Mission Editor Manual](https://forum.dcs.world/topic/347082-mission-editor-manual-most-of-all-me-how-do-i-do-this-are-solvable-with-this-little-pdf-it-has-lots-of-info-not-clear-in-the-ui-hope-it-helps/) (ED Forums, 2024 — clearer ME how-tos than the UI/ED PDF); (3) [Hoggit ME wiki](https://wiki.hoggitworld.com/view/DCS_editor_triggerBasics) ([conditions](https://wiki.hoggitworld.com/view/DCS_editor_conditions), actions, [AI tasking](https://wiki.hoggitworld.com/view/DCS_editor_AITasking)); (4) [Hoggit Scripting Engine docs](https://wiki.hoggitworld.com/view/Simulator_Scripting_Engine_Documentation) (for M6 `#22` Lua, not day-to-day Spec compile); (5) [ED changelogs](https://www.digitalcombatsimulator.com/en/news/changelog/) + newsletters for post-2020 ME features; (6) in-game ME + stock Channel IA/Training (cross-check with R5) | `done` (2026-08-04; ranked candidates in `research/me-enrichment-candidates.md` — next product: `#26` sound + richer flags) |
 | R10 | `research-me-mission-content` | **ME content-depth pass** (in-editor + PyDCS + campaign corpus + optional meteo): (1) **Weather** — mine installed Spitfire campaign `.miz` weather tables (Beware/FoD/Epsom/Big Show; 60 scanned 2026-08-06) + research samples; ME weather templates optional; PyDCS `CloudPreset` (30 ids); defer dynamic cyclones. (2) Optional Channel climatology to refine briefs. (3) **Static objects**. Notes in `research/weather.md`; promote `#17a` / `#17b` | `idea` (2026-08-06; campaign weather scan done — enough to seed `#17a` recipes) |
 | R11 | `research-theatre-content-expand` | **Per-map content audit** to expand planner capabilities beyond Channel: for each owned/installed theatre, inventory airfields, era, typical aircraft, land/sea/static unit shelves (WWII Assets Pack vs free vs modern), campaigns, and what a theatre registry slice would need (YAML + PyDCS binding + domain heuristics). Feed multi-theatre promote + `#8c` class expansion. Notes in gitignored `research/theatres/`. **Do not** auto-promote into product SoT. | `idea` (draft 2026-08-08 — see notes; user map fleet below) |
+| R12 | `research-ai-options-by-domain` | Document **Air vs Ground vs Naval** AI option sets (Hoggit `AI.Option.*` + current DCS ME on Spitfire / truck / U-boat / E-boat). Confirm which ME WP options actually stick per domain; naval beyond ROE; Formation interval / AAA restrict / ARM evade PyDCS emit. Feeds `#15h` allowlists. Notes in `research/ai-options-domain.md` (gitignored). | `idea` (draft 2026-08-08) |
 
 **`R11` `research-theatre-content-expand` — draft (2026-08-08):**
 
@@ -400,11 +437,13 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Fly with a squadron / as lead or wingman (not solo only) | **M4** `#15b` done; cohesion `#15c`; orders `#15d`; **fail-to-follow discipline** → `#15e` `player-flight-discipline` |
 | Spitfire Channel U-boat recon / “sub hunt” (surfaced only; not true ASW) | **M4** `#15f` `channel-uboat-recon-hunt` — builds on `#15a` recon + GA `sea_craft` / `Uboat_VIIC` |
 | Sea/land targets move on a path / patrol; harbour & emplaced stay static | **M4** `#15g` `strike-target-motion` — optional `targets[].motion` → ME waypoints (ships, trucks; trains later) |
+| Ground/sea target WP AI options shelf (ROE, Alarm, Disperse, …) | **M4** `#15h` `ground-target-ai-options` — curated Opt* + On Road research |
 | Agent suggests recon/GA targets from a full unit list (U-boat, trucks, …) | **M3** `#8c` `agent-strike-target-catalog` — SQLite synced offline from registry; query at invent time |
 | Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — ME Failures panel table; curated ids; opt-in Spec (**done** 2026-08-07) |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
 | Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research** R11 `research-theatre-content-expand` — install probe + per-map content notes |
+| Which AI options apply to air vs ground vs ships | **Research** R12 `research-ai-options-by-domain` → `#15h` allowlists |
 | Adversarial “prove it wrong” findings (false-green validate, tool trust, docs honesty, CI…) | **Adversarial review track** `#31`–`#42` + expand `#30c`; notes in `docs/adversarial-review-2026-08-05.md` |
 
 ---
@@ -440,7 +479,11 @@ Resolve these inside the relevant proposal, not here.
 | Section orders Spec shape (`#15d`) | **Closed 2026-08-07:** optional `player.flight.orders` curated ids → F10 `Section:…` + flags 800+ → `AITaskPush`/`GroupStop`; wingman→AI lead, lead→player group; example `manston_cap_flight_orders` |
 | Section discipline Spec shape (`#15e`) | **Closed 2026-08-07:** optional `player.flight.discipline` (wingman+join_up); moving zone + soft/hard; flags 820+; hard `message_end`\|`mission_end`\|`section_rtb`; example `manston_cap_flight_discipline` |
 | Strike/recon target catalog for agent (`#8c`) | **Draft 2026-08-07:** sync `catalog_strike_units` from YAML at catalog sync; invent-time `list_strike_targets` reads SQLite only; registry remains compile SoT |
-| Target motion Spec shape (`#15g`) | **Draft 2026-08-08:** default static; optional `patrol` / short `path` for sea **and** mobile land (trucks, later tanks/troops); harbour + AAA static; trains = curated rail corridor later, not v1 mesh snap |
+| Target motion Spec shape (`#15g`) | **Closed in proposal `strike-target-motion`:** default static; optional `patrol` / short `path`; sea + soft land; harbour + AAA static; trains later; Bombing stays at strike point v1; speed bands in `target_motion.yaml` + seeded cruise / waypoint jitter; threat stop/escape deferred |
+| Target threat reaction under fire (`#15g`) | **Closed for disperse:** moving land → ME Disperse Under Fire (option 8, default 180s). Further stop/dash scripting still deferred |
+| Ground waypoint actions: On Road vs Off Road + formations | Folded into **`#15h`** draft (with ROE/Alarm/Engage air/…) |
+| Ground target AI options Spec shelf (`#15h`) | **Draft 2026-08-08:** allowlisted WP Opt* presets **by domain**; Ground adopt list + Air skip list; Naval = research (wiki ROE-only) via **R12** |
+| AI options Air vs Ground vs Naval parity | **Research R12** `research-ai-options-by-domain` — ME smoke + Hoggit enums; feeds `#15h` |
 
 ---
 

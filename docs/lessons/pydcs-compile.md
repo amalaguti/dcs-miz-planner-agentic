@@ -5,6 +5,22 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Target motion: ship/vehicle waypoints + SwitchWaypoint loop (2026-08-08)
+
+- **Date:** 2026-08-08
+- **Lesson:** Optional `targets[].motion` (`patrol` / `path`) uses PyDCS
+  `ShipGroup`/`VehicleGroup.add_waypoint` (speed arg is **km/h**). Loop with
+  `SwitchWaypoint(from_waypoint=n, to_waypoint=1)` on the last point (1-based
+  indices). Domain-validate every path point and patrol corner like strike/AOI.
+  Speeds are **not** on PyDCS types — use packaged `target_motion.yaml` bands;
+  cruise is seeded per mission (`weather_opts.seed` or name hash) with per-waypoint
+  jitter. Moving **land** groups get ME **Disperse Under Fire** (option 8 /
+  `OptDisparseUnderFire`) default 180s — AI leaves the track briefly when attacked
+  from the air (not scripted tree picks). Override with `disperse_under_fire_s`
+  (0=off). Sea groups skip it. GA `Bombing` stays at the fixed strike point in v1.
+- **Code:** `target_motion.py`, `data/channel/target_motion.yaml`, `pydcs_compiler.py`,
+  `validation._validate_target_motion`.
+
 ## Spec theatre → PyDCS terrain binding (2026-08-05)
 
 - **Date:** 2026-08-05

@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-08 | [Target motion: ship/vehicle waypoints + SwitchWaypoint loop](lessons/pydcs-compile.md#target-motion-shipvehicle-waypoints--switchwaypoint-loop-2026-08-08) | `pydcs-compile` |
 | 2026-08-07 | [Recon AOI land/sea domain for contacts](lessons/triggers-me.md#recon-aoi-landsea-domain-for-contacts-2026-08-07) | `triggers-me` |
 | 2026-08-07 | [Recon AOI find pack (`mission_type: recon`)](lessons/triggers-me.md#recon-aoi-find-pack-mission_type-recon-2026-08-07) | `triggers-me` |
 | 2026-08-07 | [Fail-to-follow discipline (`player.flight.discipline`)](lessons/player-flight.md#fail-to-follow-discipline-playerflightdiscipline-2026-08-07) | `player-flight` |

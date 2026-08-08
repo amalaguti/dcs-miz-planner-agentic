@@ -27,8 +27,12 @@ description: >-
 7. Goldens: normalize `onboard_num` (and liveries in CI) — see `normalize_mission`.
 8. Escort: package first, then EscortTaskAction + ROE; GA: verify land vs water
    strike placement.
+9. Target motion: `target_motion.py` + `target_motion.yaml` speed bands; `add_waypoint`
+   speed is km/h; loop with `SwitchWaypoint` (1-based); domain-check path/patrol;
+   omit `speed_kmh` for seeded cruise. Moving land: `OptDisparseUnderFire` (default 180s).
+
 
 ## Code touchpoints
 
-`compiler/pydcs_compiler.py`, `theatre_terrain.py`, `tests/fixtures_support.py`,
-`tests/refresh_*_golden.py`.
+`compiler/pydcs_compiler.py`, `target_motion.py`, `theatre_terrain.py`,
+`tests/fixtures_support.py`, `tests/refresh_*_golden.py`.

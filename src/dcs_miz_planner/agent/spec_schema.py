@@ -106,7 +106,14 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         ),
         (
             "Surfaced U-boat / sea hunt: use sea_craft ids (e.g. Uboat_VIIC) on mid-Channel "
-            "water geometry (see manston_uboat_hunt.yaml). Attack while surfaced — not ASW."
+            "water geometry (see manston_uboat_hunt.yaml). Prefer motion: patrol when under "
+            "way; harbour/dock → omit/static. Attack while surfaced — not ASW."
+        ),
+        (
+            "Optional targets[].motion: static|patrol|path. Soft vehicles often path/patrol; "
+            "AAA stay static. Path = 2–6 airfield-relative points (manston_ground_attack_convoy). "
+            "Optional speed_kmh within curated unit band; omit for seeded cruise + waypoint jitter. "
+            "Moving land groups default Disperse Under Fire 180s (disperse_under_fire_s; 0=off)."
         ),
         'objectives must include {"type":"attack_ground"}; enemies must be empty.',
         "omit the cap block. Pilot jettisons the slipper tank in the cockpit before attack.",
@@ -140,7 +147,12 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         ),
         (
             "Surfaced U-boat locate: mid-Channel water + Uboat_VIIC contact "
-            "(manston_uboat_recon.yaml); weapons hold — not depth-charge ASW."
+            "(manston_uboat_recon.yaml); prefer motion: patrol when under way; "
+            "weapons hold — not depth-charge ASW."
+        ),
+        (
+            "Optional targets[].motion (static|patrol|path) same as ground_attack — "
+            "observe-only contacts may still move."
         ),
         "AOI is airfield-relative — never invent raw map x/y. enemies must be empty.",
         "omit strike, cap, escort, package. zones/triggers must stay empty (find beat injected).",

@@ -605,8 +605,8 @@ options:
     description: >
       Mid-Channel surfaced Type VII C: recon (observe, weapons hold) and/or ground_attack
       (bomb while surfaced). Not true ASW — no depth charges or submerged detect. Prefer
-      sea_craft Uboat_VIIC on mid_channel_shipping geometry. See manston_uboat_recon /
-      manston_uboat_hunt examples.
+      sea_craft Uboat_VIIC on mid_channel_shipping geometry with motion: patrol (under way).
+      See manston_uboat_recon / manston_uboat_hunt examples.
     support: advisory
     meta:
       behaviours: []
@@ -615,6 +615,7 @@ options:
       mission_types: [recon, ground_attack]
       unit_ids: [Uboat_VIIC]
       note: surfaced_only
+      preferred_motion: patrol
 
   # --- Mission-designer shelves (palette for co-authoring; Spec dynamics = #30f) ---
   # Layer A = dcs-miz randomize (new Spec day). Layer B = dynamics_mode / Spec dynamics
@@ -680,34 +681,38 @@ options:
     label: Soft vehicles / trucks
     description: >
       Land soft targets (trucks, light cars) on Axis-held French/Belgian coast —
-      not UK home ground, not water. Spitfire bomb payloads; prefer 2×250 + slipper
-      for Channel crossing.
+      not UK home ground, not water. Prefer motion path or patrol (convoy); AAA stays
+      static. Spitfire bomb payloads; prefer 2×250 + slipper for Channel crossing.
+      Example: manston_ground_attack_convoy.
     support: supported
     meta:
       domain: land
       unit_ids: [Blitz_36-6700A, Kubelwagen_82, Bedford_MWD]
       payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
       mission_types: [ground_attack]
+      preferred_motion: path
 
   - family: strike_target_class
     id: aaa_guns
     label: AAA / AT guns
     description: >
-      Land flak and Pak positions inland/coastal Axis territory. Same payload guidance
-      as soft vehicles; expect denser AAA around Dunkirk–Calais belts.
+      Land flak and Pak positions inland/coastal Axis territory. Prefer static (emplaced).
+      Same payload guidance as soft vehicles; expect denser AAA around Dunkirk–Calais belts.
     support: supported
     meta:
       domain: land
       unit_ids: [flak18, flak36, Pak40]
       payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
       mission_types: [ground_attack]
+      preferred_motion: static
 
   - family: strike_target_class
     id: sea_craft
     label: Boats / ships
     description: >
       Mid-Channel or coastal water targets — ships.yaml ids only; never place land
-      vehicles at sea. Prefer bomb payloads; large ships may need 500 lb.
+      vehicles at sea. Open water: prefer motion patrol/path; harbour/dock: static.
+      Prefer bomb payloads; large ships may need 500 lb.
     support: supported
     meta:
       domain: sea
@@ -760,13 +765,15 @@ options:
     label: Mid-Channel shipping lane
     description: >
       Over-water Channel corridor for E-boat / U-boat / cargo ship strikes — sea_craft
-      class only; keep land vehicles off the water. Also fits recon contacts (observe).
+      class only; keep land vehicles off the water. Prefer under-way motion (patrol).
+      Also fits recon contacts (observe).
     support: advisory
     meta:
       domain: sea
       geometry_hint: mid_channel
       related_classes: [sea_craft]
       mission_types: [ground_attack, recon]
+      preferred_motion: patrol
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

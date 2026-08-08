@@ -217,12 +217,30 @@ class EnemyFlight(SpecModel):
     late_activation: bool = False
 
 
+class TargetMotion(str, Enum):
+    """How a ground/sea target group moves after placement."""
+
+    STATIC = "static"
+    PATROL = "patrol"
+    PATH = "path"
+
+
+class TargetPathPoint(SpecModel):
+    """One airfield-relative path waypoint for target motion."""
+
+    bearing_deg: float = Field(ge=0, le=360)
+    distance_km: float = Field(gt=0)
+
+
 class GroundTarget(SpecModel):
     """One enemy strike target group (land vehicle or ship/boat).
 
     Land units belong on enemy-held territory for the mission date (Channel WWII:
     Axis-occupied continent). Mid-Channel / water placements must use sea-domain
     ship ids from the Channel registry — never trucks in the drink.
+
+    Optional motion: omit/`static` = parked; `patrol` + radius; or short looping
+    `path` of airfield-relative points (ships under way, truck convoys).
     """
 
     unit: str  # exact DCS ground or ship type id
@@ -231,6 +249,45 @@ class GroundTarget(SpecModel):
     country: str = "ThirdReich"
     coalition: Coalition = Coalition.RED
     late_activation: bool = False
+    motion: TargetMotion | None = None
+    patrol_radius_m: float | None = Field(default=None, ge=500, le=15_000)
+    path: list[TargetPathPoint] = Field(default_factory=list)
+    #: Optional cruise km/h; clamped to the unit's motion profile band when moving.
+    speed_kmh: float | None = Field(default=None, gt=0, le=120)
+    #: Disperse Under Fire duration (seconds). Omit = auto 180s for moving land;
+    #: ``0`` disables; sea units ignore (ground AI option only).
+    disperse_under_fire_s: int | None = Field(default=None, ge=0, le=600)
+
+    @model_validator(mode="after")
+    def _motion_field_rules(self) -> GroundTarget:
+        motion = self.motion if self.motion is not None else TargetMotion.STATIC
+        if motion is TargetMotion.STATIC:
+            if self.patrol_radius_m is not None:
+                raise ValueError(
+                    "patrol_radius_m only valid when motion is patrol; omit for static"
+                )
+            if self.path:
+                raise ValueError("path only valid when motion is path; omit for static")
+            if self.speed_kmh is not None:
+                raise ValueError("speed_kmh only valid when motion is patrol or path")
+            return self
+        if motion is TargetMotion.PATROL:
+            if self.patrol_radius_m is None:
+                raise ValueError("motion patrol requires patrol_radius_m")
+            if self.path:
+                raise ValueError("path not valid when motion is patrol")
+            return self
+        # PATH
+        if not (2 <= len(self.path) <= 6):
+            raise ValueError("motion path requires 2–6 airfield-relative path points")
+        if self.patrol_radius_m is not None:
+            raise ValueError("patrol_radius_m not valid when motion is path")
+        return self
+
+
+def ground_target_motion(tgt: GroundTarget) -> TargetMotion:
+    """Effective motion mode (omit → static)."""
+    return tgt.motion if tgt.motion is not None else TargetMotion.STATIC
 
 
 class Cap(SpecModel):
