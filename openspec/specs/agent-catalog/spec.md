@@ -61,6 +61,19 @@ sources is out of scope for this capability.
 - **WHEN** a developer adds a new verified airfield or aircraft to Channel YAML and syncs
 - **THEN** the catalog MUST list the new known row after sync without requiring hand-edited SQL
 
+### Requirement: Strike unit and theatre promote uses checklist
+Expanding known strike/recon units or theatres in the catalog MUST follow the
+checked-in theatre/target promote checklist (curated YAML → catalog sync). The
+system MUST NOT auto-promote discovery-only install folders or ME scrapes into
+known catalog sources.
+
+#### Scenario: Promote path points at checklist
+- **WHEN** a developer adds a verified ground/ship id to Channel registry YAML
+  and runs catalog sync
+- **THEN** the catalog MUST list the new strike unit after sync, and project
+  docs MUST point at the promote checklist for the required steps (class shelf,
+  motion/AI, examples, invent cues)
+
 ### Requirement: Catalog exposes mission behaviour and inspiration options
 After catalog sync from packaged Channel data, planning-option queries MUST include
 `mission_behaviour` and `mission_inspiration` family rows when present in the packaged

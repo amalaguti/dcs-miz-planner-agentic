@@ -339,6 +339,7 @@ Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blo
 
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
 - Architecture / module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- Theatre / target promote checklist: [`docs/THEATRE_TARGET_PROMOTE.md`](docs/THEATRE_TARGET_PROMOTE.md)
 - Roadmap / backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md)
 - Agent lessons index + topic files: [`docs/LESSONS_LEARNED.md`](docs/LESSONS_LEARNED.md)
   (skills: `dcs-dev-*` under `.cursor/skills/`)

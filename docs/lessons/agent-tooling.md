@@ -5,6 +5,15 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Promote theatres/targets via checklist, not ME dump (2026-08-08)
+
+- **Date:** 2026-08-08
+- **Lesson:** Grow theatres and strike/recon shelves only via curated YAML +
+  OpenSpec batches. Follow [`docs/THEATRE_TARGET_PROMOTE.md`](../THEATRE_TARGET_PROMOTE.md)
+  (`#8e`). Catalog/`list_strike_targets` is not a full ME unit list; never
+  auto-promote install discovery into known sources.
+- **Code / notes:** checklist SoT; skill `dcs-dev-agent-tooling` Hard rule 3.
+
 ## Invent place recipes fix most domain misses; path points still drift (2026-08-08)
 
 - **Date:** 2026-08-08

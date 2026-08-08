@@ -258,7 +258,7 @@ Two boundaries worth respecting:
 | `tests/` | pytest: schema, registry, install, catalog, memory, tools, agent, validation, goldens |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |
-| `docs/` | This file, `BACKLOG.md`, `LESSONS_LEARNED.md` |
+| `docs/` | This file, `BACKLOG.md`, `LESSONS_LEARNED.md`, `THEATRE_TARGET_PROMOTE.md` |
 | `out/` | Generated `.miz` output (gitignored) |
 | `research/` | Local DCS samples and findings — **gitignored**, never a source of truth for specs |
 
