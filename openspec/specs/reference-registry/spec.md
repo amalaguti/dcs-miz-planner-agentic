@@ -115,6 +115,18 @@ ship-2, HarborTug, Higgins_boat), each with domain land or sea as appropriate.
 - **WHEN** the registry is queried for HarborTug
 - **THEN** it MUST return a sea-domain strike unit
 
+### Requirement: Channel halftracks_apc shelf
+Packaged Channel registry SHALL include land-domain halftrack ids `Sd_Kfz_251`,
+`Sd_Kfz_7`, and `M2A1_halftrack`, each resolvable as a strike unit.
+
+#### Scenario: Sd_Kfz_251 resolvable
+- **WHEN** the registry is queried for Sd_Kfz_251
+- **THEN** it MUST return a land-domain strike unit
+
+#### Scenario: M2A1_halftrack resolvable
+- **WHEN** the registry is queried for M2A1_halftrack
+- **THEN** it MUST return a land-domain strike unit
+
 ### Requirement: Package aircraft in Channel registry
 The Channel reference registry SHALL expose exact DCS aircraft type ids usable as escort
 package aircraft, including at least `MosquitoFBMkVI` with a documented Allied VHF group

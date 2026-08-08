@@ -21,6 +21,15 @@ ground_units:
   Willys_MB:
     label: Willys MB jeep (Allied — practice ranges / UK-side)
     domain: land
+  Sd_Kfz_251:
+    label: Sd.Kfz. 251 halftrack
+    domain: land
+  Sd_Kfz_7:
+    label: Sd.Kfz. 7 halftrack tractor
+    domain: land
+  M2A1_halftrack:
+    label: M2A1 halftrack (Allied — practice ranges / UK-side)
+    domain: land
   flak18:
     label: Flak 18
     domain: land

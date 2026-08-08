@@ -50,6 +50,9 @@ units:
   Kubelwagen_82: soft_vehicle
   Bedford_MWD: soft_vehicle
   Willys_MB: soft_vehicle
+  Sd_Kfz_251: halftrack
+  Sd_Kfz_7: halftrack
+  M2A1_halftrack: halftrack
   Uboat_VIIC: sea_u_boat
   Schnellboot_type_S130: sea_e_boat
   Higgins_boat: sea_e_boat
@@ -58,5 +61,4 @@ units:
   HarborTug: sea_cargo
   # Future registry shelves (ready when YAML units exist):
   # Pz_IV_H: armor
-  # Sd_Kfz_251: halftrack
   # soldier_mauser98: troops

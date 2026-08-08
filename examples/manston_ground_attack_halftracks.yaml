@@ -1,0 +1,44 @@
+schema_version: "1"
+mission_type: ground_attack
+theatre: TheChannel
+name: Manston Channel Halftrack Column
+description: >
+  Cold start at Manston with 2x250 lb bombs and a slipper tank. Cross to an inland
+  strike belt near Dunkirk where Sd.Kfz. 251 halftracks move on a short road-ish
+  path (convoy_transit AI). Jettison the tank before the attack.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+  payload: spitfire_2x250_slipper
+strike:
+  bearing_deg: 125
+  distance_km: 76
+  altitude_m: 2000
+enemies: []
+targets:
+  - unit: Sd_Kfz_251
+    count: 3
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    motion: path
+    path:
+      - bearing_deg: 125
+        distance_km: 76
+      - bearing_deg: 128
+        distance_km: 77
+      - bearing_deg: 122
+        distance_km: 78
+    ai_preset: convoy_transit
+objectives:
+  - type: attack_ground

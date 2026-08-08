@@ -72,14 +72,13 @@ One OpenSpec change per coherent batch (e.g. “Channel soft + AAA expand” or
 ## Channel class spine (candidates — not a ship list)
 
 Expand registry over time; invent plans around these classes. **Shipped Channel
-ids** live in `ground_units.yaml` / `ships.yaml` (first expand batch: extra soft,
-AAA/searchlight/KDO, harbour tug / cargo / Higgins — see OpenSpec
-`channel-unit-shelf-expand`).
+ids** live in `ground_units.yaml` / `ships.yaml` (`#8h` soft/AAA/sea; `#8i`
+halftracks).
 
 | Class id | Domain | Motion default | Notes |
 |----------|--------|----------------|-------|
-| `soft_vehicles` | land | path / patrol | Trucks / light cars |
-| `halftracks_apc` | land | path / patrol | Promote when verified → BACKLOG `#8i` |
+| `soft_vehicles` | land | path / patrol | Trucks / light cars as `#8h` |
+| `halftracks_apc` | land | path / patrol | Sd_Kfz_251, Sd_Kfz_7, M2A1 as `#8i` |
 | `armor` | land | path / patrol (static if dug-in) | Era-filter → `#8j` |
 | `troops` | land | path / patrol (static if dug-in) | Era-filter → `#8k` |
 | `aaa_guns` | land | **static** | Flak / AT / searchlight as `#8h` |
@@ -88,7 +87,6 @@ AAA/searchlight/KDO, harbour tug / cargo / Higgins — see OpenSpec
 | `trains` | land | **path** on curated rail | → `#8m` (needs corridor) |
 | `sea_craft` | sea | patrol / path; harbour → static | Ships / U-boat / cargo / tug as `#8h` |
 | `hard_infrastructure` | land | **static** | Often `#17b` statics — not vehicle groups |
-| `soft_vehicles` | land | path / patrol | Trucks / light cars as `#8h` |
 
 Era caution: prefer BoB / Channel-front plausible Axis/Allied sets when promoting.
 

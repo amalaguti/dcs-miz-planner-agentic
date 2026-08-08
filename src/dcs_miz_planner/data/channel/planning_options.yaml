@@ -695,6 +695,24 @@ options:
       cues: [truck, convoy, column, soft, blitz, kettenkrad, horch, jeep, willys]
 
   - family: strike_target_class
+    id: halftracks_apc
+    label: Halftracks / APC
+    description: >
+      Land halftracks and light APC on Axis-held French/Belgian coast — not UK home
+      ground, not water. Prefer motion path or patrol; reuse convoy_transit AI (soft
+      class). Spitfire bomb payloads; prefer 2×250 + slipper for Channel crossing.
+      Example: manston_ground_attack_halftracks.
+    support: supported
+    meta:
+      domain: land
+      unit_ids: [Sd_Kfz_251, Sd_Kfz_7, M2A1_halftrack]
+      payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
+      mission_types: [ground_attack]
+      preferred_motion: path
+      preferred_ai_preset: convoy_transit
+      cues: [halftrack, half-track, spw, apc, 251, sdkfz 7, m2a1]
+
+  - family: strike_target_class
     id: aaa_guns
     label: AAA / AT guns
     description: >
@@ -853,9 +871,9 @@ options:
     meta:
       domain: land
       geometry_hint: inland_near_dunkirk
-      related_classes: [soft_vehicles, aaa_guns]
+      related_classes: [soft_vehicles, halftracks_apc, aaa_guns]
       mission_types: [ground_attack]
-      cues: [dunkirk, calais, french coast, inland, convoy, flak]
+      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, flak]
       preferred_ai_preset_soft: convoy_transit
       preferred_ai_preset_aaa: aaa_alert
       # From examples/manston_ground_attack.yaml / convoy / flak_alert
