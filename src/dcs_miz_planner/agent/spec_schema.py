@@ -42,6 +42,10 @@ ANTI_PATTERNS: tuple[str, ...] = (
     "Lua / script / Mist fields inside triggers (typed when/then only; no free-form script)",
     "friendly / same-coalition targets without strike.practice true",
     "inventing bomb CLSIDs (use named player.payload presets from the catalog)",
+    (
+        "ASW / submerged U-boat hunt (depth charges, sonobuoys, asw mission_type) — "
+        "Channel Spitfire only attacks surfaced sea_craft (e.g. Uboat_VIIC)"
+    ),
 )
 
 _TYPE_NOTES: dict[str, tuple[str, ...]] = {
@@ -100,6 +104,10 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
             "for Channel WWII; water = ships. Practice (strike.practice true): same-coalition "
             "/ UK-side targets allowed for bombing practice narrative."
         ),
+        (
+            "Surfaced U-boat / sea hunt: use sea_craft ids (e.g. Uboat_VIIC) on mid-Channel "
+            "water geometry (see manston_uboat_hunt.yaml). Attack while surfaced — not ASW."
+        ),
         'objectives must include {"type":"attack_ground"}; enemies must be empty.',
         "omit the cap block. Pilot jettisons the slipper tank in the cockpit before attack.",
         (
@@ -129,6 +137,10 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         (
             "optional targets = observe-only enemy contacts (opposing coalition; land or "
             "sea registry ids). Empty targets = area recon."
+        ),
+        (
+            "Surfaced U-boat locate: mid-Channel water + Uboat_VIIC contact "
+            "(manston_uboat_recon.yaml); weapons hold — not depth-charge ASW."
         ),
         "AOI is airfield-relative — never invent raw map x/y. enemies must be empty.",
         "omit strike, cap, escort, package. zones/triggers must stay empty (find beat injected).",

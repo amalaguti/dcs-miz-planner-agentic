@@ -215,11 +215,17 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
         targets = ", ".join(tgt_bits) or "briefed ground targets"
         payload = spec.player.payload or "briefed loadout"
         has_slipper = "slipper" in payload.lower() or "tank" in payload.lower()
+        has_uboat = any(t.unit == "Uboat_VIIC" for t in spec.targets)
         tactics = (
             f"Ground attack on {strike_bits}. Targets: {targets} (enemy only). "
             f"Loadout: {payload}. Run in with a clear abort, release on the briefed "
             "aiming point, and do not linger in flak."
         )
+        if has_uboat:
+            tactics = (
+                f"{tactics} U-boat is briefed on the surface — bomb while she is up; "
+                "this is not ASW and depth charges are not available."
+            )
         if has_slipper:
             procedures = (
                 "Cold start as briefed; taxi and takeoff with the slipper tank fitted; "
@@ -279,10 +285,16 @@ def build_commander_brief(spec: MissionSpec, voice: str) -> str:
         )
         tgt_bits = [f"{t.count}× {t.unit}" for t in spec.targets]
         contacts = ", ".join(tgt_bits) if tgt_bits else "no fixed contacts (area recon)"
+        has_uboat = any(t.unit == "Uboat_VIIC" for t in spec.targets)
         tactics = (
             f"Reconnaissance of {aoi}. Visual contacts briefed: {contacts}. "
             "Locate and observe only — weapons hold. Do not treat this as a bomb run."
         )
+        if has_uboat:
+            tactics = (
+                f"{tactics} Report the surfaced U-boat; leave the kill for a tasked "
+                "hunt while she is still on the surface — no depth charges."
+            )
         procedures = (
             "Cold start as briefed; climb toward the AOI bearing; enter the observe area; "
             "identify contacts if present; when the area is observed, RTB when ready."

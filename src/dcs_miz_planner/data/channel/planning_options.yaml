@@ -598,8 +598,23 @@ options:
     support: advisory
     meta:
       behaviours: [sound_flag_chain]
-      source: sound + flag enrichment sample
-      mission_types: [free_flight, intercept]
+
+  - family: mission_inspiration
+    id: uboat_surfaced_hunt
+    label: Surfaced U-boat locate / hunt
+    description: >
+      Mid-Channel surfaced Type VII C: recon (observe, weapons hold) and/or ground_attack
+      (bomb while surfaced). Not true ASW — no depth charges or submerged detect. Prefer
+      sea_craft Uboat_VIIC on mid_channel_shipping geometry. See manston_uboat_recon /
+      manston_uboat_hunt examples.
+    support: advisory
+    meta:
+      behaviours: []
+      related_classes: [sea_craft]
+      related_places: [mid_channel_shipping]
+      mission_types: [recon, ground_attack]
+      unit_ids: [Uboat_VIIC]
+      note: surfaced_only
 
   # --- Mission-designer shelves (palette for co-authoring; Spec dynamics = #30f) ---
   # Layer A = dcs-miz randomize (new Spec day). Layer B = dynamics_mode / Spec dynamics
@@ -745,13 +760,13 @@ options:
     label: Mid-Channel shipping lane
     description: >
       Over-water Channel corridor for E-boat / U-boat / cargo ship strikes — sea_craft
-      class only; keep land vehicles off the water.
+      class only; keep land vehicles off the water. Also fits recon contacts (observe).
     support: advisory
     meta:
       domain: sea
       geometry_hint: mid_channel
       related_classes: [sea_craft]
-      mission_types: [ground_attack]
+      mission_types: [ground_attack, recon]
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

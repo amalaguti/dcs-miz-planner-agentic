@@ -252,7 +252,7 @@ Two boundaries worth respecting:
 | Path | What lives there |
 |------|------------------|
 | `src/dcs_miz_planner/` | Product code (the modules above) |
-| `examples/` | Checked-in Mission Specs; free-flight, intercept, CAP, ground-attack, escort, and recon Manston examples |
+| `examples/` | Checked-in Mission Specs; free-flight, intercept, CAP, ground-attack, escort, recon, and mid-Channel U-boat recon/hunt Manston examples |
 | `tests/` | pytest: schema, registry, install, catalog, memory, tools, agent, validation, goldens |
 | `openspec/` | Spec-driven workflow: `specs/` (current truth), `changes/` (in flight), `changes/archive/` |
 | `.cursor/` | Agent tooling: `skills/`, `hooks/`, `rules/`, `commands/` |

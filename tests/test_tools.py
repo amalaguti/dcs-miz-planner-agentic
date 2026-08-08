@@ -146,7 +146,11 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert by_key[("channel_place", "manston_home")]["meta"]["airfield"] == "Manston"
     assert by_key[("channel_place", "french_coast_strike_belt")]["meta"]["domain"] == "land"
     assert by_key[("channel_place", "mid_channel_shipping")]["meta"]["domain"] == "sea"
+    assert "recon" in by_key[("channel_place", "mid_channel_shipping")]["meta"]["mission_types"]
     insp = by_key[("mission_inspiration", "low_level_channel_hop")]
+    uboat = by_key[("mission_inspiration", "uboat_surfaced_hunt")]
+    assert uboat["support"] == "advisory"
+    assert "Uboat_VIIC" in uboat["meta"]["unit_ids"]
     assert insp["support"] == "advisory"
     assert "altitude_speed_gates" in insp["meta"]["behaviours"]
     supports = {o["support"] for o in options}

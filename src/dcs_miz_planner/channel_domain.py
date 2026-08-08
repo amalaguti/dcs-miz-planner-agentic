@@ -51,19 +51,49 @@ def strike_map_point(
     registry: ChannelRegistry | None = None,
 ) -> tuple[float, float]:
     """Compile-equivalent strike Point (x, y) from player airfield + strike block."""
-    from .theatre_terrain import terrain_for_theatre
-
     if spec.strike is None:
         raise ValueError("strike block required")
+    return airfield_relative_map_point(
+        spec,
+        bearing_deg=spec.strike.bearing_deg,
+        distance_km=spec.strike.distance_km,
+        registry=registry,
+    )
+
+
+def recon_map_point(
+    spec: MissionSpec,
+    *,
+    registry: ChannelRegistry | None = None,
+) -> tuple[float, float]:
+    """Compile-equivalent recon AOI centre Point (x, y)."""
+    if spec.recon is None:
+        raise ValueError("recon block required")
+    return airfield_relative_map_point(
+        spec,
+        bearing_deg=spec.recon.bearing_deg,
+        distance_km=spec.recon.distance_km,
+        registry=registry,
+    )
+
+
+def airfield_relative_map_point(
+    spec: MissionSpec,
+    *,
+    bearing_deg: float,
+    distance_km: float,
+    registry: ChannelRegistry | None = None,
+) -> tuple[float, float]:
+    """Map point from player airfield + bearing/distance (same math as CAP/strike/recon)."""
+    from .theatre_terrain import terrain_for_theatre
+
     registry = registry if registry is not None else get_channel_registry()
     terrain = terrain_for_theatre(spec.theatre)
     airdrome_id = registry.airdrome_id(spec.player.airfield)
     airport = terrain.airport_by_id(airdrome_id)
     if airport is None:
         raise ValueError(f"Unknown Channel airdromeId {airdrome_id} for {spec.player.airfield}")
-    point = airport.position.point_from_heading(
-        spec.strike.bearing_deg, spec.strike.distance_km * 1000.0
-    )
+    point = airport.position.point_from_heading(bearing_deg, distance_km * 1000.0)
     return float(point.x), float(point.y)
 
 
@@ -73,4 +103,13 @@ def strike_domain_for_spec(
     registry: ChannelRegistry | None = None,
 ) -> Domain:
     x, y = strike_map_point(spec, registry=registry)
+    return classify_channel_domain(x, y)
+
+
+def recon_domain_for_spec(
+    spec: MissionSpec,
+    *,
+    registry: ChannelRegistry | None = None,
+) -> Domain:
+    x, y = recon_map_point(spec, registry=registry)
     return classify_channel_domain(x, y)

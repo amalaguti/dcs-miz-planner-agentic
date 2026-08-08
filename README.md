@@ -38,6 +38,9 @@ tank against enemy trucks inland near Dunkirk (accepted in-game 2026-08-02). Esc
 (`examples/manston_escort.yaml`) covers a Mosquito package SE of Manston with optional
 Bf-109 bounce (accepted in-game 2026-08-02). Recon Spec (`examples/manston_recon.yaml`)
 observes an AOI inland near Dunkirk with optional truck contacts (no bombs; find beat).
+Surfaced U-boat mid-Channel pair: `examples/manston_uboat_recon.yaml` /
+`manston_uboat_hunt.yaml` (locate then bomb while surfaced — not ASW; accepted ME
+2026-08-08).
 Compile writes squadron-commander briefing text
 into `.miz` `l10n` (Sortie / Description / Task; `dcs-miz compile --voice`; accepted in-game
 2026-08-02). Weather presets: `sunny_clear`, `dawn_clear`, `marginal_vfr`, plus campaign-seeded
@@ -125,6 +128,13 @@ uv run dcs-miz examples/manston_escort.yaml
 uv run dcs-miz validate examples/manston_recon.yaml
 uv run dcs-miz examples/manston_recon.yaml
 # -> out/manston_recon.miz
+
+uv run dcs-miz validate examples/manston_uboat_recon.yaml
+uv run dcs-miz examples/manston_uboat_recon.yaml
+# -> out/manston_uboat_recon.miz
+uv run dcs-miz validate examples/manston_uboat_hunt.yaml
+uv run dcs-miz examples/manston_uboat_hunt.yaml
+# -> out/manston_uboat_hunt.miz
 
 # Seeded reroll (same seed → same Spec), then compile:
 uv run dcs-miz randomize examples/manston_cap.yaml --seed 42

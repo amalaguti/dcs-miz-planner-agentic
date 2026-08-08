@@ -118,7 +118,8 @@ Rules:
   player airfield; optional practice bool). player.payload required (named preset).
   targets non-empty. Combat (practice false/default): opposing coalition only; land
   vehicles on enemy-held territory (Channel WWII: Axis French/Belgian coast). Mid-Channel
-  water MUST use ship/boat registry ids. Practice (strike.practice true): same-coalition
+  water MUST use ship/boat registry ids (e.g. surfaced Uboat_VIIC on mid-Channel —
+  manston_uboat_hunt; not ASW/depth charges). Practice (strike.practice true): same-coalition
   / home-territory targets allowed for bombing practice (e.g. UK-side range). objectives
   include {"type":"attack_ground"}. enemies must be empty. Optional narrative.enabled
   true expands curated GA immersion (push / ingress / targets-down win) when
@@ -136,6 +137,8 @@ Rules:
   contacts (opposing coalition). Empty targets = area recon. enemies must be empty.
   Omit player.payload, strike, cap, escort, package. zones/triggers must stay empty
   (compiler injects AOI find beat). Not a bomb run — locate/observe then RTB.
+  Surfaced U-boat locate: mid-Channel + Uboat_VIIC (see manston_uboat_recon); never invent
+  ASW / depth charges / submerged detect.
 """
 
 ONESHOT_CLOSING = """\

@@ -1,0 +1,37 @@
+schema_version: "1"
+mission_type: recon
+theatre: TheChannel
+name: Manston Mid-Channel U-boat Recon
+description: >
+  Cold start at Manston. Fly a mid-Channel AOI to locate a surfaced Type VII C
+  U-boat contact. Weapons hold — observe and RTB. Not ASW: no depth charges;
+  bombs only matter on a later hunt while she is still on the surface.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+recon:
+  # Mid-Channel water from Manston (same corridor as GA ship tests: 140° / 40 km).
+  bearing_deg: 140
+  distance_km: 40
+  altitude_m: 1500
+  radius_m: 4000
+  mark: true
+enemies: []
+targets:
+  - unit: Uboat_VIIC
+    count: 1
+    skill: Average
+    country: ThirdReich
+    coalition: red
+objectives:
+  - type: recon_area

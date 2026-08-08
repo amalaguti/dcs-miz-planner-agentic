@@ -5,6 +5,16 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Recon AOI land/sea domain for contacts (2026-08-07)
+
+- **Date:** 2026-08-07
+- **Lesson:** Recon contacts use the same Channel land/sea heuristic as GA strikes.
+  Mid-Channel water from Manston is ~140° / 40 km (`sea`); Dunkirk inland truck AOI
+  (~125° / 76 km) is `land`. Validation rejects sea ships on land AOIs and land trucks
+  on water (`strike_domain_mismatch`). Surfaced `Uboat_VIIC` belongs on water geometry
+  (`manston_uboat_recon` / `manston_uboat_hunt`).
+- **Code:** `channel_domain.recon_domain_for_spec`, `validation._validate_recon_domain`.
+
 ## Recon AOI find pack (`mission_type: recon`) (2026-08-07)
 
 - **Date:** 2026-08-07

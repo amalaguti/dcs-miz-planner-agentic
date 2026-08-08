@@ -688,6 +688,58 @@ def _validate_recon(
                 )
             )
 
+    if spec.recon is not None and spec.targets:
+        _validate_recon_domain(spec, registry, errors)
+
+
+def _validate_recon_domain(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+) -> None:
+    """Fail when recon AOI domain mismatches contact unit land/sea domain."""
+    from .channel_domain import recon_domain_for_spec
+
+    try:
+        point_domain = recon_domain_for_spec(spec, registry=registry)
+    except (ValueError, RegistryError) as exc:
+        errors.append(
+            ValidationError(
+                code="recon_point_unresolved",
+                path="recon",
+                message=f"Cannot resolve recon AOI map point: {exc}",
+            )
+        )
+        return
+
+    assert spec.recon is not None
+    for i, tgt in enumerate(spec.targets):
+        try:
+            unit = registry.get_strike_unit(tgt.unit)
+        except RegistryError:
+            continue
+        if unit.domain != point_domain:
+            need = (
+                "land (inland / past coast)"
+                if unit.domain == "land"
+                else "water (mid-Channel / offshore)"
+            )
+            errors.append(
+                ValidationError(
+                    code="strike_domain_mismatch",
+                    path=f"targets[{i}].unit",
+                    message=(
+                        f"Contact {tgt.unit!r} is domain {unit.domain!r} but recon AOI "
+                        f"at bearing {spec.recon.bearing_deg:g}° / "
+                        f"{spec.recon.distance_km:g} km is {point_domain}"
+                    ),
+                    hint=(
+                        f"Move recon AOI onto {need}, or use a "
+                        f"{'ship' if point_domain == 'sea' else 'land vehicle'} unit id"
+                    ),
+                )
+            )
+
 
 @dataclass(frozen=True)
 class ValidationError:

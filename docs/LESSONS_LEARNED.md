@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-07 | [Recon AOI land/sea domain for contacts](lessons/triggers-me.md#recon-aoi-landsea-domain-for-contacts-2026-08-07) | `triggers-me` |
 | 2026-08-07 | [Recon AOI find pack (`mission_type: recon`)](lessons/triggers-me.md#recon-aoi-find-pack-mission_type-recon-2026-08-07) | `triggers-me` |
 | 2026-08-07 | [Fail-to-follow discipline (`player.flight.discipline`)](lessons/player-flight.md#fail-to-follow-discipline-playerflightdiscipline-2026-08-07) | `player-flight` |
 | 2026-08-07 | [Synthetic METAR + rainy light gallery beyond PyDCS](lessons/weather.md#synthetic-metar--rainy-light-gallery-beyond-pydcs-2026-08-07) | `weather` |

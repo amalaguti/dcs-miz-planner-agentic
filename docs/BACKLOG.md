@@ -66,6 +66,7 @@ feedback** so the agent can learn tastes over time. Compile/validate still use r
 | 8a | `agent-catalog-sqlite` | Sync YAML registry + mission types/options into queryable SQLite tables for agent/UI; keep install inventory schema distinct (`catalog_*` vs install tables); theatre discovery join; aircraft module harvest deferred | `done` (CLI accepted 2026-07-26) |
 | 8a.1 | `catalog-discover-modules` | Optional: harvest installed aircraft modules for discovery-only listing (never auto-promote into known YAML) | `done` (2026-08-05; cache on theatres --refresh) |
 | 8a.2 | `install-maintenance-slash` | Host `/maintenance` (or extend `/catalog`): read-only install summary (scan time, theatres, known aircraft installed/missing, discovered-only folders); optional refresh. Not default LLM invent tools — slash/CLI only | `idea` (parked 2026-08-05) |
+| 8c | `agent-strike-target-catalog` | **Prebuilt** SQLite catalog of Channel strike/recon **unit targets** (land + sea) for agent suggestion — sync from registry YAML (`ground_units.yaml` + `ships.yaml`) at `dcs-miz catalog sync` time (same async path as `#8a`/`#9`); agent **queries SQLite only** during invent/chat (never scan YAML/PyDCS mid-turn). Tool e.g. `list_strike_targets(domain?, class?, q?)` → exact DCS ids + labels + domain for recon contacts / GA targets. Join or tag with `strike_target_class` / `channel_place` shelves. Compile/validate stay registry SoT. Pairs with `#15a`/`#15f` so “search/recon” can recommend e.g. `Uboat_VIIC`. | `idea` (draft 2026-08-07 — see notes below; promote after `#15f` or with it if thin) |
 | 8b | `user-prefs-and-history` | Store user preferences, mission-generation history (Spec path, outcome), and post-flight / post-gen satisfaction surveys; agent tools to read prefs and record feedback | `done` (CLI/API accepted 2026-08-01) |
 | 10 | `nl-to-spec-agent` | Natural language → Mission Spec via structured outputs + tool calling (uses catalog + prefs/history tools) | `done` (stub Spec accepted 2026-08-01; live needs OPENAI_API_KEY) |
 | 10a | `interactive-plan-repl` | Multi-turn CLI chat/REPL to plan missions interactively from scratch (stdin/stdout; explicit Spec accept) | `done` (CLI accepted 2026-08-01; CAP Spec via chat) |
@@ -81,11 +82,93 @@ DuckDuckGo Instant Answer returned empty JSON for multi-word queries. Fixed by c
 to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 `/research` output as offline fixture fallback whenever live returns empty/error.
 
+**`#8c` `agent-strike-target-catalog` — draft (2026-08-07, categories 2026-08-08):**
+
+Today the agent only *indirectly* sees target ids via `planning_options` meta on
+`strike_target_class` (e.g. `sea_craft.ship_ids`) after catalog sync — incomplete for
+recon contact suggestion, easy to miss, and not a queryable unit table. Registry already
+has the SoT (`get_strike_unit` / `list_strike_units`); compile must keep using registry.
+
+**Category spine (plan motion + invent around these; expand registry over time):**
+
+| Class id (proposed) | Domain | Motion default | Registry today | PyDCS examples (candidates) |
+|---------------------|--------|----------------|----------------|-----------------------------|
+| `soft_vehicles` | land | path / patrol | Blitz, Kubelwagen, Bedford | + Willys_MB, Sd_Kfz_2 |
+| `halftracks_apc` | land | path / patrol | — | Sd_Kfz_251, M2A1_halftrack, Sd_Kfz_7 |
+| `armor` | land | path / patrol (static if dug-in) | — | Pz_IV_H, Stug_III, Tiger_I, Cromwell_IV, M4_Sherman, … |
+| `troops` | land | path / patrol (static if dug-in) | — | soldier_mauser98, soldier_wwii_br_01, soldier_wwii_us |
+| `aaa_guns` | land | **static** | flak18/36, Pak40 | + flak30/37/38/41, bofors40, Flakscheinwerfer_37, KDO_Mod40 |
+| `artillery` | land | static (or rare relocate path) | — | (verify Channel-era pieces before shelving) |
+| `radar_c3` | land | **static** | — | FuMG-401, FuSe-65 |
+| `trains` | land | **path** on curated rail corridor | — | Locomotive, German_covered_wagon_G10, DR_50Ton_Flat_Wagon, … |
+| `sea_craft` | sea | patrol / path; harbour → static | S-130, Uboat_VIIC, Dry-cargo | + Dry-cargo ship-2, HarborTug, Higgins_boat, LST_Mk2, CastleClass_01, … (era-filter) |
+| `hard_infrastructure` | land | **static** | empty (`future`) | static objects / `#17b` — not vehicle groups |
+
+Era caution: Channel Spitfire sorties ≠ dump every WWII id; prefer BoB/Channel-front
+plausible Axis/Allied sets when promoting units into YAML.
+
+Draft shape (for a future OpenSpec propose — do not implement until promoted):
+
+1. **Sync (offline / CLI, not invent-time):** extend `catalog sync` to upsert
+   `catalog_strike_units` (or equivalent) from Channel `ground_units.yaml` + `ships.yaml`:
+   `unit_id`, `label`, `domain` (`land`|`sea`), optional `class_ids` / notes, theatre
+   (`TheChannel`). Same DB as `#8a` (`catalog_*` tables). Refresh with existing
+   `dcs-miz catalog sync` (and optionally after registry YAML edits in CI).
+2. **Query at agent time:** read-only tool `list_strike_targets` (filter `domain`,
+   optional text `q`, optional class) → rows from SQLite. Prompts: for recon/GA, call
+   this before inventing `targets[]`; prefer returned ids only.
+3. **Non-goals:** inventing DCS ids; scraping install UnitPayloads; building the table
+   inside each LLM turn; replacing registry for validate/compile.
+4. **Accept:** after sync, tool returns `Uboat_VIIC` under `domain=sea`; agent recon plan
+   can suggest it without hardcoding.
+
+Sequencing: can ship thin prompt+meta improvements inside `#15f`; full SQLite table +
+tool is `#8c`. Prefer `#8c` soon after `#15f` so U-boat/recon suggestions stay catalog-backed.
+Category list above is the planning SoT until propose; grow registry YAML class-by-class.
+
+**`#15g` `strike-target-motion` — draft (2026-08-08):**
+
+Today GA/recon `targets[]` are placed once (static) at the strike/AOI point.
+Motion should apply to **land and sea** when it makes sense; static remains the
+default and the right choice for fixed sites.
+
+**When motion fits (agent + examples):**
+
+| Kind | Prefer | Notes |
+|------|--------|--------|
+| Mid-Channel / open-sea craft | `patrol` or short `path` | Surfaced U-boat, coastal shipping under way |
+| Harbour / dock / port ships | `static` | Tied up alongside |
+| Soft vehicles / trucks / light cars | `path` (convoy) or `patrol` | Road-ish legs near strike/AOI |
+| Tanks / AFVs / troops (when in registry) | `path` or `patrol` | Advancing / sweeping — not dug-in |
+| AAA / AT guns / flak | `static` | Emplaced batteries |
+| Trains | `path` along **curated rail corridor** | Not free-form; needs Channel rail shelf (v2 / registry) |
+
+**Draft Spec shape** (promote via OpenSpec — do not implement until proposed):
+
+1. **Per-target motion:** `motion: static` (default/omit) | `patrol` +
+   `patrol_radius_m` | `path` + short airfield-relative
+   `{bearing_deg, distance_km}` waypoints (loop). Same fields for land + sea.
+2. **Compiler:** emit native ME waypoints / go-to loop on ship **or** vehicle
+   groups; curated speeds by domain/class. Static = today’s placement only.
+3. **Agent heuristics:** shipping places → sea motion; soft_vehicles / mobile
+   land classes → path/patrol; aaa_guns / harbour → static. Never invent rail
+   geometry — only named corridors once registry/planning_options expose them.
+4. **Examples:** mid-Channel U-boat with patrol; inland truck convoy path;
+   keep flak/static harbour Specs as-is.
+5. **Non-goals (v1):** crash-dive/ASW; Mist/MOOSE; LLM free-form routes;
+   auto-snap to real DCS rail mesh (trains = later curated corridor, not v1).
+6. **Accept:** ME shows moving sea craft + moving truck group; static Specs
+   unchanged.
+
+**Registry note:** Channel land shelf today is soft vehicles + AAA (`ground_units.yaml`).
+Tanks/troops/trains need unit ids + classes before examples; motion Spec can
+ship first for trucks + ships.
+
 ---
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** (pick next from backlog — M4 types through `#15a` recon)
+**Next promote / in proposal:** (`#15g` target motion and/or `#8c` target catalog)
 
 **Do soon (not blocking next promote):**
 - `#15c` join-up: Instant Action `out/manston_cap_flight_wingman.miz` (or recompile
@@ -108,6 +191,8 @@ to DuckDuckGo HTML results, enriching the query with Spec context, and labeling
 | 14 | `mission-type-ground-attack` | Ground targets, payload selection | `done` (accepted in-game 2026-08-02; Dunkirk inland + slipper) |
 | 15 | `mission-type-escort` | Escort a friendly package | `done` (accepted in-game 2026-08-02; Mosquito package + bounce) |
 | 15a | `mission-type-recon` | Locate / observe a place or contact (GA-like geometry + marks/zones) **without** strike/payload attack; win on find/RTB rather than destroy | `done` (accepted ME 2026-08-07; Reconnaissance + AOI find beat) |
+| 15f | `channel-uboat-recon-hunt` | Channel **surfaced** U-boat locate + hunt on top of `#15a` recon + existing GA `sea_craft` / `Uboat_VIIC`: mid-Channel recon example (sea contacts, observe/find, weapons hold), GA U-boat strike example (bomb payload while surfaced; mid-Channel or harbour geometry), catalog `mission_inspiration` + place/class cards, agent briefs that say “bomb on the surface / before crash-dive.” Prefer two Specs (recon then GA) and optional late-act/radio drama via existing `#25`/`#30f`. **Non-goals:** true ASW (submerged detect, depth charges, sonobuoys — DCS bombs vanish underwater); new `asw` mission type; armed recon / find-then-kill in one Spec (defer to a later change if wanted). Agent target *suggestion* from full unit catalog → **`#8c`** (SQLite). Moving sea contacts → **`#15g`**. | `done` (accepted ME 2026-08-08; surfaced Uboat_VIIC recon + hunt) |
+| 15g | `strike-target-motion` | Optional **motion** on `targets[]` / recon contacts (land **and** sea): default **static** (harbour/dock, emplaced AAA/AT, dug-in). Prefer **patrol** (radius) or short looping **path** (airfield-relative waypoints) for ships under way, truck/vehicle convoys, and (when registry has them) tanks/troops. Trains later via curated Channel rail corridors — not free-form. Compiler: native ME waypoints on ship/vehicle groups (no Lua). Agent heuristics by place/class. Applies to GA + recon. **Non-goals v1:** ASW/crash-dive; auto rail-mesh snap; LLM free routes. | `idea` (draft 2026-08-08 — see notes below; promote after `#15f`) |
 | 15b | `player-flight-squadron` | Break solo-only player sorties: Spec + compiler support for a **player flight** (2–4 Spits) so the human can fly as **flight lead** (AI wingmen) or as a **wingman** in an AI-led section. Placement + skills + brief; join-up/Follow deferred to `#15c`. Escort `package` remains friendly AI only, not the player’s section. | `done` (accepted ME smoke 2026-08-07; lead 4-ship + wingman 4-ship via separate AI lead group) |
 | 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead; put CAP/GA/escort tasking on the AI lead when `role: wingman` + `join_up`. Prefer native ME Follow + waypoints; no LLM Lua. | `done` (accepted 2026-08-07; **do-soon smoke:** `manston_cap_flight_wingman` after takeoff) |
 | 15d | `player-flight-orders` | Curated **section orders** the player (or Spec triggers) can issue: rejoin/form up, engage, cover, orbit, RTB, break, etc. Prefer stock DCS lead→wingman radio when `role: lead` (same group); extend with F10 / flag→AI-task packs for wingman separate groups and scripted beats. Spec selects named orders only — no free-form chat→Lua. After `#15b`; pairs with `#15c` for cohesion. | `done` (accepted 2026-08-07; ME + F10/ack; **do-soon:** airborne Rejoin/Engage on `manston_cap_flight_orders`) |
@@ -228,13 +313,32 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R8 | `deps-upgrade-review` | Periodically check latest PyDCS and other project-related libraries; decide whether an upgrade is recommended (pin notes in LESSONS / pyproject when we bump) | `idea` |
 | R9 | `research-dcs-user-manual-me` | Inventory ME features we could map into Spec/compiler/agent; notes under `research/`; promote durable gaps into backlog / LESSONS. **Sources (use together):** (1) local `docs/DCS_User_Manual_EN_2020.pdf` (gitignored; [official EN download](https://www.digitalcombatsimulator.com/en/downloads/documentation/dcs-user_manual_en/) — still the 2020 file for DCS **2.5**; ME chapter ToC ~p.83 / Set Rules for Triggers — *baseline only*); (2) community [TEMPEST.114 Mission Editor Manual](https://forum.dcs.world/topic/347082-mission-editor-manual-most-of-all-me-how-do-i-do-this-are-solvable-with-this-little-pdf-it-has-lots-of-info-not-clear-in-the-ui-hope-it-helps/) (ED Forums, 2024 — clearer ME how-tos than the UI/ED PDF); (3) [Hoggit ME wiki](https://wiki.hoggitworld.com/view/DCS_editor_triggerBasics) ([conditions](https://wiki.hoggitworld.com/view/DCS_editor_conditions), actions, [AI tasking](https://wiki.hoggitworld.com/view/DCS_editor_AITasking)); (4) [Hoggit Scripting Engine docs](https://wiki.hoggitworld.com/view/Simulator_Scripting_Engine_Documentation) (for M6 `#22` Lua, not day-to-day Spec compile); (5) [ED changelogs](https://www.digitalcombatsimulator.com/en/news/changelog/) + newsletters for post-2020 ME features; (6) in-game ME + stock Channel IA/Training (cross-check with R5) | `done` (2026-08-04; ranked candidates in `research/me-enrichment-candidates.md` — next product: `#26` sound + richer flags) |
 | R10 | `research-me-mission-content` | **ME content-depth pass** (in-editor + PyDCS + campaign corpus + optional meteo): (1) **Weather** — mine installed Spitfire campaign `.miz` weather tables (Beware/FoD/Epsom/Big Show; 60 scanned 2026-08-06) + research samples; ME weather templates optional; PyDCS `CloudPreset` (30 ids); defer dynamic cyclones. (2) Optional Channel climatology to refine briefs. (3) **Static objects**. Notes in `research/weather.md`; promote `#17a` / `#17b` | `idea` (2026-08-06; campaign weather scan done — enough to seed `#17a` recipes) |
+| R11 | `research-theatre-content-expand` | **Per-map content audit** to expand planner capabilities beyond Channel: for each owned/installed theatre, inventory airfields, era, typical aircraft, land/sea/static unit shelves (WWII Assets Pack vs free vs modern), campaigns, and what a theatre registry slice would need (YAML + PyDCS binding + domain heuristics). Feed multi-theatre promote + `#8c` class expansion. Notes in gitignored `research/theatres/`. **Do not** auto-promote into product SoT. | `idea` (draft 2026-08-08 — see notes; user map fleet below) |
 
-Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
+**`R11` `research-theatre-content-expand` — draft (2026-08-08):**
 
-- Has `triggers` / zones / flags?
-- Inline `a_do_script` vs embedded `l10n/.../*.lua` vs external Mist/MOOSE?
-- What behaviour is scripted (spawn, messages, win/fail, radio, cockpit)?
-- Anything reusable as a parameterised snippet vs better as a native trigger?
+User fleet snapshot (refreshed `dcs-miz theatres --refresh` + `S:\DCS World\Mods\terrains`):
+
+| Theatre | Install state | Planner today | Notes |
+|---------|---------------|---------------|--------|
+| TheChannel | **available** | **yes** (only SoT) | Current product |
+| Syria | **available** | no | Modern ME / Cold War–ish ops |
+| Normandy | **available** | no | WWII; pairs with WWII Assets Pack |
+| MarianaIslandsWWII | **available** | no | WWII Pacific |
+| MarianaIslands | **disabled** | no | Modern Marianas |
+| Caucasus | **disabled** | no | Free/base terrain |
+| Kola | **not installed** | no | Purchased; no terrain folder under install |
+| Nevada (NTTR) | **not installed** | no | Purchased; not on disk |
+| South Atlantic | **not installed** | no | Purchased; terrain missing — `CoreMods/tech/SouthAtlanticAssets` present only |
+| Afghanistan / Cold War Germany / Iraq | wishlist | no | Not purchased (Iraq demo folder under `DemoMods` only — ignore) |
+
+Audit checklist (per theatre, stay in `research/theatres/`):
+
+1. ME / PyDCS: airfield ids, coalition defaults, period.
+2. Unit shelves: which ground/ship/static ids make sense; free vs WWII Assets Pack vs other.
+3. Campaigns / IA on install that reveal mission patterns.
+4. Gap vs Channel registry pattern → effort to add `data/<theatre>/` + binding.
+5. Recommend promote order (e.g. Normandy after Channel solid; modern maps later).
 
 ---
 
@@ -254,7 +358,7 @@ Audit checklist for R1 / R2 / R5 (per mission, stay in `research/`):
   Answer + HTML cascade; clear soft-fail label). Revisit only if DDG HTML is blocked.
 - **Lua enrichment** — scheduled as **M6**; still never LLM-authored mission Lua.
 - **Lua IDE / MCP tooling** — see research **R5–R6**. Schema + LSP for writing snippets; VEAF MCP as a lab only. A future *project-owned* MCP that exposes *our* snippet catalog (`list` / `validate_params` / API docs) is optional once M6 `#22` exists. Native Lua compiler replacing PyDCS remains far-horizon.
-- **Normandy / multi-theatre** — after Channel registry pattern is solid; campaigns above are inspiration, not shipping content.
+- **Normandy / multi-theatre** — after Channel registry pattern is solid; campaigns above are inspiration, not shipping content. Content audit per owned map → research **R11** `research-theatre-content-expand`.
 - **Historical validation engine** — date → plausible aircraft/opposition (productized form of R3).
 - **PyDCS issue watch** — research **R7**: **done** 2026-08-04 (`research/pydcs-issues.md` + LESSONS); re-run on R8 bumps / before `#22`.
 - **Dependency upgrade cadence** — research **R8**: check PyDCS + related libs; bump only when recommended.
@@ -294,9 +398,13 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Within-pattern variance (wind/fog/turb not identical every time) | **M5** `#17e` `weather-invent-jitter` — seeded; climatology bands; not ME Dynamic |
 | Mid-flight weather story (sunny→rain / fog burn-off) | **M5** `#17c` fog-only via curated Lua (`#22`); cloud/rain mid-mission **not** feasible (no DCS API) |
 | Fly with a squadron / as lead or wingman (not solo only) | **M4** `#15b` done; cohesion `#15c`; orders `#15d`; **fail-to-follow discipline** → `#15e` `player-flight-discipline` |
+| Spitfire Channel U-boat recon / “sub hunt” (surfaced only; not true ASW) | **M4** `#15f` `channel-uboat-recon-hunt` — builds on `#15a` recon + GA `sea_craft` / `Uboat_VIIC` |
+| Sea/land targets move on a path / patrol; harbour & emplaced stay static | **M4** `#15g` `strike-target-motion` — optional `targets[].motion` → ME waypoints (ships, trucks; trains later) |
+| Agent suggests recon/GA targets from a full unit list (U-boat, trucks, …) | **M3** `#8c` `agent-strike-target-catalog` — SQLite synced offline from registry; query at invent time |
 | Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — ME Failures panel table; curated ids; opt-in Spec (**done** 2026-08-07) |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
+| Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research** R11 `research-theatre-content-expand` — install probe + per-map content notes |
 | Adversarial “prove it wrong” findings (false-green validate, tool trust, docs honesty, CI…) | **Adversarial review track** `#31`–`#42` + expand `#30c`; notes in `docs/adversarial-review-2026-08-05.md` |
 
 ---
@@ -331,6 +439,8 @@ Resolve these inside the relevant proposal, not here.
 
 | Section orders Spec shape (`#15d`) | **Closed 2026-08-07:** optional `player.flight.orders` curated ids → F10 `Section:…` + flags 800+ → `AITaskPush`/`GroupStop`; wingman→AI lead, lead→player group; example `manston_cap_flight_orders` |
 | Section discipline Spec shape (`#15e`) | **Closed 2026-08-07:** optional `player.flight.discipline` (wingman+join_up); moving zone + soft/hard; flags 820+; hard `message_end`\|`mission_end`\|`section_rtb`; example `manston_cap_flight_discipline` |
+| Strike/recon target catalog for agent (`#8c`) | **Draft 2026-08-07:** sync `catalog_strike_units` from YAML at catalog sync; invent-time `list_strike_targets` reads SQLite only; registry remains compile SoT |
+| Target motion Spec shape (`#15g`) | **Draft 2026-08-08:** default static; optional `patrol` / short `path` for sea **and** mobile land (trucks, later tanks/troops); harbour + AAA static; trains = curated rail corridor later, not v1 mesh snap |
 
 ---
 
