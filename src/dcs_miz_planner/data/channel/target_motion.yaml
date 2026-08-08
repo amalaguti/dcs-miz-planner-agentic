@@ -45,11 +45,17 @@ profiles:
 # Exact DCS unit id → profile. Static AAA/guns omitted (no motion).
 units:
   Blitz_36-6700A: soft_vehicle
+  Sd_Kfz_2: soft_vehicle
+  Horch_901_typ_40_kfz_21: soft_vehicle
   Kubelwagen_82: soft_vehicle
   Bedford_MWD: soft_vehicle
+  Willys_MB: soft_vehicle
   Uboat_VIIC: sea_u_boat
   Schnellboot_type_S130: sea_e_boat
+  Higgins_boat: sea_e_boat
   Dry-cargo ship-1: sea_cargo
+  Dry-cargo ship-2: sea_cargo
+  HarborTug: sea_cargo
   # Future registry shelves (ready when YAML units exist):
   # Pz_IV_H: armor
   # Sd_Kfz_251: halftrack

@@ -71,8 +71,10 @@ One OpenSpec change per coherent batch (e.g. “Channel soft + AAA expand” or
 
 ## Channel class spine (candidates — not a ship list)
 
-Expand registry over time; invent plans around these classes. **Shipped today**
-are only ids already in Channel `ground_units.yaml` / `ships.yaml`.
+Expand registry over time; invent plans around these classes. **Shipped Channel
+ids** live in `ground_units.yaml` / `ships.yaml` (first expand batch: extra soft,
+AAA/searchlight/KDO, harbour tug / cargo / Higgins — see OpenSpec
+`channel-unit-shelf-expand`).
 
 | Class id | Domain | Motion default | Notes |
 |----------|--------|----------------|-------|

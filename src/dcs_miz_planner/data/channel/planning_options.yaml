@@ -687,12 +687,12 @@ options:
     support: supported
     meta:
       domain: land
-      unit_ids: [Blitz_36-6700A, Kubelwagen_82, Bedford_MWD]
+      unit_ids: [Blitz_36-6700A, Sd_Kfz_2, Horch_901_typ_40_kfz_21, Kubelwagen_82, Bedford_MWD, Willys_MB]
       payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
       mission_types: [ground_attack]
       preferred_motion: path
       preferred_ai_preset: convoy_transit
-      cues: [truck, convoy, column, soft, blitz]
+      cues: [truck, convoy, column, soft, blitz, kettenkrad, horch, jeep, willys]
 
   - family: strike_target_class
     id: aaa_guns
@@ -703,12 +703,23 @@ options:
     support: supported
     meta:
       domain: land
-      unit_ids: [flak18, flak36, Pak40]
+      unit_ids:
+        [
+          flak18,
+          flak30,
+          flak36,
+          flak37,
+          flak38,
+          Flakscheinwerfer_37,
+          KDO_Mod40,
+          Pak40,
+          bofors40,
+        ]
       payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
       mission_types: [ground_attack]
       preferred_motion: static
       preferred_ai_preset: aaa_alert
-      cues: [flak, aaa, guns, pak, battery]
+      cues: [flak, aaa, guns, pak, battery, searchlight, bofors, kdo]
 
   - family: ground_ai_preset
     id: convoy_transit
@@ -785,12 +796,20 @@ options:
     support: supported
     meta:
       domain: sea
-      ship_ids: [Schnellboot_type_S130, Uboat_VIIC, Dry-cargo ship-1]
+      ship_ids:
+        [
+          Schnellboot_type_S130,
+          Uboat_VIIC,
+          Dry-cargo ship-1,
+          Dry-cargo ship-2,
+          HarborTug,
+          Higgins_boat,
+        ]
       payload_families: [spitfire_1x500, spitfire_2x250_slipper, spitfire_2x250]
       mission_types: [ground_attack]
       preferred_motion: patrol
       preferred_ai_preset: ship_under_way
-      cues: [uboat, e-boat, shipping, under way, mid-channel]
+      cues: [uboat, e-boat, shipping, under way, mid-channel, tug, harbour, higgins]
       harbour_ai_preset: harbour_static
       harbour_motion: static
 

@@ -11,3 +11,12 @@ ships:
   Dry-cargo ship-1:
     label: Dry cargo ship
     domain: sea
+  Dry-cargo ship-2:
+    label: Dry cargo ship (variant 2)
+    domain: sea
+  HarborTug:
+    label: Harbour tug
+    domain: sea
+  Higgins_boat:
+    label: Higgins landing boat (Allied / coastal)
+    domain: sea

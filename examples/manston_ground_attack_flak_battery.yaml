@@ -1,0 +1,48 @@
+schema_version: "1"
+mission_type: ground_attack
+theatre: TheChannel
+name: Manston Flak Battery Expand
+description: >
+  Cold start at Manston with 2x250 lb bombs and a slipper tank. Strike an inland
+  Flak 38 battery with searchlight and KDO director near Dunkirk (aaa_alert;
+  static). Exercises the expanded aaa_guns shelf.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+  payload: spitfire_2x250_slipper
+strike:
+  bearing_deg: 125
+  distance_km: 76
+  altitude_m: 2000
+enemies: []
+targets:
+  - unit: flak38
+    count: 2
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    ai_preset: aaa_alert
+  - unit: Flakscheinwerfer_37
+    count: 1
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    ai_preset: aaa_alert
+  - unit: KDO_Mod40
+    count: 1
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    ai_preset: aaa_alert
+objectives:
+  - type: attack_ground

@@ -16,8 +16,20 @@ from .models import (
 
 TargetAiClass = Literal["soft", "aaa", "sea"]
 
-# Channel registry AAA / AT ids (planning strike_target_class aaa_guns).
-_AAA_UNIT_IDS = frozenset({"flak18", "flak36", "Pak40"})
+# Channel registry AAA / AT / searchlight / director ids (strike_target_class aaa_guns).
+_AAA_UNIT_IDS = frozenset(
+    {
+        "flak18",
+        "flak30",
+        "flak36",
+        "flak37",
+        "flak38",
+        "Flakscheinwerfer_37",
+        "KDO_Mod40",
+        "Pak40",
+        "bofors40",
+    }
+)
 
 _SOFT_AI_KEYS = frozenset({"roe", "alarm_state", "engage_air_weapons", "restrict_targets"})
 _AAA_AI_KEYS = _SOFT_AI_KEYS | {"interception_range"}

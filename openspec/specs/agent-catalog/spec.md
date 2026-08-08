@@ -141,3 +141,11 @@ use the registry as SoT.
 - **WHEN** catalog sync runs against packaged Channel data
 - **THEN** `catalog_strike_units` MUST contain a known soft land unit (e.g. Blitz)
   with domain `land`
+
+### Requirement: Catalog lists expanded strike units
+After catalog sync, `list_strike_targets` / strike-unit listing SHALL return the
+newly promoted Channel soft, AAA, and sea ids with correct domain and class tags.
+
+#### Scenario: Sea filter includes HarborTug
+- **WHEN** list_strike_targets is called with domain=sea after sync
+- **THEN** results MUST include HarborTug
