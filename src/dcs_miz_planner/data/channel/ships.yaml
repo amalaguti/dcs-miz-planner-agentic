@@ -20,3 +20,9 @@ ships:
   Higgins_boat:
     label: Higgins landing boat (Allied / coastal)
     domain: sea
+  LST_Mk2:
+    label: LST Mk2 (Allied landing — practice / coastal)
+    domain: sea
+  USS_Samuel_Chase:
+    label: USS Samuel Chase (Allied attack transport — practice)
+    domain: sea

@@ -61,6 +61,11 @@ units:
   Stug_III: armor
   Cromwell_IV: armor
   M4_Sherman: armor
+  Tiger_I: armor
+  SturmPzIV: armor
+  Pz_V_Panther_G: armor
+  JagdPz_IV: armor
+  Jagdpanther_G1: armor
   soldier_mauser98: troops
   soldier_wwii_br_01: troops
   soldier_wwii_us: troops
@@ -68,10 +73,14 @@ units:
   German_covered_wagon_G10: train
   German_tank_wagon: train
   DR_50Ton_Flat_Wagon: train
+  Coach cargo: train
+  Coach cargo open: train
   Uboat_VIIC: sea_u_boat
   Schnellboot_type_S130: sea_e_boat
   Higgins_boat: sea_e_boat
   Dry-cargo ship-1: sea_cargo
   Dry-cargo ship-2: sea_cargo
   HarborTug: sea_cargo
+  LST_Mk2: sea_cargo
+  USS_Samuel_Chase: sea_cargo
   # Future: artillery class when verified (#8e).

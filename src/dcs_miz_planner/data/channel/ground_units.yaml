@@ -84,15 +84,48 @@ ground_units:
   flak38:
     label: Flak 38
     domain: land
+  flak41:
+    label: Flak 41
+    domain: land
   Flakscheinwerfer_37:
     label: Flak searchlight 37
     domain: land
   KDO_Mod40:
     label: Flak KDO Mod 40 (director)
     domain: land
+  Allies_Director:
+    label: Allied AAA director (practice / UK-side)
+    domain: land
+  M45_Quadmount:
+    label: M45 Quadmount (Allied — practice / UK-side AAA)
+    domain: land
+  QF_37_AA:
+    label: QF 3.7-inch AA (Allied — practice / UK-side AAA)
+    domain: land
   Pak40:
     label: Pak 40 anti-tank gun
     domain: land
   bofors40:
     label: Bofors 40 mm (Allied — practice / UK-side AAA)
+    domain: land
+  Tiger_I:
+    label: Tiger I
+    domain: land
+  SturmPzIV:
+    label: Sturmpanzer IV (Brummbär)
+    domain: land
+  Pz_V_Panther_G:
+    label: Panther Ausf. G
+    domain: land
+  JagdPz_IV:
+    label: Jagdpanzer IV
+    domain: land
+  Jagdpanther_G1:
+    label: Jagdpanther G1
+    domain: land
+  Coach cargo:
+    label: Coach cargo wagon
+    domain: land
+  Coach cargo open:
+    label: Coach cargo open wagon
     domain: land

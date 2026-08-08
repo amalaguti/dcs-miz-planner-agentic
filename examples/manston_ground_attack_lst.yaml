@@ -1,0 +1,43 @@
+schema_version: "1"
+mission_type: ground_attack
+theatre: TheChannel
+name: Manston Coastal LST
+description: >
+  Cold start at Manston with 2x250 lb bombs and a slipper tank. Strike an Allied
+  LST tied up on the coastal harbour recipe (~120°/68 km) — R13 campaign-frequency
+  sea expand (practice Allied landing craft). Static + harbour_static.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+  payload: spitfire_2x250_slipper
+strike:
+  bearing_deg: 120
+  distance_km: 68
+  altitude_m: 2000
+  practice: true
+enemies: []
+targets:
+  - unit: LST_Mk2
+    count: 1
+    skill: Average
+    country: UK
+    coalition: blue
+    ai_preset: harbour_static
+  - unit: Higgins_boat
+    count: 2
+    skill: Average
+    country: UK
+    coalition: blue
+    ai_preset: harbour_static
+objectives:
+  - type: attack_ground

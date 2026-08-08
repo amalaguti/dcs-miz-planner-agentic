@@ -530,3 +530,12 @@ example MUST validate and compile under Channel inventory.
 - **WHEN** examples/manston_ground_attack_radar.yaml is validated and compiled
   with Channel inventory
 - **THEN** validation MUST succeed and a .miz file MUST be produced
+
+### Requirement: R13 promote examples compile
+Repository SHALL include Manston GA examples exercising R13-promoted AAA and sea
+units that validate and compile under Channel inventory.
+
+#### Scenario: Flak41 and LST examples compile
+- **WHEN** examples/manston_ground_attack_flak41.yaml and
+  examples/manston_ground_attack_lst.yaml are validated and compiled
+- **THEN** each MUST succeed and produce a .miz

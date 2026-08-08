@@ -24,8 +24,12 @@ _AAA_UNIT_IDS = frozenset(
         "flak36",
         "flak37",
         "flak38",
+        "flak41",
         "Flakscheinwerfer_37",
         "KDO_Mod40",
+        "Allies_Director",
+        "M45_Quadmount",
+        "QF_37_AA",
         "Pak40",
         "bofors40",
     }

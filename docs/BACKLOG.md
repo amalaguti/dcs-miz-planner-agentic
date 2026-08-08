@@ -289,10 +289,9 @@ smoke checklist in that file.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#15h` ME do-soon; optional shelf expand from
-R13 shortlist (`flak41`, Quadmount, Tiger/Panther, LST/Chase — via `#8e`).
-Follow [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel class
-spine `#8h`–`#8m` + R13 inventory done.
+**Next promote / in proposal:** `#15h` ME do-soon. Follow
+[`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel class spine
+`#8h`–`#8m` + R13 inventory + R13 promote shelf done.
 
 **Do soon (not blocking next promote):**
 - `#15h` ME smoke: Instant Action
@@ -468,7 +467,9 @@ failed on `zones`). Headlines:
   German loco/wagons (campaigns use sparse `Coach *` instead).
 - **Skip:** modern leftovers (`M978 HEMTT Tanker`, …).
 
-Follow-on shelf expand idea: park as needed — not auto-opened.
+Follow-on shelf expand: **done** as OpenSpec `channel-shelf-r13-promote`
+(`flak41`, Quadmount/QF/Allies_Director, Tiger/Panther/Jagd*, Coach cargo*,
+LST_Mk2, USS_Samuel_Chase). Modern leftovers still skipped.
 
 Desk + ME WP Options smoke (truck convoy, Flak 18, Uboat_VIIC, Spitfire). Notes in
 `research/ai-options-domain.md`. Headlines:
