@@ -164,3 +164,12 @@ MUST NOT claim movement.
 #### Scenario: Moving U-boat brief
 - **WHEN** a commander brief is generated for a Spec with `Uboat_VIIC` and patrol/path
 - **THEN** the text MUST indicate the contact is under way (and MUST NOT claim ASW)
+
+### Requirement: Brief may note alert or transit posture
+When a Spec sets non-default target AI presets (e.g. AAA alert or convoy
+transit), squadron-commander voice SHOULD briefly reflect posture (alert guns /
+column under way) without inventing ASW or air-only tactics.
+
+#### Scenario: AAA alert brief cue
+- **WHEN** a commander brief is generated for a Spec with aaa_alert-style targets
+- **THEN** the text MAY mention alert or ready guns without claiming unsupported systems
