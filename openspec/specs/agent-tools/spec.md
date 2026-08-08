@@ -580,3 +580,14 @@ registry YAML or PyDCS at call time.
 - **WHEN** `list_strike_targets` is called with class `aaa_guns` after sync
 - **THEN** results MUST include known AAA unit ids (e.g. flak18) and MUST NOT
   invent unknown ids
+
+### Requirement: Tool guidance for target invent order
+Agent tool descriptions (or invent-facing notes) for `list_strike_targets` and
+`list_mission_options` SHALL state that GA/recon invent should call those tools
+before emitting `targets[]`, preferring returned unit ids and shelf presets
+(motion / ai_preset) over invented strings.
+
+#### Scenario: list_strike_targets and list_mission_options mention invent order
+- **WHEN** TOOL_DEFINITIONS for those tools are loaded
+- **THEN** descriptions MUST mention calling before inventing targets[] and
+  preferring returned unit ids / shelf presets
