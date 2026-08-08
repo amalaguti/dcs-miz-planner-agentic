@@ -73,14 +73,14 @@ One OpenSpec change per coherent batch (e.g. “Channel soft + AAA expand” or
 
 Expand registry over time; invent plans around these classes. **Shipped Channel
 ids** live in `ground_units.yaml` / `ships.yaml` (`#8h` soft/AAA/sea; `#8i`
-halftracks; `#8j` armor).
+halftracks; `#8j` armor; `#8k` troops).
 
 | Class id | Domain | Motion default | Notes |
 |----------|--------|----------------|-------|
 | `soft_vehicles` | land | path / patrol | Trucks / light cars as `#8h` |
 | `halftracks_apc` | land | path / patrol | Sd_Kfz_251, Sd_Kfz_7, M2A1 as `#8i` |
 | `armor` | land | path / patrol (static if dug-in) | Pz_IV_H, Stug_III, Cromwell, Sherman as `#8j` |
-| `troops` | land | path / patrol (static if dug-in) | Era-filter → `#8k` |
+| `troops` | land | path / patrol (static if dug-in) | soldier_mauser98, wwii_br/us as `#8k` |
 | `aaa_guns` | land | **static** | Flak / AT / searchlight as `#8h` |
 | `artillery` | land | static (rare relocate) | Verify before shelving |
 | `radar_c3` | land | **static** | → `#8l` |

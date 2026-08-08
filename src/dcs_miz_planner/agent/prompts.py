@@ -34,6 +34,7 @@ Rules:
   inland truck/convoy → soft_vehicles + motion path + ai_preset convoy_transit;
   halftrack/SPW/APC column → halftracks_apc + path + convoy_transit;
   tank/armor/StuG column → armor + path + convoy_transit;
+  infantry/troops/patrol → troops + path + convoy_transit;
   flak/AAA/guns → aaa_guns + static + aaa_alert;
   mid-Channel U-boat/shipping under way → sea_craft + patrol + ship_under_way;
   harbour/dock shipping → sea_craft + static + harbour_static

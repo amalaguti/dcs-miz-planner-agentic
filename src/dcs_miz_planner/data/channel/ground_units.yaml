@@ -42,6 +42,15 @@ ground_units:
   M4_Sherman:
     label: M4 Sherman (Allied — practice ranges / UK-side)
     domain: land
+  soldier_mauser98:
+    label: Infantry (Mauser 98)
+    domain: land
+  soldier_wwii_br_01:
+    label: WWII British infantry (Allied — practice ranges / UK-side)
+    domain: land
+  soldier_wwii_us:
+    label: WWII US infantry (Allied — practice ranges / UK-side)
+    domain: land
   flak18:
     label: Flak 18
     domain: land

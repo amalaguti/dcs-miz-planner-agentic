@@ -731,6 +731,24 @@ options:
       cues: [tank, armor, armour, panzer, stug, stug iii, sherman, cromwell, afv]
 
   - family: strike_target_class
+    id: troops
+    label: Troops / infantry
+    description: >
+      Land infantry on Axis-held French/Belgian coast — not UK home ground, not
+      water. Prefer motion path or patrol (slow); dug-in may use static. Reuse
+      convoy_transit AI (soft class). Spitfire bomb payloads for area targets.
+      Example: manston_ground_attack_troops.
+    support: supported
+    meta:
+      domain: land
+      unit_ids: [soldier_mauser98, soldier_wwii_br_01, soldier_wwii_us]
+      payload_families: [spitfire_2x250_slipper, spitfire_2x250, spitfire_1x500]
+      mission_types: [ground_attack]
+      preferred_motion: path
+      preferred_ai_preset: convoy_transit
+      cues: [infantry, troops, soldiers, patrol, mauser, foot]
+
+  - family: strike_target_class
     id: aaa_guns
     label: AAA / AT guns
     description: >
@@ -889,9 +907,9 @@ options:
     meta:
       domain: land
       geometry_hint: inland_near_dunkirk
-      related_classes: [soft_vehicles, halftracks_apc, armor, aaa_guns]
+      related_classes: [soft_vehicles, halftracks_apc, armor, troops, aaa_guns]
       mission_types: [ground_attack]
-      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, tank, flak]
+      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, tank, troops, flak]
       preferred_ai_preset_soft: convoy_transit
       preferred_ai_preset_aaa: aaa_alert
       # From examples/manston_ground_attack.yaml / convoy / flak_alert

@@ -139,6 +139,19 @@ Packaged Channel registry SHALL include land-domain armor ids `Pz_IV_H`,
 - **WHEN** the registry is queried for Stug_III
 - **THEN** it MUST return a land-domain strike unit
 
+### Requirement: Channel troops shelf
+Packaged Channel registry SHALL include land-domain infantry ids
+`soldier_mauser98`, `soldier_wwii_br_01`, and `soldier_wwii_us`, each resolvable
+as a strike unit.
+
+#### Scenario: soldier_mauser98 resolvable
+- **WHEN** the registry is queried for soldier_mauser98
+- **THEN** it MUST return a land-domain strike unit
+
+#### Scenario: soldier_wwii_br_01 resolvable
+- **WHEN** the registry is queried for soldier_wwii_br_01
+- **THEN** it MUST return a land-domain strike unit
+
 ### Requirement: Package aircraft in Channel registry
 The Channel reference registry SHALL expose exact DCS aircraft type ids usable as escort
 package aircraft, including at least `MosquitoFBMkVI` with a documented Allied VHF group
