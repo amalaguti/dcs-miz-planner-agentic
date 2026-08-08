@@ -28,7 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
-| 2026-08-08 | [Invent: unit/preset cues ≠ Channel geometry](lessons/agent-tooling.md#invent-unitpreset-cues--channel-geometry-2026-08-08) | `agent-tooling` |
+| 2026-08-08 | [Invent place recipes fix most domain misses; path points still drift](lessons/agent-tooling.md#invent-place-recipes-fix-most-domain-misses-path-points-still-drift-2026-08-08) | `agent-tooling` |
 | 2026-08-08 | [Strike unit catalog is curated YAML, not ME dump](lessons/agent-tooling.md#strike-unit-catalog-is-curated-yaml-not-me-dump-2026-08-08) | `agent-tooling` |
 | 2026-08-08 | [Target AI options: class allowlists, not ME dump](lessons/pydcs-compile.md#target-ai-options-class-allowlists-not-me-dump-2026-08-08) | `pydcs-compile` |
 | 2026-08-08 | [Target motion: ship/vehicle waypoints + SwitchWaypoint loop](lessons/pydcs-compile.md#target-motion-shipvehicle-waypoints--switchwaypoint-loop-2026-08-08) | `pydcs-compile` |

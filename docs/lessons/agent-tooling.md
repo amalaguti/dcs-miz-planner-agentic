@@ -5,17 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
-## Invent: unit/preset cues ≠ Channel geometry (2026-08-08)
+## Invent place recipes fix most domain misses; path points still drift (2026-08-08)
 
 - **Date:** 2026-08-08
-- **Lesson:** After `#8d`, live invent called `list_mission_options` /
-  `list_strike_targets` and often picked right units/presets (e.g. U-boat recon
-  patrol + `ship_under_way`; harbour static + `harbour_static`). Failures were
-  **geometry/domain**: land convoy paths over water (`motion_domain_mismatch`),
-  harbour strike ~4 km from Manston, U-boat GA domain errors — repair nudge did
-  not fix. Next: `#8f` place numeric recipes + stronger domain repair (before
-  shelf expand).
-- **Code / notes:** `out/target_invent_eval/`; `channel_place` still hint-only.
+- **Lesson:** `#8f` ships Manston-relative `channel_place` recipes
+  (`french_coast_strike_belt` ~125°/76 km, `mid_channel_shipping` ~140°/40 km,
+  `coastal_harbour` ~120°/70 km) plus domain-mismatch repair nudges. Live invent
+  re-eval: flak / U-boat / honest FF pass; convoy can still place some **path**
+  points over water; harbour may validate with coastal geometry but wrong land
+  units. Follow-on: path clamp / fewer points; harbour domain cue harden — before
+  assuming shelf expand will fix invent.
+- **Code / notes:** `planning_options.yaml` place meta; `host_spec_repair_nudge`;
+  `out/target_invent_eval/`.
 
 ## Strike unit catalog is curated YAML, not ME dump (2026-08-08)
 
