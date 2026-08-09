@@ -570,7 +570,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — ME Failures panel table; curated ids; opt-in Spec (**done** 2026-08-07) |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
-| Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research** R11 `research-theatre-content-expand` — install probe + per-map content notes |
+| Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research R11 done** — Normandy first; notes `research/theatres/` |
 | Which AI options apply to air vs ground vs ships | **Research** R12 `research-ai-options-by-domain` → `#15h` allowlists (**done**) |
 | Full ME Options matrix (helo, armor, more ships, …) | **Research** R12b `research-ai-options-unit-matrix` — not blocking `#15h` |
 | Which AAA / ground / sea / helo types ED campaigns actually use | **Research** R13 `research-campaign-unit-inventory` — promote via `#8e`; never auto-YAML |
