@@ -67,13 +67,20 @@ def dcs_home(tmp_path: Path) -> Path:
     root = tmp_path / "DCS World"
     write_autoupdate(
         root,
-        ["WORLD", "THECHANNEL_terrain", "NORMANDY_terrain", "CAUCASUS_terrain"],
+        [
+            "WORLD",
+            "THECHANNEL_terrain",
+            "NORMANDY_terrain",
+            "CAUCASUS_terrain",
+            "SYRIA_terrain",
+        ],
     )
     write_terrain(
         root, folder="TheChannel", theatre_id="TheChannel", update_id="THECHANNEL_terrain"
     )
     write_terrain(root, folder="Normandy", theatre_id="Normandy", update_id="NORMANDY_terrain")
     write_terrain(root, folder="Caucasus", theatre_id="Caucasus", update_id="CAUCASUS_terrain")
+    write_terrain(root, folder="Syria", theatre_id="Syria", update_id="SYRIA_terrain")
     return root
 
 
@@ -157,9 +164,17 @@ def test_incomplete_when_updater_and_disk_disagree(tmp_path: Path):
 
 def test_unsupported_installed_map(dcs_home: Path, saved_games: Path):
     inv = probe_installations(dcs_root=dcs_home, saved_games=saved_games)
+    # Syria is on disk in the fixture but not planner-supported.
+    syria = next(t for t in inv.theatres if t.theatre_id == "Syria")
+    assert syria.state is AvailabilityState.AVAILABLE
+    assert syria.planner_supported is False
+
+
+def test_normandy_installed_and_supported(dcs_home: Path, saved_games: Path):
+    inv = probe_installations(dcs_root=dcs_home, saved_games=saved_games)
     normandy = next(t for t in inv.theatres if t.theatre_id == "Normandy")
     assert normandy.state is AvailabilityState.AVAILABLE
-    assert normandy.planner_supported is False
+    assert normandy.planner_supported is True
 
 
 def test_missing_dcs_root(tmp_path: Path):

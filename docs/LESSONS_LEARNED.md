@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-09 | [Normandy id + airfield_theatres catalog tagging](lessons/channel-ids.md#normandy-20-spec-id-is-normandy-tag-afs-with-airfield_theatres) | `channel-ids` |
+| 2026-08-09 | [Refresh inventory after promoting a theatre](lessons/ci-process.md#promote-theatre--refresh-inventory-for-planner_supported) | `ci-process` |
 | 2026-08-08 | [Theatre expand: Normandy first; Marianas WWII needs PyDCS (R11)](lessons/agent-tooling.md#theatre-expand-normandy-first-marianas-wwii-needs-pydcs-r11-2026-08-08) | `agent-tooling` |
 | 2026-08-08 | [Spitfire campaign unit inventory (R13)](lessons/agent-tooling.md#spitfire-campaign-unit-inventory-r13-2026-08-08) | `agent-tooling` |
 | 2026-08-08 | [Train corridor is curated path deltas, not rail-mesh snap](lessons/agent-tooling.md#train-corridor-is-curated-path-deltas-not-rail-mesh-snap-2026-08-08) | `agent-tooling` |

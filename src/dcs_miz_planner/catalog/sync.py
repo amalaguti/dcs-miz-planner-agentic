@@ -63,10 +63,13 @@ def build_snapshot_from_registry(
     synced_at = synced_at if synced_at is not None else datetime.now(UTC)
 
     theatres = tuple(CatalogTheatre(t) for t in registry.list_theatres())
-    theatre_id = theatres[0].theatre_id if theatres else "TheChannel"
 
     airfields = tuple(
-        CatalogAirfield(name=name, airdrome_id=registry.airdrome_id(name), theatre_id=theatre_id)
+        CatalogAirfield(
+            name=name,
+            airdrome_id=registry.airdrome_id(name),
+            theatre_id=registry.airfield_theatre(name),
+        )
         for name in registry.list_airfields()
     )
     aircraft = tuple(
@@ -96,12 +99,18 @@ def build_snapshot_from_registry(
         for opt in registry.list_planning_options()
     )
     class_map = _class_ids_by_unit(planning_options)
+    # Strike shelves remain Channel-curated until a Normandy target batch ships.
+    strike_theatre = (
+        "TheChannel"
+        if "TheChannel" in registry.list_theatres()
+        else (theatres[0].theatre_id if theatres else "TheChannel")
+    )
     strike_units = tuple(
         CatalogStrikeUnit(
             unit_id=uid,
             label=ref.label or uid,
             domain=ref.domain,
-            theatre_id=theatre_id,
+            theatre_id=strike_theatre,
             class_ids_json=json.dumps(class_map.get(uid, []), sort_keys=True),
         )
         for uid in registry.list_strike_units()

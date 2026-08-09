@@ -289,12 +289,18 @@ smoke checklist in that file.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#15h` ME do-soon, or first multi-theatre smoke
-(`normandy-cold-freeflight` per R11). Follow
-[`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel shelves + R13
-promote done; R11 theatre audit done (Normandy next WWII map).
+**Next promote / in proposal:** `#15h` ME do-soon, or next Normandy airfield /
+places slice after ME accept. Follow
+[`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Definitive map fleet
+recorded under R11 (2026-08-09). Normandy freeflight bind shipped
+(`normandy-cold-freeflight`).
 
-**Do soon (not blocking next promote):**
+**Do soon (not blocking next promote) — prefer sooner:**
+- **Normandy 2.0 ME accept:** Instant Action
+  `out/needs_oar_point_cold_freeflight.miz` (or recompile
+  `examples/needs_oar_point_cold_freeflight.yaml`) — cold Spitfire at Needs Oar
+  Point on Normandy. Compile+pytest done 2026-08-09; **ME Instant Action still
+  needed** before calling the map fully accepted.
 - `#15h` ME smoke: Instant Action
   `out/manston_ground_attack_convoy.miz` — Alarm Green / Return Fire / Off Road /
   Disperse; `out/manston_ground_attack_flak_alert.miz` — aaa_alert options;
@@ -331,6 +337,7 @@ promote done; R11 theatre audit done (Normandy next WWII map).
 | 15c | `player-flight-joinup` | After `#15b`: **Follow / join-up** and shared route so the section flies as a squadron — wingman Follow AI lead; put CAP/GA/escort tasking on the AI lead when `role: wingman` + `join_up`. Prefer native ME Follow + waypoints; no LLM Lua. | `done` (accepted 2026-08-07; **do-soon smoke:** `manston_cap_flight_wingman` after takeoff) |
 | 15d | `player-flight-orders` | Curated **section orders** the player (or Spec triggers) can issue: rejoin/form up, engage, cover, orbit, RTB, break, etc. Prefer stock DCS lead→wingman radio when `role: lead` (same group); extend with F10 / flag→AI-task packs for wingman separate groups and scripted beats. Spec selects named orders only — no free-form chat→Lua. After `#15b`; pairs with `#15c` for cohesion. | `done` (accepted 2026-08-07; ME + F10/ack; **do-soon:** airborne Rejoin/Engage on `manston_cap_flight_orders`) |
 | 15e | `player-flight-discipline` | Opt-in **fail-to-follow** consequences when wingman+join_up: if the player stays outside a section bubble (distance/time) after takeoff — soft radio “rejoin”, then stronger beats (flag / message / abort or RTB / mission_end). Prefer native zones+flags+messages; curated snippet only if range-to-group needs Lua. After `#15c`; pairs with `#15d` rejoin orders. | `done` (accepted 2026-08-07; ME triggers/zone OK; **do-soon:** airborne soft/hard on `manston_cap_flight_discipline`) |
+| N1 | `normandy-cold-freeflight` | First multi-theatre smoke: Normandy 2.0 cold freeflight Spitfire at Needs Oar Point (Spec theatre `Normandy`, airfield `NeedsOarPoint` / airdromeId 28). Bind + registry + example + hermetic tests. | `done` (2026-08-09; compile+pytest; **ME do-soon** `out/needs_oar_point_cold_freeflight.miz`) |
 
 ---
 
@@ -449,18 +456,28 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R10 | `research-me-mission-content` | **ME content-depth pass** (in-editor + PyDCS + campaign corpus + optional meteo): (1) **Weather** — mine installed Spitfire campaign `.miz` weather tables (Beware/FoD/Epsom/Big Show; 60 scanned 2026-08-06) + research samples; ME weather templates optional; PyDCS `CloudPreset` (30 ids); defer dynamic cyclones. (2) Optional Channel climatology to refine briefs. (3) **Static objects**. Notes in `research/weather.md`; promote `#17a` / `#17b` | `idea` (2026-08-06; campaign weather scan done — enough to seed `#17a` recipes) |
 | R11 | `research-theatre-content-expand` | **Per-map content audit** for multi-theatre expand: install vs PyDCS vs planner bind; Normandy/Syria/MarianasWWII notes; promote order. Notes: gitignored `research/theatres/` + harness `research/audit_theatres_r11.py`. **Do not** auto-promote. | `done` (2026-08-08; see notes below) |
 
-**`R11` `research-theatre-content-expand` — done (2026-08-08):**
+**`R11` `research-theatre-content-expand` — done (2026-08-08; fleet refresh 2026-08-09):**
 
-Desk probe + notes under `research/theatres/`. Headlines:
+Desk probe + notes under `research/theatres/`. **Definitive owned map fleet**
+(install inventory 2026-08-09 — product names → Spec/probe ids):
 
-- **Planner bound:** Channel only. PyDCS 0.15 has Normandy (38 AF), Syria (59),
-  modern Marianas, Caucasus, Nevada, Falklands — **not** Marianas WWII / Kola /
-  Iraq modules.
-- **Disk:** Normandy, Syria, MarianasWWII, MarianaIslands, Caucasus, **Kola**,
-  **Iraq**, TheChannel (refresh inventory cache — Kola/Iraq folders present).
+| Product / pilot name | Inventory / Spec theatre id | State | PyDCS 0.15 | Planner |
+|----------------------|-----------------------------|-------|------------|---------|
+| The Channel | `TheChannel` | available | yes | **yes** |
+| Normandy 2.0 | `Normandy` | available | yes (38 AF) | smoke shipped; ME do-soon |
+| Syria | `Syria` | available | yes | no |
+| Marianas WWII | `MarianaIslandsWWII` | available | **no module** | no |
+| Nevada | `Nevada` | available | yes | no |
+| South Atlantic | `Falklands` | available | yes | no |
+| Caucasus | `Caucasus` | available | yes | no |
+| Kola | `Kola` | available | **no module** | no |
+| Iraq | `Iraq` | available | **no module** | no |
+
+Also on disk but **disabled**: modern `MarianaIslands` (not in definitive list).
+
 - **Assets:** WWII Units + M3 PTO present. Campaigns: Channel Spitfire only.
-- **Promote order:** (1) **Normandy** (WWII + PyDCS ready), (2) Syria (modern
-  shelves), (3) Marianas WWII after PyDCS/R8, (4) other modern maps later.
+- **Promote order:** (1) **Normandy 2.0** freeflight smoke (`normandy-cold-freeflight`),
+  (2) Syria later, (3) Marianas WWII / Kola / Iraq after PyDCS/R8.
 
 **`R12` `research-ai-options-by-domain` — done (ME 2026-08-08):**
 | R12b | `research-ai-options-unit-matrix` | Expand R12 beyond Channel smoke samples: ME WP Options matrix for **representative units** across airplanes, helicopters (same Air enum — verify ME), ships (E-boat / cargo / warship), and ground classes (armor, infantry, radar/SAM, soft, AAA). Record ME list vs meaningful capability (Spit ECM lesson). Append to `research/ai-options-domain.md`. **Not blocking `#15h`.** Promote when helo / armor / multi-theatre shelves need allowlists. | `idea` (draft 2026-08-08) |
@@ -615,6 +632,7 @@ Resolve these inside the relevant proposal, not here.
 | Theatre / target promote checklist (`#8e`) | **Done 2026-08-08:** [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md) |
 | Channel unit shelf expand (`#8h`) | **Done 2026-08-08:** soft + AAA + sea harbour ids; ME do-soon |
 | Channel strike class shelves (`#8h`–`#8m`) | **Done** — soft/AAA/sea, halftracks, armor, troops, trains, radar |
+| Normandy cold freeflight (`N1`) | **Done 2026-08-09:** bind+compile; **ME do-soon** `out/needs_oar_point_cold_freeflight.miz` |
 | Campaign unit frequency inventory | **Research R13 done** — shortlist in BACKLOG; notes gitignored `research/campaign-units.md` |
 | Target motion Spec shape (`#15g`) | **Closed in proposal `strike-target-motion`:** default static; optional `patrol` / short `path`; sea + soft land; harbour + AAA static; trains later; Bombing stays at strike point v1; speed bands in `target_motion.yaml` + seeded cruise / waypoint jitter; threat stop/escape deferred |
 | Target threat reaction under fire (`#15g`) | **Closed for disperse:** moving land → ME Disperse Under Fire (option 8, default 180s). Further stop/dash scripting still deferred |

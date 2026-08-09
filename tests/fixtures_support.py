@@ -176,6 +176,7 @@ def normalize_mission(mission: str) -> str:
 
 
 def channel_available_inventory() -> TheatreInventory:
+    """Hermetic inventory: Channel (+ Normandy when planner-bound)."""
     return TheatreInventory(
         scanned_at=datetime.now(UTC),
         dcs_roots=("S:/DCS World",),
@@ -188,12 +189,37 @@ def channel_available_inventory() -> TheatreInventory:
                 state=AvailabilityState.AVAILABLE,
                 planner_supported=True,
             ),
+            TheatreRecord(
+                theatre_id="Normandy",
+                update_id="NORMANDY_terrain",
+                dcs_root="S:/DCS World",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
         ),
     )
 
 
 def compile_manston(output_path: Path) -> Path:
     spec = load_mission_spec(EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
+NORMANDY_EXAMPLE_SPEC = REPO_ROOT / "examples" / "needs_oar_point_cold_freeflight.yaml"
+NORMANDY_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    '["airdromeId"]=28',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+)
+
+
+def compile_needs_oar_point(output_path: Path) -> Path:
+    spec = load_mission_spec(NORMANDY_EXAMPLE_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(
         spec, output_path, voice="raf"
     )

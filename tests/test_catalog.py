@@ -100,6 +100,27 @@ def test_offerable_theatre_join() -> None:
     assert views["Caucasus"].offerable is False
 
 
+def test_offerable_normandy_when_known() -> None:
+    known = frozenset({"TheChannel", "Normandy"})
+    inventory = TheatreInventory(
+        scanned_at=datetime(2026, 7, 26, tzinfo=UTC),
+        dcs_roots=("C:/DCS",),
+        saved_games_roots=(),
+        theatres=(
+            TheatreRecord(
+                theatre_id="Normandy",
+                update_id="NORMANDY_terrain",
+                dcs_root="C:/DCS",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
+        ),
+    )
+    views = {v.theatre_id: v for v in join_theatre_views(known, inventory)}
+    assert views["Normandy"].known is True
+    assert views["Normandy"].offerable is True
+
+
 def test_catalog_cli_sync_and_list(tmp_path: Path) -> None:
     db = tmp_path / "planner.sqlite"
     assert main(["catalog", "sync", "--db", str(db)]) == 0
@@ -145,19 +166,27 @@ def test_catalog_cli_sync_and_list(tmp_path: Path) -> None:
     assert "Normandy" in ids
     channel = next(r for r in payload["rows"] if r["theatre_id"] == "TheChannel")
     assert channel["known"] is True
+    normandy = next(r for r in payload["rows"] if r["theatre_id"] == "Normandy")
+    assert normandy["known"] is True
 
     buf2 = io.StringIO()
     with redirect_stdout(buf2):
         assert main(["catalog", "list", "--db", str(db), "--known-only", "--json"]) == 0
     known_only = json.loads(buf2.getvalue())
-    assert {r["theatre_id"] for r in known_only["rows"]} == {"TheChannel"}
+    assert {r["theatre_id"] for r in known_only["rows"]} == {"TheChannel", "Normandy"}
 
 
 def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     db = tmp_path / "inventory.sqlite"
     snap = CatalogService(db_path=db).sync()
     assert "TheChannel" in {t.theatre_id for t in snap.theatres}
+    assert "Normandy" in {t.theatre_id for t in snap.theatres}
     assert "Manston" in {a.name for a in snap.airfields}
+    assert "NeedsOarPoint" in {a.name for a in snap.airfields}
+    by_af = {a.name: a for a in snap.airfields}
+    assert by_af["Manston"].theatre_id == "TheChannel"
+    assert by_af["NeedsOarPoint"].theatre_id == "Normandy"
+    assert by_af["NeedsOarPoint"].airdrome_id == 28
     assert "SpitfireLFMkIX" in {a.aircraft_id for a in snap.aircraft}
     assert "sunny_clear" in {w.name for w in snap.weather_presets}
     assert "dawn_clear" in {w.name for w in snap.weather_presets}

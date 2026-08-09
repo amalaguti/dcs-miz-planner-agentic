@@ -34,6 +34,14 @@ def test_thechannel_supported(registry):
     assert "TheChannel" in registry.list_theatres()
 
 
+def test_normandy_supported_and_needs_oar_point(registry):
+    assert registry.has_theatre("Normandy")
+    assert "Normandy" in registry.list_theatres()
+    assert registry.airdrome_id("NeedsOarPoint") == 28
+    assert registry.airfield_theatre("NeedsOarPoint") == "Normandy"
+    assert registry.airfield_theatre("Manston") == "TheChannel"
+
+
 def test_known_wwii_aircraft(registry):
     known = registry.known_aircraft()
     for aircraft_id in ("SpitfireLFMkIX", "Bf-109K-4", "FW-190A8", "FW-190D9"):

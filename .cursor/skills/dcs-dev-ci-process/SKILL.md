@@ -22,6 +22,8 @@ description: >-
    commit → ask merge (`openspec-finish-change`).
 5. **OpenSpec CLI:** `npx openspec …` (npm `@fission-ai/openspec`). Not `uv openspec`
    / `uv run openspec`. Fallback: `.\node_modules\.bin\openspec.cmd`.
+6. After promoting a theatre into registry YAML, run **`dcs-miz theatres --refresh`**
+   so cached `planner_supported` flips (stale cache looks “available” but validate fails).
 
 ## Code touchpoints
 

@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Promote theatre → refresh inventory for `planner_supported`
+
+- **Date:** 2026-08-09
+- **Lesson:** Probe caches `planner_supported` from the packaged registry at
+  `--refresh` time. After adding a theatre to `theatres.yaml` / terrain bind,
+  stale SQLite rows can still show the map as `available` with
+  `planner_supported=false`, and validate fails with a confusing
+  “planner-supported but not locally available (state=['available'])” message
+  (registry says supported; inventory row does not). Fix: run
+  `dcs-miz theatres --refresh` (and `catalog sync`) before live compile.
+- **Code:** `install/probe.py`, `validation.py` theatre availability join.
+
 ## OpenSpec CLI invoke: use `npx`, not `uv` (2026-08-07)
 
 - **Date:** 2026-08-07
