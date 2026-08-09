@@ -289,9 +289,10 @@ smoke checklist in that file.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** `#15h` ME do-soon. Follow
-[`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel class spine
-`#8h`–`#8m` + R13 inventory + R13 promote shelf done.
+**Next promote / in proposal:** `#15h` ME do-soon, or first multi-theatre smoke
+(`normandy-cold-freeflight` per R11). Follow
+[`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Channel shelves + R13
+promote done; R11 theatre audit done (Normandy next WWII map).
 
 **Do soon (not blocking next promote):**
 - `#15h` ME smoke: Instant Action
@@ -446,8 +447,22 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R8 | `deps-upgrade-review` | Periodically check latest PyDCS and other project-related libraries; decide whether an upgrade is recommended (pin notes in LESSONS / pyproject when we bump) | `idea` |
 | R9 | `research-dcs-user-manual-me` | Inventory ME features we could map into Spec/compiler/agent; notes under `research/`; promote durable gaps into backlog / LESSONS. **Sources (use together):** (1) local `docs/DCS_User_Manual_EN_2020.pdf` (gitignored; [official EN download](https://www.digitalcombatsimulator.com/en/downloads/documentation/dcs-user_manual_en/) — still the 2020 file for DCS **2.5**; ME chapter ToC ~p.83 / Set Rules for Triggers — *baseline only*); (2) community [TEMPEST.114 Mission Editor Manual](https://forum.dcs.world/topic/347082-mission-editor-manual-most-of-all-me-how-do-i-do-this-are-solvable-with-this-little-pdf-it-has-lots-of-info-not-clear-in-the-ui-hope-it-helps/) (ED Forums, 2024 — clearer ME how-tos than the UI/ED PDF); (3) [Hoggit ME wiki](https://wiki.hoggitworld.com/view/DCS_editor_triggerBasics) ([conditions](https://wiki.hoggitworld.com/view/DCS_editor_conditions), actions, [AI tasking](https://wiki.hoggitworld.com/view/DCS_editor_AITasking)); (4) [Hoggit Scripting Engine docs](https://wiki.hoggitworld.com/view/Simulator_Scripting_Engine_Documentation) (for M6 `#22` Lua, not day-to-day Spec compile); (5) [ED changelogs](https://www.digitalcombatsimulator.com/en/news/changelog/) + newsletters for post-2020 ME features; (6) in-game ME + stock Channel IA/Training (cross-check with R5) | `done` (2026-08-04; ranked candidates in `research/me-enrichment-candidates.md` — next product: `#26` sound + richer flags) |
 | R10 | `research-me-mission-content` | **ME content-depth pass** (in-editor + PyDCS + campaign corpus + optional meteo): (1) **Weather** — mine installed Spitfire campaign `.miz` weather tables (Beware/FoD/Epsom/Big Show; 60 scanned 2026-08-06) + research samples; ME weather templates optional; PyDCS `CloudPreset` (30 ids); defer dynamic cyclones. (2) Optional Channel climatology to refine briefs. (3) **Static objects**. Notes in `research/weather.md`; promote `#17a` / `#17b` | `idea` (2026-08-06; campaign weather scan done — enough to seed `#17a` recipes) |
-| R11 | `research-theatre-content-expand` | **Per-map content audit** to expand planner capabilities beyond Channel: for each owned/installed theatre, inventory airfields, era, typical aircraft, land/sea/static unit shelves (WWII Assets Pack vs free vs modern), campaigns, and what a theatre registry slice would need (YAML + PyDCS binding + domain heuristics). Feed multi-theatre promote + `#8c` class expansion. Notes in gitignored `research/theatres/`. **Do not** auto-promote into product SoT. | `idea` (draft 2026-08-08 — see notes; user map fleet below) |
-| R12 | `research-ai-options-by-domain` | Document **Air vs Ground vs Naval** AI option sets (Hoggit `AI.Option.*` + current DCS ME on Spitfire / truck / U-boat / E-boat). Confirm which ME WP options actually stick per domain; naval beyond ROE; Formation interval / AAA restrict / ARM evade PyDCS emit. Feeds `#15h` allowlists. Notes in `research/ai-options-domain.md` (gitignored). | `done` (ME 2026-08-08; desk+smoke — see notes) |
+| R11 | `research-theatre-content-expand` | **Per-map content audit** for multi-theatre expand: install vs PyDCS vs planner bind; Normandy/Syria/MarianasWWII notes; promote order. Notes: gitignored `research/theatres/` + harness `research/audit_theatres_r11.py`. **Do not** auto-promote. | `done` (2026-08-08; see notes below) |
+
+**`R11` `research-theatre-content-expand` — done (2026-08-08):**
+
+Desk probe + notes under `research/theatres/`. Headlines:
+
+- **Planner bound:** Channel only. PyDCS 0.15 has Normandy (38 AF), Syria (59),
+  modern Marianas, Caucasus, Nevada, Falklands — **not** Marianas WWII / Kola /
+  Iraq modules.
+- **Disk:** Normandy, Syria, MarianasWWII, MarianaIslands, Caucasus, **Kola**,
+  **Iraq**, TheChannel (refresh inventory cache — Kola/Iraq folders present).
+- **Assets:** WWII Units + M3 PTO present. Campaigns: Channel Spitfire only.
+- **Promote order:** (1) **Normandy** (WWII + PyDCS ready), (2) Syria (modern
+  shelves), (3) Marianas WWII after PyDCS/R8, (4) other modern maps later.
+
+**`R12` `research-ai-options-by-domain` — done (ME 2026-08-08):**
 | R12b | `research-ai-options-unit-matrix` | Expand R12 beyond Channel smoke samples: ME WP Options matrix for **representative units** across airplanes, helicopters (same Air enum — verify ME), ships (E-boat / cargo / warship), and ground classes (armor, infantry, radar/SAM, soft, AAA). Record ME list vs meaningful capability (Spit ECM lesson). Append to `research/ai-options-domain.md`. **Not blocking `#15h`.** Promote when helo / armor / multi-theatre shelves need allowlists. | `idea` (draft 2026-08-08) |
 | R13 | `research-campaign-unit-inventory` | Mine installed **Spitfire Channel campaign** `.miz` (Beware / FoD / Epsom / Big Show; 60 missions) for **ground / AAA / sea / helo** unit `type` frequencies. Notes: gitignored `research/campaign-units.md` + harness `research/audit_campaign_units_r13.py`. Feed `#8e` promote candidates. **Do not** auto-promote. | `done` (2026-08-08; see notes below) |
 
@@ -488,31 +503,6 @@ Scripting only has Air / Ground / Naval (helos share Air). R12 sampled one airpl
 two ground classes, one ship. R12b collects ME Option lists for a small matrix of
 representatives so future shelves don’t assume “all ground = truck” or “all air =
 Spit.” Do when expanding registry classes or theatres — not before `#15h` propose.
-
-**`R11` `research-theatre-content-expand` — draft (2026-08-08):**
-
-User fleet snapshot (refreshed `dcs-miz theatres --refresh` + `S:\DCS World\Mods\terrains`):
-
-| Theatre | Install state | Planner today | Notes |
-|---------|---------------|---------------|--------|
-| TheChannel | **available** | **yes** (only SoT) | Current product |
-| Syria | **available** | no | Modern ME / Cold War–ish ops |
-| Normandy | **available** | no | WWII; pairs with WWII Assets Pack |
-| MarianaIslandsWWII | **available** | no | WWII Pacific |
-| MarianaIslands | **disabled** | no | Modern Marianas |
-| Caucasus | **disabled** | no | Free/base terrain |
-| Kola | **not installed** | no | Purchased; no terrain folder under install |
-| Nevada (NTTR) | **not installed** | no | Purchased; not on disk |
-| South Atlantic | **not installed** | no | Purchased; terrain missing — `CoreMods/tech/SouthAtlanticAssets` present only |
-| Afghanistan / Cold War Germany / Iraq | wishlist | no | Not purchased (Iraq demo folder under `DemoMods` only — ignore) |
-
-Audit checklist (per theatre, stay in `research/theatres/`):
-
-1. ME / PyDCS: airfield ids, coalition defaults, period.
-2. Unit shelves: which ground/ship/static ids make sense; free vs WWII Assets Pack vs other.
-3. Campaigns / IA on install that reveal mission patterns.
-4. Gap vs Channel registry pattern → effort to add `data/<theatre>/` + binding.
-5. Recommend promote order (e.g. Normandy after Channel solid; modern maps later).
 
 ---
 

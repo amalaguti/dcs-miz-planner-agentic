@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Theatre expand: Normandy first; Marianas WWII needs PyDCS (R11) (2026-08-08)
+
+- **Date:** 2026-08-08
+- **Lesson:** Multi-theatre promote order from install+PyDCS audit: **Normandy**
+  next (PyDCS `Normandy`, 38 AF, WWII Units on disk). Syria is PyDCS-ready but
+  modern shelves. `MarianaIslandsWWII` / Kola / Iraq may be on disk yet **lack**
+  PyDCS 0.15 terrain modules — don’t Spec-bind until upstream or R8 bump.
+  Inventory cache can lag new terrain folders — `--refresh` before product work.
+  Notes: gitignored `research/theatres/`.
+- **Code / notes:** `theatre_terrain.py` (Channel-only bind); harness
+  `research/audit_theatres_r11.py`.
+
 ## Spitfire campaign unit inventory (R13) (2026-08-08)
 
 - **Date:** 2026-08-08
