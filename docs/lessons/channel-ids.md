@@ -5,6 +5,19 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Normandy 2.0 Spec id is `Normandy`; tag AFs with `airfield_theatres`
+
+- **Date:** 2026-08-09
+- **Lesson:** Product name “Normandy 2.0” maps to inventory/Spec/PyDCS theatre id
+  **`Normandy`** (not a separate `Normandy2` id). Smoke airfield Spec key
+  **`NeedsOarPoint`** → airdromeId **28** (PyDCS name “Needs Oar Point”). With
+  multiple theatres in one package, flat `airfields.yaml` ids alone are not enough
+  for catalog tagging — use optional **`airfield_theatres:`** map (default
+  `TheChannel` for unlisted keys). Do not assign every airfield to
+  `list_theatres()[0]` (Normandy sorts before TheChannel).
+- **Code:** `data/channel/airfields.yaml`, `theatres.yaml`, `registry.airfield_theatre`,
+  `catalog/sync.py`; example `examples/needs_oar_point_cold_freeflight.yaml`.
+
 ## Channel WWII Axis: use `ThirdReich`, not `Germany`
 
 - **Date:** 2026-07-26 (validate allowlist 2026-08-05)

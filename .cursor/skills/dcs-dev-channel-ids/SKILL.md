@@ -21,6 +21,8 @@ description: >-
 4. Intercept spawn geometry: Hawkinge anchor + Dover-approach offset (existing helpers).
 5. Failure ids: exact stock strings (e.g. `ENG0_MAGNETO0`) from
    `data/channel/aircraft_failures.yaml`.
+6. **Normandy 2.0** Spec/inventory id is **`Normandy`**. Multi-theatre airfields need
+   `airfield_theatres:` overrides (default Channel); curated key `NeedsOarPoint` = 28.
 
 ## Code touchpoints
 

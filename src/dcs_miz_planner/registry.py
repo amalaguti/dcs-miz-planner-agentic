@@ -141,6 +141,7 @@ class ChannelRegistry:
         ships: dict[str, ShipRef] | None = None,
         planning_options: tuple[PlanningOptionRef, ...] | None = None,
         aircraft_failures: dict[str, tuple[AircraftFailureRef, ...]] | None = None,
+        airfield_theatres: dict[str, str] | None = None,
     ) -> None:
         self._airfields = dict(airfields)
         self._aircraft = dict(aircraft)
@@ -151,13 +152,25 @@ class ChannelRegistry:
         self._ships = dict(ships or {})
         self._planning_options = tuple(planning_options or ())
         self._aircraft_failures = {str(k): tuple(v) for k, v in (aircraft_failures or {}).items()}
+        self._airfield_theatres = dict(airfield_theatres or {})
 
     @classmethod
     def from_packaged_yaml(cls) -> ChannelRegistry:
-        airfields_raw = _load_yaml("airfields.yaml").get("airfields") or {}
+        airfields_doc = _load_yaml("airfields.yaml")
+        airfields_raw = airfields_doc.get("airfields") or {}
         if not isinstance(airfields_raw, dict):
             raise RegistryError("airfields.yaml: 'airfields' must be a mapping")
         airfields = {str(k): int(v) for k, v in airfields_raw.items()}
+
+        theatres_map_raw = airfields_doc.get("airfield_theatres") or {}
+        if theatres_map_raw and not isinstance(theatres_map_raw, dict):
+            raise RegistryError("airfields.yaml: 'airfield_theatres' must be a mapping")
+        airfield_theatres = {str(k): str(v) for k, v in dict(theatres_map_raw).items()}
+        unknown_af = sorted(set(airfield_theatres) - set(airfields))
+        if unknown_af:
+            raise RegistryError(
+                f"airfields.yaml: airfield_theatres keys not in airfields: {unknown_af}"
+            )
 
         aircraft_raw = _load_yaml("aircraft.yaml").get("aircraft") or {}
         if not isinstance(aircraft_raw, dict):
@@ -177,6 +190,11 @@ class ChannelRegistry:
         if not isinstance(theatres_raw, list):
             raise RegistryError("theatres.yaml: 'theatres' must be a list")
         theatres = frozenset(str(t) for t in theatres_raw)
+        unknown_theatre = sorted(set(airfield_theatres.values()) - set(theatres))
+        if unknown_theatre:
+            raise RegistryError(
+                f"airfields.yaml: airfield_theatres values not in theatres.yaml: {unknown_theatre}"
+            )
 
         presets_raw = _load_yaml("weather_presets.yaml").get("presets") or {}
         if not isinstance(presets_raw, dict):
@@ -224,6 +242,7 @@ class ChannelRegistry:
 
         return cls(
             airfields=airfields,
+            airfield_theatres=airfield_theatres,
             aircraft=aircraft,
             theatres=theatres,
             weather_presets=weather_presets,
@@ -244,6 +263,20 @@ class ChannelRegistry:
 
     def list_airfields(self) -> list[str]:
         return sorted(self._airfields)
+
+    def airfield_theatre(self, name: str) -> str:
+        """Theatre id for catalog tagging; default ``TheChannel`` when unset."""
+        if name not in self._airfields:
+            raise RegistryError(
+                f"Unknown Channel airfield '{name}'. Known: {sorted(self._airfields)}"
+            )
+        mapped = self._airfield_theatres.get(name)
+        if mapped is not None:
+            return mapped
+        if "TheChannel" in self._theatres:
+            return "TheChannel"
+        # Single-theatre test registries without TheChannel.
+        return min(self._theatres) if self._theatres else "TheChannel"
 
     def get_aircraft(self, aircraft_id: str) -> AircraftRef:
         try:

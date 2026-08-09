@@ -27,6 +27,11 @@ def test_channel_terrain_binds() -> None:
     assert "TheChannel" in bound_theatre_ids()
 
 
+def test_normandy_in_bound_set() -> None:
+    assert "Normandy" in bound_theatre_ids()
+    assert terrain_for_theatre("Normandy").__class__.__name__ == "Normandy"
+
+
 def test_unbound_theatre_raises() -> None:
     with pytest.raises(TheatreTerrainError, match="No PyDCS terrain binding"):
         terrain_for_theatre("NotARealTheatre")

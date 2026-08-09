@@ -9,7 +9,9 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 Channel Spitfire MVP through M6: Mission Spec (`schema_version: "1"`, unknown fields
 rejected) covers free_flight, intercept, CAP, ground_attack, escort, and recon, plus native ME
 triggers (zones, flags, radio, late activation, sound, markers, altitude/speed gates).
-Manston cold free flight was the first accepted-in-game slice. Optional
+Manston cold free flight was the first accepted-in-game slice. **Normandy 2.0** is
+planner-bound for the same cold freeflight smoke at Needs Oar Point
+(`examples/needs_oar_point_cold_freeflight.yaml`; Spec theatre id `Normandy`). Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
 `manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
