@@ -601,3 +601,11 @@ hardcoding bearings in prompts alone.
 - **WHEN** list_mission_options returns channel_place rows after sync
 - **THEN** french coast and mid-Channel rows MUST expose strike/AOI bearing and
   distance fields in meta
+
+### Requirement: list_mission_options includes offerable Normandy
+When Normandy is offerable on the local machine, `list_mission_options` MUST
+list `Normandy` among offerable theatres.
+
+#### Scenario: Offerable Normandy reflected
+- **WHEN** Normandy is offerable on the local machine
+- **THEN** `list_mission_options` MUST list Normandy among offerable theatres

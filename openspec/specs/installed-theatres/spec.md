@@ -157,3 +157,12 @@ packaged Channel YAML or known `catalog_aircraft` rows.
 #### Scenario: Non-aircraft WWII Units dirs skipped
 - **WHEN** `CoreMods/WWII Units/Weapons` exists beside a real aircraft folder
 - **THEN** refresh MUST NOT list `Weapons` as an aircraft module
+
+### Requirement: Normandy installed and supported when registered
+When `Normandy` is locally available and listed by the project reference
+registry as planner-supported, theatre reporting MUST show it as both locally
+available and planner-supported.
+
+#### Scenario: Normandy is installed and supported
+- **WHEN** `Normandy` is locally available and listed by the packaged registry
+- **THEN** output MUST show it as both locally available and planner-supported
