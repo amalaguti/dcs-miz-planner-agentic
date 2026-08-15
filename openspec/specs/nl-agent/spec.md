@@ -525,19 +525,26 @@ Natural-language invent/chat SHALL set Spec theatre from offerable theatres
 - **THEN** the planner MUST be allowed to emit `theatre: Normandy` with
   `airfield: NeedsOarPoint` (and MUST NOT be required to emit TheChannel)
 
-### Requirement: Normandy invent is free_flight only
-Until Normandy place recipes exist, invent/chat SHALL refuse combat mission
-types (`intercept`, `cap`, `ground_attack`, `escort`, `recon`) when the bound
-theatre is `Normandy`. Repair MUST nudge toward NeedsOarPoint free_flight or
-switching theatre to TheChannel. Invent MUST NOT copy `channel_place` geometry
-(french coast belts, Hawkinge/Dunkirk bearings) onto Normandy. Host chat and
-one-shot plan MUST refuse every turn (never capture or write a combat Spec
-after a one-shot nudge).
+### Requirement: Normandy invent is free_flight or CAP
+Invent/chat SHALL allow `free_flight` and `cap` when the bound theatre is
+`Normandy` (home `NeedsOarPoint`, CAP station from Normandy `channel_place`
+meta — 180° / 63 km — not Manston 135/25). It SHALL refuse `intercept`,
+`ground_attack`, `escort`, and `recon` on Normandy every turn (never capture
+or write a refused Spec). Repair for refused types MUST nudge toward
+NeedsOarPoint free_flight or CAP, or switching theatre to TheChannel. Invent
+MUST NOT copy Channel `channel_place` geometry (french coast belts,
+Hawkinge/Dunkirk bearings) onto Normandy.
 
-#### Scenario: Normandy intercept invent refused
+#### Scenario: Normandy CAP invent allowed
+- **WHEN** invent is asked for a CAP on Normandy
+- **THEN** the planner MUST be allowed to emit `theatre: Normandy` with
+  `airfield: NeedsOarPoint` and CAP geometry from the Normandy place/schema
+  (MUST NOT be required to emit TheChannel or Manston 135/25)
+
+#### Scenario: Normandy intercept invent still refused every turn
 - **WHEN** invent is asked for an intercept on Normandy
 - **THEN** it MUST NOT emit a combat Mission Spec and MUST surface a repair
-  that free_flight at NeedsOarPoint (or TheChannel combat) is the supported path
+  toward NeedsOarPoint free_flight or CAP (or TheChannel combat)
 
 ### Requirement: Channel place cues stay Channel-only
 Invent prompts, schema notes, harbour immersion nudges, and land-path host
