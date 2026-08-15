@@ -22,7 +22,7 @@ def test_spitfire_radio_mhz(registry):
 
 
 def test_unknown_airfield_lists_known(registry):
-    with pytest.raises(RegistryError, match="Unknown Channel airfield") as exc_info:
+    with pytest.raises(RegistryError, match="Unknown airfield") as exc_info:
         registry.airdrome_id("NotARealAirfield")
     message = str(exc_info.value)
     assert "Manston" in message

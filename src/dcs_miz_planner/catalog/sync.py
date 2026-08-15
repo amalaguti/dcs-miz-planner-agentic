@@ -67,10 +67,11 @@ def build_snapshot_from_registry(
     airfields = tuple(
         CatalogAirfield(
             name=name,
-            airdrome_id=registry.airdrome_id(name),
-            theatre_id=registry.airfield_theatre(name),
+            airdrome_id=registry.airdrome_id(name, theatre=theatre_id),
+            theatre_id=theatre_id,
         )
-        for name in registry.list_airfields()
+        for theatre_id in registry.list_theatres()
+        for name in registry.list_airfields(theatre=theatre_id)
     )
     aircraft = tuple(
         CatalogAircraft(aid, registry.get_aircraft(aid).radio_mhz)

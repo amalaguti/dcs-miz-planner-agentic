@@ -1,0 +1,16 @@
+# Curated Spec airfield key -> DCS airdromeId for theatre TheChannel.
+# Verified from local DCS / PyDCS Channel terrain; expand via data PRs only.
+# Ids 9 and 11 are not in this curated set.
+airfields:
+  Abbeville: 1
+  MervilleCalonne: 2
+  SaintOmer: 3
+  Dunkirk: 4
+  Manston: 5
+  Hawkinge: 6
+  Lympne: 7
+  Detling: 8
+  Eastchurch: 10
+  HighHalden: 12
+  Headcorn: 13
+  BigginHill: 14

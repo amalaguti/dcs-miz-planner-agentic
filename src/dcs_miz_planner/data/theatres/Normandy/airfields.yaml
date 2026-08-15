@@ -1,0 +1,4 @@
+# Curated Spec airfield key -> DCS airdromeId for theatre Normandy.
+# NeedsOarPoint = PyDCS Normandy airport "Needs Oar Point" (airdromeId 28).
+airfields:
+  NeedsOarPoint: 28

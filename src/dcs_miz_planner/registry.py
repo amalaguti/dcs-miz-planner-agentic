@@ -1,7 +1,8 @@
-"""Channel reference registry — queryable source of truth for DCS ids.
+"""Packaged reference registry — queryable source of truth for DCS ids.
 
-YAML under ``data/channel/`` is the committed artifact; this module loads it and
-exposes lookups for the compiler (and later validator / agent tools).
+YAML under ``data/era/``, ``data/shared/``, and ``data/theatres/<SpecId>/`` is the
+committed artifact; this module loads it and exposes lookups for the compiler
+(and later validator / agent tools).
 """
 
 from __future__ import annotations
@@ -12,6 +13,9 @@ from importlib import resources
 from typing import Any
 
 import yaml
+
+_DATA_PACKAGE = "dcs_miz_planner.data"
+_KNOWN_ERAS = frozenset({"wwii"})
 
 
 class RegistryError(KeyError):
@@ -117,17 +121,89 @@ class PayloadRef:
 _VALID_SUPPORT = frozenset({"supported", "advisory", "future"})
 
 
-def _load_yaml(name: str) -> dict[str, Any]:
-    root = resources.files("dcs_miz_planner.data.channel")
-    text = (root / name).read_text(encoding="utf-8")
+def _data_root():
+    return resources.files(_DATA_PACKAGE)
+
+
+def _load_yaml_file(path: Any, label: str) -> dict[str, Any]:
+    text = path.read_text(encoding="utf-8")
     data = yaml.safe_load(text)
     if not isinstance(data, dict):
-        raise RegistryError(f"Channel registry file {name!r} must be a mapping")
+        raise RegistryError(f"{label} must be a mapping")
     return data
 
 
+def _partition_airfields(
+    airfields: dict[str, int],
+    airfield_theatres: dict[str, str],
+    theatres: frozenset[str],
+) -> dict[str, dict[str, int]]:
+    """Split a flat test constructor map into per-theatre airfield tables."""
+    unknown_af = sorted(set(airfield_theatres) - set(airfields))
+    if unknown_af:
+        raise RegistryError(f"airfield_theatres keys not in airfields: {unknown_af}")
+    unknown_theatre = sorted(set(airfield_theatres.values()) - set(theatres))
+    if unknown_theatre:
+        raise RegistryError(f"airfield_theatres values not in theatres: {unknown_theatre}")
+    by_theatre: dict[str, dict[str, int]] = {t: {} for t in theatres}
+    for name, aid in airfields.items():
+        mapped = airfield_theatres.get(name)
+        if mapped is not None:
+            theatre = mapped
+        elif "TheChannel" in theatres:
+            theatre = "TheChannel"
+        else:
+            theatre = min(theatres) if theatres else "TheChannel"
+        by_theatre.setdefault(theatre, {})[str(name)] = int(aid)
+    return by_theatre
+
+
+def _load_theatre_packages(theatres_root: Any) -> tuple[dict[str, dict[str, int]], frozenset[str]]:
+    """Walk ``data/theatres/<SpecId>/`` and load per-theatre airfield maps."""
+    if not theatres_root.is_dir():
+        raise RegistryError("packaged data/theatres/ is missing")
+    by_theatre: dict[str, dict[str, int]] = {}
+    for child in theatres_root.iterdir():
+        name = child.name
+        if not child.is_dir() or name.startswith((".", "__")):
+            continue
+        theatre_file = child / "theatre.yaml"
+        if not theatre_file.is_file():
+            raise RegistryError(f"theatres/{name}: missing theatre.yaml")
+        doc = _load_yaml_file(theatre_file, f"theatres/{name}/theatre.yaml")
+        theatre_id = str(doc.get("id") or "").strip()
+        era_id = str(doc.get("era") or "").strip()
+        if theatre_id != name:
+            raise RegistryError(
+                f"theatres/{name}: theatre.yaml id {theatre_id!r} must match folder name"
+            )
+        if era_id not in _KNOWN_ERAS:
+            raise RegistryError(
+                f"theatres/{name}: unknown era {era_id!r} (expected one of {sorted(_KNOWN_ERAS)})"
+            )
+        af_file = child / "airfields.yaml"
+        if not af_file.is_file():
+            raise RegistryError(f"theatres/{name}: missing airfields.yaml")
+        af_doc = _load_yaml_file(af_file, f"theatres/{name}/airfields.yaml")
+        airfields_raw = af_doc.get("airfields") or {}
+        if not isinstance(airfields_raw, dict):
+            raise RegistryError(f"theatres/{name}/airfields.yaml: 'airfields' must be a mapping")
+        if not airfields_raw:
+            raise RegistryError(f"theatres/{name}: airfields.yaml is empty")
+        mapping: dict[str, int] = {}
+        for key, value in airfields_raw.items():
+            af_name = str(key)
+            if af_name in mapping:
+                raise RegistryError(f"theatres/{name}: duplicate airfield {af_name!r}")
+            mapping[af_name] = int(value)
+        by_theatre[theatre_id] = mapping
+    if not by_theatre:
+        raise RegistryError("no theatre packages found under data/theatres/")
+    return by_theatre, frozenset(by_theatre)
+
+
 class ChannelRegistry:
-    """In-memory Channel Map reference data."""
+    """In-memory packaged reference data (era + shared + per-theatre)."""
 
     def __init__(
         self,
@@ -142,8 +218,8 @@ class ChannelRegistry:
         planning_options: tuple[PlanningOptionRef, ...] | None = None,
         aircraft_failures: dict[str, tuple[AircraftFailureRef, ...]] | None = None,
         airfield_theatres: dict[str, str] | None = None,
+        airfields_by_theatre: dict[str, dict[str, int]] | None = None,
     ) -> None:
-        self._airfields = dict(airfields)
         self._aircraft = dict(aircraft)
         self._theatres = frozenset(theatres)
         self._weather_presets = dict(weather_presets)
@@ -152,27 +228,26 @@ class ChannelRegistry:
         self._ships = dict(ships or {})
         self._planning_options = tuple(planning_options or ())
         self._aircraft_failures = {str(k): tuple(v) for k, v in (aircraft_failures or {}).items()}
-        self._airfield_theatres = dict(airfield_theatres or {})
-
-    @classmethod
-    def from_packaged_yaml(cls) -> ChannelRegistry:
-        airfields_doc = _load_yaml("airfields.yaml")
-        airfields_raw = airfields_doc.get("airfields") or {}
-        if not isinstance(airfields_raw, dict):
-            raise RegistryError("airfields.yaml: 'airfields' must be a mapping")
-        airfields = {str(k): int(v) for k, v in airfields_raw.items()}
-
-        theatres_map_raw = airfields_doc.get("airfield_theatres") or {}
-        if theatres_map_raw and not isinstance(theatres_map_raw, dict):
-            raise RegistryError("airfields.yaml: 'airfield_theatres' must be a mapping")
-        airfield_theatres = {str(k): str(v) for k, v in dict(theatres_map_raw).items()}
-        unknown_af = sorted(set(airfield_theatres) - set(airfields))
-        if unknown_af:
-            raise RegistryError(
-                f"airfields.yaml: airfield_theatres keys not in airfields: {unknown_af}"
+        if airfields_by_theatre is not None:
+            self._airfields_by_theatre = {
+                str(tid): {str(n): int(aid) for n, aid in mapping.items()}
+                for tid, mapping in airfields_by_theatre.items()
+            }
+        else:
+            self._airfields_by_theatre = _partition_airfields(
+                airfields, dict(airfield_theatres or {}), self._theatres
             )
 
-        aircraft_raw = _load_yaml("aircraft.yaml").get("aircraft") or {}
+    @classmethod
+    def from_packaged_packages(cls) -> ChannelRegistry:
+        root = _data_root()
+        era_root = root / "era" / "wwii"
+        shared_root = root / "shared"
+
+        aircraft_raw = (
+            _load_yaml_file(era_root / "aircraft.yaml", "era/wwii/aircraft.yaml").get("aircraft")
+            or {}
+        )
         if not isinstance(aircraft_raw, dict):
             raise RegistryError("aircraft.yaml: 'aircraft' must be a mapping")
         aircraft: dict[str, AircraftRef] = {}
@@ -186,50 +261,65 @@ class ChannelRegistry:
                 radio_mhz=float(meta["radio_mhz"]),
             )
 
-        theatres_raw = _load_yaml("theatres.yaml").get("theatres") or []
-        if not isinstance(theatres_raw, list):
-            raise RegistryError("theatres.yaml: 'theatres' must be a list")
-        theatres = frozenset(str(t) for t in theatres_raw)
-        unknown_theatre = sorted(set(airfield_theatres.values()) - set(theatres))
-        if unknown_theatre:
-            raise RegistryError(
-                f"airfields.yaml: airfield_theatres values not in theatres.yaml: {unknown_theatre}"
-            )
-
-        presets_raw = _load_yaml("weather_presets.yaml").get("presets") or {}
+        presets_raw = (
+            _load_yaml_file(
+                shared_root / "weather_presets.yaml", "shared/weather_presets.yaml"
+            ).get("presets")
+            or {}
+        )
         if not isinstance(presets_raw, dict):
             raise RegistryError("weather_presets.yaml: 'presets' must be a mapping")
         weather_presets = {
             str(name): _parse_weather_preset(str(name), meta) for name, meta in presets_raw.items()
         }
 
-        payloads_raw = _load_yaml("payloads.yaml").get("payloads") or {}
+        payloads_raw = (
+            _load_yaml_file(era_root / "payloads.yaml", "era/wwii/payloads.yaml").get("payloads")
+            or {}
+        )
         if not isinstance(payloads_raw, dict):
             raise RegistryError("payloads.yaml: 'payloads' must be a mapping")
         payloads = {
             str(name): _parse_payload(str(name), meta) for name, meta in payloads_raw.items()
         }
 
-        ground_raw = _load_yaml("ground_units.yaml").get("ground_units") or {}
+        ground_raw = (
+            _load_yaml_file(era_root / "ground_units.yaml", "era/wwii/ground_units.yaml").get(
+                "ground_units"
+            )
+            or {}
+        )
         if not isinstance(ground_raw, dict):
             raise RegistryError("ground_units.yaml: 'ground_units' must be a mapping")
         ground_units: dict[str, GroundUnitRef] = {}
         for unit_id, meta in ground_raw.items():
             ground_units[str(unit_id)] = _parse_ground_unit(str(unit_id), meta)
 
-        ships_raw = _load_yaml("ships.yaml").get("ships") or {}
+        ships_raw = (
+            _load_yaml_file(era_root / "ships.yaml", "era/wwii/ships.yaml").get("ships") or {}
+        )
         if not isinstance(ships_raw, dict):
             raise RegistryError("ships.yaml: 'ships' must be a mapping")
         ships: dict[str, ShipRef] = {}
         for ship_id, meta in ships_raw.items():
             ships[str(ship_id)] = _parse_ship(str(ship_id), meta)
 
-        options_raw = _load_yaml("planning_options.yaml").get("options") or []
+        options_raw = (
+            _load_yaml_file(
+                shared_root / "planning_options.yaml", "shared/planning_options.yaml"
+            ).get("options")
+            or []
+        )
         if not isinstance(options_raw, list):
             raise RegistryError("planning_options.yaml: 'options' must be a list")
         planning_options = tuple(_parse_planning_option(row) for row in options_raw)
 
-        failures_raw = _load_yaml("aircraft_failures.yaml").get("aircraft") or {}
+        failures_raw = (
+            _load_yaml_file(
+                era_root / "aircraft_failures.yaml", "era/wwii/aircraft_failures.yaml"
+            ).get("aircraft")
+            or {}
+        )
         if not isinstance(failures_raw, dict):
             raise RegistryError("aircraft_failures.yaml: 'aircraft' must be a mapping")
         aircraft_failures: dict[str, tuple[AircraftFailureRef, ...]] = {}
@@ -240,9 +330,20 @@ class ChannelRegistry:
                 _parse_aircraft_failure(row) for row in rows
             )
 
+        airfields_by_theatre, theatres = _load_theatre_packages(root / "theatres")
+        airfields: dict[str, int] = {}
+        airfield_theatres: dict[str, str] = {}
+        for tid, mapping in airfields_by_theatre.items():
+            for af_name, aid in mapping.items():
+                if af_name not in airfields:
+                    airfields[af_name] = aid
+                if tid != "TheChannel":
+                    airfield_theatres[af_name] = tid
+
         return cls(
             airfields=airfields,
             airfield_theatres=airfield_theatres,
+            airfields_by_theatre=airfields_by_theatre,
             aircraft=aircraft,
             theatres=theatres,
             weather_presets=weather_presets,
@@ -253,30 +354,54 @@ class ChannelRegistry:
             aircraft_failures=aircraft_failures,
         )
 
-    def airdrome_id(self, name: str) -> int:
-        try:
-            return self._airfields[name]
-        except KeyError as exc:
-            raise RegistryError(
-                f"Unknown Channel airfield '{name}'. Known: {sorted(self._airfields)}"
-            ) from exc
+    @classmethod
+    def from_packaged_yaml(cls) -> ChannelRegistry:
+        """Alias for :meth:`from_packaged_packages` (legacy name)."""
+        return cls.from_packaged_packages()
 
-    def list_airfields(self) -> list[str]:
-        return sorted(self._airfields)
+    def airdrome_id(self, name: str, theatre: str | None = None) -> int:
+        if theatre is not None:
+            if theatre not in self._theatres:
+                raise RegistryError(f"Unknown theatre '{theatre}'. Known: {sorted(self._theatres)}")
+            mapping = self._airfields_by_theatre.get(theatre, {})
+            try:
+                return mapping[name]
+            except KeyError as exc:
+                raise RegistryError(f"Unknown airfield '{name}'. Known: {sorted(mapping)}") from exc
+        owners = [
+            (tid, mapping[name])
+            for tid, mapping in self._airfields_by_theatre.items()
+            if name in mapping
+        ]
+        if len(owners) == 1:
+            return owners[0][1]
+        if len(owners) > 1:
+            theatres = sorted(tid for tid, _ in owners)
+            raise RegistryError(
+                f"Ambiguous airfield '{name}' (present in {theatres}). Pass theatre=."
+            )
+        known = sorted({n for mapping in self._airfields_by_theatre.values() for n in mapping})
+        raise RegistryError(f"Unknown airfield '{name}'. Known: {known}")
+
+    def list_airfields(self, theatre: str | None = None) -> list[str]:
+        if theatre is not None:
+            if theatre not in self._theatres:
+                raise RegistryError(f"Unknown theatre '{theatre}'. Known: {sorted(self._theatres)}")
+            return sorted(self._airfields_by_theatre.get(theatre, {}))
+        names = {n for mapping in self._airfields_by_theatre.values() for n in mapping}
+        return sorted(names)
 
     def airfield_theatre(self, name: str) -> str:
-        """Theatre id for catalog tagging; default ``TheChannel`` when unset."""
-        if name not in self._airfields:
+        """Theatre id for catalog tagging; unique-name lookup."""
+        owners = [tid for tid, mapping in self._airfields_by_theatre.items() if name in mapping]
+        if len(owners) == 1:
+            return owners[0]
+        if len(owners) > 1:
             raise RegistryError(
-                f"Unknown Channel airfield '{name}'. Known: {sorted(self._airfields)}"
+                f"Ambiguous airfield '{name}' (present in {sorted(owners)}). Pass theatre=."
             )
-        mapped = self._airfield_theatres.get(name)
-        if mapped is not None:
-            return mapped
-        if "TheChannel" in self._theatres:
-            return "TheChannel"
-        # Single-theatre test registries without TheChannel.
-        return min(self._theatres) if self._theatres else "TheChannel"
+        known = sorted({n for mapping in self._airfields_by_theatre.values() for n in mapping})
+        raise RegistryError(f"Unknown airfield '{name}'. Known: {known}")
 
     def get_aircraft(self, aircraft_id: str) -> AircraftRef:
         try:
@@ -529,4 +654,4 @@ def _parse_planning_option(row: Any) -> PlanningOptionRef:
 @lru_cache(maxsize=1)
 def get_channel_registry() -> ChannelRegistry:
     """Return the packaged Channel registry (loaded once)."""
-    return ChannelRegistry.from_packaged_yaml()
+    return ChannelRegistry.from_packaged_packages()

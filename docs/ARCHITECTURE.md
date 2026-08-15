@@ -19,7 +19,7 @@ flowchart TD
     base["compiler/base.py<br/>CompilerInterface (ABC)"]
     pydcs["compiler/pydcs_compiler.py<br/>PyDCSCompiler"]
     registry["registry.py<br/>ChannelRegistry API"]
-    data["data/channel/*.yaml<br/>airfields, aircraft, theatres,<br/>weather, payloads, planning_options,<br/>aircraft_failures"]
+    data["data/era + shared + theatres/SpecId<br/>airfields, aircraft,<br/>weather, payloads, planning_options,<br/>aircraft_failures"]
     catalog["catalog/<br/>known catalog_* sync + theatre/aircraft join"]
     tools["tools/<br/>agent tool surface"]
     agent["agent/<br/>NL→Spec planner + LLM"]
@@ -103,9 +103,9 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `narrative.py` | Opt-in CAP/intercept/escort/GA pack → materialise zones/triggers (squadron-voice message text); runs before validate/compile | `models`, `agent.voice` |
 | `dynamics.py` | Opt-in play-time Layer B pack (`fixed`/`live`/`choose`/`hybrid` + pools) → typed triggers; XOR with narrative; runs after narrative expand | `models` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules + sound `asset_id` + group life indices/percent); multi-error result | `models`, `registry`, `sounds`, `install` |
-| `data/channel/` | Committed Channel YAML SoT (airdromeIds, aircraft+radio, theatres, weather, payloads, planning_options) | shipped in wheel via hatch force-include |
+| `data/era/`, `data/shared/`, `data/theatres/<SpecId>/` | Packaged YAML SoT (era WWII units, shared weather/planning, per-theatre airfields) | shipped in wheel via hatch force-include |
 | `data/sounds/` | Curated sound assets (`asset_id` → `.wav`/`.ogg`) for Spec `sound` actions | shipped in wheel via hatch force-include |
-| `registry.py` | Loads packaged YAML; lookup API shared by validator/compiler (later agent) | `data/channel`, `pyyaml` |
+| `registry.py` | Loads packaged YAML (era + shared + theatre walker); lookup API shared by validator/compiler (later agent) | `data/era`, `data/shared`, `data/theatres`, `pyyaml` |
 | `sounds.py` | Sound-asset registry lookup + path materialization for `.miz` embed | `data/sounds`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
 | `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options + strike units; joins install inventory for theatres **and** aircraft modules (`known` / `installed` / `offerable`; discovered-only never promoted) | `registry`, `install`, stdlib `sqlite3` |
@@ -114,7 +114,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `briefing.py` | Spec → plain-text Sortie / Description / Blue|Red Task for `.miz` `l10n` (splits commander brief; lazy-imports voice) | `models`, `agent.voice` |
 | `weather_invent.py` | Seeded invent snapshot from Spec weather pattern + date/time | `models`, `registry` |
 | `weather_apply.py` | Apply invent snapshot to PyDCS `Mission.weather` | `weather_invent`, `weather_gallery`, `dcs.weather` |
-| `weather_gallery.py` | Packaged gallery decode + `CloudPreset` resolve (incl. ME-only rainy light ids) | `data/channel/weather_gallery.yaml` |
+| `weather_gallery.py` | Packaged gallery decode + `CloudPreset` resolve (incl. ME-only rainy light ids) | `data/shared/weather_gallery.yaml` |
 | `weather_metar.py` | Offline synthetic METAR from invent snapshot (`EGMH` + `RMK SIM`) | `weather_invent`, `weather_gallery` |
 | `weather_sot.py` | Enum / YAML / planning / compiler weather-id parity sets | `models`, `registry` |
 | `randomize.py` | Seeded Spec→Spec variation (weather/time/geometry/opposition); compiler stays deterministic | `models`, `registry` |
@@ -147,7 +147,7 @@ Four table namespaces share one DB file on purpose:
 ```mermaid
 flowchart TB
     subgraph product ["Product SoT — compile-supported"]
-        yaml["data/channel/*.yaml<br/>+ Spec enums"]
+        yaml["data/era + shared + theatres/<SpecId><br/>+ Spec enums"]
         reg["registry.ChannelRegistry<br/>list_theatres / list_aircraft / …"]
         yaml --> reg
     end
@@ -216,7 +216,7 @@ flowchart TB
 
 | Concern | Primary callables |
 |---------|-------------------|
-| Known SoT | `registry.ChannelRegistry`, packaged `data/channel/*.yaml` |
+| Known SoT | `registry.ChannelRegistry`, packaged `data/era/` + `data/shared/` + `data/theatres/<SpecId>/` |
 | Sync known → SQLite | `cli._catalog_sync_cmd` → `catalog.sync.build_snapshot_from_registry` → `CatalogStore.replace_snapshot` |
 | Rescan install | `cli._theatres_cmd` (`--refresh`) → `InventoryService.refresh` → `probe.probe_installations` + `aircraft_modules.harvest_aircraft_modules` → `InventoryStore.replace` |
 | Read cache | `InventoryService.get` / `has_cache`; `CatalogService.ensure_synced` |
@@ -234,7 +234,8 @@ flowchart TB
 
 Ordinary install reads hit the DB; `dcs-miz theatres --refresh` rescans. Never commit the DB.
 
-**Promote-to-known (ad-hoc):** edit `data/channel/*.yaml` (and Spec enums when needed) →
+**Promote-to-known (ad-hoc):** edit packaged YAML under `data/era/`, `data/shared/`,
+`data/theatres/<SpecId>/` (and Spec enums when needed) →
 accept compile in DCS when that asset is compile-supported → run `dcs-miz catalog sync`.
 Do not auto-promote discovered install theatres/modules into known YAML.
 

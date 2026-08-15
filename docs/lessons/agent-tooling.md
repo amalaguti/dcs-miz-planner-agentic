@@ -247,7 +247,7 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 - **Date:** 2026-07-26
 - **Lesson:** Known agent rows live in `catalog_*` tables in the same
   `%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite` as install inventory. YAML under
-  `data/channel/` + Spec enums remain the product SoT; `dcs-miz catalog sync` replaces
+  `data/era/` + `data/shared/` + `data/theatres/<SpecId>/` + Spec enums remain the product SoT; `dcs-miz catalog sync` replaces
   `catalog_*` from that package. Theatre **offerable** = known ∧ available ∧
   planner_supported. Never auto-promote discovered install theatres into known YAML.
 - **Code:** `catalog/`; CLI `dcs-miz catalog sync|list`.

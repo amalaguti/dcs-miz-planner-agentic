@@ -18,7 +18,7 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
   `_make_cloud_dict` writes the gallery string. Do not silently fold light-rain into
   `rain_overcast` (`RainyPreset1`–`3`).
 - **Code:** `weather_metar.py`, `weather_gallery.py`, `weather_apply.resolve_cloud_preset`,
-  `agent/voice.py`, `data/channel/weather_gallery.yaml`.
+  `agent/voice.py`, `data/shared/weather_gallery.yaml`.
 
 ## In-flight weather: fog yes, clouds/rain no (2026-08-06)
 

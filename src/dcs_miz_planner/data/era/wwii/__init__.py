@@ -1,0 +1,1 @@
+"""WWII era reference tables."""

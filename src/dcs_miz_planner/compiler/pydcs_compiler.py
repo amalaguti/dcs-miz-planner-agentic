@@ -190,7 +190,7 @@ class PyDCSCompiler(CompilerInterface):
 
         registry = get_channel_registry()
         try:
-            airport_id = registry.airdrome_id(spec.player.airfield)
+            airport_id = registry.airdrome_id(spec.player.airfield, theatre=spec.theatre)
             radio_mhz = registry.radio_mhz(spec.player.aircraft)
         except RegistryError as exc:
             raise ValueError(str(exc)) from exc

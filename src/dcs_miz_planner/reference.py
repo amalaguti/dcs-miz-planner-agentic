@@ -10,7 +10,8 @@ from .registry import RegistryError, get_channel_registry
 _registry = get_channel_registry()
 
 CHANNEL_AIRDROME_IDS: dict[str, int] = {
-    name: _registry.airdrome_id(name) for name in _registry.list_airfields()
+    name: _registry.airdrome_id(name, theatre="TheChannel")
+    for name in _registry.list_airfields(theatre="TheChannel")
 }
 KNOWN_AIRCRAFT: frozenset[str] = _registry.known_aircraft()
 AIRCRAFT_RADIO_MHZ: dict[str, float] = {
@@ -30,6 +31,6 @@ def airdrome_id(theatre: str, airfield_name: str) -> int:
     if not _registry.has_theatre(theatre):
         raise KeyError(f"Unsupported theatre for airfield lookup: {theatre}")
     try:
-        return _registry.airdrome_id(airfield_name)
+        return _registry.airdrome_id(airfield_name, theatre=theatre)
     except RegistryError as exc:
         raise KeyError(str(exc)) from exc

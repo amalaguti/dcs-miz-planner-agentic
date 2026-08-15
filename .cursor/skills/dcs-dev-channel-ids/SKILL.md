@@ -20,10 +20,12 @@ description: >-
 3. **Spitfire group frequency** must be in **VHF** band (e.g. 124.0) — not HF defaults.
 4. Intercept spawn geometry: Hawkinge anchor + Dover-approach offset (existing helpers).
 5. Failure ids: exact stock strings (e.g. `ENG0_MAGNETO0`) from
-   `data/channel/aircraft_failures.yaml`.
-6. **Normandy 2.0** Spec/inventory id is **`Normandy`**. Multi-theatre airfields need
-   `airfield_theatres:` overrides (default Channel); curated key `NeedsOarPoint` = 28.
+   `data/era/wwii/aircraft_failures.yaml`.
+6. **Normandy 2.0** Spec/inventory id is **`Normandy`**. Airfield lookup is
+   theatre-scoped (`airdrome_id(name, theatre=)`); folder names under
+   `data/theatres/` **are** Spec ids. Curated key `NeedsOarPoint` = 28.
 
 ## Code touchpoints
 
-`data/channel/*.yaml`, `registry.py`, `validation.py`, spawn helpers in compiler.
+`data/era/wwii/*.yaml`, `data/shared/*.yaml`, `data/theatres/<SpecId>/`,
+`registry.py`, `validation.py`, spawn helpers in compiler.

@@ -29,7 +29,7 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
   `OptDisparseUnderFire`) default 180s — AI leaves the track briefly when attacked
   from the air (not scripted tree picks). Override with `disperse_under_fire_s`
   (0=off). Sea groups skip it. GA `Bombing` stays at the fixed strike point in v1.
-- **Code:** `target_motion.py`, `data/channel/target_motion.yaml`, `pydcs_compiler.py`,
+- **Code:** `target_motion.py`, `data/era/wwii/target_motion.yaml`, `pydcs_compiler.py`,
   `validation._validate_target_motion`.
 
 ## Spec theatre → PyDCS terrain binding (2026-08-05)
@@ -127,7 +127,7 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
   `group.load_pylon((pylon, {"clsid": ...}))`. Strike uses airfield-relative
   bearing/distance; `get_strike_unit` chooses `vehicle_group` vs `ship_group` by domain;
   enemy coalition only.
-- **Code:** `compiler/pydcs_compiler.py` (`_apply_ground_attack`), `data/channel/payloads.yaml`,
+- **Code:** `compiler/pydcs_compiler.py` (`_apply_ground_attack`), `data/era/wwii/payloads.yaml`,
   `ground_units.yaml`, `ships.yaml`, `examples/manston_ground_attack.yaml`.
 
 ## CAP station is airfield-relative; ROE is Spec-backed

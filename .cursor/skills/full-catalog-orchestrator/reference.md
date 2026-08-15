@@ -62,7 +62,7 @@ Spec geometry is already airfield-relative. These helpers are Channel-hardcoded:
 | Era warnings Channel-only | `agent/realism.py` |
 | Stub LLM always Manston | `agent/llm.py` |
 | Hermetic inventory Channel+Normandy | `tests/conftest.py` |
-| Payloads / failures Spitfire-only | `data/channel/payloads.yaml`, `aircraft_failures.yaml` |
+| Payloads / failures Spitfire-only | `data/era/wwii/payloads.yaml`, `aircraft_failures.yaml` |
 
 ## Hard ceiling
 

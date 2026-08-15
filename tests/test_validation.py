@@ -76,6 +76,26 @@ def test_manston_example_validates(tmp_path: Path):
     assert result.ok
 
 
+def test_manston_on_normandy_fails_validation():
+    spec = _base_spec().model_copy(update={"theatre": "Normandy"})
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert not result.ok
+    err = next(e for e in result.errors if e.code == "unknown_airfield")
+    assert err.path == "player.airfield"
+    assert "NeedsOarPoint" in (err.hint or "")
+    assert "Manston" not in (err.hint or "")
+
+
+def test_needs_oar_point_on_channel_fails_validation():
+    spec = _base_spec(airfield="NeedsOarPoint")
+    result = validate_mission_spec(spec, inventory=_channel_inventory())
+    assert not result.ok
+    err = next(e for e in result.errors if e.code == "unknown_airfield")
+    assert err.path == "player.airfield"
+    assert "Manston" in (err.hint or "")
+    assert "NeedsOarPoint" not in (err.hint or "")
+
+
 def test_intercept_example_validates():
     spec = load_mission_spec(INTERCEPT_EXAMPLE)
     result = validate_mission_spec(spec, inventory=_channel_inventory())
@@ -179,7 +199,7 @@ def test_cli_validate_failure_json(tmp_path: Path, capsys, monkeypatch):
 def test_compile_refuses_invalid_without_writing(tmp_path: Path):
     spec = _base_spec(airfield="FakeField")
     out = tmp_path / "nope.miz"
-    with pytest.raises(ValueError, match="unknown_airfield|Unknown Channel airfield"):
+    with pytest.raises(ValueError, match="unknown_airfield|Unknown airfield"):
         PyDCSCompiler(inventory=_channel_inventory()).compile(spec, out)
     assert not out.exists()
 

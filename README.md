@@ -21,13 +21,13 @@ Section menus `#15d`, example `manston_cap_flight_orders.yaml`; optional
 (curated Spitfire ME Set Failure ids; example `manston_freeflight_magneto_failure.yaml`).
 Channel DCS facts
 (airfields, aircraft, radio, weather presets incl. `showers_scattered`) live in packaged YAML under
-`src/dcs_miz_planner/data/channel/`. Commander briefs include an offline synthetic
+`src/dcs_miz_planner/data/` (`era/wwii/`, `shared/`, `theatres/<SpecId>/`). Commander briefs include an offline synthetic
 METAR (`EGMH` + `RMK SIM`) from invent weather — never live meteo APIs.
-`src/dcs_miz_planner/data/channel/`, queried via `registry.py`. Local map
+Packaged tables are queried via `registry.py`. Local map
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
 refresh with `dcs-miz theatres --refresh` (caches theatres **and** aircraft module
 folders). Known agent catalog (`catalog_*` tables in the
-same DB) syncs from Channel YAML + Spec enums via `dcs-miz catalog sync` (airfields,
+same DB) syncs from packaged YAML + Spec enums via `dcs-miz catalog sync` (airfields,
 aircraft, planning options, **strike/recon units**). Shared validation
 (`dcs-miz validate` / compile) checks registry + local theatre inventory.
 Manston compile structure is pinned by golden fixtures under `tests/fixtures/`
@@ -233,8 +233,9 @@ uv run dcs-miz catalog list --type planning_options --family mission_inspiration
 uv run dcs-miz catalog list --type strike_units --json
 ```
 
-To grow **known** entries: edit `src/dcs_miz_planner/data/channel/*.yaml` (and Spec enums
-when needed), accept in DCS when compile-supported, then `catalog sync`. Planning knobs live
+To grow **known** entries: edit packaged YAML under `src/dcs_miz_planner/data/`
+(`era/wwii/`, `shared/`, `theatres/<SpecId>/`) and Spec enums when needed, accept in DCS
+when compile-supported, then `catalog sync`. Planning knobs live
 in `planning_options.yaml` with support levels (`supported` / `advisory` / `future`), including
 `mission_behaviour` (Spec recipes) and `mission_inspiration` (advisory patterns). Strike/recon
 target units sync into `catalog_strike_units` from `ground_units.yaml` + `ships.yaml` (class

@@ -709,7 +709,7 @@ def _validate_target_motion(
     from .theatre_terrain import terrain_for_theatre
 
     try:
-        airdrome_id = registry.airdrome_id(spec.player.airfield)
+        airdrome_id = registry.airdrome_id(spec.player.airfield, theatre=spec.theatre)
         terrain = terrain_for_theatre(spec.theatre)
         airport = terrain.airport_by_id(airdrome_id)
         if airport is None:
@@ -1566,14 +1566,19 @@ def validate_mission_spec(
         )
 
     try:
-        registry.airdrome_id(spec.player.airfield)
+        registry.airdrome_id(spec.player.airfield, theatre=spec.theatre)
     except RegistryError:
+        known = (
+            registry.list_airfields(theatre=spec.theatre)
+            if registry.has_theatre(spec.theatre)
+            else registry.list_airfields()
+        )
         errors.append(
             ValidationError(
                 code="unknown_airfield",
                 path="player.airfield",
-                message=f"Unknown Channel airfield '{spec.player.airfield}'",
-                hint=f"Known: {registry.list_airfields()}",
+                message=f"Unknown airfield '{spec.player.airfield}'",
+                hint=f"Known: {known}",
             )
         )
 

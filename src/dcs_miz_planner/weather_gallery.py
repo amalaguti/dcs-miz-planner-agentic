@@ -9,7 +9,7 @@ from typing import Any
 
 import yaml
 
-_DATA = Path(__file__).resolve().parent / "data" / "channel" / "weather_gallery.yaml"
+_DATA = Path(__file__).resolve().parent / "data" / "shared" / "weather_gallery.yaml"
 
 
 @dataclass(frozen=True)

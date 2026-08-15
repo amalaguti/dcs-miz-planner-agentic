@@ -37,7 +37,7 @@ class SpeedProfile:
 
 @lru_cache(maxsize=1)
 def _load_motion_tables() -> tuple[dict[str, SpeedProfile], dict[str, str]]:
-    root = resources.files("dcs_miz_planner.data.channel")
+    root = resources.files("dcs_miz_planner.data") / "era" / "wwii"
     data = yaml.safe_load((root / "target_motion.yaml").read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise TypeError("target_motion.yaml must be a mapping")

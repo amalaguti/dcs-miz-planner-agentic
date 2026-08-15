@@ -5,17 +5,33 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Theatre-scoped airfield lookup (replaces `airfield_theatres`)
+
+- **Date:** 2026-08-15
+- **Lesson:** Packaged SoT is `data/era/wwii/` + `data/shared/` +
+  `data/theatres/<SpecId>/` (folder name **is** the Spec/PyDCS id:
+  `TheChannel`, `Normandy`). `theatre.yaml` `id:` MUST match the folder;
+  the loader fails closed if not. Airfield → `airdromeId` is
+  **per-theatre** (`airdrome_id(name, theatre=)`). Validate/compile/reference
+  MUST pass `spec.theatre`. Unscoped unique-name lookup remains for tests.
+  Do not keep a combined `data/channel/` tree or a flat `airfield_theatres:`
+  map. Channel curated keys are the 12 verified names (no airdromeIds 9 or 11).
+  Normandy smoke is `NeedsOarPoint` = 28 only. Shared `weather_presets.yaml`
+  covers `sunny_clear` for both maps (no Normandy weather file this slice).
+- **Code:** `registry.py` (`from_packaged_packages`, `_airfields_by_theatre`),
+  `data/theatres/TheChannel/`, `data/theatres/Normandy/`, `validation.py`,
+  `compiler/pydcs_compiler.py`, `reference.py`.
+
 ## Normandy 2.0 Spec id is `Normandy`; tag AFs with `airfield_theatres`
 
 - **Date:** 2026-08-09
 - **Lesson:** Product name “Normandy 2.0” maps to inventory/Spec/PyDCS theatre id
   **`Normandy`** (not a separate `Normandy2` id). Smoke airfield Spec key
-  **`NeedsOarPoint`** → airdromeId **28** (PyDCS name “Needs Oar Point”). With
-  multiple theatres in one package, flat `airfields.yaml` ids alone are not enough
-  for catalog tagging — use optional **`airfield_theatres:`** map (default
-  `TheChannel` for unlisted keys). Do not assign every airfield to
-  `list_theatres()[0]` (Normandy sorts before TheChannel).
-- **Code:** `data/channel/airfields.yaml`, `theatres.yaml`, `registry.airfield_theatre`,
+  **`NeedsOarPoint`** → airdromeId **28** (PyDCS name “Needs Oar Point”).
+  *(Superseded for packaging: Slice 0 `theatre-registry-packages` replaced the
+  combined `data/channel/` + `airfield_theatres:` map with per-theatre packages
+  and `airdrome_id(name, theatre=)`. See the 2026-08-15 entry.)*
+- **Code:** `data/theatres/Normandy/airfields.yaml`, `registry.airfield_theatre`,
   `catalog/sync.py`; example `examples/needs_oar_point_cold_freeflight.yaml`.
 
 ## Channel WWII Axis: use `ThirdReich`, not `Germany`
@@ -45,7 +61,7 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 - **Symptom:** Compiled Manston free-flight `.miz` opens in the Mission Editor, but launching the flight warns the radio frequency is invalid for the Spitfire. PyDCS defaults every group to `["frequency"]=251`.
 - **Cause:** 251 MHz is a modern UHF value. WWII radios cannot tune it: Allied VHF is ~**100–156 MHz**, German VHF ~**38.4–42.4 MHz**.
 - **Fix:** Set the group frequency from the Channel registry radio table (Spitfire **124**, Bf-109K-4 40, FW-190 38.4) — the values every stock ED Channel mission uses. Assigning `group.frequency` is enough; DCS tunes the aircraft's first radio channel from it, and stock missions leave `radioSet = false`.
-- **Code:** `src/dcs_miz_planner/compiler/pydcs_compiler.py`; data in `data/channel/aircraft.yaml` via `registry.py`.
+- **Code:** `src/dcs_miz_planner/compiler/pydcs_compiler.py`; data in `data/era/wwii/aircraft.yaml` via `registry.py`.
 - **Do not:** use the airfield ATC frequency as the flight frequency. It is in-band and works (Channel ATC VHF-high runs 118.05–118.6, Manston = 118.45), but it is the tower channel, not the flight's, and diverges from every stock mission.
 - **Note:** PyDCS `set_frequency()` also flips `radio_set` and writes channel presets — more than ME does. Plain attribute assignment matches stock output.
 
@@ -54,4 +70,4 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 - **Date:** 2026-07-24 (research) / reinforced in M1
 - **Symptom:** Mission fails to load or units missing if type / airfield ids are wrong.
 - **Cause:** Guessing spellings (`Spitfire IX`, wrong `airdromeId`, etc.).
-- **Fix:** Use verified ids only (`SpitfireLFMkIX`, Manston → `airdromeId` 5, theatre `TheChannel`, …). Prefer `registry.py` / `data/channel/*.yaml` over memory. Expand the registry via data PRs, not ad-hoc in prompts.
+- **Fix:** Use verified ids only (`SpitfireLFMkIX`, Manston → `airdromeId` 5, theatre `TheChannel`, …). Prefer `registry.py` / packaged `data/era/`, `data/shared/`, `data/theatres/<SpecId>/` over memory. Expand the registry via data PRs, not ad-hoc in prompts.
