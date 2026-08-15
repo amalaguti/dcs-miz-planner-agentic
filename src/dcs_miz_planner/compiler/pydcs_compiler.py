@@ -10,6 +10,7 @@ import datetime
 from pathlib import Path
 
 from ..install.models import TheatreInventory
+from ..intercept_spawn import intercept_spawn_for_theatre
 from ..models import (
     CapPattern,
     Engagement,
@@ -25,14 +26,6 @@ from ..registry import RegistryError, get_channel_registry
 from ..validation import MissionValidationError, validate_mission_spec
 from .base import CompilerInterface
 
-# Enemy spawn for the checked-in Manston dawn intercept example.
-# Source: PyDCS `TheChannel` airport Hawkinge (airdromeId 6) map position, offset
-# south-east toward the Strait as a Dover-approach corridor (Channel geography
-# relative to Manston id 5). Not invented lat/lon — terrain units from PyDCS.
-_HAWKINGE_X = 26989.935547
-_HAWKINGE_Y = -29402.577148
-_DOVER_APPROACH_OFFSET_X = 4000.0
-_DOVER_APPROACH_OFFSET_Y = -6000.0
 _ENEMY_ALTITUDE_M = 3500
 _ENEMY_SPEED_KMH = 450
 
@@ -57,7 +50,8 @@ _ESCORT_BOUNCE_OFFSET_M_Y = -1500.0
 _RECON_SPEED_KMH = 400
 _RECON_CONTACT_SPREAD_M = 80.0
 
-# Wingman join-up: AI lead outbound + player Follow (metres / km/h).
+# Wingman join-up: generic airfield-relative heading default (any bound theatre).
+# Not Channel intercept spawn geometry — do not treat 120° as Hawkinge/Dover.
 _JOINUP_OUTBOUND_BEARING_DEG = 120.0
 _JOINUP_OUTBOUND_M = 12_000.0
 _JOINUP_CLIMB_M = 5_000.0
@@ -903,9 +897,10 @@ class PyDCSCompiler(CompilerInterface):
             except RegistryError as exc:
                 raise ValueError(str(exc)) from exc
 
+            recipe = intercept_spawn_for_theatre(spec.theatre)
             position = Point(
-                _HAWKINGE_X + _DOVER_APPROACH_OFFSET_X,
-                _HAWKINGE_Y + _DOVER_APPROACH_OFFSET_Y,
+                recipe.enemy_x,
+                recipe.enemy_y,
                 mission.terrain,
             )
             eg = mission.flight_group_inflight(

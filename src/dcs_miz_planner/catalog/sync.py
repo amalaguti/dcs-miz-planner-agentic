@@ -11,7 +11,7 @@ from ..models import (
     ObjectiveType,
     StartType,
 )
-from ..registry import ChannelRegistry, get_channel_registry
+from ..registry import ChannelRegistry, RegistryError, get_channel_registry
 from .models import (
     CatalogAircraft,
     CatalogAirfield,
@@ -23,9 +23,6 @@ from .models import (
     CatalogTheatre,
     CatalogWeatherPreset,
 )
-
-# Curated Spec/PyDCS country ids used by checked-in examples (not a full DCS dump).
-_KNOWN_COUNTRIES = ("UK", "ThirdReich")
 
 SOURCE_LABEL = "channel_yaml+spec_enums"
 
@@ -106,12 +103,17 @@ def build_snapshot_from_registry(
         if "TheChannel" in registry.list_theatres()
         else (theatres[0].theatre_id if theatres else "TheChannel")
     )
+    try:
+        strike_era = registry.era_for_theatre(strike_theatre)
+    except RegistryError:
+        strike_era = "wwii"
     strike_units = tuple(
         CatalogStrikeUnit(
             unit_id=uid,
             label=ref.label or uid,
             domain=ref.domain,
             theatre_id=strike_theatre,
+            era_id=strike_era,
             class_ids_json=json.dumps(class_map.get(uid, []), sort_keys=True),
         )
         for uid in registry.list_strike_units()
@@ -132,5 +134,5 @@ def build_snapshot_from_registry(
         start_types=tuple(CatalogEnumRow(s.value) for s in StartType),
         coalitions=tuple(CatalogEnumRow(c.value) for c in Coalition),
         objective_types=tuple(CatalogEnumRow(o.value) for o in ObjectiveType),
-        countries=tuple(CatalogEnumRow(c) for c in _KNOWN_COUNTRIES),
+        countries=tuple(CatalogEnumRow(c) for c in registry.list_countries()),
     )

@@ -34,6 +34,17 @@ _AGENT_EXAMPLE_FILES: dict[str, str] = {
     MissionType.RECON.value: "manston_recon.yaml",
 }
 
+_NORMANDY_FREE_FLIGHT_EXAMPLE = "needs_oar_point_cold_freeflight.yaml"
+_COMBAT_MISSION_TYPES = frozenset(
+    {
+        MissionType.INTERCEPT.value,
+        MissionType.CAP.value,
+        MissionType.GROUND_ATTACK.value,
+        MissionType.ESCORT.value,
+        MissionType.RECON.value,
+    }
+)
+
 ANTI_PATTERNS: tuple[str, ...] = (
     'top-level "airfield" / "aircraft" (use nested player.aircraft / player.airfield)',
     '"date" as an ISO string like "1944-06-06" (use {"year","month","day"})',
@@ -189,7 +200,10 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
 }
 
 _COMMON_NOTES: tuple[str, ...] = (
-    'schema_version must be "1"; theatre for v1 is TheChannel.',
+    (
+        'schema_version must be "1"; theatre is an offerable id '
+        "(TheChannel for combat; Normandy free_flight only at NeedsOarPoint)."
+    ),
     (
         "Required envelope: schema_version, mission_type, theatre, date, start_time, "
         "weather, player; enemies/objectives/triggers/zones default to empty lists."
@@ -281,12 +295,38 @@ def supported_mission_types() -> tuple[str, ...]:
     return tuple(_EXAMPLE_FILES.keys())
 
 
-def build_spec_schema(mission_type: str) -> SpecSchemaView:
-    """Load and validate the packaged example for ``mission_type`` (immersion-first)."""
+def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSchemaView:
+    """Load and validate the packaged example for ``mission_type`` (immersion-first).
+
+    Default / TheChannel stubs stay Manston. ``theatre=Normandy`` + free_flight uses
+    NeedsOarPoint. Normandy combat types raise (no Manston combat skeleton).
+    """
     key = (mission_type or "").strip()
     if key not in _EXAMPLE_FILES:
         allowed = ", ".join(supported_mission_types())
         raise ValueError(f"Unsupported mission_type {mission_type!r}; expected one of: {allowed}")
+    theatre_id = (theatre or "").strip() or None
+    if theatre_id == "Normandy":
+        if key in _COMBAT_MISSION_TYPES:
+            raise ValueError(
+                f"Combat mission_type {key!r} is not supported for theatre Normandy; "
+                "use free_flight at NeedsOarPoint or theatre TheChannel"
+            )
+        filename = _NORMANDY_FREE_FLIGHT_EXAMPLE
+        path = examples_dir() / filename
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing Spec example for {key}: {path}")
+        spec = load_mission_spec(path)
+        if spec.mission_type.value != key:
+            raise ValueError(
+                f"Example {path.name} has mission_type {spec.mission_type.value!r}, "
+                f"expected {key!r}"
+            )
+        example = json.loads(spec.model_dump_json())
+        MissionSpec.model_validate(example)
+        notes = _notes_for(key, theatre_id)
+        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+
     filename = _AGENT_EXAMPLE_FILES.get(key) or _EXAMPLE_FILES[key]
 
     path = examples_dir() / filename
@@ -305,8 +345,21 @@ def build_spec_schema(mission_type: str) -> SpecSchemaView:
     example = json.loads(spec.model_dump_json())
     # Re-validate the projected dict so drift fails loudly.
     MissionSpec.model_validate(example)
-    notes = _COMMON_NOTES + _TYPE_NOTES.get(key, ())
+    notes = _notes_for(key, theatre_id)
     return SpecSchemaView(mission_type=key, example=example, notes=notes)
+
+
+def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
+    if theatre == "Normandy":
+        extra = (
+            (
+                "Normandy invent is free_flight only: airfield NeedsOarPoint, "
+                "SpitfireLFMkIX, sunny_clear, UK blue. Do not copy channel_place "
+                "geometry (french coast belts, Hawkinge) onto Normandy."
+            ),
+        )
+        return extra + _COMMON_NOTES + _TYPE_NOTES.get(mission_type, ())
+    return _COMMON_NOTES + _TYPE_NOTES.get(mission_type, ())
 
 
 def infer_mission_type(text: str | None, *, default: str = MissionType.FREE_FLIGHT.value) -> str:
@@ -337,7 +390,9 @@ def format_spec_schema_fragment(view: SpecSchemaView) -> str:
 SPEC_SHAPE_REMINDER = """\
 Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
-(free_flight | intercept | cap | ground_attack | escort | recon) and copy that example's structure.
+(free_flight | intercept | cap | ground_attack | escort | recon) and optional theatre.
+Copy that example's structure. Default stub is Manston / TheChannel; Normandy
+free_flight uses NeedsOarPoint. Normandy combat is unsupported.
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user
 left challenge unspecified — see schema notes for example YAML paths.

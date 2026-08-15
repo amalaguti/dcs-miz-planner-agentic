@@ -25,7 +25,9 @@ description: >-
 6. **Rainy light gallery** (`RainyPreset4`–`6` / `NEWRAINPRESET4`) is not in PyDCS
    `CloudPreset.by_name` — use `weather_gallery.resolve_cloud_preset` (construct from
    packaged min/max). Never invent live METAR; briefs use offline
-   `format_synthetic_metar` + `RMK SIM`.
+   `format_synthetic_metar` + `RMK SIM`. ICAO `EGMH` is TheChannel-only; do not
+   invent a Needs Oar Point station. Miz-patch reweather fail-closed unless the
+   `.miz` theatre is TheChannel.
 
 ## Code touchpoints
 

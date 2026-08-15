@@ -286,6 +286,7 @@ class CatalogService:
                         "label": u.label,
                         "domain": u.domain,
                         "theatre_id": u.theatre_id,
+                        "era_id": u.era_id,
                         "class_ids": [str(c) for c in class_ids],
                         "class_ids_json": u.class_ids_json,
                     }

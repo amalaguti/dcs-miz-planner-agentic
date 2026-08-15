@@ -6,10 +6,10 @@ from dataclasses import dataclass
 
 from .allowlists import (
     AI_FLIGHT_SKILLS,
-    KNOWN_COUNTRIES,
     KNOWN_SKILLS,
     ai_flight_skill_hint,
     country_hint,
+    known_countries,
     skill_hint,
 )
 from .install.aircraft_modules import missing_aircraft_module_messages
@@ -102,7 +102,7 @@ def _check_country_skill(
     skill_path: str,
     errors: list[ValidationError],
 ) -> None:
-    if country not in KNOWN_COUNTRIES:
+    if country not in known_countries():
         errors.append(
             ValidationError(
                 code="unknown_country",
@@ -410,10 +410,23 @@ def _validate_strike_domain(
     errors: list[ValidationError],
 ) -> None:
     """Fail when strike Point domain mismatches target unit land/sea domain."""
-    from .channel_domain import strike_domain_for_spec
+    from .channel_domain import DomainUnsupportedTheatre, strike_domain_for_spec
 
     try:
         point_domain = strike_domain_for_spec(spec, registry=registry)
+    except DomainUnsupportedTheatre:
+        errors.append(
+            ValidationError(
+                code="domain_unsupported_theatre",
+                path="strike",
+                message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
+                hint=(
+                    "Use theatre TheChannel for strike/recon/path geometry, or omit "
+                    "land/sea combat until that theatre has a domain recipe"
+                ),
+            )
+        )
+        return
     except (ValueError, RegistryError) as exc:
         errors.append(
             ValidationError(
@@ -704,9 +717,23 @@ def _validate_target_motion(
     area: str,
 ) -> None:
     """Domain-check path waypoints and patrol corners vs unit land|sea."""
-    from .channel_domain import classify_channel_domain
+    from .channel_domain import DomainUnsupportedTheatre, classify_domain_for_theatre
     from .models import TargetMotion, ground_target_motion
     from .theatre_terrain import terrain_for_theatre
+
+    if spec.theatre != "TheChannel":
+        errors.append(
+            ValidationError(
+                code="domain_unsupported_theatre",
+                path=area,
+                message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
+                hint=(
+                    "Use theatre TheChannel for strike/recon/path geometry, or omit "
+                    "land/sea combat until that theatre has a domain recipe"
+                ),
+            )
+        )
+        return
 
     try:
         airdrome_id = registry.airdrome_id(spec.player.airfield, theatre=spec.theatre)
@@ -756,7 +783,23 @@ def _validate_target_motion(
                 sample_points.append((f"path[{j}]", float(p.x), float(p.y)))
 
         for label, x, y in sample_points:
-            point_domain = classify_channel_domain(x, y)
+            try:
+                point_domain = classify_domain_for_theatre(spec.theatre, x, y)
+            except DomainUnsupportedTheatre:
+                errors.append(
+                    ValidationError(
+                        code="domain_unsupported_theatre",
+                        path=f"targets[{i}].motion",
+                        message=(
+                            f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"
+                        ),
+                        hint=(
+                            "Use theatre TheChannel for strike/recon/path geometry, or omit "
+                            "land/sea combat until that theatre has a domain recipe"
+                        ),
+                    )
+                )
+                return
             if point_domain != unit.domain:
                 errors.append(
                     ValidationError(
@@ -847,10 +890,23 @@ def _validate_recon_domain(
     errors: list[ValidationError],
 ) -> None:
     """Fail when recon AOI domain mismatches contact unit land/sea domain."""
-    from .channel_domain import recon_domain_for_spec
+    from .channel_domain import DomainUnsupportedTheatre, recon_domain_for_spec
 
     try:
         point_domain = recon_domain_for_spec(spec, registry=registry)
+    except DomainUnsupportedTheatre:
+        errors.append(
+            ValidationError(
+                code="domain_unsupported_theatre",
+                path="recon",
+                message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
+                hint=(
+                    "Use theatre TheChannel for strike/recon/path geometry, or omit "
+                    "land/sea combat until that theatre has a domain recipe"
+                ),
+            )
+        )
+        return
     except (ValueError, RegistryError) as exc:
         errors.append(
             ValidationError(
@@ -1332,6 +1388,17 @@ def validate_mission_spec(
                     )
                 )
     elif spec.mission_type is MissionType.INTERCEPT:
+        from .intercept_spawn import intercept_supported
+
+        if not intercept_supported(spec.theatre):
+            errors.append(
+                ValidationError(
+                    code="intercept_unsupported_theatre",
+                    path="theatre",
+                    message=f"Intercept spawn is not supported for theatre {spec.theatre!r}",
+                    hint=("Use theatre TheChannel, or free_flight at NeedsOarPoint for Normandy"),
+                )
+            )
         if spec.cap is not None:
             errors.append(
                 ValidationError(

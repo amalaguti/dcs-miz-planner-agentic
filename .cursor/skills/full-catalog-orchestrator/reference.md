@@ -16,7 +16,7 @@ Capture the kinds below even if they stay grouped under planning_options.
 |------|----------------|
 | Theatre id + PyDCS terrain bind | `TheChannel`, `Normandy` |
 | Airfields (name → airdromeId) | 12 Channel + NeedsOarPoint |
-| Countries (PyDCS class names) | `UK`, `ThirdReich` hardcoded |
+| Countries (PyDCS class names) | `UK`, `ThirdReich` from `era/wwii/countries.yaml` |
 | Coalitions | blue/red |
 | Aircraft + group radio MHz | 5 WWII types |
 | Start types | cold parking |

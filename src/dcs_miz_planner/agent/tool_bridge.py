@@ -84,10 +84,11 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "(land + sea). Call after list_mission_options and before inventing "
                 "ground_attack or recon targets[]. Optional filters: domain "
                 "(land|sea), class_id (soft_vehicles, aaa_guns, sea_craft, …), "
-                "q (substring on unit_id/label). Harbour/dock asks MUST use domain=sea. "
-                "Prefer returned exact DCS unit_ids; pair with shelf preferred_motion / "
-                "preferred_ai_preset (convoy_transit, aaa_alert, ship_under_way, "
-                "harbour_static)."
+                "q (substring on unit_id/label), theatre (TheChannel combat; "
+                "Normandy returns empty until a target batch ships). Harbour/dock "
+                "asks MUST use domain=sea. Prefer returned exact DCS unit_ids; pair "
+                "with shelf preferred_motion / preferred_ai_preset (convoy_transit, "
+                "aaa_alert, ship_under_way, harbour_static)."
             ),
             "parameters": {
                 "type": "object",
@@ -103,6 +104,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                     "q": {
                         "type": "string",
                         "description": "Optional substring match on unit_id or label",
+                    },
+                    "theatre": {
+                        "type": "string",
+                        "description": "Optional theatre id (TheChannel combat; Normandy empty)",
                     },
                 },
             },
@@ -140,7 +145,8 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "description": (
                 "Get a compact Mission Spec JSON example plus notes/anti-patterns for a "
                 "mission_type (free_flight, intercept, cap, ground_attack, escort, or recon). "
-                "Call before emitting Spec JSON."
+                "Optional theatre: TheChannel uses Manston examples; Normandy free_flight "
+                "uses NeedsOarPoint; Normandy combat is unsupported. Call before emitting Spec JSON."
             ),
             "parameters": {
                 "type": "object",
@@ -148,6 +154,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                     "mission_type": {
                         "type": "string",
                         "description": "free_flight | intercept | cap | ground_attack | escort",
+                    },
+                    "theatre": {
+                        "type": "string",
+                        "description": "Optional theatre id (TheChannel or Normandy)",
                     },
                 },
                 "required": ["mission_type"],
@@ -427,13 +437,18 @@ def dispatch_tool(
             domain=args.get("domain"),
             class_id=args.get("class_id"),
             q=args.get("q"),
+            theatre=args.get("theatre"),
             db_path=db_path,
         )
     if name == "list_installed_campaigns":
         include_doc_text = bool(args.get("include_doc_text", False))
         return list_installed_campaigns(db_path=db_path, include_doc_text=include_doc_text)
     if name == "get_mission_spec_schema":
-        return get_mission_spec_schema(str(args.get("mission_type", "")))
+        theatre = args.get("theatre")
+        return get_mission_spec_schema(
+            str(args.get("mission_type", "")),
+            theatre=str(theatre) if theatre else None,
+        )
     if name == "get_user_prefs":
         keys = args.get("keys")
         if keys is not None and not isinstance(keys, list):

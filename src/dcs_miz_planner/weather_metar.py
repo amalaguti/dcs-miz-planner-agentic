@@ -17,13 +17,21 @@ def format_synthetic_metar(
     snap: WeatherSnapshot,
     spec: MissionSpec,
     *,
-    icao: str = DEFAULT_ICAO,
+    icao: str | None = None,
 ) -> str:
     """Build one ICAO-style METAR line from snapshot + Spec date/time.
 
     Deterministic for the same inputs. Always ends with ``NOSIG RMK SIM``.
+    ICAO ``EGMH`` is TheChannel-only; other theatres omit a station code
+    (do not invent Needs Oar Point ICAO).
     """
-    parts: list[str] = [icao.strip().upper() or DEFAULT_ICAO]
+    if icao is None:
+        station = DEFAULT_ICAO if spec.theatre == "TheChannel" else ""
+    else:
+        station = icao.strip().upper()
+    parts: list[str] = []
+    if station:
+        parts.append(station)
     parts.append(_obs_time_group(spec))
     parts.append(_wind_group(snap))
     parts.append(_vis_group(snap))

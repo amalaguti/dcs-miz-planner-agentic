@@ -5,6 +5,22 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Theatre-keyed intercept and domain (fail closed off TheChannel)
+
+- **Date:** 2026-08-15
+- **Lesson:** Land/sea domain classification is the Channel UK–FR airport chord only.
+  Non-Channel Specs with strike/recon/path geometry fail
+  `domain_unsupported_theatre` — do not run the chord on Normandy (x,y). Intercept
+  enemy spawn is a recipe table with **only** TheChannel Hawkinge
+  `26989.935547` / `-29402.577148` plus Dover `+4000` / `-6000` (golden
+  `30989.935547` / `-35402.577148`). Do **not** recompute from `airport_list()`.
+  Other theatres fail `intercept_unsupported_theatre`. Join-up outbound 120° stays
+  generic airfield-relative. WWII countries live in `data/era/wwii/countries.yaml`
+  (`UK`, `ThirdReich`); Germany is a hint, not a known id. `airfield_relative_map_point`
+  must pass `theatre=spec.theatre` into `airdrome_id`.
+- **Code:** `channel_domain.py`, `intercept_spawn.py`, `allowlists.py`,
+  `data/era/wwii/countries.yaml`, `validation.py`, `compiler/pydcs_compiler.py`.
+
 ## Theatre-scoped airfield lookup (replaces `airfield_theatres`)
 
 - **Date:** 2026-08-15

@@ -18,7 +18,7 @@ from .models import (
     CatalogWeatherPreset,
 )
 
-CATALOG_SCHEMA_VERSION = 5
+CATALOG_SCHEMA_VERSION = 6
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS catalog_meta (
@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS catalog_strike_units (
     label TEXT NOT NULL,
     domain TEXT NOT NULL,
     theatre_id TEXT NOT NULL,
+    era_id TEXT NOT NULL,
     class_ids_json TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS catalog_mission_types (
@@ -116,7 +117,8 @@ class CatalogStore:
             conn.commit()
         elif int(row["value"]) != CATALOG_SCHEMA_VERSION:
             for table in _KNOWN_TABLES:
-                conn.execute(f"DELETE FROM {table}")
+                conn.execute(f"DROP TABLE IF EXISTS {table}")
+            conn.executescript(_SCHEMA)
             conn.execute(
                 "UPDATE catalog_meta SET value = ? WHERE key = 'catalog_schema_version'",
                 (str(CATALOG_SCHEMA_VERSION),),
@@ -167,9 +169,17 @@ class CatalogStore:
             )
             conn.executemany(
                 "INSERT INTO catalog_strike_units"
-                "(unit_id, label, domain, theatre_id, class_ids_json) VALUES (?, ?, ?, ?, ?)",
+                "(unit_id, label, domain, theatre_id, era_id, class_ids_json) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
                 [
-                    (u.unit_id, u.label, u.domain, u.theatre_id, u.class_ids_json)
+                    (
+                        u.unit_id,
+                        u.label,
+                        u.domain,
+                        u.theatre_id,
+                        u.era_id,
+                        u.class_ids_json,
+                    )
                     for u in snapshot.strike_units
                 ],
             )
@@ -254,10 +264,11 @@ class CatalogStore:
                     row["label"],
                     row["domain"],
                     row["theatre_id"],
+                    row["era_id"],
                     row["class_ids_json"],
                 )
                 for row in conn.execute(
-                    "SELECT unit_id, label, domain, theatre_id, class_ids_json "
+                    "SELECT unit_id, label, domain, theatre_id, era_id, class_ids_json "
                     "FROM catalog_strike_units ORDER BY unit_id"
                 )
             )

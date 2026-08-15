@@ -158,11 +158,14 @@ def _partition_airfields(
     return by_theatre
 
 
-def _load_theatre_packages(theatres_root: Any) -> tuple[dict[str, dict[str, int]], frozenset[str]]:
-    """Walk ``data/theatres/<SpecId>/`` and load per-theatre airfield maps."""
+def _load_theatre_packages(
+    theatres_root: Any,
+) -> tuple[dict[str, dict[str, int]], frozenset[str], dict[str, str]]:
+    """Walk ``data/theatres/<SpecId>/`` and load per-theatre airfield maps + era."""
     if not theatres_root.is_dir():
         raise RegistryError("packaged data/theatres/ is missing")
     by_theatre: dict[str, dict[str, int]] = {}
+    theatre_eras: dict[str, str] = {}
     for child in theatres_root.iterdir():
         name = child.name
         if not child.is_dir() or name.startswith((".", "__")):
@@ -197,9 +200,10 @@ def _load_theatre_packages(theatres_root: Any) -> tuple[dict[str, dict[str, int]
                 raise RegistryError(f"theatres/{name}: duplicate airfield {af_name!r}")
             mapping[af_name] = int(value)
         by_theatre[theatre_id] = mapping
+        theatre_eras[theatre_id] = era_id
     if not by_theatre:
         raise RegistryError("no theatre packages found under data/theatres/")
-    return by_theatre, frozenset(by_theatre)
+    return by_theatre, frozenset(by_theatre), theatre_eras
 
 
 class ChannelRegistry:
@@ -219,6 +223,8 @@ class ChannelRegistry:
         aircraft_failures: dict[str, tuple[AircraftFailureRef, ...]] | None = None,
         airfield_theatres: dict[str, str] | None = None,
         airfields_by_theatre: dict[str, dict[str, int]] | None = None,
+        theatre_eras: dict[str, str] | None = None,
+        countries: frozenset[str] | None = None,
     ) -> None:
         self._aircraft = dict(aircraft)
         self._theatres = frozenset(theatres)
@@ -228,6 +234,13 @@ class ChannelRegistry:
         self._ships = dict(ships or {})
         self._planning_options = tuple(planning_options or ())
         self._aircraft_failures = {str(k): tuple(v) for k, v in (aircraft_failures or {}).items()}
+        if theatre_eras is not None:
+            self._theatre_eras = {str(k): str(v) for k, v in theatre_eras.items()}
+        else:
+            self._theatre_eras = {t: "wwii" for t in self._theatres}
+        self._countries = (
+            frozenset(countries) if countries is not None else frozenset({"UK", "ThirdReich"})
+        )
         if airfields_by_theatre is not None:
             self._airfields_by_theatre = {
                 str(tid): {str(n): int(aid) for n, aid in mapping.items()}
@@ -330,7 +343,7 @@ class ChannelRegistry:
                 _parse_aircraft_failure(row) for row in rows
             )
 
-        airfields_by_theatre, theatres = _load_theatre_packages(root / "theatres")
+        airfields_by_theatre, theatres, theatre_eras = _load_theatre_packages(root / "theatres")
         airfields: dict[str, int] = {}
         airfield_theatres: dict[str, str] = {}
         for tid, mapping in airfields_by_theatre.items():
@@ -340,12 +353,29 @@ class ChannelRegistry:
                 if tid != "TheChannel":
                     airfield_theatres[af_name] = tid
 
+        countries_raw = (
+            _load_yaml_file(era_root / "countries.yaml", "era/wwii/countries.yaml").get("countries")
+            or {}
+        )
+        if isinstance(countries_raw, dict):
+            countries = frozenset(str(k) for k in countries_raw)
+        elif isinstance(countries_raw, list):
+            countries = frozenset(str(x) for x in countries_raw)
+        else:
+            raise RegistryError("countries.yaml: 'countries' must be a mapping or list")
+        if not countries:
+            raise RegistryError("countries.yaml: 'countries' is empty")
+        if "Germany" in countries:
+            raise RegistryError("Germany must not be a known country id (hint to ThirdReich)")
+
         return cls(
             airfields=airfields,
             airfield_theatres=airfield_theatres,
             airfields_by_theatre=airfields_by_theatre,
             aircraft=aircraft,
             theatres=theatres,
+            theatre_eras=theatre_eras,
+            countries=countries,
             weather_presets=weather_presets,
             payloads=payloads,
             ground_units=ground_units,
@@ -440,6 +470,17 @@ class ChannelRegistry:
 
     def list_theatres(self) -> list[str]:
         return sorted(self._theatres)
+
+    def era_for_theatre(self, theatre_id: str) -> str:
+        if theatre_id not in self._theatres:
+            raise RegistryError(f"Unknown theatre '{theatre_id}'. Known: {sorted(self._theatres)}")
+        era = self._theatre_eras.get(theatre_id)
+        if not era:
+            raise RegistryError(f"No era recorded for theatre '{theatre_id}'")
+        return era
+
+    def list_countries(self) -> list[str]:
+        return sorted(self._countries)
 
     def weather_preset(self, name: str) -> WeatherPresetRef:
         try:

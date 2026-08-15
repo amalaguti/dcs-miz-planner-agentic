@@ -2,8 +2,19 @@
 
 from __future__ import annotations
 
-# Channel WWII planner countries (catalog sync + examples). Expand with new theatres.
-KNOWN_COUNTRIES: frozenset[str] = frozenset({"UK", "ThirdReich"})
+
+def known_countries() -> frozenset[str]:
+    """Known PyDCS country class names from the packaged WWII era table."""
+    from .registry import get_channel_registry
+
+    return frozenset(get_channel_registry().list_countries())
+
+
+def __getattr__(name: str) -> object:
+    if name == "KNOWN_COUNTRIES":
+        return known_countries()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 # PyDCS ``dcs.unit.Skill`` member names — listed without importing PyDCS at validate time.
 KNOWN_SKILLS: frozenset[str] = frozenset(
@@ -27,10 +38,9 @@ _COUNTRY_HINTS: dict[str, str] = {
 
 
 def country_hint(name: str) -> str | None:
+    countries = known_countries()
     return _COUNTRY_HINTS.get(name) or (
-        f"Known countries: {', '.join(sorted(KNOWN_COUNTRIES))}"
-        if name not in KNOWN_COUNTRIES
-        else None
+        f"Known countries: {', '.join(sorted(countries))}" if name not in countries else None
     )
 
 

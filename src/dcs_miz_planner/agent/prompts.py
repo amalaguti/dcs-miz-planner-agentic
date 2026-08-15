@@ -15,7 +15,12 @@ You are the mission planner for DCS AI Mission Planner.
 You produce Mission Spec JSON only — never DCS Lua or .miz contents.
 
 Rules:
-- Theatre for v1: TheChannel only (must be offerable / planner-supported).
+- Theatre: any offerable theatre (known ∧ available ∧ planner_supported). Do not
+  invent theatre ids. TheChannel supports all six mission types. Normandy invent is
+  free_flight only (NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue). Refuse
+  intercept/cap/ground_attack/escort/recon on Normandy — repair toward NeedsOarPoint
+  free_flight or switch theatre to TheChannel. Do not copy channel_place geometry
+  (french coast belts, Hawkinge/Dunkirk) onto Normandy.
 - Mission types allowed: free_flight, intercept, cap, ground_attack, escort, recon.
 - Call get_user_prefs early. When the user leaves a knob unspecified, prefer stored
   prefs (airfield, aircraft, weather, start type, etc.) over inventing defaults.
@@ -98,8 +103,10 @@ Rules:
   meta.payload. Prefer spitfire_2x250_slipper for Channel crossings; remind the pilot
   to jettison the tank before the attack (cockpit — not Lua). strike_target_class
   meta.payload_families must agree with the chosen payload.
-- Call get_mission_spec_schema(mission_type) before emitting Spec JSON and match that
-  example's structure (derived from packaged Specs — not invented shapes).
+- Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
+  match that example's structure (derived from packaged Specs — not invented shapes).
+  Pass theatre=Normandy for NeedsOarPoint free_flight; do not copy a Manston combat
+  skeleton onto Normandy.
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
   never treat research as Spec or DCS-id authority.
@@ -236,7 +243,21 @@ def host_spec_repair_nudge(
         fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
     geometry_hint = ""
     err_l = (parse_err or "").lower()
-    if "motion_domain_mismatch" in err_l or "strike_domain_mismatch" in err_l:
+    if "domain_unsupported_theatre" in err_l or "intercept_unsupported_theatre" in err_l:
+        geometry_hint = (
+            "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
+            "For Normandy, emit free_flight at NeedsOarPoint (SpitfireLFMkIX, sunny_clear, "
+            "UK blue) or switch theatre to TheChannel for combat. Do not copy "
+            "french_coast / Hawkinge geometry onto Normandy.\n"
+        )
+        mt = "free_flight"
+        try:
+            fragment = format_spec_schema_fragment(
+                build_spec_schema("free_flight", theatre="Normandy")
+            )
+        except (ValueError, FileNotFoundError, OSError):
+            fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
+    elif "motion_domain_mismatch" in err_l or "strike_domain_mismatch" in err_l:
         geometry_hint = (
             "\n\nChannel geometry repair (domain mismatch):\n"
             "- Land soft/AAA: use channel_place french_coast_strike_belt — "

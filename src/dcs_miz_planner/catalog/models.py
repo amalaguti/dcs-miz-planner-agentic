@@ -54,6 +54,7 @@ class CatalogStrikeUnit:
     label: str
     domain: str
     theatre_id: str
+    era_id: str
     #: JSON list of strike_target_class ids (may be empty ``[]``).
     class_ids_json: str
 

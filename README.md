@@ -11,7 +11,10 @@ rejected) covers free_flight, intercept, CAP, ground_attack, escort, and recon, 
 triggers (zones, flags, radio, late activation, sound, markers, altitude/speed gates).
 Manston cold free flight was the first accepted-in-game slice. **Normandy 2.0** is
 planner-bound for the same cold freeflight smoke at Needs Oar Point
-(`examples/needs_oar_point_cold_freeflight.yaml`; Spec theatre id `Normandy`). Optional
+(`examples/needs_oar_point_cold_freeflight.yaml`; Spec theatre id `Normandy`).
+Invent/chat may use any offerable theatre; Normandy invent is **free_flight only**
+until place recipes ship. Land/sea domain, intercept spawn, and Channel path clamp
+fail closed or skip off TheChannel. Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
 `manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
@@ -22,7 +25,7 @@ Section menus `#15d`, example `manston_cap_flight_orders.yaml`; optional
 Channel DCS facts
 (airfields, aircraft, radio, weather presets incl. `showers_scattered`) live in packaged YAML under
 `src/dcs_miz_planner/data/` (`era/wwii/`, `shared/`, `theatres/<SpecId>/`). Commander briefs include an offline synthetic
-METAR (`EGMH` + `RMK SIM`) from invent weather — never live meteo APIs.
+METAR (`EGMH` + `RMK SIM` for TheChannel; other theatres omit a fake ICAO) from invent weather — never live meteo APIs.
 Packaged tables are queried via `registry.py`. Local map
 availability is cached in SQLite (`%LOCALAPPDATA%\dcs-miz-planner\inventory.sqlite`);
 refresh with `dcs-miz theatres --refresh` (caches theatres **and** aircraft module

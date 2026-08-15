@@ -134,7 +134,11 @@ def _strike_domains_ok(spec: MissionSpec, strike: Strike) -> bool:
         return True
     candidate = spec.model_copy(update={"strike": strike})
     try:
+        from .channel_domain import DomainUnsupportedTheatre
+
         point_domain = strike_domain_for_spec(candidate)
+    except DomainUnsupportedTheatre:
+        return False
     except (ValueError, RegistryError):
         return False
     return domains <= {point_domain}

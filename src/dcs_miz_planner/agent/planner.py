@@ -24,7 +24,11 @@ from ..memory import (
 )
 from ..models import MissionSpec
 from ..validation import validate_mission_spec
-from .immersion import host_harbour_unit_nudge, host_immersion_repair_nudge
+from .immersion import (
+    host_harbour_unit_nudge,
+    host_immersion_repair_nudge,
+    host_normandy_combat_nudge,
+)
 from .llm import LLMClient, default_tools
 from .path_clamp import try_clamp_land_paths_if_needed
 from .prompts import compose_system_prompt, host_spec_repair_nudge
@@ -211,6 +215,13 @@ def plan_mission(
                     "content": host_spec_repair_nudge(str(exc), rejected_text=resp.content),
                 }
             )
+            continue
+
+        combat_nudge = host_normandy_combat_nudge(spec)
+        if combat_nudge:
+            # Always refuse — independent of harbour/immersion one-shot flags.
+            last_parse_error = "Normandy invent is free_flight only; combat types are refused"
+            messages.append({"role": "user", "content": combat_nudge})
             continue
 
         vresult = validate_mission_spec(spec, inventory=inventory)

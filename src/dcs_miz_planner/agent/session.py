@@ -25,7 +25,11 @@ from ..models import MissionSpec
 from ..tools.research import format_research_host_message, format_research_lines
 from ..tools.surface import list_mission_options, research_guidance
 from ..validation import validate_mission_spec
-from .immersion import host_harbour_unit_nudge, host_immersion_repair_nudge
+from .immersion import (
+    host_harbour_unit_nudge,
+    host_immersion_repair_nudge,
+    host_normandy_combat_nudge,
+)
 from .llm import LLMClient, default_tools
 from .path_clamp import try_clamp_land_paths_if_needed
 from .planner import (
@@ -149,6 +153,18 @@ class PlanSession:
         content = (resp.content or "").strip() or "(no reply)"
         parsed, parse_err = diagnose_mission_spec_parse(resp.content)
         if parsed is not None:
+            combat_nudge = host_normandy_combat_nudge(parsed)
+            if combat_nudge:
+                # Always refuse — never a one-shot flag. Combat must not be captured.
+                self.messages.append({"role": "user", "content": combat_nudge})
+                return SlashResult(
+                    output=(
+                        content + "\n\n[Host] Normandy combat is not inventable yet — "
+                        "commander nudged toward NeedsOarPoint free_flight or TheChannel. "
+                        "Draft NOT captured. Emit free_flight at NeedsOarPoint or switch "
+                        "theatre to TheChannel, then /accept."
+                    )
+                )
             harbour_nudge = host_harbour_unit_nudge(user_text, parsed)
             if harbour_nudge and not getattr(self, "_harbour_nudge_used", False):
                 self._harbour_nudge_used = True
@@ -365,6 +381,13 @@ class PlanSession:
 
     def _accept(self, *, compile_after: bool) -> str:
         spec = self.proposed_spec or self.draft_spec
+        if spec is not None:
+            combat_nudge = host_normandy_combat_nudge(spec)
+            if combat_nudge:
+                return (
+                    "Normandy combat is not inventable yet. Draft NOT written. "
+                    "Emit free_flight at NeedsOarPoint or switch theatre to TheChannel."
+                )
         if spec is None:
             msg = "Nothing to accept — no draft Spec yet."
             if self.last_spec_error:

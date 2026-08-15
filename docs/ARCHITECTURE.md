@@ -103,19 +103,22 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `narrative.py` | Opt-in CAP/intercept/escort/GA pack → materialise zones/triggers (squadron-voice message text); runs before validate/compile | `models`, `agent.voice` |
 | `dynamics.py` | Opt-in play-time Layer B pack (`fixed`/`live`/`choose`/`hybrid` + pools) → typed triggers; XOR with narrative; runs after narrative expand | `models` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules + sound `asset_id` + group life indices/percent); multi-error result | `models`, `registry`, `sounds`, `install` |
-| `data/era/`, `data/shared/`, `data/theatres/<SpecId>/` | Packaged YAML SoT (era WWII units, shared weather/planning, per-theatre airfields) | shipped in wheel via hatch force-include |
+| `channel_domain.py` | Land/sea probe (UK–FR chord) for TheChannel only; fail-closed `domain_unsupported_theatre` otherwise; `airfield_relative_map_point` passes `theatre=` | `models`, `registry`, `theatre_terrain` |
+| `intercept_spawn.py` | Theatre-keyed intercept enemy spawn recipes (TheChannel Hawkinge/Dover literals only) | none |
+| `allowlists.py` | Known skills + country hint; countries from era YAML via registry | `registry` |
+| `data/era/`, `data/shared/`, `data/theatres/<SpecId>/` | Packaged YAML SoT (era WWII units/countries, shared weather/planning, per-theatre airfields) | shipped in wheel via hatch force-include |
 | `data/sounds/` | Curated sound assets (`asset_id` → `.wav`/`.ogg`) for Spec `sound` actions | shipped in wheel via hatch force-include |
-| `registry.py` | Loads packaged YAML (era + shared + theatre walker); lookup API shared by validator/compiler (later agent) | `data/era`, `data/shared`, `data/theatres`, `pyyaml` |
+| `registry.py` | Loads packaged YAML (era + shared + theatre walker); `era_for_theatre` / `list_countries`; lookup API shared by validator/compiler | `data/era`, `data/shared`, `data/theatres`, `pyyaml` |
 | `sounds.py` | Sound-asset registry lookup + path materialization for `.miz` embed | `data/sounds`, `pyyaml` |
 | `reference.py` | Thin compatibility façade over `registry` (legacy constant names) | `registry` |
-| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options + strike units; joins install inventory for theatres **and** aircraft modules (`known` / `installed` / `offerable`; discovered-only never promoted) | `registry`, `install`, stdlib `sqlite3` |
+| `catalog/` | Known `catalog_*` SQLite synced from YAML + Spec enums + planning options + strike units (`era_id` + Channel `theatre_id`); joins install inventory for theatres **and** aircraft modules (`known` / `installed` / `offerable`; discovered-only never promoted) | `registry`, `install`, stdlib `sqlite3` |
 | `memory/` | User prefs, generation history, satisfaction feedback (`user_*` tables; never wiped by catalog sync) | `install.default_db_path`, stdlib `sqlite3` |
 | `tools/` | Agent-facing callables: catalog lookups (`list_strike_targets`, …), `get_mission_spec_schema`, validate/compile, `randomize_mission`, prefs/history/feedback, research_guidance (`focus=mission_design`), `list_installed_campaigns` | `catalog`, `memory`, `validation`, `compiler`, `loader`, `randomize`, `install.campaigns`, `agent/spec_schema` |
 | `briefing.py` | Spec → plain-text Sortie / Description / Blue|Red Task for `.miz` `l10n` (splits commander brief; lazy-imports voice) | `models`, `agent.voice` |
 | `weather_invent.py` | Seeded invent snapshot from Spec weather pattern + date/time | `models`, `registry` |
 | `weather_apply.py` | Apply invent snapshot to PyDCS `Mission.weather` | `weather_invent`, `weather_gallery`, `dcs.weather` |
 | `weather_gallery.py` | Packaged gallery decode + `CloudPreset` resolve (incl. ME-only rainy light ids) | `data/shared/weather_gallery.yaml` |
-| `weather_metar.py` | Offline synthetic METAR from invent snapshot (`EGMH` + `RMK SIM`) | `weather_invent`, `weather_gallery` |
+| `weather_metar.py` | Offline synthetic METAR from invent snapshot (`EGMH` TheChannel-only + `RMK SIM`) | `weather_invent`, `weather_gallery` |
 | `weather_sot.py` | Enum / YAML / planning / compiler weather-id parity sets | `models`, `registry` |
 | `randomize.py` | Seeded Spec→Spec variation (weather/time/geometry/opposition); compiler stays deterministic | `models`, `registry` |
 | `agent/` | NL→Spec planner + interactive `chat` REPL: tool loop, derived Spec shape (`spec_schema`), squadron voice, commander brief, slash cmds (`/accept`, `/briefing`, `/research`, `/catalog`, …), stub/live LLM; host-records generation history | `tools`, `memory`, `validation`, `compiler`, `openai` |

@@ -164,6 +164,8 @@ def try_clamp_land_paths_if_needed(
     registry: ChannelRegistry | None = None,
 ) -> MissionSpec | None:
     """Clamp land paths after domain fail, or when invent path diverges from strike."""
+    if spec.theatre != "TheChannel":
+        return None
     need = bool(
         (errors and errors_are_land_path_domain_only(errors))
         or land_path_diverges_from_strike(spec, registry=registry)

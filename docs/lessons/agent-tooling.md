@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Invent offerable theatres; Normandy free_flight only (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Invent/chat may set Spec theatre from offerable theatres (not
+  TheChannel-only). Normandy invent is **free_flight only** (NeedsOarPoint,
+  SpitfireLFMkIX, `sunny_clear`, UK blue). Combat types refuse with a repair
+  toward NeedsOarPoint or TheChannel. Host chat/planner MUST refuse every turn
+  (never a one-shot `_used` flag that then captures `proposed_spec` or writes YAML;
+  `/accept` must refuse a slipped combat draft). `get_mission_spec_schema` accepts optional
+  `theatre=`; Normandy+combat must not return a Manston skeleton. Path clamp and
+  harbour immersion skip unless `spec.theatre == TheChannel`. Keep family
+  `channel_place` with `meta.theatre: TheChannel` (no Normandy place rows). Strike
+  catalog schema v6: `era_id=wwii`, keep `theatre_id=TheChannel`;
+  `list_strike_targets(theatre="Normandy")` is empty. WWII date realism follows
+  theatre→era from `theatre.yaml`, not `if theatre != TheChannel: skip`.
+- **Code:** `agent/prompts.py`, `agent/spec_schema.py`, `agent/path_clamp.py`,
+  `catalog/store.py` (schema 6), `catalog/sync.py`, `tools/surface.py`,
+  `agent/realism.py`, `data/shared/planning_options.yaml`.
+
 ## Theatre expand: Normandy first; Marianas WWII needs PyDCS (R11) (2026-08-08)
 
 - **Date:** 2026-08-08

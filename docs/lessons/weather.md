@@ -5,6 +5,16 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## METAR ICAO and miz-patch reweather are TheChannel-only (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Synthetic briefing METAR uses station `EGMH` only for theatre
+  `TheChannel`. Normandy briefs keep `NOSIG RMK SIM` but must not emit `EGMH` or
+  invent a Needs Oar Point ICAO. Miz-zip weather patch (`reweather` without a Spec
+  sidecar) is TheChannel-only — do not build a dummy Manston Spec to patch a
+  Normandy `.miz`; fail closed and require the sidecar recompile path.
+- **Code:** `weather_metar.py`, `reweather.py`, `agent/voice.py`.
+
 ## Synthetic METAR + rainy light gallery beyond PyDCS (2026-08-07)
 
 - **Date:** 2026-08-07

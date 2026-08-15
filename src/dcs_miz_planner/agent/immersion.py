@@ -192,6 +192,36 @@ def harbour_prompt_cues(prompt: str) -> bool:
     return bool(_HARBOUR_CUE.search(prompt or ""))
 
 
+_NORMANDY_COMBAT_TYPES = frozenset(
+    {
+        MissionType.INTERCEPT,
+        MissionType.CAP,
+        MissionType.GROUND_ATTACK,
+        MissionType.ESCORT,
+        MissionType.RECON,
+    }
+)
+
+
+def host_normandy_combat_nudge(spec: MissionSpec) -> str | None:
+    """Refuse Normandy combat invent; nudge toward NeedsOarPoint free_flight.
+
+    Callers MUST treat a non-None result as a hard refuse: never capture a draft
+    and never write YAML. Nudging every turn is OK; a one-shot ``_used`` flag is not.
+    """
+    if spec.theatre != "Normandy":
+        return None
+    if spec.mission_type not in _NORMANDY_COMBAT_TYPES:
+        return None
+    return (
+        "[Host] Normandy invent is free_flight only until place recipes exist. "
+        "Emit theatre Normandy, airfield NeedsOarPoint, SpitfireLFMkIX, sunny_clear, "
+        "UK blue — or switch theatre to TheChannel for combat. Do not copy "
+        "channel_place geometry (french coast belts, Hawkinge) onto Normandy. "
+        "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
+    )
+
+
 def host_harbour_unit_nudge(
     prompt: str,
     spec: MissionSpec,
@@ -199,6 +229,8 @@ def host_harbour_unit_nudge(
     registry: ChannelRegistry | None = None,
 ) -> str | None:
     """Nudge when harbour cues conflict with land-domain targets (no unit auto-swap)."""
+    if spec.theatre != "TheChannel":
+        return None
     if not harbour_prompt_cues(prompt):
         return None
     if spec.mission_type not in {MissionType.GROUND_ATTACK, MissionType.RECON}:

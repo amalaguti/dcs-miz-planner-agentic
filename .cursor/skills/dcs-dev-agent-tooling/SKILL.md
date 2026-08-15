@@ -18,11 +18,16 @@ description: >-
 2. Tools return **structured dicts**; no dedicated research CLI required.
 3. Catalog shares `inventory.sqlite` as query layer — Channel YAML remains SoT;
    schema bumps must clear `synced_at`. Strike units are a **curated** YAML shelf
-   (`list_strike_targets`), not an ME/install dump. Before expanding theatres or
+   (`list_strike_targets`), not an ME/install dump. Schema v6: `era_id=wwii` and
+   combat `theatre_id=TheChannel` (do not tag Normandy). `list_strike_targets(theatre="Normandy")`
+   is empty until a target batch ships. Before expanding theatres or
    target shelves, follow [`docs/THEATRE_TARGET_PROMOTE.md`](../../../docs/THEATRE_TARGET_PROMOTE.md)
    (`#8e`). Invent unit/preset cues ≠ geometry — use place recipes + invent path
-   clamp (`#8f`/`#8g`). Trains use `french_coast_rail_corridor` path deltas only —
-   **no** DCS rail-mesh snap (`#8m`).
+   clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
+   `french_coast_rail_corridor` path deltas only —
+   **no** DCS rail-mesh snap (`#8m`). Invent may use offerable theatres; Normandy
+   is free_flight only (NeedsOarPoint). Combat types on Normandy refuse every
+   turn (never a one-shot nudge that then captures/writes the Spec).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent; soft-warn missing aircraft modules.

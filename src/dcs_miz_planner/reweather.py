@@ -56,6 +56,18 @@ def reweather_mission(
     return _reweather_via_miz_patch(miz, preset, seed=seed)
 
 
+def _miz_theatre_id(miz: Path) -> str | None:
+    import zipfile
+
+    try:
+        with zipfile.ZipFile(miz) as z:
+            if "theatre" not in z.namelist():
+                return None
+            return z.read("theatre").decode("utf-8").strip() or None
+    except (OSError, zipfile.BadZipFile):
+        return None
+
+
 def _reweather_via_spec(
     miz: Path,
     spec_file: Path,
@@ -109,6 +121,13 @@ def _reweather_via_miz_patch(
     from dcs.mission import Mission
 
     from .theatre_terrain import TheatreTerrainError, terrain_for_theatre
+
+    theatre = _miz_theatre_id(miz)
+    if theatre != "TheChannel":
+        raise ReweatherError(
+            "Miz-patch reweather is only supported for theatre TheChannel "
+            f"(got {theatre!r}). Provide a Spec sidecar to recompile."
+        )
 
     try:
         terrain = terrain_for_theatre("TheChannel")

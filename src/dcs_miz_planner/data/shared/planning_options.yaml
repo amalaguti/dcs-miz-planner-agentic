@@ -942,6 +942,7 @@ options:
       Channel-crossing strikes.
     support: advisory
     meta:
+      theatre: TheChannel
       airfield: Manston
       role: home_base
       mission_types: [free_flight, intercept, cap, ground_attack, escort]
@@ -957,6 +958,7 @@ options:
       invent long free routes or mid-Channel path distances.
     support: advisory
     meta:
+      theatre: TheChannel
       domain: land
       geometry_hint: inland_near_dunkirk
       related_classes: [soft_vehicles, halftracks_apc, armor, troops, aaa_guns, radar_c3]
@@ -987,6 +989,7 @@ options:
       rail-mesh snap. Land domain only.
     support: advisory
     meta:
+      theatre: TheChannel
       domain: land
       geometry_hint: inland_rail_near_dunkirk
       related_classes: [trains]
@@ -1016,6 +1019,7 @@ options:
       Also fits recon contacts (observe). Copy strike/AOI bearing+distance from meta.
     support: advisory
     meta:
+      theatre: TheChannel
       domain: sea
       geometry_hint: mid_channel
       related_classes: [sea_craft]
@@ -1046,6 +1050,7 @@ options:
       Use harbour_static + static motion. Copy strike geometry from meta.
     support: advisory
     meta:
+      theatre: TheChannel
       domain: sea
       geometry_hint: coastal_harbour
       related_classes: [sea_craft]

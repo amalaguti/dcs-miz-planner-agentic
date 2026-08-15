@@ -85,13 +85,15 @@ def list_strike_targets(
     domain: str | None = None,
     class_id: str | None = None,
     q: str | None = None,
+    theatre: str | None = None,
     db_path: Path | str | None = None,
 ) -> dict[str, Any]:
     """List known Channel strike/recon units from catalog SQLite (after sync).
 
     Optional filters: ``domain`` (``land``|``sea``), ``class_id`` (strike_target_class
-    id), and case-insensitive substring ``q`` on unit_id/label. Does not read
-    registry YAML or PyDCS at call time.
+    id), case-insensitive substring ``q`` on unit_id/label, and ``theatre``.
+    Does not read registry YAML or PyDCS at call time. Strike rows stay tagged
+    TheChannel until a Normandy target batch ships.
     """
     domain_f = (domain or "").strip().casefold() or None
     if domain_f is not None and domain_f not in {"land", "sea"}:
@@ -102,6 +104,7 @@ def list_strike_targets(
         )
     class_f = (class_id or "").strip() or None
     needle = (q or "").strip().casefold() or None
+    theatre_f = (theatre or "").strip() or None
 
     service = _catalog(db_path)
     rows = service.list_rows("strike_units")
@@ -109,6 +112,8 @@ def list_strike_targets(
     for row in rows:
         row_domain = str(row["domain"])
         if domain_f is not None and row_domain.casefold() != domain_f:
+            continue
+        if theatre_f is not None and str(row["theatre_id"]) != theatre_f:
             continue
         class_ids = row.get("class_ids")
         if not isinstance(class_ids, list):
@@ -129,6 +134,7 @@ def list_strike_targets(
                 "domain": row_domain,
                 "class_ids": class_ids_s,
                 "theatre": str(row["theatre_id"]),
+                "era_id": str(row.get("era_id") or ""),
             }
         )
     return ok_result(units=units)
@@ -185,7 +191,10 @@ def list_mission_options(
     )
 
 
-def get_mission_spec_schema(mission_type: str) -> dict[str, Any]:
+def get_mission_spec_schema(
+    mission_type: str,
+    theatre: str | None = None,
+) -> dict[str, Any]:
     """Return a compact derived Mission Spec example + notes for ``mission_type``."""
     # Lazy import: avoid tools ↔ agent package init cycles.
     from ..agent.spec_schema import build_spec_schema, supported_mission_types
@@ -197,13 +206,21 @@ def get_mission_spec_schema(mission_type: str) -> dict[str, Any]:
             code="invalid_mission_type",
             supported=list(supported_mission_types()),
         )
+    theatre_id = (theatre or "").strip() or None
     try:
-        view = build_spec_schema(key)
+        view = build_spec_schema(key, theatre=theatre_id)
     except ValueError as exc:
+        msg = str(exc)
+        code = (
+            "combat_unsupported_theatre"
+            if "not supported for theatre" in msg
+            else "unsupported_mission_type"
+        )
         return err_result(
-            str(exc),
-            code="unsupported_mission_type",
+            msg,
+            code=code,
             mission_type=key,
+            theatre=theatre_id,
             supported=list(supported_mission_types()),
         )
     except FileNotFoundError as exc:
