@@ -5,6 +5,7 @@ from __future__ import annotations
 from dcs_miz_planner.agent.spec_schema import (
     build_spec_schema,
     infer_mission_type,
+    infer_theatre,
     supported_mission_types,
 )
 from dcs_miz_planner.agent.tool_bridge import TOOL_DEFINITIONS, dispatch_tool
@@ -34,6 +35,17 @@ def test_unknown_mission_type_raises() -> None:
 def test_infer_mission_type_from_rejected_json() -> None:
     assert infer_mission_type('{"mission_type": "cap", "theatre": "TheChannel"}') == "cap"
     assert infer_mission_type("no json here") == "free_flight"
+
+
+def test_infer_theatre_from_rejected_json() -> None:
+    assert infer_theatre('{"mission_type": "cap", "theatre": "Normandy"}') == "Normandy"
+    assert infer_theatre('{"mission_type": "cap", "theatre": "TheChannel"}') == "TheChannel"
+    assert infer_theatre('{"mission_type": "cap"}') is None
+    assert infer_theatre("no json here") is None
+    assert (
+        infer_theatre('{"mission_type": "cap", "player": {"airfield": "NeedsOarPoint"}}')
+        == "Normandy"
+    )
 
 
 def test_get_mission_spec_schema_tool() -> None:

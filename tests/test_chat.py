@@ -160,6 +160,43 @@ def test_host_spec_repair_nudge_includes_derived_example() -> None:
     assert "DO NOT emit" in nudge
 
 
+def test_host_spec_repair_nudge_normandy_cap_not_manston() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    nudge = host_spec_repair_nudge(
+        "cap.duration_min Field required",
+        rejected_text='{"mission_type": "cap", "theatre": "Normandy"}',
+    )
+    assert '"theatre": "Normandy"' in nudge or '"theatre":"Normandy"' in nudge
+    assert '"airfield": "NeedsOarPoint"' in nudge or '"airfield":"NeedsOarPoint"' in nudge
+    assert '"bearing_deg": 180' in nudge or '"bearing_deg":180' in nudge
+    assert '"airfield": "Manston"' not in nudge and '"airfield":"Manston"' not in nudge
+
+
+def test_host_spec_repair_nudge_theatre_kwarg_without_json() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    nudge = host_spec_repair_nudge(
+        "Validation failed:\n[]",
+        mission_type="cap",
+        theatre="Normandy",
+    )
+    assert '"airfield": "NeedsOarPoint"' in nudge or '"airfield":"NeedsOarPoint"' in nudge
+    assert '"airfield": "Manston"' not in nudge and '"airfield":"Manston"' not in nudge
+
+
+def test_host_spec_repair_nudge_needs_oar_point_implies_normandy() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    nudge = host_spec_repair_nudge(
+        "theatre Field required",
+        rejected_text='{"mission_type": "cap", "player": {"airfield": "NeedsOarPoint"}}',
+    )
+    assert '"airfield": "NeedsOarPoint"' in nudge or '"airfield":"NeedsOarPoint"' in nudge
+    assert '"bearing_deg": 180' in nudge or '"bearing_deg":180' in nudge
+    assert '"airfield": "Manston"' not in nudge and '"airfield":"Manston"' not in nudge
+
+
 def test_host_spec_repair_nudge_domain_mismatch_includes_geometry() -> None:
     from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
 

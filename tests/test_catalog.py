@@ -187,6 +187,8 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert by_af["Manston"].theatre_id == "TheChannel"
     assert by_af["NeedsOarPoint"].theatre_id == "Normandy"
     assert by_af["NeedsOarPoint"].airdrome_id == 28
+    assert by_af["FordAF"].theatre_id == "Normandy"
+    assert by_af["FordAF"].airdrome_id == 31
     assert "SpitfireLFMkIX" in {a.aircraft_id for a in snap.aircraft}
     assert "sunny_clear" in {w.name for w in snap.weather_presets}
     assert "dawn_clear" in {w.name for w in snap.weather_presets}

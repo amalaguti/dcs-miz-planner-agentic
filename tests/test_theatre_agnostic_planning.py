@@ -36,7 +36,11 @@ from dcs_miz_planner.intercept_spawn import (
 from dcs_miz_planner.loader import load_mission_spec
 from dcs_miz_planner.registry import get_channel_registry
 from dcs_miz_planner.reweather import ReweatherError, reweather_mission
-from dcs_miz_planner.tools.surface import get_mission_spec_schema, list_strike_targets
+from dcs_miz_planner.tools.surface import (
+    get_mission_spec_schema,
+    list_mission_options,
+    list_strike_targets,
+)
 from dcs_miz_planner.validation import validate_mission_spec
 from dcs_miz_planner.weather_invent import ensure_weather_seed, resolve_weather_snapshot
 from dcs_miz_planner.weather_metar import format_synthetic_metar
@@ -44,14 +48,14 @@ from dcs_miz_planner.weather_metar import format_synthetic_metar
 REPO = Path(__file__).resolve().parents[1]
 INTERCEPT = REPO / "examples" / "manston_dawn_intercept.yaml"
 GA = REPO / "examples" / "manston_ground_attack.yaml"
-CAP = REPO / "examples" / "manston_cap.yaml"
 NORMANDY_FF = REPO / "examples" / "needs_oar_point_cold_freeflight.yaml"
+NORMANDY_CAP = REPO / "examples" / "needs_oar_point_cap.yaml"
 MANSTON_FF = REPO / "examples" / "manston_cold_freeflight.yaml"
 
 
-def _normandy_cap_json() -> str:
-    """Validating Normandy CAP Spec JSON (airfield-relative — not fail-closed in validate)."""
-    spec = load_mission_spec(CAP).model_copy(
+def _normandy_intercept_json() -> str:
+    """Normandy intercept JSON (Channel geometry copied onto NeedsOarPoint player)."""
+    spec = load_mission_spec(INTERCEPT).model_copy(
         update={"theatre": "Normandy", "player": load_mission_spec(NORMANDY_FF).player}
     )
     return spec.model_dump_json()
@@ -138,8 +142,17 @@ def test_channel_place_tagged_thechannel() -> None:
     assert places
     belt = next(o for o in places if o.id == "french_coast_strike_belt")
     assert belt.meta.get("theatre") == "TheChannel"
+    home = next(o for o in places if o.id == "needs_oar_point_home")
+    cap = next(o for o in places if o.id == "cherbourg_channel_cap")
+    assert home.meta.get("theatre") == "Normandy"
+    assert cap.meta.get("theatre") == "Normandy"
+    assert cap.meta.get("cap_bearing_deg") == 180
+    assert cap.meta.get("cap_distance_km") == 63
     for opt in places:
-        assert opt.meta.get("theatre") == "TheChannel"
+        if opt.id in {"needs_oar_point_home", "cherbourg_channel_cap"}:
+            assert opt.meta.get("theatre") == "Normandy"
+        else:
+            assert opt.meta.get("theatre") == "TheChannel"
 
 
 def test_schema_theatre_normandy_free_flight() -> None:
@@ -160,6 +173,14 @@ def test_schema_theatre_normandy_combat_no_manston_skeleton() -> None:
     assert tool["code"] == "combat_unsupported_theatre"
     blob = json.dumps(tool)
     assert "Manston" not in blob
+    cap = build_spec_schema("cap", theatre="Normandy")
+    assert cap.example["theatre"] == "Normandy"
+    assert cap.example["player"]["airfield"] == "NeedsOarPoint"
+    assert cap.example["player"]["airfield"] != "Manston"
+    assert cap.example["cap"]["bearing_deg"] == 180
+    assert cap.example["cap"]["distance_km"] == 63
+    assert cap.example["cap"]["bearing_deg"] != 135
+    assert cap.example["cap"]["distance_km"] != 25
 
 
 def test_stub_default_stays_manston() -> None:
@@ -179,19 +200,20 @@ def test_normandy_combat_invent_nudge() -> None:
     assert "NeedsOarPoint" in nudge
     ff = load_mission_spec(NORMANDY_FF)
     assert host_normandy_combat_nudge(ff) is None
+    assert host_normandy_combat_nudge(load_mission_spec(NORMANDY_CAP)) is None
 
 
 def test_chat_second_normandy_combat_json_not_captured(tmp_path: Path) -> None:
-    """Combat refuse is every turn — a second CAP JSON must not become the draft."""
+    """Combat refuse is every turn — a second intercept JSON must not become the draft."""
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    cap_json = _normandy_cap_json()
+    intercept_json = _normandy_intercept_json()
     session = PlanSession(
         llm=StubLLM(
             script=[
-                LLMResponse(content=cap_json),
-                LLMResponse(content=cap_json),
+                LLMResponse(content=intercept_json),
+                LLMResponse(content=intercept_json),
             ]
         ),
         output_path=out,
@@ -199,11 +221,11 @@ def test_chat_second_normandy_combat_json_not_captured(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    first = session.handle_line("Normandy CAP")
+    first = session.handle_line("Normandy intercept")
     assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
     assert session.proposed_spec is None
     assert session.draft_spec is None
-    second = session.handle_line("still a CAP please")
+    second = session.handle_line("still an intercept please")
     assert "Draft NOT captured" in second.output or "not inventable" in second.output.lower()
     assert session.proposed_spec is None
     assert session.draft_spec is None
@@ -213,7 +235,7 @@ def test_chat_second_normandy_combat_json_not_captured(tmp_path: Path) -> None:
 
 
 def test_accept_refuses_slipped_normandy_combat_draft(tmp_path: Path) -> None:
-    """/accept must not write a Normandy combat draft that slipped into proposed_spec."""
+    """/accept must not write a Normandy intercept draft that slipped into proposed_spec."""
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
@@ -224,7 +246,7 @@ def test_accept_refuses_slipped_normandy_combat_draft(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    slipped = load_mission_spec(CAP).model_copy(
+    slipped = load_mission_spec(INTERCEPT).model_copy(
         update={"theatre": "Normandy", "player": load_mission_spec(NORMANDY_FF).player}
     )
     session.proposed_spec = slipped
@@ -236,16 +258,16 @@ def test_accept_refuses_slipped_normandy_combat_draft(tmp_path: Path) -> None:
 
 
 def test_planner_second_normandy_combat_not_written(tmp_path: Path) -> None:
-    """After one combat nudge, a still-combat Spec must not be written."""
-    cap_json = _normandy_cap_json()
+    """After one combat nudge, a still-intercept Spec must not be written."""
+    intercept_json = _normandy_intercept_json()
     out = tmp_path / "planned.yaml"
     result = plan_mission(
-        "Normandy CAP",
+        "Normandy intercept",
         out,
         llm=StubLLM(
             script=[
-                LLMResponse(content=cap_json),
-                LLMResponse(content=cap_json),
+                LLMResponse(content=intercept_json),
+                LLMResponse(content=intercept_json),
             ]
         ),
         inventory=_inv(),
@@ -255,6 +277,78 @@ def test_planner_second_normandy_combat_not_written(tmp_path: Path) -> None:
     assert result.ok is False
     assert not out.exists()
     assert result.spec is None or host_normandy_combat_nudge(result.spec) is not None
+
+
+def test_chat_normandy_cap_is_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    cap_json = load_mission_spec(NORMANDY_CAP).model_dump_json()
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=cap_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    session.handle_line("Normandy CAP toward Cherbourg")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "cap"
+    assert session.proposed_spec.player.airfield == "NeedsOarPoint"
+    assert session.proposed_spec.theatre == "Normandy"
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "cap"
+    assert written.player.airfield == "NeedsOarPoint"
+
+
+def test_planner_normandy_cap_is_written(tmp_path: Path) -> None:
+    cap_json = load_mission_spec(NORMANDY_CAP).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Normandy CAP toward Cherbourg",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=cap_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Normandy"
+    assert result.spec.mission_type.value == "cap"
+    assert result.spec.player.airfield == "NeedsOarPoint"
+    assert result.spec.cap is not None
+    assert result.spec.cap.bearing_deg == 180
+    assert result.spec.cap.distance_km == 63
+
+
+def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    channel = list_mission_options(theatre="TheChannel", db_path=db)
+    assert channel["ok"] is True
+    channel_ids = {o["id"] for o in channel["options"] if o["family"] == "channel_place"}
+    assert "cherbourg_channel_cap" not in channel_ids
+    assert "needs_oar_point_home" not in channel_ids
+    assert "manston_home" in channel_ids
+    assert "french_coast_strike_belt" in channel_ids
+    assert any(o["family"] == "weather" for o in channel["options"])
+    normandy = list_mission_options(theatre="Normandy", db_path=db)
+    assert normandy["ok"] is True
+    normandy_ids = {o["id"] for o in normandy["options"] if o["family"] == "channel_place"}
+    assert "manston_home" not in normandy_ids
+    assert "french_coast_strike_belt" not in normandy_ids
+    assert "needs_oar_point_home" in normandy_ids
+    assert "cherbourg_channel_cap" in normandy_ids
+    all_rows = list_mission_options(db_path=db)
+    all_ids = {o["id"] for o in all_rows["options"] if o["family"] == "channel_place"}
+    assert "manston_home" in all_ids
+    assert "cherbourg_channel_cap" in all_ids
 
 
 def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:

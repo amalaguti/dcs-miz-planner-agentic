@@ -7,6 +7,7 @@ from .spec_schema import (
     build_spec_schema,
     format_spec_schema_fragment,
     infer_mission_type,
+    infer_theatre,
 )
 from .voice import DEFAULT_VOICE, ops_brief_rules, persona_pack, resolve_voice
 
@@ -17,10 +18,11 @@ You produce Mission Spec JSON only — never DCS Lua or .miz contents.
 Rules:
 - Theatre: any offerable theatre (known ∧ available ∧ planner_supported). Do not
   invent theatre ids. TheChannel supports all six mission types. Normandy invent is
-  free_flight only (NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue). Refuse
-  intercept/cap/ground_attack/escort/recon on Normandy — repair toward NeedsOarPoint
-  free_flight or switch theatre to TheChannel. Do not copy channel_place geometry
-  (french coast belts, Hawkinge/Dunkirk) onto Normandy.
+  free_flight or CAP (NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue; CAP
+  station 180°/63 km toward Cherbourg — not Manston 135/25). Refuse
+  intercept/ground_attack/escort/recon on Normandy — repair toward NeedsOarPoint
+  free_flight or CAP, or switch theatre to TheChannel. Do not copy channel_place
+  geometry (french coast belts, Hawkinge/Dunkirk) onto Normandy.
 - Mission types allowed: free_flight, intercept, cap, ground_attack, escort, recon.
 - Call get_user_prefs early. When the user leaves a knob unspecified, prefer stored
   prefs (airfield, aircraft, weather, start type, etc.) over inventing defaults.
@@ -234,27 +236,32 @@ def host_spec_repair_nudge(
     *,
     rejected_text: str | None = None,
     mission_type: str | None = None,
+    theatre: str | None = None,
 ) -> str:
     """User-role message injected after invalid Spec JSON so the model can repair."""
     mt = mission_type or infer_mission_type(rejected_text)
+    theatre = (theatre or "").strip() or infer_theatre(rejected_text)
     try:
-        fragment = format_spec_schema_fragment(build_spec_schema(mt))
+        fragment = format_spec_schema_fragment(build_spec_schema(mt, theatre=theatre))
     except (ValueError, FileNotFoundError, OSError):
-        fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
+        fallback_mt = "free_flight"
+        try:
+            fragment = format_spec_schema_fragment(build_spec_schema(fallback_mt, theatre=theatre))
+        except (ValueError, FileNotFoundError, OSError):
+            fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
     geometry_hint = ""
     err_l = (parse_err or "").lower()
     if "domain_unsupported_theatre" in err_l or "intercept_unsupported_theatre" in err_l:
         geometry_hint = (
             "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
-            "For Normandy, emit free_flight at NeedsOarPoint (SpitfireLFMkIX, sunny_clear, "
-            "UK blue) or switch theatre to TheChannel for combat. Do not copy "
-            "french_coast / Hawkinge geometry onto Normandy.\n"
+            "For Normandy, emit free_flight or CAP at NeedsOarPoint (SpitfireLFMkIX, "
+            "sunny_clear, UK blue; CAP 180°/63 km) or switch theatre to TheChannel "
+            "for intercept/GA/escort/recon. Do not copy french_coast / Hawkinge "
+            "geometry onto Normandy.\n"
         )
-        mt = "free_flight"
+        schema_mt = "cap" if mt == "cap" else "free_flight"
         try:
-            fragment = format_spec_schema_fragment(
-                build_spec_schema("free_flight", theatre="Normandy")
-            )
+            fragment = format_spec_schema_fragment(build_spec_schema(schema_mt, theatre="Normandy"))
         except (ValueError, FileNotFoundError, OSError):
             fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
     elif "motion_domain_mismatch" in err_l or "strike_domain_mismatch" in err_l:

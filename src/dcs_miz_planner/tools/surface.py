@@ -142,9 +142,16 @@ def list_strike_targets(
 
 def list_mission_options(
     *,
+    theatre: str | None = None,
     db_path: Path | str | None = None,
 ) -> dict[str, Any]:
-    """Return known planning enums, enriched options, and offerable theatres."""
+    """Return known planning enums, enriched options, and offerable theatres.
+
+    When ``theatre`` is set, ``channel_place`` rows whose ``meta.theatre`` does
+    not match are omitted. Other families pass through. Omitted ``theatre``
+    returns all rows.
+    """
+    theatre_f = (theatre or "").strip() or None
     service = _catalog(db_path)
     snap = service.ensure_synced()
     theatres = service.list_theatres(include_discovered=True)
@@ -168,6 +175,12 @@ def list_mission_options(
             meta = {}
         if not isinstance(meta, dict):
             meta = {}
+        if (
+            theatre_f is not None
+            and opt.family == "channel_place"
+            and str(meta.get("theatre") or "") != theatre_f
+        ):
+            continue
         options.append(
             {
                 "family": opt.family,

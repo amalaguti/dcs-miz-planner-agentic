@@ -220,7 +220,9 @@ def plan_mission(
         combat_nudge = host_normandy_combat_nudge(spec)
         if combat_nudge:
             # Always refuse — independent of harbour/immersion one-shot flags.
-            last_parse_error = "Normandy invent is free_flight only; combat types are refused"
+            last_parse_error = (
+                "Normandy invent is free_flight or CAP; intercept/GA/escort/recon are refused"
+            )
             messages.append({"role": "user", "content": combat_nudge})
             continue
 
@@ -337,6 +339,8 @@ def plan_mission(
                 "content": host_spec_repair_nudge(
                     "Validation failed:\n" + json.dumps(list(errors), indent=2),
                     mission_type=spec.mission_type.value,
+                    theatre=spec.theatre,
+                    rejected_text=spec.model_dump_json(),
                 ),
             }
         )

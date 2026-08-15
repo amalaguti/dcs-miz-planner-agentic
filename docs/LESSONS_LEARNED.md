@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-15 | [Curated Normandy airfields; FordAF is not Ford_AF](lessons/channel-ids.md#curated-normandy-airfields-fordaf-is-not-ford_af-2026-08-15) | `channel-ids` |
+| 2026-08-15 | [Normandy invent is free_flight or CAP](lessons/agent-tooling.md#normandy-invent-is-free_flight-or-cap-2026-08-15) | `agent-tooling` |
 | 2026-08-15 | [Theatre-keyed intercept and domain (fail closed off TheChannel)](lessons/channel-ids.md#theatre-keyed-intercept-and-domain-fail-closed-off-thechannel) | `channel-ids` |
 | 2026-08-15 | [METAR ICAO and miz-patch reweather are TheChannel-only](lessons/weather.md#metar-icao-and-miz-patch-reweather-are-thechannel-only-2026-08-15) | `weather` |
 | 2026-08-15 | [Invent offerable theatres; Normandy free_flight only](lessons/agent-tooling.md#invent-offerable-theatres-normandy-free_flight-only-2026-08-15) | `agent-tooling` |

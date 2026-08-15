@@ -195,7 +195,6 @@ def harbour_prompt_cues(prompt: str) -> bool:
 _NORMANDY_COMBAT_TYPES = frozenset(
     {
         MissionType.INTERCEPT,
-        MissionType.CAP,
         MissionType.GROUND_ATTACK,
         MissionType.ESCORT,
         MissionType.RECON,
@@ -204,7 +203,7 @@ _NORMANDY_COMBAT_TYPES = frozenset(
 
 
 def host_normandy_combat_nudge(spec: MissionSpec) -> str | None:
-    """Refuse Normandy combat invent; nudge toward NeedsOarPoint free_flight.
+    """Refuse Normandy intercept/GA/escort/recon; CAP and free_flight are allowed.
 
     Callers MUST treat a non-None result as a hard refuse: never capture a draft
     and never write YAML. Nudging every turn is OK; a one-shot ``_used`` flag is not.
@@ -214,10 +213,11 @@ def host_normandy_combat_nudge(spec: MissionSpec) -> str | None:
     if spec.mission_type not in _NORMANDY_COMBAT_TYPES:
         return None
     return (
-        "[Host] Normandy invent is free_flight only until place recipes exist. "
-        "Emit theatre Normandy, airfield NeedsOarPoint, SpitfireLFMkIX, sunny_clear, "
-        "UK blue — or switch theatre to TheChannel for combat. Do not copy "
-        "channel_place geometry (french coast belts, Hawkinge) onto Normandy. "
+        "[Host] Normandy invent is free_flight or CAP at NeedsOarPoint. "
+        "Refuse intercept/ground_attack/escort/recon — emit free_flight or CAP "
+        "(station 180°/63 km toward Cherbourg, not Manston 135/25) or switch "
+        "theatre to TheChannel. Do not copy channel_place geometry (french coast "
+        "belts, Hawkinge) onto Normandy. "
         "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
     )
 

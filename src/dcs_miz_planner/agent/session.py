@@ -159,9 +159,10 @@ class PlanSession:
                 self.messages.append({"role": "user", "content": combat_nudge})
                 return SlashResult(
                     output=(
-                        content + "\n\n[Host] Normandy combat is not inventable yet — "
-                        "commander nudged toward NeedsOarPoint free_flight or TheChannel. "
-                        "Draft NOT captured. Emit free_flight at NeedsOarPoint or switch "
+                        content
+                        + "\n\n[Host] Normandy intercept/GA/escort/recon is not inventable — "
+                        "commander nudged toward NeedsOarPoint free_flight or CAP, or TheChannel. "
+                        "Draft NOT captured. Emit free_flight or CAP at NeedsOarPoint or switch "
                         "theatre to TheChannel, then /accept."
                     )
                 )
@@ -385,8 +386,8 @@ class PlanSession:
             combat_nudge = host_normandy_combat_nudge(spec)
             if combat_nudge:
                 return (
-                    "Normandy combat is not inventable yet. Draft NOT written. "
-                    "Emit free_flight at NeedsOarPoint or switch theatre to TheChannel."
+                    "Normandy intercept/GA/escort/recon is not inventable. Draft NOT written. "
+                    "Emit free_flight or CAP at NeedsOarPoint or switch theatre to TheChannel."
                 )
         if spec is None:
             msg = "Nothing to accept — no draft Spec yet."

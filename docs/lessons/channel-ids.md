@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Curated Normandy airfields; FordAF is not Ford_AF (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Packaged Normandy airfields are eight curated keys from
+  `Normandy.airport_list()`, not all 38 fields. Spec key **`FordAF`** = 31
+  (PyDCS name **`Ford_AF`** — do not use the underscore in Spec YAML).
+  `Maupertus` = 4 on Normandy is **not** Channel Abbeville (also id 4 on
+  TheChannel). Lookup stays theatre-scoped. Keys: NeedsOarPoint 28, Chailey 27,
+  Funtington 29, Tangmere 30, FordAF 31, Maupertus 4, SaintPierreduMont 1
+  (PyDCS “Saint Pierre du Mont”), Carpiquet 19.
+- **Code:** `data/theatres/Normandy/airfields.yaml`, `registry.airdrome_id`.
+
 ## Theatre-keyed intercept and domain (fail closed off TheChannel)
 
 - **Date:** 2026-08-15

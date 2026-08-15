@@ -224,7 +224,7 @@ flowchart TB
 | Rescan install | `cli._theatres_cmd` (`--refresh`) → `InventoryService.refresh` → `probe.probe_installations` + `aircraft_modules.harvest_aircraft_modules` → `InventoryStore.replace` |
 | Read cache | `InventoryService.get` / `has_cache`; `CatalogService.ensure_synced` |
 | Join list | `CatalogService.list_theatres` / `list_aircraft` → `join_theatre_views` / `join_aircraft_views` → `TheatreAvailabilityView` / `AircraftAvailabilityView` |
-| Agent lookups | `tools.surface.get_aircraft_details`, `list_mission_options`, `list_strike_targets`, `find_airfield` (known catalog; not discovered-only) |
+| Agent lookups | `tools.surface.get_aircraft_details`, `list_mission_options` (optional `theatre=` filters `channel_place` by `meta.theatre`), `list_strike_targets`, `find_airfield` (known catalog; not discovered-only) |
 | Missing known pack | `aircraft_modules.missing_aircraft_module_messages` (validate soft-warn) |
 | Chat host summary | `agent.session.PlanSession._catalog` → `list_mission_options` (offerable theatres + known aircraft ids) |
 

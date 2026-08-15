@@ -6,11 +6,14 @@ import zipfile
 from pathlib import Path
 
 from fixtures_support import (
+    NORMANDY_CAP_EXAMPLE_SPEC,
+    NORMANDY_CAP_MISSION_CONTRACTS,
     NORMANDY_EXAMPLE_SPEC,
     NORMANDY_MISSION_CONTRACTS,
     REQUIRED_MEMBERS,
     channel_available_inventory,
     compile_needs_oar_point,
+    compile_needs_oar_point_cap,
 )
 
 from dcs_miz_planner.loader import load_mission_spec
@@ -41,4 +44,24 @@ def test_compile_needs_oar_point_contracts(tmp_path: Path) -> None:
         assert "Normandy" in theatre
         mission = zf.read("mission").decode("utf-8")
         for token in NORMANDY_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+
+
+def test_validate_needs_oar_point_cap() -> None:
+    spec = load_mission_spec(NORMANDY_CAP_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_needs_oar_point_cap_contracts(tmp_path: Path) -> None:
+    out = compile_needs_oar_point_cap(tmp_path / "needs_oar_point_cap.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Normandy" in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in NORMANDY_CAP_MISSION_CONTRACTS:
             assert token in mission, f"missing mission contract {token}"

@@ -67,12 +67,23 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "meta includes strike_bearing_deg/strike_distance_km (and aoi_*) recipes "
                 "plus french_coast path_point_deltas for short land paths — copy those "
                 "for GA/recon geometry. Harbour/dock → coastal_harbour + sea units only. "
-                "For targets[] invent: call this first (preferred_motion / "
+                "Pass theatre so Channel invent does not copy Normandy places (and vice "
+                "versa). For targets[] invent: call this first (preferred_motion / "
                 "preferred_ai_preset / cues / geometry), then list_strike_targets "
                 "(domain=sea for harbour), then emit allowlisted unit + motion + "
                 "ai_preset only — no free-form ME Opt*."
             ),
-            "parameters": {"type": "object", "properties": {}},
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "theatre": {
+                        "type": "string",
+                        "description": (
+                            "Optional theatre id; filters channel_place by meta.theatre"
+                        ),
+                    },
+                },
+            },
         },
     },
     {
@@ -146,7 +157,8 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "Get a compact Mission Spec JSON example plus notes/anti-patterns for a "
                 "mission_type (free_flight, intercept, cap, ground_attack, escort, or recon). "
                 "Optional theatre: TheChannel uses Manston examples; Normandy free_flight "
-                "uses NeedsOarPoint; Normandy combat is unsupported. Call before emitting Spec JSON."
+                "or CAP uses NeedsOarPoint; Normandy intercept/GA/escort/recon is "
+                "unsupported. Call before emitting Spec JSON."
             ),
             "parameters": {
                 "type": "object",
@@ -431,7 +443,11 @@ def dispatch_tool(
     if name == "get_aircraft_details":
         return get_aircraft_details(str(args.get("aircraft_id", "")), db_path=db_path)
     if name == "list_mission_options":
-        return list_mission_options(db_path=db_path)
+        theatre = args.get("theatre")
+        return list_mission_options(
+            theatre=str(theatre) if theatre else None,
+            db_path=db_path,
+        )
     if name == "list_strike_targets":
         return list_strike_targets(
             domain=args.get("domain"),

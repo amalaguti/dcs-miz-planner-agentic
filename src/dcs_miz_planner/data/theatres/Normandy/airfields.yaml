@@ -1,4 +1,13 @@
 # Curated Spec airfield key -> DCS airdromeId for theatre Normandy.
-# NeedsOarPoint = PyDCS Normandy airport "Needs Oar Point" (airdromeId 28).
+# Verified from PyDCS Normandy.airport_list(); do not dump all 38 fields.
+# PyDCS names: "Needs Oar Point", "Chailey", "Funtington", "Tangmere",
+# "Ford_AF" (Spec key FordAF), "Maupertus", "Saint Pierre du Mont", "Carpiquet".
 airfields:
-  NeedsOarPoint: 28
+  NeedsOarPoint: 28 # Needs Oar Point
+  Chailey: 27 # Chailey
+  Funtington: 29 # Funtington
+  Tangmere: 30 # Tangmere
+  FordAF: 31 # Ford_AF
+  Maupertus: 4 # Maupertus
+  SaintPierreduMont: 1 # Saint Pierre du Mont
+  Carpiquet: 19 # Carpiquet

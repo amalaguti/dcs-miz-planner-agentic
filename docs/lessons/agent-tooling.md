@@ -5,6 +5,24 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Normandy invent is free_flight or CAP (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Normandy invent/chat may emit **free_flight or CAP** at
+  NeedsOarPoint (CAP station 180°/63 km from `cherbourg_channel_cap`, not
+  Manston 135/25). Intercept / ground_attack / escort / recon still refuse
+  **every turn** (never capture or write). `list_mission_options(theatre=)`
+  filters `channel_place` by `meta.theatre` so Channel invent cannot copy
+  Cherbourg geometry. Schema `theatre=Normandy` + `cap` loads
+  `needs_oar_point_cap.yaml`. Host repair (`host_spec_repair_nudge`) MUST
+  infer theatre from rejected JSON and pass it to `build_spec_schema` —
+  omitting theatre injects the Manston CAP example (135°/25 km) onto a
+  Normandy CAP parse/validation failure. The one-shot planner validation
+  repair MUST pass `theatre=spec.theatre` (and the Spec JSON) into that
+  nudge — `mission_type` alone is not enough.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `agent/prompts.py`,
+  `tools/surface.py`, `data/shared/planning_options.yaml`.
+
 ## Invent offerable theatres; Normandy free_flight only (2026-08-15)
 
 - **Date:** 2026-08-15

@@ -25,7 +25,10 @@ description: >-
    `data/era/wwii/aircraft_failures.yaml`.
 6. **Normandy 2.0** Spec/inventory id is **`Normandy`**. Airfield lookup is
    theatre-scoped (`airdrome_id(name, theatre=)`); folder names under
-   `data/theatres/` **are** Spec ids. Curated key `NeedsOarPoint` = 28.
+   `data/theatres/` **are** Spec ids. Curated keys: `NeedsOarPoint` = 28,
+   `Chailey` = 27, `Funtington` = 29, `Tangmere` = 30, `FordAF` = 31
+   (PyDCS `Ford_AF`), `Maupertus` = 4, `SaintPierreduMont` = 1, `Carpiquet` = 19.
+   Do not invent ids or dump all 38 fields.
 7. Domain land/sea is TheChannel UK–FR chord only. Non-Channel strike/recon/path
    → `domain_unsupported_theatre`. `airfield_relative_map_point` MUST pass
    `theatre=spec.theatre`.

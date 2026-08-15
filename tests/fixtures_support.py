@@ -225,6 +225,29 @@ def compile_needs_oar_point(output_path: Path) -> Path:
     )
 
 
+NORMANDY_CAP_EXAMPLE_SPEC = REPO_ROOT / "examples" / "needs_oar_point_cap.yaml"
+NORMANDY_CAP_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    "Bf-109K-4",
+    '["airdromeId"]=28',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+    '["frequency"]=40.0',
+    '["task"]="CAP"',
+    "Orbit",
+    '["pattern"]="Circle"',
+)
+
+
+def compile_needs_oar_point_cap(output_path: Path) -> Path:
+    spec = load_mission_spec(NORMANDY_CAP_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 def compile_intercept(output_path: Path) -> Path:
     spec = load_mission_spec(INTERCEPT_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(

@@ -24,6 +24,17 @@ _CHANNEL_AIRFIELDS = {
     "BigginHill": 14,
 }
 
+_NORMANDY_AIRFIELDS = {
+    "NeedsOarPoint": 28,
+    "Chailey": 27,
+    "Funtington": 29,
+    "Tangmere": 30,
+    "FordAF": 31,
+    "Maupertus": 4,
+    "SaintPierreduMont": 1,
+    "Carpiquet": 19,
+}
+
 
 @pytest.fixture
 def registry():
@@ -64,9 +75,12 @@ def test_channel_airfields_exactly_verified_twelve(registry):
     assert 11 not in ids
 
 
-def test_normandy_airfields_exactly_needs_oar_point(registry):
+def test_normandy_airfields_exactly_curated_eight(registry):
     names = registry.list_airfields(theatre="Normandy")
-    assert {n: registry.airdrome_id(n, theatre="Normandy") for n in names} == {"NeedsOarPoint": 28}
+    assert {n: registry.airdrome_id(n, theatre="Normandy") for n in names} == _NORMANDY_AIRFIELDS
+    assert registry.airdrome_id("Maupertus", theatre="Normandy") == 4
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Maupertus", theatre="TheChannel")
 
 
 def test_sunny_clear_without_normandy_weather_file(registry):

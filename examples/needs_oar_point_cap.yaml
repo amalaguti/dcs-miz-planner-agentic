@@ -1,0 +1,36 @@
+schema_version: "1"
+mission_type: cap
+theatre: Normandy
+name: Needs Oar Point CAP
+description: >
+  Cold start at Needs Oar Point. Climb to a CAP station south toward Cherbourg
+  (bearing 180°, 63 km), circle at 4000 m, weapons free. Light Bf-109
+  opposition near the station.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: NeedsOarPoint
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+cap:
+  bearing_deg: 180
+  distance_km: 63
+  altitude_m: 4000
+  pattern: circle
+  engagement: weapons_free
+  duration_min: 20
+enemies:
+  - aircraft: Bf-109K-4
+    count: 2
+    skill: Average
+    country: ThirdReich
+    coalition: red
+objectives:
+  - type: patrol

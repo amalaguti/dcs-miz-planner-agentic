@@ -1068,6 +1068,36 @@ options:
         Sea/coastal water + sea_craft only. Never land soft vehicles; never place
         harbour strikes a few km from Manston. Use ~120°/68 km (70 km is often land).
 
+  - family: channel_place
+    id: needs_oar_point_home
+    label: Needs Oar Point (home field)
+    description: >
+      RAF Needs Oar Point — default Normandy Spitfire start for free flight and
+      mid-Channel CAP toward Cherbourg.
+    support: advisory
+    meta:
+      theatre: Normandy
+      airfield: NeedsOarPoint
+      role: home_base
+      mission_types: [free_flight, cap]
+
+  - family: channel_place
+    id: cherbourg_channel_cap
+    label: Cherbourg Channel CAP
+    description: >
+      Mid-Channel CAP station south of Needs Oar Point toward Cherbourg /
+      Maupertus (bearing 180°, 63 km, 4000 m). Sea domain — do not copy Manston
+      135/25 or french-coast geometry onto Normandy.
+    support: advisory
+    meta:
+      theatre: Normandy
+      domain: sea
+      mission_types: [cap]
+      cap_bearing_deg: 180
+      cap_distance_km: 63
+      cap_altitude_m: 4000
+      example: examples/needs_oar_point_cap.yaml
+
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure
     id: magneto_training

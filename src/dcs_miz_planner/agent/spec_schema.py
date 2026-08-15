@@ -35,10 +35,10 @@ _AGENT_EXAMPLE_FILES: dict[str, str] = {
 }
 
 _NORMANDY_FREE_FLIGHT_EXAMPLE = "needs_oar_point_cold_freeflight.yaml"
-_COMBAT_MISSION_TYPES = frozenset(
+_NORMANDY_CAP_EXAMPLE = "needs_oar_point_cap.yaml"
+_NORMANDY_UNSUPPORTED_COMBAT = frozenset(
     {
         MissionType.INTERCEPT.value,
-        MissionType.CAP.value,
         MissionType.GROUND_ATTACK.value,
         MissionType.ESCORT.value,
         MissionType.RECON.value,
@@ -202,7 +202,7 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
 _COMMON_NOTES: tuple[str, ...] = (
     (
         'schema_version must be "1"; theatre is an offerable id '
-        "(TheChannel for combat; Normandy free_flight only at NeedsOarPoint)."
+        "(TheChannel for combat; Normandy free_flight or CAP at NeedsOarPoint)."
     ),
     (
         "Required envelope: schema_version, mission_type, theatre, date, start_time, "
@@ -276,6 +276,9 @@ _COMMON_NOTES: tuple[str, ...] = (
 )
 
 _MT_IN_JSON = re.compile(r'"mission_type"\s*:\s*"([a-z_]+)"')
+_THEATRE_IN_JSON = re.compile(r'"theatre"\s*:\s*"([A-Za-z0-9_]+)"')
+_AIRFIELD_IN_JSON = re.compile(r'"airfield"\s*:\s*"([A-Za-z0-9_]+)"')
+_SCHEMA_THEATRES = frozenset({"TheChannel", "Normandy"})
 
 
 @dataclass(frozen=True)
@@ -298,8 +301,9 @@ def supported_mission_types() -> tuple[str, ...]:
 def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSchemaView:
     """Load and validate the packaged example for ``mission_type`` (immersion-first).
 
-    Default / TheChannel stubs stay Manston. ``theatre=Normandy`` + free_flight uses
-    NeedsOarPoint. Normandy combat types raise (no Manston combat skeleton).
+    Default / TheChannel stubs stay Manston. ``theatre=Normandy`` + free_flight or
+    cap uses NeedsOarPoint. Normandy intercept/GA/escort/recon raise (no Manston
+    combat skeleton).
     """
     key = (mission_type or "").strip()
     if key not in _EXAMPLE_FILES:
@@ -307,12 +311,14 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
         raise ValueError(f"Unsupported mission_type {mission_type!r}; expected one of: {allowed}")
     theatre_id = (theatre or "").strip() or None
     if theatre_id == "Normandy":
-        if key in _COMBAT_MISSION_TYPES:
+        if key in _NORMANDY_UNSUPPORTED_COMBAT:
             raise ValueError(
                 f"Combat mission_type {key!r} is not supported for theatre Normandy; "
-                "use free_flight at NeedsOarPoint or theatre TheChannel"
+                "use free_flight or cap at NeedsOarPoint or theatre TheChannel"
             )
-        filename = _NORMANDY_FREE_FLIGHT_EXAMPLE
+        filename = (
+            _NORMANDY_CAP_EXAMPLE if key == MissionType.CAP.value else _NORMANDY_FREE_FLIGHT_EXAMPLE
+        )
         path = examples_dir() / filename
         if not path.is_file():
             raise FileNotFoundError(f"Missing Spec example for {key}: {path}")
@@ -353,8 +359,9 @@ def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
     if theatre == "Normandy":
         extra = (
             (
-                "Normandy invent is free_flight only: airfield NeedsOarPoint, "
-                "SpitfireLFMkIX, sunny_clear, UK blue. Do not copy channel_place "
+                "Normandy invent is free_flight or CAP: airfield NeedsOarPoint, "
+                "SpitfireLFMkIX, sunny_clear, UK blue. CAP station 180° / 63 km "
+                "/ 4000 m (not Manston 135/25). Do not copy channel_place "
                 "geometry (french coast belts, Hawkinge) onto Normandy."
             ),
         )
@@ -370,6 +377,19 @@ def infer_mission_type(text: str | None, *, default: str = MissionType.FREE_FLIG
     if m and m.group(1) in _EXAMPLE_FILES:
         return m.group(1)
     return default
+
+
+def infer_theatre(text: str | None) -> str | None:
+    """Best-effort Spec theatre from rejected JSON; else None (Manston default)."""
+    if not text:
+        return None
+    m = _THEATRE_IN_JSON.search(text)
+    if m and m.group(1) in _SCHEMA_THEATRES:
+        return m.group(1)
+    af = _AIRFIELD_IN_JSON.search(text)
+    if af and af.group(1) == "NeedsOarPoint":
+        return "Normandy"
+    return None
 
 
 def format_spec_schema_fragment(view: SpecSchemaView) -> str:
@@ -392,7 +412,8 @@ Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
 (free_flight | intercept | cap | ground_attack | escort | recon) and optional theatre.
 Copy that example's structure. Default stub is Manston / TheChannel; Normandy
-free_flight uses NeedsOarPoint. Normandy combat is unsupported.
+free_flight or CAP uses NeedsOarPoint. Normandy intercept/GA/escort/recon is
+unsupported.
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user
 left challenge unspecified — see schema notes for example YAML paths.
