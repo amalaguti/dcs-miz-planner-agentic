@@ -87,7 +87,9 @@ Creative decisions persist in generation
 `detail.creative`; feedback + history bias later invents.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-**Intentional limits:** Channel theatre only; campaign `.miz` files are listed for
+**Intentional limits:** Channel theatre is the complete product surface today
+(Normandy is a freeflight smoke). Multi-theatre catalog expand is queued as
+backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for
 inspiration, not imported as Spec; stub LLM + offline research fixtures keep tests
 hermetic.
 
@@ -342,6 +344,9 @@ Agent work stays off `master`/`main` (Cursor hook + skill). Commits are also blo
 - Concept: [`DCS_AI_Mission_Planner.md`](DCS_AI_Mission_Planner.md)
 - Architecture / module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Theatre / target promote checklist: [`docs/THEATRE_TARGET_PROMOTE.md`](docs/THEATRE_TARGET_PROMOTE.md)
+- Full-catalog campaign (multi-theatre): [`docs/BACKLOG.md`](docs/BACKLOG.md) M7;
+  Agents Window: `/full-catalog-orchestrate` (skill
+  `.cursor/skills/full-catalog-orchestrator/`)
 - Roadmap / backlog: [`docs/BACKLOG.md`](docs/BACKLOG.md)
 - Agent lessons index + topic files: [`docs/LESSONS_LEARNED.md`](docs/LESSONS_LEARNED.md)
   (skills: `dcs-dev-*` under `.cursor/skills/`)

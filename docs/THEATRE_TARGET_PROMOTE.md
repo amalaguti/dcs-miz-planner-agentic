@@ -98,3 +98,5 @@ Era caution: prefer BoB / Channel-front plausible Axis/Allied sets when promotin
 - Invent cues / presets: `#8d`; geometry: `#8f`/`#8g`
 - Lessons: [`LESSONS_LEARNED.md`](LESSONS_LEARNED.md) → `lessons/agent-tooling.md`
 - Skill: `.cursor/skills/dcs-dev-agent-tooling`
+- Multi-theatre campaign: [`BACKLOG.md`](BACKLOG.md) M7; orchestrator
+  `.cursor/skills/full-catalog-orchestrator/SKILL.md`
