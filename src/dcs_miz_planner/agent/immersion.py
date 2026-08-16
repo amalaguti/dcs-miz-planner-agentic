@@ -206,6 +206,7 @@ _THEATRE_ALLOWED_TYPES: dict[str, frozenset[MissionType]] = {
             MissionType.CAP,
             MissionType.GROUND_ATTACK,
             MissionType.INTERCEPT,
+            MissionType.ESCORT,
         }
     ),
 }
@@ -214,7 +215,7 @@ _THEATRE_ALLOWED_TYPES: dict[str, frozenset[MissionType]] = {
 def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
     """Refuse mission types not allowed on this theatre. Every turn.
 
-    TheChannel: all six. Normandy: free_flight + CAP + ground_attack + intercept. Else
+    TheChannel: all six. Normandy: free_flight + CAP + ground_attack + intercept + escort. Else
     (Caucasus / Syria / Nevada / Falklands / Stage A): free_flight only. Callers MUST treat a non-None result as a hard refuse:
     never capture a draft and never write YAML. A one-shot ``_used`` flag is not.
     """
@@ -223,11 +224,12 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
         return None
     if spec.theatre == "Normandy":
         return (
-            "[Host] Normandy invent is free_flight, CAP, ground_attack, or intercept "
-            "at NeedsOarPoint. Refuse escort/recon — emit free_flight, CAP "
+            "[Host] Normandy invent is free_flight, CAP, ground_attack, intercept, or escort "
+            "at NeedsOarPoint. Refuse recon — emit free_flight, CAP "
             "(station 180°/63 km toward Cherbourg, not Manston 135/25), "
             "ground_attack (strike 180°/133 km inland of Maupertus, not Manston "
-            "125/76), or intercept on the same Cherbourg corridor (not Hawkinge) "
+            "125/76), intercept or escort on the same Cherbourg corridor (not Hawkinge, "
+            "not Manston 120/55) "
             "or switch theatre to TheChannel. Do not copy channel_place "
             "geometry (french coast belts, Hawkinge) onto Normandy. "
             "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
@@ -281,11 +283,11 @@ def theatre_mission_refuse_chat_line(spec: MissionSpec) -> str:
     """User-facing chat refuse after a combat JSON (draft not captured)."""
     if spec.theatre == "Normandy":
         return (
-            "[Host] Normandy escort/recon is not inventable — "
+            "[Host] Normandy recon is not inventable — "
             "commander nudged toward NeedsOarPoint free_flight, CAP, "
-            "ground_attack, or intercept, or TheChannel. "
-            "Draft NOT captured. Emit free_flight, CAP, ground_attack, or "
-            "intercept at NeedsOarPoint or switch theatre to TheChannel, then /accept."
+            "ground_attack, intercept, or escort, or TheChannel. "
+            "Draft NOT captured. Emit free_flight, CAP, ground_attack, intercept, or "
+            "escort at NeedsOarPoint or switch theatre to TheChannel, then /accept."
         )
     if spec.theatre == "Caucasus":
         return (
@@ -326,8 +328,8 @@ def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
     """User-facing /accept refuse (draft not written)."""
     if spec.theatre == "Normandy":
         return (
-            "Normandy escort/recon is not inventable. Draft NOT written. "
-            "Emit free_flight, CAP, ground_attack, or intercept at NeedsOarPoint "
+            "Normandy recon is not inventable. Draft NOT written. "
+            "Emit free_flight, CAP, ground_attack, intercept, or escort at NeedsOarPoint "
             "or switch theatre to TheChannel."
         )
     if spec.theatre == "Caucasus":
@@ -360,8 +362,8 @@ def theatre_mission_refuse_planner_error(spec: MissionSpec) -> str:
     """Planner last_parse_error when combat is refused on this theatre."""
     if spec.theatre == "Normandy":
         return (
-            "Normandy invent is free_flight, CAP, ground_attack, or intercept; "
-            "escort/recon are refused"
+            "Normandy invent is free_flight, CAP, ground_attack, intercept, or escort; "
+            "recon is refused"
         )
     if spec.theatre == "Caucasus":
         return "Caucasus invent is free_flight only; intercept/cap/GA/escort/recon are refused"

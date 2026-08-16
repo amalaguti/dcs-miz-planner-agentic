@@ -10,13 +10,14 @@ Channel Spitfire MVP through M6: Mission Spec (`schema_version: "1"`, unknown fi
 rejected) covers free_flight, intercept, CAP, ground_attack, escort, and recon, plus native ME
 triggers (zones, flags, radio, late activation, sound, markers, altitude/speed gates).
 Manston cold free flight was the first accepted-in-game slice. **Normandy 2.0** is
-planner-bound for cold freeflight, CAP, ground attack, and intercept at Needs Oar Point
+planner-bound for cold freeflight, CAP, ground attack, intercept, and escort at Needs Oar Point
 (`examples/needs_oar_point_cold_freeflight.yaml`,
 `examples/needs_oar_point_cap.yaml`,
 `examples/needs_oar_point_ground_attack.yaml`,
-`examples/needs_oar_point_dawn_intercept.yaml`; Spec theatre id `Normandy`).
+`examples/needs_oar_point_dawn_intercept.yaml`,
+`examples/needs_oar_point_escort.yaml`; Spec theatre id `Normandy`).
 Invent/chat may use any offerable theatre; Normandy invent is **free_flight, CAP,
-ground_attack, or intercept** at Needs Oar Point. **Caucasus** is planner-bound for cold freeflight at Batumi
+ground_attack, intercept, or escort** at Needs Oar Point. **Caucasus** is planner-bound for cold freeflight at Batumi
 (`examples/batumi_cold_freeflight.yaml`; Spec theatre id `Caucasus`; Su-25T /
 Georgia / 251.0 MHz). **Syria** is planner-bound for cold freeflight at Incirlik
 (`examples/incirlik_cold_freeflight.yaml`; Spec theatre id `Syria`; Su-25T /
@@ -109,10 +110,10 @@ Creative decisions persist in generation
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **Intentional limits:** Channel theatre is the complete combat surface today
-(Normandy invent is free_flight, CAP, ground_attack, or intercept at Needs Oar Point; Caucasus invent is
+(Normandy invent is free_flight, CAP, ground_attack, intercept, or escort at Needs Oar Point; Caucasus invent is
 free_flight only at Batumi; Syria invent is free_flight only at Incirlik;
 Nevada invent is free_flight only at Nellis; Falklands invent is free_flight
-only at Mount Pleasant; escort/recon still refuse on Normandy;
+only at Mount Pleasant; recon still refuses on Normandy;
 intercept/GA still refuse on Caucasus/Syria/Nevada/Falklands).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for
@@ -151,6 +152,10 @@ uv run dcs-miz examples/manston_dawn_intercept.yaml
 uv run dcs-miz validate examples/needs_oar_point_dawn_intercept.yaml
 uv run dcs-miz examples/needs_oar_point_dawn_intercept.yaml
 # -> out/needs_oar_point_dawn_intercept.miz
+
+uv run dcs-miz validate examples/needs_oar_point_escort.yaml
+uv run dcs-miz examples/needs_oar_point_escort.yaml
+# -> out/needs_oar_point_escort.miz
 
 uv run dcs-miz validate examples/manston_cap.yaml
 uv run dcs-miz examples/manston_cap.yaml

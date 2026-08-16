@@ -433,6 +433,7 @@ Stage C combat on a new map before Slice 0b is on master.
 | F1 | `normandy-airfields-places` | Deepen Normandy (already bound): more AFs, places, CAP invent at Needs Oar Point (stages B–C). After 0 + 0b | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F1b | `normandy-ground-attack` | Normandy Stage C combat: Needs Oar Point ground_attack inland of Maupertus; UK–Cotentin domain; WWII land strike list; invent allow GA | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F1c | `normandy-intercept` | Normandy Stage C combat: Needs Oar Point dawn intercept on the Cherbourg corridor (180°/63 km); invent allow intercept; escort/recon still refuse | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
+| F1d | `normandy-escort` | Normandy Stage C combat: Needs Oar Point Mosquito escort on the Cherbourg corridor (180°/63 km); invent allow escort; recon still refuse | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F2 | `caucasus-cold-freeflight` | Caucasus Stage A: bind + smoke freeflight (modern countries/aircraft). After 0 + 0b | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F3 | `syria-cold-freeflight` | Syria Stage A bind + smoke. After F2 pattern | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |

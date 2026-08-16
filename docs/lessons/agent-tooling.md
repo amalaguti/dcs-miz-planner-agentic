@@ -5,6 +5,20 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Normandy invent allows escort; recon still refuses (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Normandy invent/chat may emit **free_flight, CAP, ground_attack,
+  intercept, or escort** at NeedsOarPoint. Escort package destination is the
+  Cherbourg corridor (180°/63 km / 4000 m — same as CAP/intercept, not
+  Manston 120/55). Schema `theatre=Normandy` + `escort` loads
+  `needs_oar_point_escort.yaml` with dedicated `_NORMANDY_ESCORT_NOTES` —
+  do not concatenate Channel `_TYPE_NOTES`. Recon still refuses every turn.
+  Compiler escort is already airfield-relative (`point_from_heading`); no
+  intercept-spawn recipe is required. Stub LLM stays Manston.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `agent/prompts.py`,
+  `examples/needs_oar_point_escort.yaml`.
+
 ## Normandy invent allows intercept; escort/recon still refuse (2026-08-16)
 
 - **Date:** 2026-08-16
