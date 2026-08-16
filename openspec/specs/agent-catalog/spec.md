@@ -246,3 +246,13 @@ Sync MUST NOT stamp `theatre_id` `Normandy` on those rows in this change.
 - **WHEN** catalog sync runs
 - **THEN** a known land strike unit (e.g. Blitz) MUST have `era_id` `wwii`
   and `theatre_id` `TheChannel`
+
+### Requirement: Catalog lists Caucasus and Batumi
+After catalog sync from the packaged registry, known theatres MUST include
+`Caucasus` and known airfields MUST include `Batumi` with `airdromeId` 22
+and theatre `Caucasus`.
+
+#### Scenario: Sync populates Batumi
+- **WHEN** a catalog sync runs against the packaged registry after this change
+- **THEN** the catalog MUST contain theatre `Caucasus` and airfield `Batumi`
+  with `airdromeId` 22
