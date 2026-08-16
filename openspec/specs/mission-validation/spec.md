@@ -631,7 +631,7 @@ Validation SHALL reject `mission_type: intercept` when Spec theatre is not
 ### Requirement: Normandy intercept Specs validate
 Shared validation SHALL accept a well-formed Normandy intercept Spec
 (theatre `Normandy`, airfield `NeedsOarPoint`, enemies present) when
-inventory agrees. It MUST still reject Normandy escort/recon invent, but
+inventory agrees. It MUST still reject Normandy recon invent, but
 MUST NOT fail Normandy intercept solely with `intercept_unsupported_theatre`.
 
 #### Scenario: Needs Oar Point intercept validates
@@ -675,10 +675,20 @@ Other non-Channel theatres MUST still fail with `domain_unsupported_theatre`.
 ### Requirement: Normandy ground_attack Specs validate
 Shared validation SHALL accept a well-formed Normandy ground-attack Spec
 (theatre `Normandy`, airfield `NeedsOarPoint`, strike + land targets) when
-inventory agrees. It MUST still reject Normandy escort/recon invent.
+inventory agrees. It MUST still reject Normandy recon invent.
 
 #### Scenario: Needs Oar Point ground_attack validates
 - **WHEN** `examples/needs_oar_point_ground_attack.yaml` is validated against
+  an inventory that includes offerable Normandy
+- **THEN** validation MUST succeed
+
+### Requirement: Normandy escort Specs validate
+Shared validation SHALL accept a well-formed Normandy escort Spec
+(theatre `Normandy`, airfield `NeedsOarPoint`, nested escort + package)
+when inventory agrees. It MUST still reject Normandy recon invent.
+
+#### Scenario: Needs Oar Point escort validates
+- **WHEN** `examples/needs_oar_point_escort.yaml` is validated against
   an inventory that includes offerable Normandy
 - **THEN** validation MUST succeed
 

@@ -466,9 +466,9 @@ rows MAY exist when they declare `meta.theatre: Normandy`.
 ### Requirement: Normandy channel_place rows
 Packaged `channel_place` options SHALL include `needs_oar_point_home`,
 `cherbourg_channel_cap`, and `maupertus_inland_strike` with
-`meta.theatre: Normandy`. The CAP/intercept place MUST publish station
-geometry 180° / 63 km / 4000 m and MUST list mission types including `cap`
-and `intercept`. The GA place MUST publish strike geometry 180° / 133 km /
+`meta.theatre: Normandy`. The CAP/intercept/escort place MUST publish station
+geometry 180° / 63 km / 4000 m and MUST list mission types including `cap`,
+`intercept`, and `escort`. The GA place MUST publish strike geometry 180° / 133 km /
 2000 m (inland of Maupertus). The family name MUST remain `channel_place`
 (not renamed to `theatre_place`). Channel rows MUST keep
 `meta.theatre: TheChannel`.
@@ -478,9 +478,10 @@ and `intercept`. The GA place MUST publish strike geometry 180° / 133 km /
 - **THEN** `cherbourg_channel_cap` MUST include meta theatre `Normandy` and
   CAP bearing 180° / distance 63 km
 
-#### Scenario: cherbourg_channel_cap includes intercept
+#### Scenario: cherbourg_channel_cap includes escort
 - **WHEN** catalog/registry loads `cherbourg_channel_cap`
-- **THEN** meta mission_types MUST include `intercept` as well as `cap`
+- **THEN** meta mission_types MUST include `escort` as well as `cap` and
+  `intercept`
 
 ### Requirement: maupertus_inland_strike place
 Packaged `channel_place` options SHALL include `maupertus_inland_strike` with
