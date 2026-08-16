@@ -621,27 +621,34 @@ Spec theatre.
 
 ### Requirement: Intercept spawn is Channel-only
 Validation SHALL reject `mission_type: intercept` when Spec theatre is not
-`TheChannel`, with stable code `intercept_unsupported_theatre` (or equivalent).
+`TheChannel` or `Normandy`, with stable code `intercept_unsupported_theatre`
+(or equivalent).
 
-#### Scenario: Normandy intercept fails validation
-- **WHEN** a Mission Spec sets theatre `Normandy` and `mission_type: intercept`
+#### Scenario: Caucasus intercept fails validation
+- **WHEN** a Mission Spec sets theatre `Caucasus` and `mission_type: intercept`
 - **THEN** validation MUST fail with `intercept_unsupported_theatre`
+
+### Requirement: Normandy intercept Specs validate
+Shared validation SHALL accept a well-formed Normandy intercept Spec
+(theatre `Normandy`, airfield `NeedsOarPoint`, enemies present) when
+inventory agrees. It MUST still reject Normandy escort/recon invent, but
+MUST NOT fail Normandy intercept solely with `intercept_unsupported_theatre`.
+
+#### Scenario: Needs Oar Point intercept validates
+- **WHEN** `examples/needs_oar_point_dawn_intercept.yaml` is validated against
+  an inventory that includes offerable Normandy
+- **THEN** validation MUST succeed
 
 ### Requirement: Normandy CAP Specs validate
 Shared validation SHALL accept a well-formed Normandy CAP Spec (theatre
 `Normandy`, airfield `NeedsOarPoint`, CAP geometry present) when inventory
-agrees. It MUST still reject Normandy intercept with
-`intercept_unsupported_theatre`. Well-formed Normandy ground-attack Specs
+agrees. Well-formed Normandy ground-attack Specs
 MUST NOT fail solely with `domain_unsupported_theatre`.
 
 #### Scenario: Needs Oar Point CAP validates
 - **WHEN** `examples/needs_oar_point_cap.yaml` is validated against an
   inventory that includes offerable Normandy
 - **THEN** validation MUST succeed
-
-#### Scenario: Normandy intercept still fails closed
-- **WHEN** a Mission Spec sets theatre `Normandy` and `mission_type: intercept`
-- **THEN** validation MUST fail with `intercept_unsupported_theatre`
 
 ### Requirement: Normandy land/sea domain is classified
 Validation SHALL classify land vs sea for Spec theatre `Normandy` using a
@@ -668,8 +675,7 @@ Other non-Channel theatres MUST still fail with `domain_unsupported_theatre`.
 ### Requirement: Normandy ground_attack Specs validate
 Shared validation SHALL accept a well-formed Normandy ground-attack Spec
 (theatre `Normandy`, airfield `NeedsOarPoint`, strike + land targets) when
-inventory agrees. It MUST still reject Normandy intercept with
-`intercept_unsupported_theatre`.
+inventory agrees. It MUST still reject Normandy escort/recon invent.
 
 #### Scenario: Needs Oar Point ground_attack validates
 - **WHEN** `examples/needs_oar_point_ground_attack.yaml` is validated against

@@ -688,21 +688,28 @@ Mk IX installed.
   cold-started at Needs Oar Point around 09:00 in clear weather
 
 ### Requirement: Intercept enemy spawn is TheChannel-only
-The compiler SHALL place intercept enemies using the packaged TheChannel
-Hawkinge/Dover recipe only when Spec theatre is `TheChannel`. It MUST NOT
-write those Channel map coordinates onto another theatre’s terrain. For any
-other theatre, compilation MUST NOT produce a `.miz` (shared validation
-failure or equivalent).
+The compiler SHALL use the packaged intercept spawn recipe for Spec theatre
+`TheChannel` (Hawkinge + Dover-approach offset) and `Normandy` (NeedsOarPoint
++ 180° / 63 km). Other theatres MUST fail closed. Channel enemy coordinates
+MUST remain the existing Hawkinge golden pair.
 
 #### Scenario: Channel intercept still uses Hawkinge recipe
-- **WHEN** the checked-in Manston intercept example Spec is compiled
+- **WHEN** a TheChannel intercept Spec is compiled
 - **THEN** enemy placement MUST still use the existing Hawkinge anchor plus
   Dover-approach offset (golden `x=30989.935547`, `y=-35402.577148`)
 
-#### Scenario: Normandy intercept does not compile
-- **WHEN** a Mission Spec requests theatre `Normandy` and `mission_type:
-  intercept`
-- **THEN** compilation MUST NOT write a `.miz`
+### Requirement: Compile intercept at Needs Oar Point
+The compiler SHALL compile a Normandy intercept Mission Spec that cold-starts
+the player Spitfire at Needs Oar Point and places Bf-109K-4 enemies inflight
+on the packaged Cherbourg-corridor recipe (NeedsOarPoint + 180° / 63 km). It
+MUST bind PyDCS `Normandy` terrain. It MUST NOT write Channel Hawkinge/Dover
+coordinates.
+
+#### Scenario: Needs Oar Point intercept contracts
+- **WHEN** `examples/needs_oar_point_dawn_intercept.yaml` is compiled
+- **THEN** the `.miz` MUST contain theatre `Normandy`, player type
+  `SpitfireLFMkIX`, `airdromeId` 28, cold parking, start_time 21600, player
+  radio 124.0 MHz, and enemy `Bf-109K-4` at 40.0 MHz
 
 ### Requirement: Join-up outbound bearing stays airfield-relative
 Wingman join-up outbound SHALL remain an airfield-relative heading default
