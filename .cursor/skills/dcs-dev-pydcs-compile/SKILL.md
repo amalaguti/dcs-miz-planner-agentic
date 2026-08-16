@@ -27,6 +27,10 @@ description: >-
 6. Briefing: PyDCS `set_sortie_text` / `set_description_*`; lazy-import briefing
    to avoid compiler↔agent cycles.
 7. Goldens: normalize `onboard_num` (and liveries in CI) — see `normalize_mission`.
+   Do **not** assert an aircraft type is absent via a whole-mission substring:
+   PyDCS `requiredModules` lists ED module names (`Su-25T by Eagle Dynamics`)
+   even when that type is not a unit. Assert player `["type"]="…"` instead
+   (PyDCS dumps no spaces around `=`).
 8. Escort: package first, then EscortTaskAction + ROE; GA: verify land vs water
    strike placement.
 9. Target motion: `target_motion.py` + `target_motion.yaml` speed bands; `add_waypoint`

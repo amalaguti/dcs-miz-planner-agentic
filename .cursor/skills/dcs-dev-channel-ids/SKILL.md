@@ -45,27 +45,28 @@ description: >-
    `SochiAdler` = 18 (`Sochi-Adler`), `Mozdok` = 28 (not NeedsOarPoint).
    Invent home: `Georgia` + `Su-25T` at **251.0 MHz** at Batumi. `Russia` is
    modern-only (PyDCS red default — do not place Russia on blue). Channel+Russia
-   and Caucasus+Spitfire are unknown. UK is dual-era. Catalog listing may union
-   eras. Do not dump all 21 fields.
+   is unknown. **SpitfireLFMkIX is dual-era** (same 124.0 ref in wwii + modern)
+   because DCS flies it on modern maps; Channel still rejects `Su-25T`. UK is
+   dual-era. Catalog listing may union eras. Do not dump all 21 fields.
 10. **Syria** Spec id is **`Syria`** (era `modern`). Curated AF: `Incirlik` = 16
     (PyDCS name `Incirlik`; do not dump 59 fields). Modern smoke: country
     `Turkey` (not USA / `usaaf`, not Georgia, not Syria-on-red), aircraft
     `Su-25T` at **251.0 MHz**.     Add Turkey only to `era/modern` next to Georgia —
-    never `era/wwii`. Channel+Turkey/Su-25T and Syria+Spitfire are unknown.
+    never `era/wwii`. Channel+Turkey/Su-25T is unknown. Spitfire is dual-era.
 11. **Nevada** Spec id is **`Nevada`** (era `modern`). Curated AF: `Nellis` = 4
     (PyDCS name `Nellis`; do not dump 17 fields). Modern smoke: country `USA`
     (not `usaaf`, not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**.
     Add USA only to `era/modern` next to Georgia and Turkey — never `era/wwii`.
-    `usaaf` is voice only, not a country. Channel+USA/Su-25T and
-    Nevada+Spitfire are unknown. UK is dual-era (wwii + modern).
+    `usaaf` is voice only, not a country. Channel+USA/Su-25T is unknown.
+    Spitfire is dual-era. UK is dual-era (wwii + modern).
 12. **Falklands** Spec id is **`Falklands`** (product name South Atlantic;
     era `modern`). Curated AF: `MountPleasant` = 2 (PyDCS name
     `Mount Pleasant`; class `Mount_Pleasant`; do not dump 27 fields). Spec
     key MUST be `MountPleasant`, not `Mount_Pleasant` (same pitfall as
     Normandy `FordAF` ≠ `Ford_AF`). Modern smoke: country `UK` (keep UK in
-    `era/wwii` as well), aircraft `Su-25T` at **251.0 MHz**. Do not add
-    Spitfire to modern. Channel+UK still ok (wwii); Falklands+Spitfire and
-    Channel+Su-25T are unknown.
+    `era/wwii` as well), aircraft `Su-25T` at **251.0 MHz**. Spitfire is
+    dual-era (same 124.0 in wwii + modern). Channel+UK still ok (wwii);
+    Channel+Su-25T is unknown.
 
 ## Code touchpoints
 

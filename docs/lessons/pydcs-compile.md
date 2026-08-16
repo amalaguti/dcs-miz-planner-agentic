@@ -5,6 +5,20 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## requiredModules lists ED aircraft even when unused (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Symptom:** Batumi Spitfire compile test failed `assert "Su-25T" not in mission`
+  even though the player unit was `SpitfireLFMkIX`.
+- **Cause:** PyDCS writes a `requiredModules` table of Eagle Dynamics module
+  display names (`["Su-25T by Eagle Dynamics"]=true`, …) into every mission
+  Lua dump. Substring absence of an aircraft type is not a player-unit
+  contract.
+- **Fix:** Assert player `["type"]="SpitfireLFMkIX"` (PyDCS dumps no spaces
+  around `=`) and optionally that `["type"]="Su-25T"` is absent. Do not scan
+  the whole mission string for a type token.
+- **Code:** `tests/test_caucasus_freeflight.py`.
+
 ## Target AI options: class allowlists, not ME dump (2026-08-08)
 
 - **Date:** 2026-08-08

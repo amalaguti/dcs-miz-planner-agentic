@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-16 | [requiredModules lists ED aircraft even when unused](lessons/pydcs-compile.md#requiredmodules-lists-ed-aircraft-even-when-unused-2026-08-16) | `pydcs-compile` |
+| 2026-08-16 | [Spitfire is dual-era; DCS map capability wins](lessons/channel-ids.md#spitfire-is-dual-era-dcs-map-capability-wins-2026-08-16) | `channel-ids` |
 | 2026-08-16 | [Caucasus eight airfields; Russia modern; Mozdok 28](lessons/channel-ids.md#caucasus-eight-airfields-russia-modern-mozdok-28-2026-08-16) | `channel-ids` |
 | 2026-08-16 | [Normandy invent allows recon; all six types](lessons/agent-tooling.md#normandy-invent-allows-recon-all-six-types-2026-08-16) | `agent-tooling` |
 | 2026-08-16 | [Normandy invent allows escort; recon still refuses](lessons/agent-tooling.md#normandy-invent-allows-escort-recon-still-refuses-2026-08-16) | `agent-tooling` |

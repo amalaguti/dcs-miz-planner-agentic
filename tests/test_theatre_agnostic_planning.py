@@ -444,7 +444,7 @@ def test_era_filter_channel_rejects_georgia_turkey_and_su25t() -> None:
     assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
 
 
-def test_era_filter_caucasus_rejects_spitfire() -> None:
+def test_era_filter_caucasus_accepts_spitfire() -> None:
     spec_uk = load_mission_spec(CAUCASUS_FF).model_copy(
         update={
             "player": load_mission_spec(CAUCASUS_FF).player.model_copy(update={"country": "UK"})
@@ -460,11 +460,10 @@ def test_era_filter_caucasus_rejects_spitfire() -> None:
         }
     )
     result_ac = validate_mission_spec(spec_ac, inventory=_inv())
-    assert not result_ac.ok
-    assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
+    assert result_ac.ok, result_ac.errors
 
 
-def test_era_filter_syria_rejects_spitfire() -> None:
+def test_era_filter_syria_accepts_spitfire() -> None:
     spec_uk = load_mission_spec(SYRIA_FF).model_copy(
         update={"player": load_mission_spec(SYRIA_FF).player.model_copy(update={"country": "UK"})}
     )
@@ -478,11 +477,10 @@ def test_era_filter_syria_rejects_spitfire() -> None:
         }
     )
     result_ac = validate_mission_spec(spec_ac, inventory=_inv())
-    assert not result_ac.ok
-    assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
+    assert result_ac.ok, result_ac.errors
 
 
-def test_era_filter_nevada_rejects_spitfire() -> None:
+def test_era_filter_nevada_accepts_spitfire() -> None:
     spec_uk = load_mission_spec(NEVADA_FF).model_copy(
         update={"player": load_mission_spec(NEVADA_FF).player.model_copy(update={"country": "UK"})}
     )
@@ -496,11 +494,10 @@ def test_era_filter_nevada_rejects_spitfire() -> None:
         }
     )
     result_ac = validate_mission_spec(spec_ac, inventory=_inv())
-    assert not result_ac.ok
-    assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
+    assert result_ac.ok, result_ac.errors
 
 
-def test_era_filter_falklands_rejects_spitfire() -> None:
+def test_era_filter_falklands_accepts_spitfire() -> None:
     spec = load_mission_spec(FALKLANDS_FF)
     assert validate_mission_spec(spec, inventory=_inv()).ok
     spec_ac = load_mission_spec(FALKLANDS_FF).model_copy(
@@ -511,8 +508,7 @@ def test_era_filter_falklands_rejects_spitfire() -> None:
         }
     )
     result_ac = validate_mission_spec(spec_ac, inventory=_inv())
-    assert not result_ac.ok
-    assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
+    assert result_ac.ok, result_ac.errors
 
 
 def test_era_filter_caucasus_georgia_and_syria_turkey_ok() -> None:

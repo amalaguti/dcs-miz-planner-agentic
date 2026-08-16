@@ -438,6 +438,7 @@ Stage C combat on a new map before Slice 0b is on master.
 | F1e | `normandy-recon` | Normandy Stage C combat: Needs Oar Point recon inland of Maupertus (180°/133 km); invent allow all six types | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F2 | `caucasus-cold-freeflight` | Caucasus Stage A: bind + smoke freeflight (modern countries/aircraft). After 0 + 0b | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F2b | `caucasus-airfields` | Caucasus Stage B: eight curated AFs; `Russia` in modern; Mozdok FF smoke (Russia red); invent still FF-only at Batumi | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
+| F2c | `spitfire-dual-era` | Spitfire LF Mk IX dual-era (DCS can fly it on modern maps); Channel still rejects Su-25T | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F3 | `syria-cold-freeflight` | Syria Stage A bind + smoke. After F2 pattern | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |

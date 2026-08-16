@@ -21,7 +21,8 @@ Invent/chat may use any offerable theatre; Normandy invent is **all six types**
 at Needs Oar Point. **Caucasus** is planner-bound for cold freeflight at Batumi
 (`examples/batumi_cold_freeflight.yaml`; Spec theatre id `Caucasus`; Su-25T /
 Georgia / 251.0 MHz) plus curated extra airfields and a Mozdok smoke
-(`examples/mozdok_cold_freeflight.yaml`; Russia red). **Syria** is planner-bound for cold freeflight at Incirlik
+(`examples/mozdok_cold_freeflight.yaml`; Russia red). Spitfire LF Mk IX is
+**dual-era** and may fly on Caucasus (`examples/batumi_spitfire_freeflight.yaml`). **Syria** is planner-bound for cold freeflight at Incirlik
 (`examples/incirlik_cold_freeflight.yaml`; Spec theatre id `Syria`; Su-25T /
 Turkey / 251.0 MHz). **Nevada** is planner-bound for cold freeflight at Nellis
 (`examples/nellis_cold_freeflight.yaml`; Spec theatre id `Nevada`; Su-25T /
@@ -167,6 +168,10 @@ uv run dcs-miz examples/needs_oar_point_recon.yaml
 uv run dcs-miz validate examples/mozdok_cold_freeflight.yaml
 uv run dcs-miz examples/mozdok_cold_freeflight.yaml
 # -> out/mozdok_cold_freeflight.miz
+
+uv run dcs-miz validate examples/batumi_spitfire_freeflight.yaml
+uv run dcs-miz examples/batumi_spitfire_freeflight.yaml
+# -> out/batumi_spitfire_freeflight.miz
 
 uv run dcs-miz validate examples/manston_cap.yaml
 uv run dcs-miz examples/manston_cap.yaml

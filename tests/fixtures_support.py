@@ -388,6 +388,24 @@ def compile_batumi(output_path: Path) -> Path:
     )
 
 
+BATUMI_SPITFIRE_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_spitfire_freeflight.yaml"
+BATUMI_SPITFIRE_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    '["airdromeId"]=22',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+)
+
+
+def compile_batumi_spitfire(output_path: Path) -> Path:
+    spec = load_mission_spec(BATUMI_SPITFIRE_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 MOZDOK_EXAMPLE_SPEC = REPO_ROOT / "examples" / "mozdok_cold_freeflight.yaml"
 MOZDOK_MISSION_CONTRACTS = (
     "Su-25T",

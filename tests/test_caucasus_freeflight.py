@@ -6,6 +6,8 @@ import zipfile
 from pathlib import Path
 
 from fixtures_support import (
+    BATUMI_SPITFIRE_EXAMPLE_SPEC,
+    BATUMI_SPITFIRE_MISSION_CONTRACTS,
     CAUCASUS_EXAMPLE_SPEC,
     CAUCASUS_MISSION_CONTRACTS,
     MOZDOK_EXAMPLE_SPEC,
@@ -13,6 +15,7 @@ from fixtures_support import (
     REQUIRED_MEMBERS,
     channel_available_inventory,
     compile_batumi,
+    compile_batumi_spitfire,
     compile_mozdok,
 )
 
@@ -66,3 +69,27 @@ def test_compile_mozdok_contracts(tmp_path: Path) -> None:
         mission = zf.read("mission").decode("utf-8")
         for token in MOZDOK_MISSION_CONTRACTS:
             assert token in mission, f"missing mission contract {token}"
+
+
+def test_validate_batumi_spitfire() -> None:
+    spec = load_mission_spec(BATUMI_SPITFIRE_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_batumi_spitfire_contracts(tmp_path: Path) -> None:
+    out = compile_batumi_spitfire(tmp_path / "batumi_spitfire.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Caucasus" in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in BATUMI_SPITFIRE_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+            # Player unit type — not a whole-file substring: PyDCS requiredModules
+            # still lists "Su-25T by Eagle Dynamics" even when the player is a Spitfire.
+            assert '["type"]="SpitfireLFMkIX"' in mission
+            assert '["type"]="Su-25T"' not in mission

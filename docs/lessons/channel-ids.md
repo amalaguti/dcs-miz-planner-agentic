@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Spitfire is dual-era; DCS map capability wins (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** If DCS can spawn the module on the map, the planner MUST allow
+  the Spec. `SpitfireLFMkIX` / `SpitfireLFMkIXCW` are dual-era: same 124.0
+  `AircraftRef` in `era/wwii` and `era/modern` (collision guard requires
+  identical refs). Modern theatres accept Spitfire; **Su-25T stays
+  modern-only** (Channel still rejects Frogfoot). Invent default on Caucasus
+  remains Su-25T Georgia; users may emit UK+Spitfire at Batumi.
+- **Code:** `data/era/modern/aircraft.yaml`,
+  `examples/batumi_spitfire_freeflight.yaml`.
+
 ## Caucasus eight airfields; Russia modern; Mozdok 28 (2026-08-16)
 
 - **Date:** 2026-08-16
