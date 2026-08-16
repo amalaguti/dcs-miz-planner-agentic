@@ -408,12 +408,13 @@ package. It MUST NOT dump every Caucasus airport.
 ### Requirement: Modern era countries and aircraft are era-keyed
 The packaged registry SHALL load countries and aircraft from each
 `data/era/<era>/` package (`wwii` and `modern`). Era `modern` SHALL include
-PyDCS countries `Georgia`, `Turkey`, and `USA` and aircraft `Su-25T` with group radio
-251.0 MHz. It MUST NOT add those ids to the WWII era package. Known-country and
-known-aircraft queries used for validation SHALL be filterable by era so
-Channel/Normandy remain `UK` / `ThirdReich` and WWII aircraft only.
-`usaaf` MUST NOT be a known country. `Germany` MUST NOT be a known country
-in any era.
+PyDCS countries `Georgia`, `Turkey`, `USA`, and `UK` and aircraft `Su-25T` with group radio
+251.0 MHz. `UK` MUST remain in the WWII era package as well. Spitfire types
+MUST NOT be added to modern. It MUST NOT add Georgia/Turkey/USA to the WWII
+era package. Known-country and known-aircraft queries used for validation SHALL
+be filterable by era so Channel/Normandy remain `UK` / `ThirdReich` and WWII
+aircraft only. `usaaf` MUST NOT be a known country. `Germany` MUST NOT be a
+known country in any era.
 
 #### Scenario: WWII countries unchanged
 - **WHEN** the registry lists countries for era `wwii`
@@ -422,8 +423,8 @@ in any era.
 
 #### Scenario: Modern smoke identity
 - **WHEN** the registry lists countries and aircraft for era `modern`
-- **THEN** countries MUST include `Georgia`, `Turkey`, and `USA` and aircraft MUST
-  include `Su-25T` at 251.0 MHz
+- **THEN** countries MUST include `Georgia`, `Turkey`, `USA`, and `UK` and
+  aircraft MUST include `Su-25T` at 251.0 MHz
 
 ### Requirement: Syria theatre in packaged registry
 The packaged registry SHALL list Spec theatre id `Syria` as
@@ -464,3 +465,24 @@ package. It MUST NOT dump every Nevada airport.
 - **WHEN** the registry is queried for airfield `Nellis` with theatre
   `Nevada`
 - **THEN** it MUST return `airdromeId` 4
+
+### Requirement: Falklands theatre in packaged registry
+The packaged registry SHALL list Spec theatre id `Falklands` as
+planner-supported. Folder name under `data/theatres/` MUST match the Spec id.
+Era MUST be `modern`. Data MUST use the verified DCS/PyDCS theatre id only.
+
+#### Scenario: Falklands is supported
+- **WHEN** a caller checks theatre `Falklands`
+- **THEN** the registry MUST treat it as supported and MUST report era
+  `modern`
+
+### Requirement: Mount Pleasant airfield registered
+The packaged registry SHALL map curated airfield key `MountPleasant` to DCS
+`airdromeId` 2 (PyDCS Falklands airport Mount Pleasant) in the `Falklands`
+theatre package. It MUST NOT dump every Falklands airport. The Spec key MUST
+be `MountPleasant`, not `Mount_Pleasant`.
+
+#### Scenario: MountPleasant resolves
+- **WHEN** the registry is queried for airfield `MountPleasant` with theatre
+  `Falklands`
+- **THEN** it MUST return `airdromeId` 2
