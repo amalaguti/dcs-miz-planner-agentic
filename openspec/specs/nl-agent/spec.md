@@ -612,6 +612,15 @@ onto Caucasus.
 - **THEN** it MUST NOT emit a combat Mission Spec and MUST surface a repair
   toward Batumi free_flight (or TheChannel combat)
 
+### Requirement: Infer Caucasus from curated airfield keys
+When rejected Spec JSON names a curated Caucasus airfield and omits a usable
+theatre field, theatre inference MUST return `Caucasus` (not Normandy when
+the key is `Mozdok`).
+
+#### Scenario: Mozdok infers Caucasus
+- **WHEN** rejected JSON contains `"airfield": "Mozdok"` without theatre
+- **THEN** `infer_theatre` MUST return `Caucasus`
+
 ### Requirement: Syria invent is free_flight only
 Invent/chat SHALL allow `free_flight` when the bound theatre is `Syria`
 (home `Incirlik`, `Su-25T`, `sunny_clear`, Turkey blue). It SHALL refuse

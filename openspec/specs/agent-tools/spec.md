@@ -17,6 +17,11 @@ invent DCS identifiers absent from the known catalog.
 - **WHEN** `find_airfield` is called with a query that matches Manston
 - **THEN** the result MUST include airfield name Manston and its known airdrome id
 
+#### Scenario: Find Mozdok on Caucasus
+- **WHEN** `find_airfield` is called for `Mozdok`
+- **THEN** the result MUST include `airdromeId` 28 and theatre `Caucasus`
+  and MUST NOT be a Normandy Needs Oar Point row
+
 #### Scenario: Aircraft details for Spitfire
 - **WHEN** `get_aircraft_details` is called for `SpitfireLFMkIX`
 - **THEN** the result MUST include that aircraft id and its known radio frequency
