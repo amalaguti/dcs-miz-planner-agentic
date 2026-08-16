@@ -11,12 +11,15 @@ from fixtures_support import (
     NORMANDY_EXAMPLE_SPEC,
     NORMANDY_GA_EXAMPLE_SPEC,
     NORMANDY_GA_MISSION_CONTRACTS,
+    NORMANDY_INTERCEPT_EXAMPLE_SPEC,
+    NORMANDY_INTERCEPT_MISSION_CONTRACTS,
     NORMANDY_MISSION_CONTRACTS,
     REQUIRED_MEMBERS,
     channel_available_inventory,
     compile_needs_oar_point,
     compile_needs_oar_point_cap,
     compile_needs_oar_point_ground_attack,
+    compile_needs_oar_point_intercept,
 )
 
 from dcs_miz_planner.loader import load_mission_spec
@@ -88,3 +91,25 @@ def test_compile_needs_oar_point_ground_attack_contracts(tmp_path: Path) -> None
         mission = zf.read("mission").decode("utf-8")
         for token in NORMANDY_GA_MISSION_CONTRACTS:
             assert token in mission, f"missing mission contract {token}"
+
+
+def test_validate_needs_oar_point_intercept() -> None:
+    spec = load_mission_spec(NORMANDY_INTERCEPT_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_needs_oar_point_intercept_contracts(tmp_path: Path) -> None:
+    out = compile_needs_oar_point_intercept(tmp_path / "needs_oar_point_intercept.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Normandy" in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in NORMANDY_INTERCEPT_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+        assert "30989.935547" not in mission
+        assert "-35402.577148" not in mission

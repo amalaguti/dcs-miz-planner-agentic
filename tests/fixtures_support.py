@@ -300,6 +300,28 @@ def compile_needs_oar_point_ground_attack(output_path: Path) -> Path:
     )
 
 
+NORMANDY_INTERCEPT_EXAMPLE_SPEC = REPO_ROOT / "examples" / "needs_oar_point_dawn_intercept.yaml"
+NORMANDY_INTERCEPT_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    "Bf-109K-4",
+    '["airdromeId"]=28',
+    '["start_time"]=21600',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+    '["frequency"]=40.0',
+    "78296.390625",
+    "-84372.234375",
+)
+
+
+def compile_needs_oar_point_intercept(output_path: Path) -> Path:
+    spec = load_mission_spec(NORMANDY_INTERCEPT_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 CAUCASUS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_cold_freeflight.yaml"
 CAUCASUS_MISSION_CONTRACTS = (
     "Su-25T",

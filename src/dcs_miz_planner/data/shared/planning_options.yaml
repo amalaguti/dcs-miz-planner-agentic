@@ -1073,26 +1073,26 @@ options:
     label: Needs Oar Point (home field)
     description: >
       RAF Needs Oar Point — default Normandy Spitfire start for free flight,
-      mid-Channel CAP toward Cherbourg, and Cotentin ground attack.
+      mid-Channel CAP/intercept toward Cherbourg, and Cotentin ground attack.
     support: advisory
     meta:
       theatre: Normandy
       airfield: NeedsOarPoint
       role: home_base
-      mission_types: [free_flight, cap, ground_attack]
+      mission_types: [free_flight, cap, ground_attack, intercept]
 
   - family: channel_place
     id: cherbourg_channel_cap
     label: Cherbourg Channel CAP
     description: >
-      Mid-Channel CAP station south of Needs Oar Point toward Cherbourg /
+      Mid-Channel CAP / intercept station south of Needs Oar Point toward Cherbourg /
       Maupertus (bearing 180°, 63 km, 4000 m). Sea domain — do not copy Manston
-      135/25 or french-coast geometry onto Normandy.
+      135/25 or french-coast / Hawkinge geometry onto Normandy.
     support: advisory
     meta:
       theatre: Normandy
       domain: sea
-      mission_types: [cap]
+      mission_types: [cap, intercept]
       cap_bearing_deg: 180
       cap_distance_km: 63
       cap_altitude_m: 4000

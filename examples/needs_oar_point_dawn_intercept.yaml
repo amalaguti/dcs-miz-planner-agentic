@@ -1,0 +1,29 @@
+schema_version: "1"
+mission_type: intercept
+theatre: Normandy
+name: Needs Oar Point Dawn Intercept
+description: >
+  Cold start at Needs Oar Point at dawn. Intercept Bf-109K-4s approaching the
+  Cherbourg corridor (bearing 180°, 63 km — same station as the packaged CAP
+  place; not Hawkinge/Dover).
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "06:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: NeedsOarPoint
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+enemies:
+  - aircraft: Bf-109K-4
+    count: 2
+    skill: Average
+    country: ThirdReich
+    coalition: red
+objectives:
+  - type: intercept_enemy

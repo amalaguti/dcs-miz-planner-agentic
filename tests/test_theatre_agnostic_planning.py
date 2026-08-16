@@ -47,11 +47,12 @@ from dcs_miz_planner.weather_invent import ensure_weather_seed, resolve_weather_
 from dcs_miz_planner.weather_metar import format_synthetic_metar
 
 REPO = Path(__file__).resolve().parents[1]
-INTERCEPT = REPO / "examples" / "manston_dawn_intercept.yaml"
+ESCORT = REPO / "examples" / "manston_escort.yaml"
 GA = REPO / "examples" / "manston_ground_attack.yaml"
 NORMANDY_FF = REPO / "examples" / "needs_oar_point_cold_freeflight.yaml"
 NORMANDY_CAP = REPO / "examples" / "needs_oar_point_cap.yaml"
 NORMANDY_GA = REPO / "examples" / "needs_oar_point_ground_attack.yaml"
+NORMANDY_INTERCEPT = REPO / "examples" / "needs_oar_point_dawn_intercept.yaml"
 MANSTON_FF = REPO / "examples" / "manston_cold_freeflight.yaml"
 CAUCASUS_FF = REPO / "examples" / "batumi_cold_freeflight.yaml"
 SYRIA_FF = REPO / "examples" / "incirlik_cold_freeflight.yaml"
@@ -59,9 +60,9 @@ NEVADA_FF = REPO / "examples" / "nellis_cold_freeflight.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
 
 
-def _normandy_intercept_json() -> str:
-    """Normandy intercept JSON (Channel geometry copied onto NeedsOarPoint player)."""
-    spec = load_mission_spec(INTERCEPT).model_copy(
+def _normandy_escort_json() -> str:
+    """Normandy escort JSON (Channel escort copied onto NeedsOarPoint player)."""
+    spec = load_mission_spec(ESCORT).model_copy(
         update={"theatre": "Normandy", "player": load_mission_spec(NORMANDY_FF).player}
     )
     return spec.model_dump_json()
@@ -140,17 +141,35 @@ def test_channel_strike_domain_still_classified() -> None:
     assert strike_domain_for_spec(spec) == "land"
 
 
-def test_intercept_fail_closed_on_normandy(tmp_path: Path) -> None:
-    player = load_mission_spec(NORMANDY_FF).player
-    spec = load_mission_spec(INTERCEPT).model_copy(update={"theatre": "Normandy", "player": player})
+def test_intercept_succeeds_on_normandy(tmp_path: Path) -> None:
+    spec = load_mission_spec(NORMANDY_INTERCEPT)
     result = validate_mission_spec(spec, inventory=_inv())
-    assert not result.ok
-    assert any(e.code == "intercept_unsupported_theatre" for e in result.errors)
-    assert not intercept_supported("Normandy")
-    out = tmp_path / "should_not_write_normandy_intercept.miz"
-    with pytest.raises(ValueError):
-        PyDCSCompiler(inventory=_inv()).compile(spec, out)
-    assert not out.is_file()
+    assert result.ok, result.errors
+    assert intercept_supported("Normandy")
+    recipe = intercept_spawn_for_theatre("Normandy")
+    assert recipe.enemy_x == 78296.390625
+    assert recipe.enemy_y == -84372.234375
+    out = tmp_path / "normandy_intercept.miz"
+    PyDCSCompiler(inventory=_inv()).compile(spec, out)
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8")
+        assert "78296.390625" in mission
+        assert "30989.935547" not in mission
+
+
+def test_escort_fail_closed_on_normandy() -> None:
+    spec = load_mission_spec(ESCORT).model_copy(
+        update={"theatre": "Normandy", "player": load_mission_spec(NORMANDY_FF).player}
+    )
+    nudge = host_normandy_combat_nudge(spec)
+    assert nudge is not None
+    assert "escort" in nudge.lower() or "not inventable" in nudge.lower() or "Refuse" in nudge
+    with pytest.raises(ValueError, match="not supported for theatre Normandy"):
+        build_spec_schema("escort", theatre="Normandy")
+    tool = get_mission_spec_schema("escort", theatre="Normandy")
+    assert tool["ok"] is False
+    assert tool["code"] == "combat_unsupported_theatre"
 
 
 def test_channel_intercept_recipe_literals() -> None:
@@ -182,6 +201,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert cap.meta.get("theatre") == "Normandy"
     assert cap.meta.get("cap_bearing_deg") == 180
     assert cap.meta.get("cap_distance_km") == 63
+    assert "intercept" in cap.meta.get("mission_types", [])
     inland = next(o for o in places if o.id == "maupertus_inland_strike")
     assert inland.meta.get("theatre") == "Normandy"
     assert inland.meta.get("domain") == "land"
@@ -555,12 +575,24 @@ def test_schema_theatre_normandy_free_flight() -> None:
 
 def test_schema_theatre_normandy_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Normandy"):
-        build_spec_schema("intercept", theatre="Normandy")
-    tool = get_mission_spec_schema("intercept", theatre="Normandy")
+        build_spec_schema("escort", theatre="Normandy")
+    tool = get_mission_spec_schema("escort", theatre="Normandy")
     assert tool["ok"] is False
     assert tool["code"] == "combat_unsupported_theatre"
     blob = json.dumps(tool)
     assert "Manston" not in blob
+    recon = get_mission_spec_schema("recon", theatre="Normandy")
+    assert recon["ok"] is False
+    assert recon["code"] == "combat_unsupported_theatre"
+    ix = build_spec_schema("intercept", theatre="Normandy")
+    assert ix.example["theatre"] == "Normandy"
+    assert ix.example["player"]["airfield"] == "NeedsOarPoint"
+    assert ix.example["player"]["airfield"] != "Manston"
+    assert ix.example["mission_type"] == "intercept"
+    ix_notes = " ".join(ix.notes)
+    assert "french_coast" not in ix_notes
+    assert "manston_dawn_intercept_radio" not in ix_notes
+    assert "Cherbourg" in ix_notes or "63" in ix_notes
     ga = build_spec_schema("ground_attack", theatre="Normandy")
     assert ga.example["theatre"] == "Normandy"
     assert ga.example["player"]["airfield"] == "NeedsOarPoint"
@@ -613,7 +645,7 @@ def test_stub_default_stays_manston() -> None:
 
 
 def test_normandy_combat_invent_nudge() -> None:
-    spec = load_mission_spec(INTERCEPT).model_copy(
+    spec = load_mission_spec(ESCORT).model_copy(
         update={"theatre": "Normandy", "player": load_mission_spec(NORMANDY_FF).player}
     )
     nudge = host_normandy_combat_nudge(spec)
@@ -623,19 +655,20 @@ def test_normandy_combat_invent_nudge() -> None:
     assert host_normandy_combat_nudge(ff) is None
     assert host_normandy_combat_nudge(load_mission_spec(NORMANDY_CAP)) is None
     assert host_normandy_combat_nudge(load_mission_spec(NORMANDY_GA)) is None
+    assert host_normandy_combat_nudge(load_mission_spec(NORMANDY_INTERCEPT)) is None
 
 
 def test_chat_second_normandy_combat_json_not_captured(tmp_path: Path) -> None:
-    """Combat refuse is every turn — a second intercept JSON must not become the draft."""
+    """Combat refuse is every turn — a second escort JSON must not become the draft."""
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    intercept_json = _normandy_intercept_json()
+    escort_json = _normandy_escort_json()
     session = PlanSession(
         llm=StubLLM(
             script=[
-                LLMResponse(content=intercept_json),
-                LLMResponse(content=intercept_json),
+                LLMResponse(content=escort_json),
+                LLMResponse(content=escort_json),
             ]
         ),
         output_path=out,
@@ -643,11 +676,11 @@ def test_chat_second_normandy_combat_json_not_captured(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    first = session.handle_line("Normandy intercept")
+    first = session.handle_line("Normandy escort")
     assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
     assert session.proposed_spec is None
     assert session.draft_spec is None
-    second = session.handle_line("still an intercept please")
+    second = session.handle_line("still an escort please")
     assert "Draft NOT captured" in second.output or "not inventable" in second.output.lower()
     assert session.proposed_spec is None
     assert session.draft_spec is None
@@ -657,7 +690,7 @@ def test_chat_second_normandy_combat_json_not_captured(tmp_path: Path) -> None:
 
 
 def test_accept_refuses_slipped_normandy_combat_draft(tmp_path: Path) -> None:
-    """/accept must not write a Normandy intercept draft that slipped into proposed_spec."""
+    """/accept must not write a Normandy escort draft that slipped into proposed_spec."""
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
@@ -668,7 +701,7 @@ def test_accept_refuses_slipped_normandy_combat_draft(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    slipped = load_mission_spec(INTERCEPT).model_copy(
+    slipped = load_mission_spec(ESCORT).model_copy(
         update={"theatre": "Normandy", "player": load_mission_spec(NORMANDY_FF).player}
     )
     session.proposed_spec = slipped
@@ -680,16 +713,16 @@ def test_accept_refuses_slipped_normandy_combat_draft(tmp_path: Path) -> None:
 
 
 def test_planner_second_normandy_combat_not_written(tmp_path: Path) -> None:
-    """After one combat nudge, a still-intercept Spec must not be written."""
-    intercept_json = _normandy_intercept_json()
+    """After one combat nudge, a still-escort Spec must not be written."""
+    escort_json = _normandy_escort_json()
     out = tmp_path / "planned.yaml"
     result = plan_mission(
-        "Normandy intercept",
+        "Normandy escort",
         out,
         llm=StubLLM(
             script=[
-                LLMResponse(content=intercept_json),
-                LLMResponse(content=intercept_json),
+                LLMResponse(content=escort_json),
+                LLMResponse(content=escort_json),
             ]
         ),
         inventory=_inv(),

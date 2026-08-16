@@ -27,13 +27,14 @@ description: >-
    YAML. Invent unit/preset cues ≠ geometry — use place recipes + invent path
    clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
    `french_coast_rail_corridor` path deltas only —
-   **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy is free_flight, CAP, or
-   ground_attack (NeedsOarPoint; CAP 180°/63 km; GA 180°/133 km inland of
+   **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy is free_flight, CAP,
+   ground_attack, or intercept (NeedsOarPoint; CAP and intercept 180°/63 km Cherbourg
+   corridor, not Hawkinge; GA 180°/133 km inland of
    Maupertus). Caucasus is
    **free_flight only** (Batumi; CAP refused). Syria is **free_flight only**
    (Incirlik; CAP refused). Nevada is **free_flight only**    (Nellis; CAP
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).
-   Intercept / escort / recon
+   Escort / recon
    on Normandy and all combat on Caucasus/Syria/Nevada/Falklands refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
    nudges MUST infer theatre from rejected JSON and pass it to

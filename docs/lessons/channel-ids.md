@@ -5,6 +5,21 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Normandy intercept spawn: NeedsOarPoint + Cherbourg 180/63 (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Normandy intercept enemy spawn is Needs Oar Point map position
+  (`141296.390625`, `-84372.234375`, airdromeId 28) plus due-south 63 km
+  (`point_from_heading(180, 63000)` → offset `(-63000, 0)`). Enemy
+  `78296.390625`, `-84372.234375` — same station as `cherbourg_channel_cap`
+  (sea). Store literals in `intercept_spawn.py`; do **not** copy Hawkinge /
+  Dover (`30989.935547`, `-35402.577148`) and do **not** recompute Channel
+  goldens from `airport_list()`. Caucasus/Syria/Nevada/Falklands still fail
+  `intercept_unsupported_theatre`.
+- **Code:** `intercept_spawn.py` (`NORMANDY_THEATRE` recipe),
+  `examples/needs_oar_point_dawn_intercept.yaml`,
+  `planning_options.yaml` (`cherbourg_channel_cap` `mission_types: [cap, intercept]`).
+
 ## Normandy domain chord; Maupertus inland 180/133 (2026-08-16)
 
 - **Date:** 2026-08-16

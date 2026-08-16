@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-16 | [Normandy intercept spawn: NeedsOarPoint + Cherbourg 180/63](lessons/channel-ids.md#normandy-intercept-spawn-needsoarpoint--cherbourg-18063-2026-08-16) | `channel-ids` |
+| 2026-08-16 | [Normandy invent allows intercept; escort/recon still refuse](lessons/agent-tooling.md#normandy-invent-allows-intercept-escortrecon-still-refuse-2026-08-16) | `agent-tooling` |
 | 2026-08-16 | [Normandy invent allows ground_attack; land strike list](lessons/agent-tooling.md#normandy-invent-allows-ground_attack-land-strike-list-2026-08-16) | `agent-tooling` |
 | 2026-08-16 | [Normandy domain chord; Maupertus inland 180/133](lessons/channel-ids.md#normandy-domain-chord-maupertus-inland-180133-2026-08-16) | `channel-ids` |
 | 2026-08-16 | [QAG HTML is research colour, not catalog YAML](lessons/agent-tooling.md#qag-html-is-research-colour-not-catalog-yaml-2026-08-16) | `agent-tooling` |

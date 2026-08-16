@@ -5,6 +5,19 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Normandy invent allows intercept; escort/recon still refuse (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Normandy invent/chat may emit **free_flight, CAP, ground_attack,
+  or intercept** at NeedsOarPoint. Intercept uses the Cherbourg corridor
+  (180°/63 km — same as CAP, not Hawkinge). Schema `theatre=Normandy` +
+  `intercept` loads `needs_oar_point_dawn_intercept.yaml` with dedicated
+  `_NORMANDY_INTERCEPT_NOTES` — do not concatenate Channel `_TYPE_NOTES`
+  (Hawkinge / `manston_dawn_intercept_radio`). Escort / recon still refuse
+  every turn. Soft immersion floor and path clamp stay TheChannel-only.
+  Stub LLM stays Manston.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `agent/prompts.py`.
+
 ## Normandy invent allows ground_attack; land strike list (2026-08-16)
 
 - **Date:** 2026-08-16

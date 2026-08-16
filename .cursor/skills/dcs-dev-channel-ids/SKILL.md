@@ -18,8 +18,10 @@ description: >-
    Source = packaged YAML / registry / stock `.miz` research.
 2. **WWII Axis country:** `ThirdReich`, not `Germany`.
 3. **Spitfire group frequency** must be in **VHF** band (e.g. 124.0) — not HF defaults.
-4. Intercept spawn geometry: packaged TheChannel Hawkinge + Dover-approach
-   offset only (`intercept_spawn.py`). Do not recompute from `airport_list()`.
+4. Intercept spawn geometry: packaged recipes in `intercept_spawn.py`.
+   TheChannel: Hawkinge + Dover-approach offset. Do not recompute from
+   `airport_list()`. Normandy: NeedsOarPoint + Cherbourg corridor
+   (`-63000`, `0`) — same station as `cherbourg_channel_cap` (180°/63 km).
    Other theatres fail `intercept_unsupported_theatre`.
 5. Failure ids: exact stock strings (e.g. `ENG0_MAGNETO0`) from
    `data/era/wwii/aircraft_failures.yaml`.
