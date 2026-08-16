@@ -20,7 +20,8 @@ planner-bound for all six mission types at Needs Oar Point
 Invent/chat may use any offerable theatre; Normandy invent is **all six types**
 at Needs Oar Point. **Caucasus** is planner-bound for cold freeflight at Batumi
 (`examples/batumi_cold_freeflight.yaml`; Spec theatre id `Caucasus`; Su-25T /
-Georgia / 251.0 MHz). **Syria** is planner-bound for cold freeflight at Incirlik
+Georgia / 251.0 MHz) plus curated extra airfields and a Mozdok smoke
+(`examples/mozdok_cold_freeflight.yaml`; Russia red). **Syria** is planner-bound for cold freeflight at Incirlik
 (`examples/incirlik_cold_freeflight.yaml`; Spec theatre id `Syria`; Su-25T /
 Turkey / 251.0 MHz). **Nevada** is planner-bound for cold freeflight at Nellis
 (`examples/nellis_cold_freeflight.yaml`; Spec theatre id `Nevada`; Su-25T /
@@ -33,7 +34,9 @@ Hawkinge/Dover **or** Normandy NeedsOarPoint/Cherbourg. Land/sea domain
 classifies TheChannel and Normandy (UK–Cotentin chord); other maps fail closed.
 Channel path clamp stays TheChannel-only. Extra curated Normandy airfields
 (Chailey, Funtington, Tangmere, FordAF, Maupertus,
-SaintPierreduMont, Carpiquet) are packaged. Optional
+SaintPierreduMont, Carpiquet) are packaged. Extra curated Caucasus airfields
+(Kobuleti, SenakiKolkhi, Kutaisi, TbilisiLochini, Vaziani, SochiAdler, Mozdok)
+are packaged. Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
 `manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
@@ -160,6 +163,10 @@ uv run dcs-miz examples/needs_oar_point_escort.yaml
 uv run dcs-miz validate examples/needs_oar_point_recon.yaml
 uv run dcs-miz examples/needs_oar_point_recon.yaml
 # -> out/needs_oar_point_recon.miz
+
+uv run dcs-miz validate examples/mozdok_cold_freeflight.yaml
+uv run dcs-miz examples/mozdok_cold_freeflight.yaml
+# -> out/mozdok_cold_freeflight.miz
 
 uv run dcs-miz validate examples/manston_cap.yaml
 uv run dcs-miz examples/manston_cap.yaml

@@ -1,5 +1,13 @@
 # Curated Spec airfield key -> DCS airdromeId for theatre Caucasus.
 # Verified from PyDCS Caucasus.airport_list(); do not dump all 21 fields.
-# PyDCS name: Batumi.
+# PyDCS names: Batumi, Kobuleti, Senaki-Kolkhi, Kutaisi, Tbilisi-Lochini,
+# Vaziani, Sochi-Adler, Mozdok.
 airfields:
   Batumi: 22 # Batumi
+  Kobuleti: 24 # Kobuleti
+  SenakiKolkhi: 23 # Senaki-Kolkhi (class Senaki_Kolkhi)
+  Kutaisi: 25 # Kutaisi
+  TbilisiLochini: 29 # Tbilisi-Lochini (class Tbilisi_Lochini)
+  Vaziani: 31 # Vaziani
+  SochiAdler: 18 # Sochi-Adler (class Sochi_Adler)
+  Mozdok: 28 # Mozdok (not Normandy NeedsOarPoint)

@@ -39,13 +39,14 @@ description: >-
    Do not copy Manston 125/76 or CAP 180/63 (sea) onto Cotentin land.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
    Germany is a hint, not a known id in **any** era.
-9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AF: `Batumi` = 22
-   (PyDCS name `Batumi`; do not dump 21 fields). Modern smoke: country `Georgia`
-   (not USAF), aircraft `Su-25T` at **251.0 MHz** (modern UHF default — not
-   Spitfire 124, not Batumi ATC). Validate countries/aircraft with
-   `era_for_theatre(spec.theatre)` — Channel+Georgia/Su-25T and
-   Caucasus+Spitfire are unknown. UK is dual-era (wwii + modern). Catalog
-   listing may union eras.
+9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
+   `Batumi` = 22, `Kobuleti` = 24, `SenakiKolkhi` = 23 (PyDCS `Senaki-Kolkhi`),
+   `Kutaisi` = 25, `TbilisiLochini` = 29 (`Tbilisi-Lochini`), `Vaziani` = 31,
+   `SochiAdler` = 18 (`Sochi-Adler`), `Mozdok` = 28 (not NeedsOarPoint).
+   Invent home: `Georgia` + `Su-25T` at **251.0 MHz** at Batumi. `Russia` is
+   modern-only (PyDCS red default — do not place Russia on blue). Channel+Russia
+   and Caucasus+Spitfire are unknown. UK is dual-era. Catalog listing may union
+   eras. Do not dump all 21 fields.
 10. **Syria** Spec id is **`Syria`** (era `modern`). Curated AF: `Incirlik` = 16
     (PyDCS name `Incirlik`; do not dump 59 fields). Modern smoke: country
     `Turkey` (not USA / `usaaf`, not Georgia, not Syria-on-red), aircraft

@@ -5,6 +5,22 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus eight airfields; Russia modern; Mozdok 28 (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Caucasus Stage B curates **eight** Spec keys from live
+  `Caucasus.airport_list()` (21 fields — do not dump): `Batumi` 22,
+  `Kobuleti` 24, `SenakiKolkhi` 23 (PyDCS `Senaki-Kolkhi` / `Senaki_Kolkhi`),
+  `Kutaisi` 25, `TbilisiLochini` 29 (`Tbilisi-Lochini`), `Vaziani` 31,
+  `SochiAdler` 18 (`Sochi-Adler`), `Mozdok` 28. Lookup is theatre-scoped:
+  Mozdok 28 is **not** Normandy NeedsOarPoint 28. Add **`Russia`** only to
+  `era/modern` (PyDCS class `Russia` id 0; Mission defaults Russia to **red**
+  — compile `_ensure_country` will refuse Russia-on-blue). Invent/schema stay
+  Batumi Georgia blue, free_flight only. Player aircraft stays **Su-25T** at
+  **251.0 MHz**. Do not add paid FC3 jets. Channel+Russia is unknown-country.
+- **Code:** `data/theatres/Caucasus/airfields.yaml`,
+  `data/era/modern/countries.yaml`, `examples/mozdok_cold_freeflight.yaml`.
+
 ## Normandy intercept spawn: NeedsOarPoint + Cherbourg 180/63 (2026-08-16)
 
 - **Date:** 2026-08-16

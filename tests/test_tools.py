@@ -55,6 +55,21 @@ def test_find_airfield_manston(tmp_path: Path) -> None:
     assert manston["airdrome_id"] == 5
 
 
+def test_find_airfield_mozdok(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    result = find_airfield("Mozdok", db_path=db)
+    assert result["ok"] is True
+    mozdok = next(a for a in result["airfields"] if a["name"] == "Mozdok")
+    assert mozdok["airdrome_id"] == 28
+    assert mozdok["theatre_id"] == "Caucasus"
+    needs = find_airfield("NeedsOarPoint", db_path=db)
+    assert needs["ok"] is True
+    nop = next(a for a in needs["airfields"] if a["name"] == "NeedsOarPoint")
+    assert nop["airdrome_id"] == 28
+    assert nop["theatre_id"] == "Normandy"
+
+
 def test_get_aircraft_details_spitfire(tmp_path: Path) -> None:
     db = tmp_path / "inventory.sqlite"
     CatalogService(db_path=db).sync()

@@ -799,7 +799,16 @@ def infer_theatre(text: str | None) -> str | None:
     af = _AIRFIELD_IN_JSON.search(text)
     if af and af.group(1) in {"NeedsOarPoint", "Maupertus"}:
         return "Normandy"
-    if af and af.group(1) == "Batumi":
+    if af and af.group(1) in {
+        "Batumi",
+        "Kobuleti",
+        "SenakiKolkhi",
+        "Kutaisi",
+        "TbilisiLochini",
+        "Vaziani",
+        "SochiAdler",
+        "Mozdok",
+    }:
         return "Caucasus"
     if af and af.group(1) == "Incirlik":
         return "Syria"

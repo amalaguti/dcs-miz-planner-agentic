@@ -26,6 +26,13 @@ _CHANNEL_AIRFIELDS = {
 
 _CAUCASUS_AIRFIELDS = {
     "Batumi": 22,
+    "Kobuleti": 24,
+    "SenakiKolkhi": 23,
+    "Kutaisi": 25,
+    "TbilisiLochini": 29,
+    "Vaziani": 31,
+    "SochiAdler": 18,
+    "Mozdok": 28,
 }
 
 _SYRIA_AIRFIELDS = {
@@ -91,14 +98,18 @@ def test_channel_airfields_exactly_verified_twelve(registry):
     assert 11 not in ids
 
 
-def test_caucasus_airfields_exactly_batumi(registry):
+def test_caucasus_airfields_exactly_curated_eight(registry):
     names = registry.list_airfields(theatre="Caucasus")
     assert {n: registry.airdrome_id(n, theatre="Caucasus") for n in names} == _CAUCASUS_AIRFIELDS
     assert registry.airdrome_id("Batumi", theatre="Caucasus") == 22
+    assert registry.airdrome_id("Mozdok", theatre="Caucasus") == 28
+    assert registry.airdrome_id("NeedsOarPoint", theatre="Normandy") == 28
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Batumi", theatre="TheChannel")
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Manston", theatre="Caucasus")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Mozdok", theatre="Normandy")
 
 
 def test_syria_airfields_exactly_incirlik(registry):

@@ -81,7 +81,13 @@ def test_countries_uk_and_thirdreich_only() -> None:
     assert "usaaf" not in registry.list_countries()
     assert "Germany" not in registry.list_countries()
     assert "Germany" not in known_countries(era="modern")
-    assert set(registry.list_countries(era="modern")) == {"Georgia", "Turkey", "USA", "UK"}
+    assert set(registry.list_countries(era="modern")) == {
+        "Georgia",
+        "Turkey",
+        "USA",
+        "UK",
+        "Russia",
+    }
 
 
 def test_era_for_theatre_wwii() -> None:
@@ -420,6 +426,14 @@ def test_era_filter_channel_rejects_georgia_turkey_and_su25t() -> None:
     result_usa = validate_mission_spec(spec_usa, inventory=_inv())
     assert not result_usa.ok
     assert any(e.code == "unknown_country" for e in result_usa.errors)
+    spec_ru = load_mission_spec(MANSTON_FF).model_copy(
+        update={
+            "player": load_mission_spec(MANSTON_FF).player.model_copy(update={"country": "Russia"})
+        }
+    )
+    result_ru = validate_mission_spec(spec_ru, inventory=_inv())
+    assert not result_ru.ok
+    assert any(e.code == "unknown_country" for e in result_ru.errors)
     spec_ac = load_mission_spec(MANSTON_FF).model_copy(
         update={
             "player": load_mission_spec(MANSTON_FF).player.model_copy(update={"aircraft": "Su-25T"})

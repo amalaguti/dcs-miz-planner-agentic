@@ -388,6 +388,25 @@ def compile_batumi(output_path: Path) -> Path:
     )
 
 
+MOZDOK_EXAMPLE_SPEC = REPO_ROOT / "examples" / "mozdok_cold_freeflight.yaml"
+MOZDOK_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=28',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Russia",
+)
+
+
+def compile_mozdok(output_path: Path) -> Path:
+    spec = load_mission_spec(MOZDOK_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 SYRIA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "incirlik_cold_freeflight.yaml"
 SYRIA_MISSION_CONTRACTS = (
     "Su-25T",
