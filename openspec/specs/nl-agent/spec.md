@@ -547,14 +547,10 @@ Natural-language invent/chat SHALL set Spec theatre from offerable theatres
   `airfield: NeedsOarPoint` (and MUST NOT be required to emit TheChannel)
 
 ### Requirement: Normandy invent is free_flight or CAP
-Invent/chat SHALL allow `free_flight`, `cap`, `ground_attack`, `intercept`,
-and `escort` when the bound theatre is `Normandy` (home `NeedsOarPoint`;
-CAP/intercept/escort station from Normandy `channel_place` meta — 180° / 63 km
-— not Manston 135/25, Hawkinge, or escort 120/55; GA strike 180° / 133 km
-inland of Maupertus). It SHALL refuse `recon` on Normandy every turn (never
-capture or write a refused Spec). Repair for refused types MUST nudge toward
-NeedsOarPoint free_flight, CAP, ground_attack, intercept, or escort, or
-switching theatre to TheChannel. Invent MUST NOT copy Channel `channel_place`
+Invent/chat SHALL allow all six mission types when the bound theatre is
+`Normandy` (home `NeedsOarPoint`; CAP/intercept/escort station 180° / 63 km;
+GA/recon AOI 180° / 133 km inland of Maupertus — not Manston 125/76, not
+Hawkinge, not escort 120/55). Repair MUST NOT copy Channel `channel_place`
 geometry (french coast belts, Hawkinge/Dunkirk bearings) onto Normandy.
 
 #### Scenario: Normandy CAP invent allowed
@@ -581,11 +577,11 @@ geometry (french coast belts, Hawkinge/Dunkirk bearings) onto Normandy.
   `airfield: NeedsOarPoint` (MUST NOT be required to emit TheChannel or
   Manston 120/55)
 
-#### Scenario: Normandy recon invent still refused every turn
+#### Scenario: Normandy recon invent allowed
 - **WHEN** invent is asked for recon on Normandy
-- **THEN** it MUST NOT emit a combat Mission Spec and MUST surface a repair
-  toward NeedsOarPoint free_flight, CAP, ground_attack, intercept, or escort
-  (or TheChannel combat)
+- **THEN** the planner MUST be allowed to emit `theatre: Normandy` with
+  `airfield: NeedsOarPoint` and AOI geometry from the Normandy inland
+  place/schema (MUST NOT be required to emit TheChannel or Manston 125/76)
 
 ### Requirement: Channel place cues stay Channel-only
 Invent prompts, schema notes, harbour immersion nudges, and land-path host
