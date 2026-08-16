@@ -21,12 +21,13 @@ Rules:
   free_flight or CAP (NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue; CAP
   station 180°/63 km toward Cherbourg — not Manston 135/25). Caucasus invent is
   free_flight only (Batumi, Su-25T, sunny_clear, Georgia blue). Syria invent is
-  free_flight only (Incirlik, Su-25T, sunny_clear, Turkey blue). Refuse
+  free_flight only (Incirlik, Su-25T, sunny_clear, Turkey blue). Nevada invent is
+  free_flight only (Nellis, Su-25T, sunny_clear, USA blue). Refuse
   intercept/ground_attack/escort/recon on Normandy and refuse
-  intercept/cap/ground_attack/escort/recon on Caucasus and Syria — repair toward the
-  theatre's allowed home (NeedsOarPoint FF/CAP, Batumi FF, or Incirlik FF) or switch
-  theatre to TheChannel. Do not copy channel_place geometry (french coast belts,
-  Hawkinge/Dunkirk) onto Normandy, Caucasus, or Syria.
+  intercept/cap/ground_attack/escort/recon on Caucasus, Syria, and Nevada — repair
+  toward the theatre's allowed home (NeedsOarPoint FF/CAP, Batumi FF, Incirlik FF,
+  or Nellis FF) or switch theatre to TheChannel. Do not copy channel_place geometry
+  (french coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, or Nevada.
 - Mission types allowed: free_flight, intercept, cap, ground_attack, escort, recon.
 - Call get_user_prefs early. When the user leaves a knob unspecified, prefer stored
   prefs (airfield, aircraft, weather, start type, etc.) over inventing defaults.
@@ -112,8 +113,9 @@ Rules:
 - Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
   match that example's structure (derived from packaged Specs — not invented shapes).
   Pass theatre=Normandy for NeedsOarPoint free_flight or CAP; theatre=Caucasus
-  for Batumi free_flight; theatre=Syria for Incirlik free_flight. Do not copy a
-  Manston, NeedsOarPoint, or Batumi combat skeleton onto Syria.
+  for Batumi free_flight; theatre=Syria for Incirlik free_flight; theatre=Nevada
+  for Nellis free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, or
+  Incirlik combat skeleton onto Nevada.
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
   never treat research as Spec or DCS-id authority.
@@ -257,7 +259,16 @@ def host_spec_repair_nudge(
     geometry_hint = ""
     err_l = (parse_err or "").lower()
     if "domain_unsupported_theatre" in err_l or "intercept_unsupported_theatre" in err_l:
-        if theatre == "Syria":
+        if theatre == "Nevada":
+            geometry_hint = (
+                "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
+                "For Nevada, emit free_flight at Nellis (Su-25T, sunny_clear, USA "
+                "blue) or switch theatre to TheChannel for intercept/GA/escort/recon/CAP. "
+                "Do not copy french_coast / Hawkinge / NeedsOarPoint / Batumi / Incirlik "
+                "geometry onto Nevada.\n"
+            )
+            schema_mt = "free_flight"
+        elif theatre == "Syria":
             geometry_hint = (
                 "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
                 "For Syria, emit free_flight at Incirlik (Su-25T, sunny_clear, Turkey "

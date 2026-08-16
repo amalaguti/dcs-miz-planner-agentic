@@ -32,6 +32,10 @@ _SYRIA_AIRFIELDS = {
     "Incirlik": 16,
 }
 
+_NEVADA_AIRFIELDS = {
+    "Nellis": 4,
+}
+
 _NORMANDY_AIRFIELDS = {
     "NeedsOarPoint": 28,
     "Chailey": 27,
@@ -103,6 +107,18 @@ def test_syria_airfields_exactly_incirlik(registry):
         registry.airdrome_id("Manston", theatre="Syria")
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Batumi", theatre="Syria")
+
+
+def test_nevada_airfields_exactly_nellis(registry):
+    names = registry.list_airfields(theatre="Nevada")
+    assert {n: registry.airdrome_id(n, theatre="Nevada") for n in names} == _NEVADA_AIRFIELDS
+    assert registry.airdrome_id("Nellis", theatre="Nevada") == 4
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Nellis", theatre="TheChannel")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Manston", theatre="Nevada")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Incirlik", theatre="Nevada")
 
 
 def test_normandy_airfields_exactly_curated_eight(registry):

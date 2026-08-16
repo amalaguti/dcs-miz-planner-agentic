@@ -204,6 +204,27 @@ def test_host_spec_repair_nudge_syria_domain_uses_incirlik() -> None:
     assert '"airfield":"Manston"' not in nudge
 
 
+def test_host_spec_repair_nudge_nevada_domain_uses_nellis() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    nudge = host_spec_repair_nudge(
+        'Validation failed:\n[{"code": "domain_unsupported_theatre"}]',
+        rejected_text='{"mission_type": "cap", "theatre": "Nevada"}',
+    )
+    assert "Nellis" in nudge
+    assert "Su-25T" in nudge
+    assert "USA" in nudge
+    assert '"airfield": "Nellis"' in nudge or '"airfield":"Nellis"' in nudge
+    assert '"airfield": "NeedsOarPoint"' not in nudge
+    assert '"airfield":"NeedsOarPoint"' not in nudge
+    assert '"airfield": "Batumi"' not in nudge
+    assert '"airfield":"Batumi"' not in nudge
+    assert '"airfield": "Incirlik"' not in nudge
+    assert '"airfield":"Incirlik"' not in nudge
+    assert '"airfield": "Manston"' not in nudge
+    assert '"airfield":"Manston"' not in nudge
+
+
 def test_host_spec_repair_nudge_caucasus_domain_uses_batumi() -> None:
     from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
 

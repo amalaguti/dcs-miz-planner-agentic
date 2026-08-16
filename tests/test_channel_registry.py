@@ -55,6 +55,10 @@ def test_caucasus_supported_and_batumi(registry):
     assert "Georgia" not in registry.list_countries(era="wwii")
     assert "Turkey" in registry.list_countries(era="modern")
     assert "Turkey" not in registry.list_countries(era="wwii")
+    assert "USA" in registry.list_countries(era="modern")
+    assert "USA" not in registry.list_countries(era="wwii")
+    assert "usaaf" not in registry.list_countries(era="modern")
+    assert "usaaf" not in registry.list_countries(era="wwii")
 
 
 def test_syria_supported_and_incirlik(registry):
@@ -63,6 +67,14 @@ def test_syria_supported_and_incirlik(registry):
     assert registry.era_for_theatre("Syria") == "modern"
     assert registry.airdrome_id("Incirlik", theatre="Syria") == 16
     assert registry.airfield_theatre("Incirlik") == "Syria"
+
+
+def test_nevada_supported_and_nellis(registry):
+    assert registry.has_theatre("Nevada")
+    assert "Nevada" in registry.list_theatres()
+    assert registry.era_for_theatre("Nevada") == "modern"
+    assert registry.airdrome_id("Nellis", theatre="Nevada") == 4
+    assert registry.airfield_theatre("Nellis") == "Nevada"
 
 
 def test_known_wwii_aircraft(registry):

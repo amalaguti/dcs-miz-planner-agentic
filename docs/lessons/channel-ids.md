@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada Nellis smoke; USA not usaaf (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Spec theatre `Nevada` (era `modern`) curates **Nellis** =
+  airdromeId **4** (PyDCS name `Nellis`; 247 parking slots; do not dump all
+  17 Nevada fields). Host country is **USA** (blue) — not `usaaf` (voice
+  only), not Georgia, not Turkey. F2 rejected USA at Batumi because Batumi
+  is a Georgia host; Nellis is a US host so USA is correct. Reuse **Su-25T**
+  at **251.0 MHz** (modern UHF default — not Nellis ATC 132.55 / 327.0).
+  Add USA only to `data/era/modern/countries.yaml` next to Georgia and
+  Turkey; do **not** put USA in `era/wwii`. `Germany` is still not a known
+  id in any era. Validate with `era_for_theatre(spec.theatre)`:
+  Channel+USA or Channel+Su-25T is unknown; Nevada+UK or Nevada+Spitfire is
+  unknown; Caucasus+Georgia and Syria+Turkey stay ok.
+- **Code:** `data/era/modern/countries.yaml`, `data/theatres/Nevada/`,
+  `theatre_terrain.py` (`_nevada_terrain` → `Nevada()`).
+
 ## Syria Incirlik smoke; Turkey not USAF (2026-08-15)
 
 - **Date:** 2026-08-15

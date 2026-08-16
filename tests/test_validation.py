@@ -63,6 +63,13 @@ def _channel_inventory(
                 state=AvailabilityState.AVAILABLE,
                 planner_supported=True,
             ),
+            TheatreRecord(
+                theatre_id="Nevada",
+                update_id="NEVADA_terrain",
+                dcs_root="S:/DCS World",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
         ),
     )
 

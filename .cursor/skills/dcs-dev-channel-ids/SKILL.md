@@ -43,8 +43,14 @@ description: >-
 10. **Syria** Spec id is **`Syria`** (era `modern`). Curated AF: `Incirlik` = 16
     (PyDCS name `Incirlik`; do not dump 59 fields). Modern smoke: country
     `Turkey` (not USA / `usaaf`, not Georgia, not Syria-on-red), aircraft
-    `Su-25T` at **251.0 MHz**. Add Turkey only to `era/modern` next to Georgia —
+    `Su-25T` at **251.0 MHz**.     Add Turkey only to `era/modern` next to Georgia —
     never `era/wwii`. Channel+Turkey/Su-25T and Syria+UK/Spitfire are unknown.
+11. **Nevada** Spec id is **`Nevada`** (era `modern`). Curated AF: `Nellis` = 4
+    (PyDCS name `Nellis`; do not dump 17 fields). Modern smoke: country `USA`
+    (not `usaaf`, not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**.
+    Add USA only to `era/modern` next to Georgia and Turkey — never `era/wwii`.
+    `usaaf` is voice only, not a country. Channel+USA/Su-25T and
+    Nevada+UK/Spitfire are unknown.
 
 ## Code touchpoints
 

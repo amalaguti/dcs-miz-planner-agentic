@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-15 | [Nevada invent is free_flight only; schema notes must not concatenate](lessons/agent-tooling.md#nevada-invent-is-free_flight-only-schema-notes-must-not-concatenate-2026-08-15) | `agent-tooling` |
+| 2026-08-15 | [Nevada Nellis smoke; USA not usaaf](lessons/channel-ids.md#nevada-nellis-smoke-usa-not-usaaf-2026-08-15) | `channel-ids` |
 | 2026-08-15 | [Syria invent is free_flight only; schema notes must not concatenate](lessons/agent-tooling.md#syria-invent-is-free_flight-only-schema-notes-must-not-concatenate-2026-08-15) | `agent-tooling` |
 | 2026-08-15 | [Syria Incirlik smoke; Turkey not USAF](lessons/channel-ids.md#syria-incirlik-smoke-turkey-not-usaf-2026-08-15) | `channel-ids` |
 | 2026-08-15 | [Caucasus schema notes must not concatenate Channel bundles](lessons/agent-tooling.md#caucasus-schema-notes-must-not-concatenate-channel-bundles-2026-08-15) | `agent-tooling` |

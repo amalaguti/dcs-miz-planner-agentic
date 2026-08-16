@@ -289,8 +289,8 @@ smoke checklist in that file.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** Full-catalog campaign **M7** (Slice F4
-`nevada-cold-freeflight`) from Agents Window
+**Next promote / in proposal:** Full-catalog campaign **M7** (Slice F5
+`falklands-cold-freeflight`) from Agents Window
 (`/full-catalog-orchestrate`). ME Instant Action smokes below stay do-soon and
 do not block that campaign. Follow
 [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Definitive map fleet
@@ -406,7 +406,7 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** `nevada-cold-freeflight` (F4). Trigger from
+**Next promote / in proposal:** `falklands-cold-freeflight` (F5). Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
 
@@ -429,7 +429,7 @@ Stage C combat on a new map before Slice 0b is on master.
 | F1 | `normandy-airfields-places` | Deepen Normandy (already bound): more AFs, places, CAP invent at Needs Oar Point (stages B–C). After 0 + 0b | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F2 | `caucasus-cold-freeflight` | Caucasus Stage A: bind + smoke freeflight (modern countries/aircraft). After 0 + 0b | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F3 | `syria-cold-freeflight` | Syria Stage A bind + smoke. After F2 pattern | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
-| F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `idea` |
+| F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `idea` |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
@@ -504,7 +504,7 @@ Desk probe + notes under `research/theatres/`. **Definitive owned map fleet**
 | Normandy 2.0 | `Normandy` | available | yes (38 AF) | smoke shipped; ME do-soon |
 | Syria | `Syria` | available | yes | planner smoke |
 | Marianas WWII | `MarianaIslandsWWII` | available | **no module** | no |
-| Nevada | `Nevada` | available | yes | no |
+| Nevada | `Nevada` | available | yes | planner smoke |
 | South Atlantic | `Falklands` | available | yes | no |
 | Caucasus | `Caucasus` | available | yes | planner smoke |
 | Kola | `Kola` | available | **no module** | no |
@@ -576,7 +576,7 @@ Spit.” Do when expanding registry classes or theatres — not before `#15h` pr
   Answer + HTML cascade; clear soft-fail label). Revisit only if DDG HTML is blocked.
 - **Lua enrichment** — scheduled as **M6**; still never LLM-authored mission Lua.
 - **Lua IDE / MCP tooling** — see research **R5–R6**. Schema + LSP for writing snippets; VEAF MCP as a lab only. A future *project-owned* MCP that exposes *our* snippet catalog (`list` / `validate_params` / API docs) is optional once M6 `#22` exists. Native Lua compiler replacing PyDCS remains far-horizon.
-- **Normandy / multi-theatre** — **M7** full-catalog campaign (`nevada-cold-freeflight` next after F3). R11 audit done; campaigns remain inspiration, not Spec import.
+- **Normandy / multi-theatre** — **M7** full-catalog campaign (`falklands-cold-freeflight` next after F4). R11 audit done; campaigns remain inspiration, not Spec import.
 - **Historical validation engine** — date → plausible aircraft/opposition (productized form of R3).
 - **PyDCS issue watch** — research **R7**: **done** 2026-08-04 (`research/pydcs-issues.md` + LESSONS); re-run on R8 bumps / before `#22`.
 - **Dependency upgrade cadence** — research **R8**: check PyDCS + related libs; bump only when recommended.
@@ -624,7 +624,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — ME Failures panel table; curated ids; opt-in Spec (**done** 2026-08-07) |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
-| Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research R11 done**; product expand → **M7** (Slice 0 + 0b + F1 + F2 + F3 done; `nevada-cold-freeflight` next) |
+| Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research R11 done**; product expand → **M7** (Slice 0 + 0b + F1–F4 done; `falklands-cold-freeflight` next) |
 | Which AI options apply to air vs ground vs ships | **Research** R12 `research-ai-options-by-domain` → `#15h` allowlists (**done**) |
 | Full ME Options matrix (helo, armor, more ships, …) | **Research** R12b `research-ai-options-unit-matrix` — not blocking `#15h` |
 | Which AAA / ground / sea / helo types ED campaigns actually use | **Research** R13 `research-campaign-unit-inventory` — promote via `#8e`; never auto-YAML |

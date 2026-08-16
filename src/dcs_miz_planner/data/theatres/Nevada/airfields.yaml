@@ -1,0 +1,5 @@
+# Curated Spec airfield key -> DCS airdromeId for theatre Nevada.
+# Verified from PyDCS Nevada.airport_list(); do not dump all 17 fields.
+# PyDCS name: Nellis.
+airfields:
+  Nellis: 4 # Nellis
