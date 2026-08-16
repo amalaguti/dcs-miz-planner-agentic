@@ -5,6 +5,29 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria invent is free_flight only; schema notes must not concatenate (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Invent allow-table: TheChannel all six; Normandy free_flight +
+  CAP; Caucasus **free_flight only**; Syria **free_flight only** (CAP refused
+  every turn — never capture or write). Schema `theatre=Syria` + free_flight
+  loads `incirlik_cold_freeflight.yaml`; combat types raise with no
+  Manston/NeedsOarPoint/Batumi skeleton. `_notes_for("Syria")` returns
+  dedicated `_SYRIA_FF_NOTES` only — do **not** concatenate `_COMMON_NOTES` /
+  `_TYPE_NOTES` (F2 Bugbot: those cite Manston YAML, Spitfire failures,
+  `channel_place`). `infer_theatre` accepts JSON `Syria` or airfield
+  `Incirlik`. Host repair of `domain_unsupported_theatre` /
+  `intercept_unsupported_theatre` MUST use the inferred theatre — do not
+  hardcode Caucasus or Normandy or a Syria CAP repair becomes Batumi or
+  NeedsOarPoint. Stub LLM stays Manston. `list_strike_targets(theatre="Syria")`
+  is empty. Hermetic inventory: Syria AVAILABLE + `planner_supported=True`;
+  retarget `test_unsupported_installed_map` onto Nevada.
+  Soft immersion floor (`host_immersion_repair_nudge`) is **TheChannel-only** —
+  do not cite `manston_*.yaml` behaviour examples on Syria/Caucasus.
+- **Code:** `agent/spec_schema.py` (`_SYRIA_FF_NOTES`, `_notes_for`),
+  `agent/immersion.py`, `agent/prompts.py`, `agent/session.py`,
+  `agent/planner.py`.
+
 ## Caucasus schema notes must not concatenate Channel bundles (2026-08-15)
 
 - **Date:** 2026-08-15

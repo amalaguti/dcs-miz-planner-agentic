@@ -73,6 +73,7 @@ def dcs_home(tmp_path: Path) -> Path:
             "NORMANDY_terrain",
             "CAUCASUS_terrain",
             "SYRIA_terrain",
+            "NEVADA_terrain",
         ],
     )
     write_terrain(
@@ -81,6 +82,7 @@ def dcs_home(tmp_path: Path) -> Path:
     write_terrain(root, folder="Normandy", theatre_id="Normandy", update_id="NORMANDY_terrain")
     write_terrain(root, folder="Caucasus", theatre_id="Caucasus", update_id="CAUCASUS_terrain")
     write_terrain(root, folder="Syria", theatre_id="Syria", update_id="SYRIA_terrain")
+    write_terrain(root, folder="Nevada", theatre_id="Nevada", update_id="NEVADA_terrain")
     return root
 
 
@@ -164,10 +166,10 @@ def test_incomplete_when_updater_and_disk_disagree(tmp_path: Path):
 
 def test_unsupported_installed_map(dcs_home: Path, saved_games: Path):
     inv = probe_installations(dcs_root=dcs_home, saved_games=saved_games)
-    # Syria is on disk in the fixture but not planner-supported.
-    syria = next(t for t in inv.theatres if t.theatre_id == "Syria")
-    assert syria.state is AvailabilityState.AVAILABLE
-    assert syria.planner_supported is False
+    # Nevada is on disk in the fixture but not planner-supported.
+    nevada = next(t for t in inv.theatres if t.theatre_id == "Nevada")
+    assert nevada.state is AvailabilityState.AVAILABLE
+    assert nevada.planner_supported is False
 
 
 def test_normandy_installed_and_supported(dcs_home: Path, saved_games: Path):
@@ -181,6 +183,13 @@ def test_caucasus_installed_and_supported(dcs_home: Path, saved_games: Path):
     inv = probe_installations(dcs_root=dcs_home, saved_games=saved_games)
     caucasus = next(t for t in inv.theatres if t.theatre_id == "Caucasus")
     assert caucasus.planner_supported is True
+
+
+def test_syria_installed_and_supported(dcs_home: Path, saved_games: Path):
+    inv = probe_installations(dcs_root=dcs_home, saved_games=saved_games)
+    syria = next(t for t in inv.theatres if t.theatre_id == "Syria")
+    assert syria.state is AvailabilityState.AVAILABLE
+    assert syria.planner_supported is True
 
 
 def test_missing_dcs_root(tmp_path: Path):

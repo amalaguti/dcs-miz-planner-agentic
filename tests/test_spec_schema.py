@@ -48,6 +48,8 @@ def test_infer_theatre_from_rejected_json() -> None:
     )
     assert infer_theatre('{"mission_type": "free_flight", "theatre": "Caucasus"}') == "Caucasus"
     assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Batumi"}}') == "Caucasus"
+    assert infer_theatre('{"mission_type": "free_flight", "theatre": "Syria"}') == "Syria"
+    assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Incirlik"}}') == "Syria"
 
 
 def test_get_mission_spec_schema_tool() -> None:

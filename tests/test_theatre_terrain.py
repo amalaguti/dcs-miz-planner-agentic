@@ -37,6 +37,11 @@ def test_caucasus_in_bound_set() -> None:
     assert terrain_for_theatre("Caucasus").__class__.__name__ == "Caucasus"
 
 
+def test_syria_in_bound_set() -> None:
+    assert "Syria" in bound_theatre_ids()
+    assert terrain_for_theatre("Syria").__class__.__name__ == "Syria"
+
+
 def test_unbound_theatre_raises() -> None:
     with pytest.raises(TheatreTerrainError, match="No PyDCS terrain binding"):
         terrain_for_theatre("NotARealTheatre")

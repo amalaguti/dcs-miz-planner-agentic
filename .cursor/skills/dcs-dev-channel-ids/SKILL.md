@@ -40,6 +40,11 @@ description: >-
    Spitfire 124, not Batumi ATC). Validate countries/aircraft with
    `era_for_theatre(spec.theatre)` — Channel+Georgia/Su-25T and
    Caucasus+UK/Spitfire are unknown. Catalog listing may union eras.
+10. **Syria** Spec id is **`Syria`** (era `modern`). Curated AF: `Incirlik` = 16
+    (PyDCS name `Incirlik`; do not dump 59 fields). Modern smoke: country
+    `Turkey` (not USA / `usaaf`, not Georgia, not Syria-on-red), aircraft
+    `Su-25T` at **251.0 MHz**. Add Turkey only to `era/modern` next to Georgia —
+    never `era/wwii`. Channel+Turkey/Su-25T and Syria+UK/Spitfire are unknown.
 
 ## Code touchpoints
 

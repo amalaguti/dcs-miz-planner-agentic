@@ -157,8 +157,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "Get a compact Mission Spec JSON example plus notes/anti-patterns for a "
                 "mission_type (free_flight, intercept, cap, ground_attack, escort, or recon). "
                 "Optional theatre: TheChannel uses Manston examples; Normandy free_flight "
-                "or CAP uses NeedsOarPoint; Normandy intercept/GA/escort/recon is "
-                "unsupported. Call before emitting Spec JSON."
+                "or CAP uses NeedsOarPoint; Caucasus free_flight uses Batumi; Syria "
+                "free_flight uses Incirlik. Normandy intercept/GA/escort/recon and "
+                "Caucasus/Syria combat (including CAP) are unsupported. Call before "
+                "emitting Spec JSON."
             ),
             "parameters": {
                 "type": "object",
@@ -169,7 +171,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                     },
                     "theatre": {
                         "type": "string",
-                        "description": "Optional theatre id (TheChannel or Normandy)",
+                        "description": "Optional theatre id (TheChannel, Normandy, Caucasus, Syria)",
                     },
                 },
                 "required": ["mission_type"],

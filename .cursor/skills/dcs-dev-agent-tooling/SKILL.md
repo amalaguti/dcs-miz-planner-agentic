@@ -27,19 +27,23 @@ description: >-
    `french_coast_rail_corridor` path deltas only —
    **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy
    is free_flight or CAP (NeedsOarPoint; CAP 180°/63 km). Caucasus is
-   **free_flight only** (Batumi; CAP refused). Intercept / GA /
-   escort / recon on Normandy and all combat on Caucasus refuse every turn
+   **free_flight only** (Batumi; CAP refused). Syria is **free_flight only**
+   (Incirlik; CAP refused). Intercept / GA /
+   escort / recon on Normandy and all combat on Caucasus/Syria refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
    nudges MUST infer theatre from rejected JSON and pass it to
-   `build_spec_schema` — do not hardcode `theatre="Normandy"` on
-   domain/intercept errors (Caucasus must repair to Batumi FF, not
-   NeedsOarPoint CAP). Default Manston CAP 135/25 must not repair a Normandy CAP.
-   Caucasus `build_spec_schema` notes MUST NOT concatenate `_COMMON_NOTES` /
-   `_TYPE_NOTES` (those cite Manston YAML, Spitfire failures, `channel_place`).
-   Use a Caucasus-only notes tuple.
+   `build_spec_schema` — do not hardcode `theatre="Normandy"` or
+   `theatre="Caucasus"` on domain/intercept errors (Syria must repair to
+   Incirlik FF, not Batumi or NeedsOarPoint). Default Manston CAP 135/25 must
+   not repair a Normandy CAP. Caucasus/Syria `build_spec_schema` notes MUST NOT
+   concatenate `_COMMON_NOTES` / `_TYPE_NOTES` (those cite Manston YAML,
+   Spitfire failures, `channel_place`). Use a dedicated notes tuple
+   (`_CAUCASUS_FF_NOTES` / `_SYRIA_FF_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
-6. Soft immersion floor for vague invent; soft-warn missing aircraft modules.
+6. Soft immersion floor for vague invent is **TheChannel-only** (Manston
+   behaviour YAML); skip `host_immersion_repair_nudge` on other theatres.
+   Soft-warn missing aircraft modules.
 7. Campaign Doc PDF excerpts are cached; `.cmp` vs `Doc/` inspiration paths differ.
 8. Squadron voice id is **usaaf** (not usaf).
 

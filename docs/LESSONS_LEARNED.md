@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-15 | [Syria invent is free_flight only; schema notes must not concatenate](lessons/agent-tooling.md#syria-invent-is-free_flight-only-schema-notes-must-not-concatenate-2026-08-15) | `agent-tooling` |
+| 2026-08-15 | [Syria Incirlik smoke; Turkey not USAF](lessons/channel-ids.md#syria-incirlik-smoke-turkey-not-usaf-2026-08-15) | `channel-ids` |
 | 2026-08-15 | [Caucasus schema notes must not concatenate Channel bundles](lessons/agent-tooling.md#caucasus-schema-notes-must-not-concatenate-channel-bundles-2026-08-15) | `agent-tooling` |
 | 2026-08-15 | [Modern era + Caucasus Batumi smoke](lessons/channel-ids.md#modern-era--caucasus-batumi-smoke-2026-08-15) | `channel-ids` |
 | 2026-08-15 | [Caucasus invent is free_flight only](lessons/agent-tooling.md#caucasus-invent-is-free_flight-only-2026-08-15) | `agent-tooling` |

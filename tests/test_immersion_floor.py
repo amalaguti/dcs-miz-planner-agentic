@@ -51,6 +51,29 @@ def test_gap_bare_freeflight() -> None:
     assert host_immersion_repair_nudge("interesting free flight", bare)
 
 
+def test_immersion_nudge_skipped_off_channel() -> None:
+    syria = MissionSpec.model_validate(
+        {
+            "schema_version": "1",
+            "mission_type": "free_flight",
+            "theatre": "Syria",
+            "date": {"year": 2024, "month": 6, "day": 6},
+            "start_time": "09:00",
+            "weather": "sunny_clear",
+            "player": {
+                "aircraft": "Su-25T",
+                "airfield": "Incirlik",
+                "coalition": "blue",
+                "country": "Turkey",
+                "skill": "Player",
+                "start": "cold_parking",
+            },
+        }
+    )
+    nudge = host_immersion_repair_nudge("interesting free flight", syria)
+    assert nudge is None
+
+
 def test_no_gap_when_gates_present() -> None:
     gates = load_mission_spec(Path("examples/manston_freeflight_altitude_speed_gates.yaml"))
     assert immersion_gap("interesting free flight", gates) is None

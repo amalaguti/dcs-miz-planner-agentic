@@ -1,0 +1,18 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: Syria
+name: Incirlik Free Flight
+description: Cold start at Incirlik. Free flight over Syria. Clear morning.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Incirlik
+  coalition: blue
+  country: Turkey
+  skill: Player
+  start: cold_parking

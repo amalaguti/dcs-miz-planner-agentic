@@ -64,6 +64,31 @@ BATUMI_COLD_FREE_FLIGHT_JSON = json.dumps(
     }
 )
 
+# Optional test-only Incirlik free-flight JSON (stub default stays Manston).
+INCIRLIK_COLD_FREE_FLIGHT_JSON = json.dumps(
+    {
+        "schema_version": "1",
+        "mission_type": "free_flight",
+        "theatre": "Syria",
+        "name": "Incirlik Free Flight",
+        "description": "Cold start at Incirlik. Free flight over Syria. Clear morning.",
+        "date": {"year": 2024, "month": 6, "day": 6},
+        "start_time": "09:00",
+        "weather": "sunny_clear",
+        "player": {
+            "aircraft": "Su-25T",
+            "airfield": "Incirlik",
+            "coalition": "blue",
+            "country": "Turkey",
+            "skill": "Player",
+            "start": "cold_parking",
+        },
+        "enemies": [],
+        "objectives": [],
+        "triggers": [],
+    }
+)
+
 # Optional test-only Needs Oar Point free-flight JSON (stub default stays Manston).
 NEEDS_OAR_POINT_FREE_FLIGHT_JSON = json.dumps(
     {

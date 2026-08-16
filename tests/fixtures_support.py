@@ -176,7 +176,7 @@ def normalize_mission(mission: str) -> str:
 
 
 def channel_available_inventory() -> TheatreInventory:
-    """Hermetic inventory: Channel + Normandy + Caucasus when planner-bound."""
+    """Hermetic inventory: Channel + Normandy + Caucasus + Syria when planner-bound."""
     return TheatreInventory(
         scanned_at=datetime.now(UTC),
         dcs_roots=("S:/DCS World",),
@@ -199,6 +199,13 @@ def channel_available_inventory() -> TheatreInventory:
             TheatreRecord(
                 theatre_id="Caucasus",
                 update_id="CAUCASUS_terrain",
+                dcs_root="S:/DCS World",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
+            TheatreRecord(
+                theatre_id="Syria",
+                update_id="SYRIA_terrain",
                 dcs_root="S:/DCS World",
                 state=AvailabilityState.AVAILABLE,
                 planner_supported=True,
@@ -268,6 +275,24 @@ CAUCASUS_MISSION_CONTRACTS = (
 
 def compile_batumi(output_path: Path) -> Path:
     spec = load_mission_spec(CAUCASUS_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
+SYRIA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "incirlik_cold_freeflight.yaml"
+SYRIA_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=16',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+)
+
+
+def compile_incirlik(output_path: Path) -> Path:
+    spec = load_mission_spec(SYRIA_EXAMPLE_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(
         spec, output_path, voice="raf"
     )

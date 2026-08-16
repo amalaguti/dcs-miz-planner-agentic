@@ -1,0 +1,5 @@
+# Curated Spec airfield key -> DCS airdromeId for theatre Syria.
+# Verified from PyDCS Syria.airport_list(); do not dump all 59 fields.
+# PyDCS name: Incirlik.
+airfields:
+  Incirlik: 16 # Incirlik

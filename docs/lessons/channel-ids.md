@@ -5,6 +5,21 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria Incirlik smoke; Turkey not USAF (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Spec theatre `Syria` (era `modern`) curates **Incirlik** =
+  airdromeId **16** (PyDCS name `Incirlik`; do not dump all 59 Syria fields).
+  Host country is **Turkey** (blue) — not USA / `usaaf`, not Georgia, not
+  Syria-on-red. Reuse **Su-25T** at **251.0 MHz** (modern UHF default — not
+  Incirlik ATC 122.1 / 360.1). Add Turkey only to `data/era/modern/countries.yaml`
+  next to Georgia; do **not** put Turkey in `era/wwii`. `Germany` is still not
+  a known id in any era. Validate with `era_for_theatre(spec.theatre)`:
+  Channel+Turkey or Channel+Su-25T is unknown; Syria+UK or Syria+Spitfire is
+  unknown; Caucasus+Georgia stays ok.
+- **Code:** `data/era/modern/countries.yaml`, `data/theatres/Syria/`,
+  `theatre_terrain.py` (`_syria_terrain` → `Syria()`).
+
 ## Modern era + Caucasus Batumi smoke (2026-08-15)
 
 - **Date:** 2026-08-15

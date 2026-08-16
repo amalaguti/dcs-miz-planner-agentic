@@ -171,7 +171,13 @@ def immersion_gap(prompt: str, spec: MissionSpec) -> tuple[str, str, str] | None
 
 
 def host_immersion_repair_nudge(prompt: str, spec: MissionSpec) -> str | None:
-    """User-role message asking for one immersion repair, or None if OK."""
+    """User-role message asking for one immersion repair, or None if OK.
+
+    Channel-only: packaged ``mission_behaviour`` examples are Manston YAML.
+    Do not cite those paths on other theatres (Syria/Caucasus Stage A).
+    """
+    if spec.theatre != "TheChannel":
+        return None
     gap = immersion_gap(prompt, spec)
     if gap is None:
         return None
@@ -201,8 +207,8 @@ _THEATRE_ALLOWED_TYPES: dict[str, frozenset[MissionType]] = {
 def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
     """Refuse mission types not allowed on this theatre. Every turn.
 
-    TheChannel: all six. Normandy: free_flight + CAP. Else (Caucasus / Stage A):
-    free_flight only. Callers MUST treat a non-None result as a hard refuse:
+    TheChannel: all six. Normandy: free_flight + CAP. Else (Caucasus / Syria /
+    Stage A): free_flight only. Callers MUST treat a non-None result as a hard refuse:
     never capture a draft and never write YAML. A one-shot ``_used`` flag is not.
     """
     allowed = _THEATRE_ALLOWED_TYPES.get(spec.theatre, frozenset({MissionType.FREE_FLIGHT}))
@@ -223,6 +229,14 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
             "Refuse intercept/cap/ground_attack/escort/recon — emit free_flight "
             "(Su-25T, Georgia blue, sunny_clear) or switch theatre to TheChannel. "
             "Do not copy channel_place or NeedsOarPoint geometry onto Caucasus. "
+            "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
+        )
+    if spec.theatre == "Syria":
+        return (
+            "[Host] Syria invent is free_flight only at Incirlik. "
+            "Refuse intercept/cap/ground_attack/escort/recon — emit free_flight "
+            "(Su-25T, Turkey blue, sunny_clear) or switch theatre to TheChannel. "
+            "Do not copy channel_place or NeedsOarPoint geometry onto Syria. "
             "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
         )
     return (
@@ -254,6 +268,13 @@ def theatre_mission_refuse_chat_line(spec: MissionSpec) -> str:
             "Draft NOT captured. Emit free_flight at Batumi or switch "
             "theatre to TheChannel, then /accept."
         )
+    if spec.theatre == "Syria":
+        return (
+            "[Host] Syria combat (including CAP) is not inventable — "
+            "commander nudged toward Incirlik free_flight, or TheChannel. "
+            "Draft NOT captured. Emit free_flight at Incirlik or switch "
+            "theatre to TheChannel, then /accept."
+        )
     return (
         f"[Host] {spec.theatre} combat is not inventable — "
         "commander nudged toward free_flight or TheChannel. "
@@ -273,6 +294,11 @@ def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
             "Caucasus combat (including CAP) is not inventable. Draft NOT written. "
             "Emit free_flight at Batumi or switch theatre to TheChannel."
         )
+    if spec.theatre == "Syria":
+        return (
+            "Syria combat (including CAP) is not inventable. Draft NOT written. "
+            "Emit free_flight at Incirlik or switch theatre to TheChannel."
+        )
     return (
         f"{spec.theatre} combat is not inventable. Draft NOT written. "
         "Emit free_flight or switch theatre to TheChannel."
@@ -285,6 +311,8 @@ def theatre_mission_refuse_planner_error(spec: MissionSpec) -> str:
         return "Normandy invent is free_flight or CAP; intercept/GA/escort/recon are refused"
     if spec.theatre == "Caucasus":
         return "Caucasus invent is free_flight only; intercept/cap/GA/escort/recon are refused"
+    if spec.theatre == "Syria":
+        return "Syria invent is free_flight only; intercept/cap/GA/escort/recon are refused"
     return f"{spec.theatre} invent is free_flight only; combat types are refused"
 
 
