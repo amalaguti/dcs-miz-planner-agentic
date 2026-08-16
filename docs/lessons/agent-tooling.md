@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## QAG HTML is research colour, not catalog YAML (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Gitignored `research/DCS *` QAG HTML is a **local source** for
+  `research_guidance`, not product data. A thin packaged index
+  (`data/qag_fixtures/qag_index.yaml`) maps those paths; the HTML itself MUST
+  NOT be copied into the wheel. Notes are `fixture:qag:<id>` when the dump is
+  present; if `research/` is missing (CI, installed wheel) QAG notes are empty
+  and canned Channel fixtures remain. QAG UI names, site templates
+  (`FLAK36 BATTERY(Asset Pack Required)`), and `template.lua` strings are
+  **not** Spec/`vehicle_map` ids. The Cold War Anti-Ship HTML was a copy of the
+  WWII anti-ship page — index row `enabled: false`. QAG Dogfight / Anti-Ship SR /
+  SEAD SR are generator families, not Spec `mission_type`s. QAG “Cold War
+  1947–1970” is not a Spec era. Promote only via
+  [`docs/THEATRE_TARGET_PROMOTE.md`](../THEATRE_TARGET_PROMOTE.md) §B.
+- **Code:** `tools/qag_fixtures.py`, `tools/research.py`, `data/qag_fixtures/qag_index.yaml`.
+
 ## Falklands invent is free_flight only; schema notes must not concatenate (2026-08-15)
 
 - **Date:** 2026-08-15

@@ -1,0 +1,158 @@
+# Thin index of gitignored research/ QAG HTML — not the pages themselves.
+# html paths are relative to the local research/ dump. Do not copy those files
+# into the package. QAG UI names are NOT Spec/PyDCS ids.
+# See docs/THEATRE_TARGET_PROMOTE.md §B.
+
+pages:
+  - id: wwii-air-to-air
+    title: DCS WWII Air-to-Air Mission Reference
+    html: "DCS WWII — Air-to-Air Mission Reference/dcs_wwii_air_to_air_missions.html"
+    qag_era: wwii
+    qag_types: [Dogfight, Bomber Escort, Bomber Intercept]
+    spec_mission_types: [intercept, escort, cap]
+    theatres: [TheChannel, Normandy]
+    keywords:
+      - dogfight
+      - bomber
+      - escort
+      - intercept
+      - spitfire
+      - bf 109
+      - fw 190
+      - p-51
+      - b-17
+      - ju 88
+    enabled: true
+
+  - id: wwii-ground-targets
+    title: DCS WWII Ground Target Classes
+    html: "DCS WWII Ground Target Classes/dcs_wwii_ground_targets.html"
+    qag_era: wwii
+    qag_types: [Artillery, Infantry, Unarmed, Armor]
+    spec_mission_types: [ground_attack, recon]
+    theatres: [TheChannel, Normandy]
+    keywords:
+      - artillery
+      - infantry
+      - armor
+      - unarmed
+      - pak
+      - howitzer
+      - strike
+      - ground attack
+      - troops
+    enabled: true
+
+  - id: wwii-air-defence
+    title: DCS WWII Air Defence Sites
+    html: "DCS WWII Air Defence Sites/dcs_wwii_air_defence_sites.html"
+    qag_era: wwii
+    qag_types: [Air Defence Sites]
+    spec_mission_types: [ground_attack, recon]
+    theatres: [TheChannel, Normandy]
+    keywords:
+      - flak
+      - aaa
+      - air defence
+      - air defense
+      - sites
+      - assets pack
+      - searchlight
+      - würzburg
+      - wurzburg
+    enabled: true
+
+  - id: wwii-anti-ship
+    title: DCS WWII Anti-Ship SR
+    html: "DCS WWII Anti-Ship SR/dcs_wwii_anti_ship_sr.html"
+    qag_era: wwii
+    qag_types: [Anti-Ship SR]
+    spec_mission_types: [ground_attack, recon]
+    theatres: [TheChannel, Normandy]
+    keywords:
+      - anti-ship
+      - antiship
+      - submarine
+      - u-boat
+      - uboat
+      - lst
+      - schnellboot
+      - amphibious
+      - naval
+      - shipping
+    snippet_extra: >-
+      Anti-Ship SR is a QAG generator family, not a Spec mission_type; use
+      ground_attack/recon sea_craft shelves.
+    enabled: true
+
+  - id: cw-air-to-air
+    title: DCS Cold War 1947–1970 Air-to-Air Mission Reference
+    html: "DCS Cold War 1947–1970 — Air-to-Air Mission Reference/dcs_cold_war_1947_1970_air_to_air_missions.html"
+    qag_era: cold_war_1947_1970
+    qag_types: [Dogfight, Bomber Escort, Bomber Intercept]
+    spec_mission_types: [intercept, escort, cap]
+    theatres: [Caucasus, Syria, Nevada, Falklands]
+    keywords:
+      - cold war
+      - mig-15
+      - f-86
+      - sabre
+      - dogfight
+      - bomber escort
+    snippet_extra: >-
+      QAG Cold War 1947–1970 is not a Spec era package (planner eras are wwii
+      and modern only).
+    enabled: true
+
+  - id: cw-ground-attack
+    title: DCS Cold War 1947–1970 Ground Attack
+    html: "DCS Cold War 1947–1970 — Ground Attack/dcs_cold_war_1947_1970_ground_attack.html"
+    qag_era: cold_war_1947_1970
+    qag_types: [Artillery, Infantry, Unarmed]
+    spec_mission_types: [ground_attack, recon]
+    theatres: [Caucasus, Syria, Nevada, Falklands]
+    keywords:
+      - cold war
+      - artillery
+      - infantry
+      - unarmed
+      - grad
+      - zil
+      - strike
+      - ground attack
+    snippet_extra: >-
+      QAG Cold War 1947–1970 is not a Spec era package (planner eras are wwii
+      and modern only).
+    enabled: true
+
+  - id: cw-sead
+    title: DCS Cold War 1947–1970 SEAD SR
+    html: "DCS Cold War 1947–1970 — SEAD SR/dcs_cold_war_1947_1970_sead_sr.html"
+    qag_era: cold_war_1947_1970
+    qag_types: [SEAD SR]
+    spec_mission_types: [ground_attack, recon]
+    theatres: [Caucasus, Syria, Nevada, Falklands]
+    keywords:
+      - sead
+      - sam
+      - sa-2
+      - sa-3
+      - aaa
+      - air defence
+      - air defense
+    snippet_extra: >-
+      The planner has no SEAD Spec mission_type; map AAA/SAM colour onto
+      ground_attack or recon shelves only — never invent a SEAD type. QAG
+      Cold War 1947–1970 is not a Spec era.
+    enabled: true
+
+  - id: cw-anti-ship
+    title: DCS WWII Anti-Ship SR (misfiled under Cold War folder)
+    html: "DCS Cold War 1947–1970 — Anti-Ship SR/dcs_wwii_anti_ship_sr.html"
+    qag_era: cold_war_1947_1970
+    qag_types: [Anti-Ship SR]
+    spec_mission_types: [ground_attack, recon]
+    theatres: []
+    keywords: []
+    enabled: false
+    skip_reason: duplicate of wwii-anti-ship (filename and title still WWII)

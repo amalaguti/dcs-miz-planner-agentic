@@ -66,6 +66,9 @@ One OpenSpec change per coherent batch (e.g. “Channel soft + AAA expand” or
 - Auto-promoting discovered install folders into known YAML.
 - Invent inventing Opt* names or unit strings outside allowlists.
 - Treating `list_strike_targets` / catalog as a complete ME unit list.
+- Auto-promoting gitignored `research/` QAG HTML (or its thin `data/qag_fixtures`
+  index) into unit YAML — those pages are local research colour only until a
+  `#8e` verify-then-shelf batch. Do not copy the HTML into the package.
 
 ---
 

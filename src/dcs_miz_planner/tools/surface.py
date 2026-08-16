@@ -584,7 +584,8 @@ def research_guidance(
     Soft-fails: always returns ok with notes (fixtures on offline or live error/empty).
     Live mode sets ``warning`` when web retrieval fails or returns nothing.
     ``focus="mission_design"`` biases live search toward User Files / mission repos /
-    ME patterns (still not Spec-field authority).
+    ME patterns and matches local gitignored research/ QAG HTML offline when present
+    (still not Spec-field authority).
     Research is not Spec or DCS-id authority. ``db_path`` unused (tool signature parity).
     """
     del db_path

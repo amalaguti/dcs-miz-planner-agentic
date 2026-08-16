@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-16 | [QAG HTML is research colour, not catalog YAML](lessons/agent-tooling.md#qag-html-is-research-colour-not-catalog-yaml-2026-08-16) | `agent-tooling` |
 | 2026-08-15 | [Falklands invent is free_flight only; schema notes must not concatenate](lessons/agent-tooling.md#falklands-invent-is-free_flight-only-schema-notes-must-not-concatenate-2026-08-15) | `agent-tooling` |
 | 2026-08-15 | [Falklands MountPleasant key; UK dual-era](lessons/channel-ids.md#falklands-mountpleasant-key-uk-dual-era-2026-08-15) | `channel-ids` |
 | 2026-08-15 | [Nevada invent is free_flight only; schema notes must not concatenate](lessons/agent-tooling.md#nevada-invent-is-free_flight-only-schema-notes-must-not-concatenate-2026-08-15) | `agent-tooling` |

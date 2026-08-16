@@ -284,9 +284,11 @@ Import from `dcs_miz_planner.tools` (no dedicated tools CLI — pytest is the ac
   `record_feedback` — local user memory
 - `research_guidance(query, …, focus=)` — tactics/procedures/history notes for commander
   briefs; `focus=mission_design` biases live search toward User Files / mission repos /
-  ME patterns (offline fixtures by default; set `DCS_MIZ_RESEARCH_LIVE=1` or chat
-  `/research` for best-effort web: DuckDuckGo Instant Answer, then HTML results;
-  soft-fail warns and labels offline fixtures — research is never Spec/DCS-id authority)
+  ME patterns and also matches local gitignored `research/` QAG HTML when present
+  (era/generator colour only — never Spec/DCS-id authority; those pages are not
+  shipped. Set `DCS_MIZ_RESEARCH_LIVE=1` or chat `/research` for best-effort web:
+  DuckDuckGo Instant Answer, then HTML results; soft-fail warns and labels offline
+  fixtures)
 - `validate_mission_spec(path)` / `compile_mission(path, output)` — wrap existing engines
 
 Results are JSON-friendly dicts with an `ok` flag for later LLM tool calling.

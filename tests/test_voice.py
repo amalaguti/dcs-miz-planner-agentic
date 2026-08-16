@@ -54,6 +54,7 @@ def test_compose_neutral_omits_commander_persona() -> None:
     assert "USAAF squadron commander" not in prompt
     assert "TheChannel" in prompt
     assert "research_guidance" in prompt
+    assert "QAG" in prompt
     assert "cap" in prompt
     assert "ground_attack" in prompt
     assert "escort" in prompt

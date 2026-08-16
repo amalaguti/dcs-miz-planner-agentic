@@ -101,9 +101,14 @@ Rules:
   .miz filenames, .cmp short text, and Doc/ PDFs. Default listing is filenames only;
   set include_doc_text=true for short PDF excerpts (cached — unchanged Docs are not
   re-parsed). Prefer Doc excerpts/themes when present; else Doc filenames over raw
-  .cmp stage lists. Treat research notes, .cmp playlists, Doc text, and .miz
-  filenames as inspiration only — map onto packaged behaviours; never import .miz
-  as Spec.
+  .cmp stage lists. When local gitignored research/ QAG HTML is present,
+  research_guidance can return that colour (era / generator classes). QAG UI labels,
+  site templates, and template.lua names are not Spec or PyDCS ids — never copy
+  them into unit_id, aircraft, country, or mission_type. Do not invent Spec types
+  from QAG families (Dogfight, Bomber Escort, Bomber Intercept, Anti-Ship SR,
+  SEAD SR). QAG Cold War 1947–1970 is not a Spec era. Treat research notes, .cmp
+  playlists, Doc text, and .miz filenames as inspiration only — map onto packaged
+  behaviours; never import .miz as Spec.
 - Advisory options guide existing Spec fields (e.g. time_of_day → start_time,
   opposition_density → enemies.count); use their meta hints when present.
 - Supported roe_seed options map to CAP Spec field cap.engagement via meta.engagement
@@ -121,7 +126,7 @@ Rules:
   onto Falklands.
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
-  never treat research as Spec or DCS-id authority.
+  never treat research as Spec or DCS-id authority (including QAG fixture labels).
 - Host slash/CLI owns compile (.miz write), set_user_prefs, and record_generation /
   record_feedback. Those are not on the default agent tool surface — do not expect
   to call them as tools. Validate Specs with validate_mission_spec; emit Spec JSON

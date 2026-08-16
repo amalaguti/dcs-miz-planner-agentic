@@ -107,6 +107,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `intercept_spawn.py` | Theatre-keyed intercept enemy spawn recipes (TheChannel Hawkinge/Dover literals only) | none |
 | `allowlists.py` | Known skills + country hint; countries from era YAML via registry | `registry` |
 | `data/era/`, `data/shared/`, `data/theatres/<SpecId>/` | Packaged YAML SoT (era WWII units/countries, shared weather/planning, per-theatre airfields) | shipped in wheel via hatch force-include |
+| `data/qag_fixtures/` | Thin YAML index of gitignored `research/` QAG HTML for `research_guidance` (pages stay local; not catalog SoT) | shipped in wheel via hatch force-include |
 | `data/sounds/` | Curated sound assets (`asset_id` → `.wav`/`.ogg`) for Spec `sound` actions | shipped in wheel via hatch force-include |
 | `registry.py` | Loads packaged YAML (era + shared + theatre walker); `era_for_theatre` / `list_countries`; lookup API shared by validator/compiler | `data/era`, `data/shared`, `data/theatres`, `pyyaml` |
 | `sounds.py` | Sound-asset registry lookup + path materialization for `.miz` embed | `data/sounds`, `pyyaml` |

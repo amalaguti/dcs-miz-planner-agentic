@@ -12,6 +12,8 @@ import urllib.request
 from collections.abc import Callable
 from html.parser import HTMLParser
 
+from .qag_fixtures import qag_fixture_notes
+
 ENV_RESEARCH_LIVE = "DCS_MIZ_RESEARCH_LIVE"
 
 # Instant Answer is cheap; HTML fallback needs a bit more headroom on slow links.
@@ -94,17 +96,27 @@ def fixture_notes(
     *,
     query: str = "",
     mission_type: str | None = None,
+    theatre: str | None = None,
+    focus: str | None = None,
 ) -> list[dict[str, str]]:
-    """Canned Channel Spitfire-relevant notes (no network)."""
+    """Canned Channel notes plus local research/ QAG HTML when present (no network)."""
     mt = (mission_type or "").strip().lower()
     q = (query or "").lower()
     if mt == "intercept" or "intercept" in q or "bandit" in q or "bf-109" in q:
-        return list(_INTERCEPT_NOTES)
-    if mt == "free_flight" or "free flight" in q or "familiarisation" in q:
-        return list(_FREE_FLIGHT_NOTES)
-    if "intercept" in q:
-        return list(_INTERCEPT_NOTES)
-    return list(_GENERIC_NOTES) + list(_FREE_FLIGHT_NOTES)[:1]
+        canned = list(_INTERCEPT_NOTES)
+    elif mt == "free_flight" or "free flight" in q or "familiarisation" in q:
+        canned = list(_FREE_FLIGHT_NOTES)
+    elif "intercept" in q:
+        canned = list(_INTERCEPT_NOTES)
+    else:
+        canned = list(_GENERIC_NOTES) + list(_FREE_FLIGHT_NOTES)[:1]
+    qag = qag_fixture_notes(
+        query=query,
+        mission_type=mission_type,
+        theatre=theatre,
+        focus=focus,
+    )
+    return qag + canned
 
 
 def _live_enabled(explicit: bool | None) -> bool:
@@ -438,10 +450,18 @@ def gather_research_notes(
 
     ``web_fetch`` is injectable for tests (callable returning notes or raising).
     When omitted, live mode uses Instant Answer then HTML fallback.
-    ``focus="mission_design"`` enriches the live query toward mission-pattern sources.
+    ``focus="mission_design"`` enriches the live query toward mission-pattern sources
+    and also matches local gitignored research/ QAG HTML on the offline path when present.
     Returned notes are always sanitized for agent/host use.
     """
-    fixtures = sanitize_research_notes(fixture_notes(query=query, mission_type=mission_type))
+    fixtures = sanitize_research_notes(
+        fixture_notes(
+            query=query,
+            mission_type=mission_type,
+            theatre=theatre,
+            focus=focus,
+        )
+    )
     if not _live_enabled(live):
         return fixtures, None
 
