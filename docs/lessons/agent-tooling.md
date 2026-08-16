@@ -5,6 +5,33 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands invent is free_flight only; schema notes must not concatenate (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Invent allow-table: TheChannel all six; Normandy free_flight +
+  CAP; Caucasus **free_flight only**; Syria **free_flight only**; Nevada
+  **free_flight only**; Falklands **free_flight only** (CAP refused every
+  turn — never capture or write). Schema `theatre=Falklands` + free_flight
+  loads `mount_pleasant_cold_freeflight.yaml`; combat types raise with no
+  Manston/NeedsOarPoint/Batumi/Incirlik/Nellis skeleton. `_notes_for("Falklands")`
+  returns dedicated `_FALKLANDS_FF_NOTES` only — do **not** concatenate
+  `_COMMON_NOTES` / `_TYPE_NOTES` (those cite Manston YAML, Spitfire
+  failures, `channel_place`). `infer_theatre` accepts JSON `Falklands` or
+  airfield `MountPleasant` (and PyDCS-style `Mount_Pleasant` so a wrong key
+  still repairs to Falklands, not Manston). Host repair of `domain_unsupported_theatre` /
+  `intercept_unsupported_theatre` MUST use the inferred theatre — do not
+  hardcode Nevada, Syria, Caucasus, or Normandy or a Falklands CAP repair
+  becomes Nellis, Incirlik, Batumi, or NeedsOarPoint. Stub LLM stays
+  Manston. `list_strike_targets(theatre="Falklands")` is empty. Hermetic
+  inventory: Falklands AVAILABLE + `planner_supported=True`; retarget
+  `test_unsupported_installed_map` onto Kola (installed, no PyDCS). Soft
+  immersion floor (`host_immersion_repair_nudge`) is **TheChannel-only** —
+  do not cite `manston_*.yaml` behaviour examples on
+  Falklands/Nevada/Syria/Caucasus.
+- **Code:** `agent/spec_schema.py` (`_FALKLANDS_FF_NOTES`, `_notes_for`),
+  `agent/immersion.py`, `agent/prompts.py`, `agent/session.py`,
+  `agent/planner.py`.
+
 ## Nevada invent is free_flight only; schema notes must not concatenate (2026-08-15)
 
 - **Date:** 2026-08-15

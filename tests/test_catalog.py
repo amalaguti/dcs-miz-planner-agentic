@@ -179,6 +179,7 @@ def test_catalog_cli_sync_and_list(tmp_path: Path) -> None:
         "Caucasus",
         "Syria",
         "Nevada",
+        "Falklands",
     }
 
 
@@ -190,11 +191,13 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert "Caucasus" in {t.theatre_id for t in snap.theatres}
     assert "Syria" in {t.theatre_id for t in snap.theatres}
     assert "Nevada" in {t.theatre_id for t in snap.theatres}
+    assert "Falklands" in {t.theatre_id for t in snap.theatres}
     assert "Manston" in {a.name for a in snap.airfields}
     assert "NeedsOarPoint" in {a.name for a in snap.airfields}
     assert "Batumi" in {a.name for a in snap.airfields}
     assert "Incirlik" in {a.name for a in snap.airfields}
     assert "Nellis" in {a.name for a in snap.airfields}
+    assert "MountPleasant" in {a.name for a in snap.airfields}
     by_af = {a.name: a for a in snap.airfields}
     assert by_af["Manston"].theatre_id == "TheChannel"
     assert by_af["NeedsOarPoint"].theatre_id == "Normandy"
@@ -205,6 +208,8 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert by_af["Incirlik"].airdrome_id == 16
     assert by_af["Nellis"].theatre_id == "Nevada"
     assert by_af["Nellis"].airdrome_id == 4
+    assert by_af["MountPleasant"].theatre_id == "Falklands"
+    assert by_af["MountPleasant"].airdrome_id == 2
     assert by_af["FordAF"].theatre_id == "Normandy"
     assert by_af["FordAF"].airdrome_id == 31
     assert "SpitfireLFMkIX" in {a.aircraft_id for a in snap.aircraft}

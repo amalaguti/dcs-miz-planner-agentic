@@ -5,6 +5,27 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands MountPleasant key; UK dual-era (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Spec theatre `Falklands` (product name South Atlantic; era
+  `modern`) curates **MountPleasant** = airdromeId **2** (PyDCS name
+  `Mount Pleasant`; class `Mount_Pleasant`; 37 parking slots; do not dump
+  all 27 Falklands fields). Spec key is **`MountPleasant`**, not
+  `Mount_Pleasant` — same pitfall as Normandy `FordAF` ≠ `Ford_AF`. Host
+  country is **UK** (blue). UK is dual-era: keep it in `era/wwii` and add
+  it to `data/era/modern/countries.yaml` next to Georgia, Turkey, and USA
+  so Falklands can use UK+Su-25T without putting Frogfoot on Channel.
+  Reuse **Su-25T** at **251.0 MHz** (modern UHF default — not Mount
+  Pleasant ATC 133.35 / 250.8). Do **not** add Spitfire to modern.
+  `usaaf` is voice only, not a country. `Germany` is still not a known id
+  in any era. Validate with `era_for_theatre(spec.theatre)`: Channel+UK
+  still ok (wwii); Falklands+Spitfire is unknown; Channel+Su-25T is still
+  unknown. Because countries are era-keyed, UK is now valid on every
+  modern theatre (Caucasus/Syria/Nevada/Falklands).
+- **Code:** `data/era/modern/countries.yaml`, `data/theatres/Falklands/`,
+  `theatre_terrain.py` (`_falklands_terrain` → `Falklands()`).
+
 ## Nevada Nellis smoke; USA not usaaf (2026-08-15)
 
 - **Date:** 2026-08-15

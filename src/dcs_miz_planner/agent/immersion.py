@@ -174,7 +174,7 @@ def host_immersion_repair_nudge(prompt: str, spec: MissionSpec) -> str | None:
     """User-role message asking for one immersion repair, or None if OK.
 
     Channel-only: packaged ``mission_behaviour`` examples are Manston YAML.
-    Do not cite those paths on other theatres (Nevada/Syria/Caucasus Stage A).
+    Do not cite those paths on other theatres (Falklands/Nevada/Syria/Caucasus Stage A).
     """
     if spec.theatre != "TheChannel":
         return None
@@ -208,7 +208,7 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
     """Refuse mission types not allowed on this theatre. Every turn.
 
     TheChannel: all six. Normandy: free_flight + CAP. Else (Caucasus / Syria /
-    Nevada / Stage A): free_flight only. Callers MUST treat a non-None result as a hard refuse:
+    Nevada / Falklands / Stage A): free_flight only. Callers MUST treat a non-None result as a hard refuse:
     never capture a draft and never write YAML. A one-shot ``_used`` flag is not.
     """
     allowed = _THEATRE_ALLOWED_TYPES.get(spec.theatre, frozenset({MissionType.FREE_FLIGHT}))
@@ -245,6 +245,14 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
             "Refuse intercept/cap/ground_attack/escort/recon — emit free_flight "
             "(Su-25T, USA blue, sunny_clear) or switch theatre to TheChannel. "
             "Do not copy channel_place or NeedsOarPoint geometry onto Nevada. "
+            "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
+        )
+    if spec.theatre == "Falklands":
+        return (
+            "[Host] Falklands invent is free_flight only at Mount Pleasant. "
+            "Refuse intercept/cap/ground_attack/escort/recon — emit free_flight "
+            "(Su-25T, UK blue, sunny_clear) or switch theatre to TheChannel. "
+            "Do not copy channel_place or NeedsOarPoint geometry onto Falklands. "
             "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
         )
     return (
@@ -290,6 +298,13 @@ def theatre_mission_refuse_chat_line(spec: MissionSpec) -> str:
             "Draft NOT captured. Emit free_flight at Nellis or switch "
             "theatre to TheChannel, then /accept."
         )
+    if spec.theatre == "Falklands":
+        return (
+            "[Host] Falklands combat (including CAP) is not inventable — "
+            "commander nudged toward Mount Pleasant free_flight, or TheChannel. "
+            "Draft NOT captured. Emit free_flight at Mount Pleasant or switch "
+            "theatre to TheChannel, then /accept."
+        )
     return (
         f"[Host] {spec.theatre} combat is not inventable — "
         "commander nudged toward free_flight or TheChannel. "
@@ -319,6 +334,11 @@ def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
             "Nevada combat (including CAP) is not inventable. Draft NOT written. "
             "Emit free_flight at Nellis or switch theatre to TheChannel."
         )
+    if spec.theatre == "Falklands":
+        return (
+            "Falklands combat (including CAP) is not inventable. Draft NOT written. "
+            "Emit free_flight at Mount Pleasant or switch theatre to TheChannel."
+        )
     return (
         f"{spec.theatre} combat is not inventable. Draft NOT written. "
         "Emit free_flight or switch theatre to TheChannel."
@@ -335,6 +355,8 @@ def theatre_mission_refuse_planner_error(spec: MissionSpec) -> str:
         return "Syria invent is free_flight only; intercept/cap/GA/escort/recon are refused"
     if spec.theatre == "Nevada":
         return "Nevada invent is free_flight only; intercept/cap/GA/escort/recon are refused"
+    if spec.theatre == "Falklands":
+        return "Falklands invent is free_flight only; intercept/cap/GA/escort/recon are refused"
     return f"{spec.theatre} invent is free_flight only; combat types are refused"
 
 

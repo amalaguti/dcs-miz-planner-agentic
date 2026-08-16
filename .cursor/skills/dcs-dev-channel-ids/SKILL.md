@@ -39,18 +39,27 @@ description: >-
    (not USAF), aircraft `Su-25T` at **251.0 MHz** (modern UHF default — not
    Spitfire 124, not Batumi ATC). Validate countries/aircraft with
    `era_for_theatre(spec.theatre)` — Channel+Georgia/Su-25T and
-   Caucasus+UK/Spitfire are unknown. Catalog listing may union eras.
+   Caucasus+Spitfire are unknown. UK is dual-era (wwii + modern). Catalog
+   listing may union eras.
 10. **Syria** Spec id is **`Syria`** (era `modern`). Curated AF: `Incirlik` = 16
     (PyDCS name `Incirlik`; do not dump 59 fields). Modern smoke: country
     `Turkey` (not USA / `usaaf`, not Georgia, not Syria-on-red), aircraft
     `Su-25T` at **251.0 MHz**.     Add Turkey only to `era/modern` next to Georgia —
-    never `era/wwii`. Channel+Turkey/Su-25T and Syria+UK/Spitfire are unknown.
+    never `era/wwii`. Channel+Turkey/Su-25T and Syria+Spitfire are unknown.
 11. **Nevada** Spec id is **`Nevada`** (era `modern`). Curated AF: `Nellis` = 4
     (PyDCS name `Nellis`; do not dump 17 fields). Modern smoke: country `USA`
     (not `usaaf`, not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**.
     Add USA only to `era/modern` next to Georgia and Turkey — never `era/wwii`.
     `usaaf` is voice only, not a country. Channel+USA/Su-25T and
-    Nevada+UK/Spitfire are unknown.
+    Nevada+Spitfire are unknown. UK is dual-era (wwii + modern).
+12. **Falklands** Spec id is **`Falklands`** (product name South Atlantic;
+    era `modern`). Curated AF: `MountPleasant` = 2 (PyDCS name
+    `Mount Pleasant`; class `Mount_Pleasant`; do not dump 27 fields). Spec
+    key MUST be `MountPleasant`, not `Mount_Pleasant` (same pitfall as
+    Normandy `FordAF` ≠ `Ford_AF`). Modern smoke: country `UK` (keep UK in
+    `era/wwii` as well), aircraft `Su-25T` at **251.0 MHz**. Do not add
+    Spitfire to modern. Channel+UK still ok (wwii); Falklands+Spitfire and
+    Channel+Su-25T are unknown.
 
 ## Code touchpoints
 

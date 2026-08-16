@@ -158,9 +158,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "mission_type (free_flight, intercept, cap, ground_attack, escort, or recon). "
                 "Optional theatre: TheChannel uses Manston examples; Normandy free_flight "
                 "or CAP uses NeedsOarPoint; Caucasus free_flight uses Batumi; Syria "
-                "free_flight uses Incirlik; Nevada free_flight uses Nellis. Normandy "
-                "intercept/GA/escort/recon and Caucasus/Syria/Nevada combat (including "
-                "CAP) are unsupported. Call before "
+                "free_flight uses Incirlik; Nevada free_flight uses Nellis; Falklands "
+                "free_flight uses Mount Pleasant. Normandy intercept/GA/escort/recon "
+                "and Caucasus/Syria/Nevada/Falklands combat (including CAP) are "
+                "unsupported. Call before "
                 "emitting Spec JSON."
             ),
             "parameters": {
@@ -172,7 +173,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                     },
                     "theatre": {
                         "type": "string",
-                        "description": "Optional theatre id (TheChannel, Normandy, Caucasus, Syria, Nevada)",
+                        "description": "Optional theatre id (TheChannel, Normandy, Caucasus, Syria, Nevada, Falklands)",
                     },
                 },
                 "required": ["mission_type"],

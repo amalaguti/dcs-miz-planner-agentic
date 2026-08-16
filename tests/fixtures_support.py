@@ -176,7 +176,7 @@ def normalize_mission(mission: str) -> str:
 
 
 def channel_available_inventory() -> TheatreInventory:
-    """Hermetic inventory: Channel + Normandy + Caucasus + Syria + Nevada when planner-bound."""
+    """Hermetic inventory: Channel + Normandy + Caucasus + Syria + Nevada + Falklands when planner-bound."""
     return TheatreInventory(
         scanned_at=datetime.now(UTC),
         dcs_roots=("S:/DCS World",),
@@ -213,6 +213,13 @@ def channel_available_inventory() -> TheatreInventory:
             TheatreRecord(
                 theatre_id="Nevada",
                 update_id="NEVADA_terrain",
+                dcs_root="S:/DCS World",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
+            TheatreRecord(
+                theatre_id="Falklands",
+                update_id="FALKLANDS_terrain",
                 dcs_root="S:/DCS World",
                 state=AvailabilityState.AVAILABLE,
                 planner_supported=True,
@@ -318,6 +325,24 @@ NEVADA_MISSION_CONTRACTS = (
 
 def compile_nellis(output_path: Path) -> Path:
     spec = load_mission_spec(NEVADA_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
+FALKLANDS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "mount_pleasant_cold_freeflight.yaml"
+FALKLANDS_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=2',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+)
+
+
+def compile_mount_pleasant(output_path: Path) -> Path:
+    spec = load_mission_spec(FALKLANDS_EXAMPLE_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(
         spec, output_path, voice="raf"
     )

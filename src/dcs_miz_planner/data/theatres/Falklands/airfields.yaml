@@ -1,0 +1,5 @@
+# Curated Spec airfield key -> DCS airdromeId for theatre Falklands.
+# Verified from PyDCS Falklands.airport_list(); do not dump all 27 fields.
+# PyDCS name: Mount Pleasant (class Mount_Pleasant). Spec key is MountPleasant.
+airfields:
+  MountPleasant: 2 # Mount Pleasant

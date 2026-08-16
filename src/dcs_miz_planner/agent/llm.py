@@ -114,6 +114,31 @@ INCIRLIK_COLD_FREE_FLIGHT_JSON = json.dumps(
     }
 )
 
+# Optional test-only Mount Pleasant free-flight JSON (stub default stays Manston).
+MOUNT_PLEASANT_COLD_FREE_FLIGHT_JSON = json.dumps(
+    {
+        "schema_version": "1",
+        "mission_type": "free_flight",
+        "theatre": "Falklands",
+        "name": "Mount Pleasant Free Flight",
+        "description": "Cold start at Mount Pleasant. Free flight over the Falklands. Clear morning.",
+        "date": {"year": 2024, "month": 6, "day": 6},
+        "start_time": "09:00",
+        "weather": "sunny_clear",
+        "player": {
+            "aircraft": "Su-25T",
+            "airfield": "MountPleasant",
+            "coalition": "blue",
+            "country": "UK",
+            "skill": "Player",
+            "start": "cold_parking",
+        },
+        "enemies": [],
+        "objectives": [],
+        "triggers": [],
+    }
+)
+
 # Optional test-only Needs Oar Point free-flight JSON (stub default stays Manston).
 NEEDS_OAR_POINT_FREE_FLIGHT_JSON = json.dumps(
     {

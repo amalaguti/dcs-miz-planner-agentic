@@ -57,6 +57,8 @@ def test_caucasus_supported_and_batumi(registry):
     assert "Turkey" not in registry.list_countries(era="wwii")
     assert "USA" in registry.list_countries(era="modern")
     assert "USA" not in registry.list_countries(era="wwii")
+    assert "UK" in registry.list_countries(era="modern")
+    assert "UK" in registry.list_countries(era="wwii")
     assert "usaaf" not in registry.list_countries(era="modern")
     assert "usaaf" not in registry.list_countries(era="wwii")
 
@@ -75,6 +77,14 @@ def test_nevada_supported_and_nellis(registry):
     assert registry.era_for_theatre("Nevada") == "modern"
     assert registry.airdrome_id("Nellis", theatre="Nevada") == 4
     assert registry.airfield_theatre("Nellis") == "Nevada"
+
+
+def test_falklands_supported_and_mount_pleasant(registry):
+    assert registry.has_theatre("Falklands")
+    assert "Falklands" in registry.list_theatres()
+    assert registry.era_for_theatre("Falklands") == "modern"
+    assert registry.airdrome_id("MountPleasant", theatre="Falklands") == 2
+    assert registry.airfield_theatre("MountPleasant") == "Falklands"
 
 
 def test_known_wwii_aircraft(registry):

@@ -54,6 +54,7 @@ MANSTON_FF = REPO / "examples" / "manston_cold_freeflight.yaml"
 CAUCASUS_FF = REPO / "examples" / "batumi_cold_freeflight.yaml"
 SYRIA_FF = REPO / "examples" / "incirlik_cold_freeflight.yaml"
 NEVADA_FF = REPO / "examples" / "nellis_cold_freeflight.yaml"
+FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
 
 
 def _normandy_intercept_json() -> str:
@@ -84,7 +85,7 @@ def test_countries_uk_and_thirdreich_only() -> None:
     assert "usaaf" not in registry.list_countries()
     assert "Germany" not in registry.list_countries()
     assert "Germany" not in known_countries(era="modern")
-    assert set(registry.list_countries(era="modern")) == {"Georgia", "Turkey", "USA"}
+    assert set(registry.list_countries(era="modern")) == {"Georgia", "Turkey", "USA", "UK"}
 
 
 def test_era_for_theatre_wwii() -> None:
@@ -94,6 +95,7 @@ def test_era_for_theatre_wwii() -> None:
     assert registry.era_for_theatre("Caucasus") == "modern"
     assert registry.era_for_theatre("Syria") == "modern"
     assert registry.era_for_theatre("Nevada") == "modern"
+    assert registry.era_for_theatre("Falklands") == "modern"
 
 
 def test_airfield_relative_map_point_passes_theatre() -> None:
@@ -253,6 +255,37 @@ def test_schema_theatre_nevada_free_flight() -> None:
     assert "french_coast" not in blob
 
 
+def test_schema_theatre_falklands_free_flight() -> None:
+    view = build_spec_schema("free_flight", theatre="Falklands")
+    assert view.example["theatre"] == "Falklands"
+    assert view.example["player"]["airfield"] == "MountPleasant"
+    assert view.example["player"]["aircraft"] == "Su-25T"
+    assert view.example["player"]["country"] == "UK"
+    assert view.example["player"]["airfield"] != "Manston"
+    assert view.example["player"]["airfield"] != "NeedsOarPoint"
+    assert view.example["player"]["airfield"] != "Batumi"
+    assert view.example["player"]["airfield"] != "Incirlik"
+    assert view.example["player"]["airfield"] != "Nellis"
+    tool = get_mission_spec_schema("free_flight", theatre="Falklands")
+    assert tool["ok"] is True
+    assert tool["example"]["player"]["airfield"] == "MountPleasant"
+    blob = " ".join(view.notes)
+    assert "MountPleasant" in blob or "Mount Pleasant" in blob
+    assert "Su-25T" in blob
+    assert "UK" in blob
+    assert "mount_pleasant_cold_freeflight.yaml" in blob
+    assert "manston_" not in blob.lower()
+    assert "examples are Channel templates" not in blob
+    assert "SpitfireLFMkIX" not in blob
+    assert "ENG0_MAGNETO0" not in blob
+    assert "channel_place" not in blob
+    assert "NeedsOarPoint" not in blob
+    assert "Batumi" not in blob
+    assert "Incirlik" not in blob
+    assert "Nellis" not in blob
+    assert "french_coast" not in blob
+
+
 def test_schema_theatre_syria_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Syria"):
         build_spec_schema("intercept", theatre="Syria")
@@ -280,6 +313,22 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
     assert "NeedsOarPoint" not in blob
     assert "Batumi" not in blob
     assert "Incirlik" not in blob
+
+
+def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
+    with pytest.raises(ValueError, match="not supported for theatre Falklands"):
+        build_spec_schema("intercept", theatre="Falklands")
+    with pytest.raises(ValueError, match="not supported for theatre Falklands"):
+        build_spec_schema("cap", theatre="Falklands")
+    tool = get_mission_spec_schema("cap", theatre="Falklands")
+    assert tool["ok"] is False
+    assert tool["code"] == "combat_unsupported_theatre"
+    blob = json.dumps(tool)
+    assert "Manston" not in blob
+    assert "NeedsOarPoint" not in blob
+    assert "Batumi" not in blob
+    assert "Incirlik" not in blob
+    assert "Nellis" not in blob
 
 
 def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
@@ -330,15 +379,14 @@ def test_era_filter_channel_rejects_georgia_turkey_and_su25t() -> None:
     assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
 
 
-def test_era_filter_caucasus_rejects_uk_and_spitfire() -> None:
-    spec = load_mission_spec(CAUCASUS_FF).model_copy(
+def test_era_filter_caucasus_rejects_spitfire() -> None:
+    spec_uk = load_mission_spec(CAUCASUS_FF).model_copy(
         update={
             "player": load_mission_spec(CAUCASUS_FF).player.model_copy(update={"country": "UK"})
         }
     )
-    result = validate_mission_spec(spec, inventory=_inv())
-    assert not result.ok
-    assert any(e.code == "unknown_country" for e in result.errors)
+    result_uk = validate_mission_spec(spec_uk, inventory=_inv())
+    assert result_uk.ok, result_uk.errors
     spec_ac = load_mission_spec(CAUCASUS_FF).model_copy(
         update={
             "player": load_mission_spec(CAUCASUS_FF).player.model_copy(
@@ -351,13 +399,12 @@ def test_era_filter_caucasus_rejects_uk_and_spitfire() -> None:
     assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
 
 
-def test_era_filter_syria_rejects_uk_and_spitfire() -> None:
-    spec = load_mission_spec(SYRIA_FF).model_copy(
+def test_era_filter_syria_rejects_spitfire() -> None:
+    spec_uk = load_mission_spec(SYRIA_FF).model_copy(
         update={"player": load_mission_spec(SYRIA_FF).player.model_copy(update={"country": "UK"})}
     )
-    result = validate_mission_spec(spec, inventory=_inv())
-    assert not result.ok
-    assert any(e.code == "unknown_country" for e in result.errors)
+    result_uk = validate_mission_spec(spec_uk, inventory=_inv())
+    assert result_uk.ok, result_uk.errors
     spec_ac = load_mission_spec(SYRIA_FF).model_copy(
         update={
             "player": load_mission_spec(SYRIA_FF).player.model_copy(
@@ -370,16 +417,30 @@ def test_era_filter_syria_rejects_uk_and_spitfire() -> None:
     assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
 
 
-def test_era_filter_nevada_rejects_uk_and_spitfire() -> None:
-    spec = load_mission_spec(NEVADA_FF).model_copy(
+def test_era_filter_nevada_rejects_spitfire() -> None:
+    spec_uk = load_mission_spec(NEVADA_FF).model_copy(
         update={"player": load_mission_spec(NEVADA_FF).player.model_copy(update={"country": "UK"})}
     )
-    result = validate_mission_spec(spec, inventory=_inv())
-    assert not result.ok
-    assert any(e.code == "unknown_country" for e in result.errors)
+    result_uk = validate_mission_spec(spec_uk, inventory=_inv())
+    assert result_uk.ok, result_uk.errors
     spec_ac = load_mission_spec(NEVADA_FF).model_copy(
         update={
             "player": load_mission_spec(NEVADA_FF).player.model_copy(
+                update={"aircraft": "SpitfireLFMkIX"}
+            )
+        }
+    )
+    result_ac = validate_mission_spec(spec_ac, inventory=_inv())
+    assert not result_ac.ok
+    assert any(e.code == "unknown_aircraft" for e in result_ac.errors)
+
+
+def test_era_filter_falklands_rejects_spitfire() -> None:
+    spec = load_mission_spec(FALKLANDS_FF)
+    assert validate_mission_spec(spec, inventory=_inv()).ok
+    spec_ac = load_mission_spec(FALKLANDS_FF).model_copy(
+        update={
+            "player": load_mission_spec(FALKLANDS_FF).player.model_copy(
                 update={"aircraft": "SpitfireLFMkIX"}
             )
         }
@@ -396,6 +457,8 @@ def test_era_filter_caucasus_georgia_and_syria_turkey_ok() -> None:
     assert validate_mission_spec(syria, inventory=_inv()).ok
     nevada = load_mission_spec(NEVADA_FF)
     assert validate_mission_spec(nevada, inventory=_inv()).ok
+    falklands = load_mission_spec(FALKLANDS_FF)
+    assert validate_mission_spec(falklands, inventory=_inv()).ok
 
 
 def test_caucasus_cap_invent_nudge() -> None:
@@ -440,6 +503,22 @@ def test_nevada_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(ff) is None
 
 
+def test_falklands_cap_invent_nudge() -> None:
+    spec = load_mission_spec(NORMANDY_CAP).model_copy(
+        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
+    )
+    nudge = host_normandy_combat_nudge(spec)
+    assert nudge is not None
+    assert "Mount Pleasant" in nudge
+    assert "free_flight" in nudge
+    assert "CAP at NeedsOarPoint" not in nudge
+    assert "free_flight at Batumi" not in nudge
+    assert "free_flight at Incirlik" not in nudge
+    assert "free_flight at Nellis" not in nudge
+    ff = load_mission_spec(FALKLANDS_FF)
+    assert host_normandy_combat_nudge(ff) is None
+
+
 def test_schema_theatre_normandy_free_flight() -> None:
     view = build_spec_schema("free_flight", theatre="Normandy")
     assert view.example["theatre"] == "Normandy"
@@ -472,6 +551,7 @@ def test_stub_default_stays_manston() -> None:
     from dcs_miz_planner.agent.llm import (
         BATUMI_COLD_FREE_FLIGHT_JSON,
         INCIRLIK_COLD_FREE_FLIGHT_JSON,
+        MOUNT_PLEASANT_COLD_FREE_FLIGHT_JSON,
         NELLIS_COLD_FREE_FLIGHT_JSON,
     )
 
@@ -491,6 +571,10 @@ def test_stub_default_stays_manston() -> None:
     assert nellis["player"]["airfield"] == "Nellis"
     assert nellis["theatre"] == "Nevada"
     assert nellis["player"]["country"] == "USA"
+    mount = json.loads(MOUNT_PLEASANT_COLD_FREE_FLIGHT_JSON)
+    assert mount["player"]["airfield"] == "MountPleasant"
+    assert mount["theatre"] == "Falklands"
+    assert mount["player"]["country"] == "UK"
 
 
 def test_normandy_combat_invent_nudge() -> None:
@@ -662,6 +746,37 @@ def test_chat_nevada_cap_not_captured(tmp_path: Path) -> None:
     assert "Wrote Spec" not in accepted.output
 
 
+def test_chat_falklands_cap_not_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    cap_json = (
+        load_mission_spec(NORMANDY_CAP)
+        .model_copy(
+            update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
+        )
+        .model_dump_json()
+    )
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=cap_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    first = session.handle_line("Falklands CAP")
+    assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
+    assert "Mount Pleasant" in first.output
+    assert "NeedsOarPoint" not in first.output
+    assert "Batumi" not in first.output
+    assert "Incirlik" not in first.output
+    assert "Nellis" not in first.output
+    assert session.proposed_spec is None
+    accepted = session.handle_line("/accept")
+    assert not out.exists()
+    assert "Wrote Spec" not in accepted.output
+
+
 def test_chat_normandy_cap_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
@@ -755,6 +870,9 @@ def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:
     nevada = list_strike_targets(theatre="Nevada", db_path=db)
     assert nevada["ok"] is True
     assert nevada["units"] == []
+    falklands = list_strike_targets(theatre="Falklands", db_path=db)
+    assert falklands["ok"] is True
+    assert falklands["units"] == []
 
 
 def test_metar_egmh_channel_only() -> None:
@@ -782,6 +900,11 @@ def test_metar_egmh_channel_only() -> None:
     assert "EGMH" not in metar_nv
     assert "ICAO" not in metar_nv
     assert metar_nv.endswith("NOSIG RMK SIM")
+    falklands = ensure_weather_seed(load_mission_spec(FALKLANDS_FF), seed=1)
+    metar_fk = format_synthetic_metar(resolve_weather_snapshot(falklands), falklands)
+    assert "EGMH" not in metar_fk
+    assert "ICAO" not in metar_fk
+    assert metar_fk.endswith("NOSIG RMK SIM")
 
 
 def test_miz_patch_reweather_fail_closed_on_normandy(tmp_path: Path) -> None:
@@ -811,6 +934,8 @@ def test_date_realism_from_era_map() -> None:
     assert date_realism_warnings(syria) == ()
     nevada = load_mission_spec(NEVADA_FF)
     assert date_realism_warnings(nevada) == ()
+    falklands = load_mission_spec(FALKLANDS_FF)
+    assert date_realism_warnings(falklands) == ()
 
 
 def test_normandy_join_up_still_compiles(tmp_path: Path) -> None:

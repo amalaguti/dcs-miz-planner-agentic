@@ -75,6 +75,7 @@ def dcs_home(tmp_path: Path) -> Path:
             "SYRIA_terrain",
             "NEVADA_terrain",
             "FALKLANDS_terrain",
+            "KOLA_terrain",
         ],
     )
     write_terrain(
@@ -85,6 +86,7 @@ def dcs_home(tmp_path: Path) -> Path:
     write_terrain(root, folder="Syria", theatre_id="Syria", update_id="SYRIA_terrain")
     write_terrain(root, folder="Nevada", theatre_id="Nevada", update_id="NEVADA_terrain")
     write_terrain(root, folder="Falklands", theatre_id="Falklands", update_id="FALKLANDS_terrain")
+    write_terrain(root, folder="Kola", theatre_id="Kola", update_id="KOLA_terrain")
     return root
 
 
@@ -168,10 +170,10 @@ def test_incomplete_when_updater_and_disk_disagree(tmp_path: Path):
 
 def test_unsupported_installed_map(dcs_home: Path, saved_games: Path):
     inv = probe_installations(dcs_root=dcs_home, saved_games=saved_games)
-    # Falklands is on disk in the fixture but not planner-supported.
-    falklands = next(t for t in inv.theatres if t.theatre_id == "Falklands")
-    assert falklands.state is AvailabilityState.AVAILABLE
-    assert falklands.planner_supported is False
+    # Kola is on disk in the fixture but not planner-supported (no PyDCS bind).
+    kola = next(t for t in inv.theatres if t.theatre_id == "Kola")
+    assert kola.state is AvailabilityState.AVAILABLE
+    assert kola.planner_supported is False
 
 
 def test_normandy_installed_and_supported(dcs_home: Path, saved_games: Path):
@@ -199,6 +201,13 @@ def test_nevada_installed_and_supported(dcs_home: Path, saved_games: Path):
     nevada = next(t for t in inv.theatres if t.theatre_id == "Nevada")
     assert nevada.state is AvailabilityState.AVAILABLE
     assert nevada.planner_supported is True
+
+
+def test_falklands_installed_and_supported(dcs_home: Path, saved_games: Path):
+    inv = probe_installations(dcs_root=dcs_home, saved_games=saved_games)
+    falklands = next(t for t in inv.theatres if t.theatre_id == "Falklands")
+    assert falklands.state is AvailabilityState.AVAILABLE
+    assert falklands.planner_supported is True
 
 
 def test_missing_dcs_root(tmp_path: Path):

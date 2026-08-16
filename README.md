@@ -20,9 +20,12 @@ Georgia / 251.0 MHz). **Syria** is planner-bound for cold freeflight at Incirlik
 (`examples/incirlik_cold_freeflight.yaml`; Spec theatre id `Syria`; Su-25T /
 Turkey / 251.0 MHz). **Nevada** is planner-bound for cold freeflight at Nellis
 (`examples/nellis_cold_freeflight.yaml`; Spec theatre id `Nevada`; Su-25T /
-USA / 251.0 MHz). Caucasus, Syria, and Nevada invent are **free_flight only** —
-CAP and other combat types refuse. Intercept, ground_attack, escort, and recon
-still refuse off TheChannel (Normandy CAP excepted).
+USA / 251.0 MHz). **Falklands** (South Atlantic) is planner-bound for cold
+freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
+Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
+251.0 MHz). Caucasus, Syria, Nevada, and Falklands invent are **free_flight
+only** — CAP and other combat types refuse. Intercept, ground_attack, escort,
+and recon still refuse off TheChannel (Normandy CAP excepted).
 Extra curated Normandy airfields (Chailey, Funtington, Tangmere, FordAF, Maupertus,
 SaintPierreduMont, Carpiquet) are packaged. Land/sea domain, intercept spawn, and
 Channel path clamp fail closed or skip off TheChannel. Optional
@@ -104,8 +107,8 @@ Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 **Intentional limits:** Channel theatre is the complete combat surface today
 (Normandy invent is free_flight or CAP at Needs Oar Point; Caucasus invent is
 free_flight only at Batumi; Syria invent is free_flight only at Incirlik;
-Nevada invent is free_flight only at Nellis; intercept/GA still refuse off
-TheChannel).
+Nevada invent is free_flight only at Nellis; Falklands invent is free_flight
+only at Mount Pleasant; intercept/GA still refuse off TheChannel).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for
 inspiration, not imported as Spec; stub LLM + offline research fixtures keep tests
