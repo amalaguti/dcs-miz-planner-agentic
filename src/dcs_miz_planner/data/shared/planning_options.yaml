@@ -1072,14 +1072,14 @@ options:
     id: needs_oar_point_home
     label: Needs Oar Point (home field)
     description: >
-      RAF Needs Oar Point — default Normandy Spitfire start for free flight,
-      mid-Channel CAP/intercept/escort toward Cherbourg, and Cotentin ground attack.
+      RAF Needs Oar Point — default Normandy Spitfire start for all six
+      mission types (Cherbourg-corridor CAP/intercept/escort; Cotentin GA/recon).
     support: advisory
     meta:
       theatre: Normandy
       airfield: NeedsOarPoint
       role: home_base
-      mission_types: [free_flight, cap, ground_attack, intercept, escort]
+      mission_types: [free_flight, cap, ground_attack, intercept, escort, recon]
 
   - family: channel_place
     id: cherbourg_channel_cap
@@ -1102,17 +1102,17 @@ options:
     id: maupertus_inland_strike
     label: Maupertus inland strike
     description: >
-      Axis-held Cotentin land inland of Maupertus for Normandy GA — place
-      soft/AAA on French soil, not on UK fields or mid-Channel water. Copy
-      strike_bearing_deg / strike_distance_km. Do not copy Manston 125/76 or
-      Cherbourg CAP 180/63 (sea).
+      Axis-held Cotentin land inland of Maupertus for Normandy GA and recon —
+      place soft/AAA on French soil, not on UK fields or mid-Channel water. Copy
+      strike_bearing_deg / strike_distance_km (recon AOI uses the same numbers).
+      Do not copy Manston 125/76 or Cherbourg CAP 180/63 (sea).
     support: advisory
     meta:
       theatre: Normandy
       domain: land
       geometry_hint: inland_of_maupertus
       related_classes: [soft_vehicles, aaa_guns]
-      mission_types: [ground_attack]
+      mission_types: [ground_attack, recon]
       cues: [maupertus, cherbourg, cotentin, inland, convoy, flak, trucks]
       preferred_ai_preset_soft: convoy_transit
       preferred_ai_preset_aaa: aaa_alert

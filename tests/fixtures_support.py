@@ -346,6 +346,30 @@ def compile_needs_oar_point_escort(output_path: Path) -> Path:
     )
 
 
+NORMANDY_RECON_EXAMPLE_SPEC = REPO_ROOT / "examples" / "needs_oar_point_recon.yaml"
+NORMANDY_RECON_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    '["airdromeId"]=28',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+    "Reconnaissance",
+    "Blitz_36-6700A",
+    "recon_aoi",
+    "recon_area_observed",
+    "a_out_text_delay",
+    '["value"]=4',
+)
+
+
+def compile_needs_oar_point_recon(output_path: Path) -> Path:
+    spec = load_mission_spec(NORMANDY_RECON_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 CAUCASUS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_cold_freeflight.yaml"
 CAUCASUS_MISSION_CONTRACTS = (
     "Su-25T",

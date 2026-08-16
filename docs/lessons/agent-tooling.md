@@ -5,6 +5,21 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Normandy invent allows recon; all six types (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Normandy invent/chat may emit **all six** mission types at
+  NeedsOarPoint. Recon AOI is inland of Maupertus (180° / 133 km / 2000 m —
+  same land station as GA `maupertus_inland_strike`, not Manston 125/76, not
+  CAP/intercept/escort 180/63 sea). Schema `theatre=Normandy` + `recon` loads
+  `needs_oar_point_recon.yaml` with dedicated `_NORMANDY_RECON_NOTES` — do
+  **not** concatenate Channel `_TYPE_NOTES` (french_coast / U-boat / 125/76).
+  Compiler recon is already airfield-relative; no intercept-spawn recipe.
+  Stub LLM stays Manston. Soft immersion floor and path clamp stay
+  TheChannel-only.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `agent/prompts.py`,
+  `examples/needs_oar_point_recon.yaml`.
+
 ## Normandy invent allows escort; recon still refuses (2026-08-16)
 
 - **Date:** 2026-08-16

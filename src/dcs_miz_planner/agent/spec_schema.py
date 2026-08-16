@@ -39,11 +39,8 @@ _NORMANDY_CAP_EXAMPLE = "needs_oar_point_cap.yaml"
 _NORMANDY_GROUND_ATTACK_EXAMPLE = "needs_oar_point_ground_attack.yaml"
 _NORMANDY_INTERCEPT_EXAMPLE = "needs_oar_point_dawn_intercept.yaml"
 _NORMANDY_ESCORT_EXAMPLE = "needs_oar_point_escort.yaml"
-_NORMANDY_UNSUPPORTED_COMBAT = frozenset(
-    {
-        MissionType.RECON.value,
-    }
-)
+_NORMANDY_RECON_EXAMPLE = "needs_oar_point_recon.yaml"
+_NORMANDY_UNSUPPORTED_COMBAT: frozenset[str] = frozenset()
 _CAUCASUS_FREE_FLIGHT_EXAMPLE = "batumi_cold_freeflight.yaml"
 _CAUCASUS_UNSUPPORTED_COMBAT = frozenset(
     {
@@ -242,7 +239,7 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
 _COMMON_NOTES: tuple[str, ...] = (
     (
         'schema_version must be "1"; theatre is an offerable id '
-        "(TheChannel for combat; Normandy free_flight, CAP, ground_attack, intercept, or escort at NeedsOarPoint; "
+        "(TheChannel for combat; Normandy all six types at NeedsOarPoint; "
         "Caucasus free_flight only at Batumi; Syria free_flight only at Incirlik; "
         "Nevada free_flight only at Nellis; Falklands free_flight only at "
         "Mount Pleasant)."
@@ -491,13 +488,13 @@ def supported_mission_types() -> tuple[str, ...]:
 def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSchemaView:
     """Load and validate the packaged example for ``mission_type`` (immersion-first).
 
-    Default / TheChannel stubs stay Manston. ``theatre=Normandy`` + free_flight,
-    cap, ground_attack, intercept, or escort uses NeedsOarPoint. ``theatre=Caucasus`` +
+    Default / TheChannel stubs stay Manston. ``theatre=Normandy`` uses
+    NeedsOarPoint for all six mission types. ``theatre=Caucasus`` +
     free_flight uses Batumi. ``theatre=Syria`` + free_flight uses Incirlik.
     ``theatre=Nevada`` + free_flight uses Nellis. ``theatre=Falklands`` +
-    free_flight uses Mount Pleasant. Normandy recon and
-    Caucasus/Syria/Nevada/Falklands combat (including CAP) raise (no Manston /
-    NeedsOarPoint / Batumi / Incirlik / Nellis combat skeleton).
+    free_flight uses Mount Pleasant. Caucasus/Syria/Nevada/Falklands combat
+    (including CAP) raise (no Manston / NeedsOarPoint / Batumi / Incirlik /
+    Nellis combat skeleton).
     """
     key = (mission_type or "").strip()
     if key not in _EXAMPLE_FILES:
@@ -592,7 +589,7 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
         if key in _NORMANDY_UNSUPPORTED_COMBAT:
             raise ValueError(
                 f"Combat mission_type {key!r} is not supported for theatre Normandy; "
-                "use free_flight, cap, ground_attack, intercept, or escort at NeedsOarPoint or theatre TheChannel"
+                "use a Normandy-supported type at NeedsOarPoint or theatre TheChannel"
             )
         if key == MissionType.CAP.value:
             filename = _NORMANDY_CAP_EXAMPLE
@@ -602,6 +599,8 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
             filename = _NORMANDY_INTERCEPT_EXAMPLE
         elif key == MissionType.ESCORT.value:
             filename = _NORMANDY_ESCORT_EXAMPLE
+        elif key == MissionType.RECON.value:
+            filename = _NORMANDY_RECON_EXAMPLE
         else:
             filename = _NORMANDY_FREE_FLIGHT_EXAMPLE
         path = examples_dir() / filename
@@ -643,12 +642,12 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
 # Normandy GA: do not concatenate _TYPE_NOTES (those cite french_coast / Manston).
 _NORMANDY_GA_NOTES: tuple[str, ...] = (
     (
-        "Normandy invent is free_flight, CAP, ground_attack, intercept, or escort: "
-        "airfield NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue. Strike 180° / "
+        "Normandy invent is all six types: airfield NeedsOarPoint, "
+        "SpitfireLFMkIX, sunny_clear, UK blue. Strike 180° / "
         "133 km / 2000 m inland of Maupertus (not Manston 125/76, not CAP "
         "180/63 which is sea). Call list_strike_targets(theatre=Normandy) for "
-        "land units (Blitz / flak18). Sea craft stay Channel-only. Refuse "
-        "recon. Do not copy channel_place geometry (french "
+        "land units (Blitz / flak18). Sea craft stay Channel-only. Do not copy "
+        "channel_place geometry (french "
         "coast belts, Hawkinge) onto Normandy."
     ),
     ('schema_version must be "1"; theatre is Normandy (ground_attack at NeedsOarPoint).'),
@@ -675,11 +674,11 @@ _NORMANDY_GA_NOTES: tuple[str, ...] = (
 
 _NORMANDY_INTERCEPT_NOTES: tuple[str, ...] = (
     (
-        "Normandy invent is free_flight, CAP, ground_attack, intercept, or escort: "
-        "airfield NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue. "
+        "Normandy invent is all six types: airfield NeedsOarPoint, "
+        "SpitfireLFMkIX, sunny_clear, UK blue. "
         "Enemies spawn on the Cherbourg corridor (180° / 63 km from "
         "NeedsOarPoint — same station as cherbourg_channel_cap; not Hawkinge / "
-        "Dover / Manston). Refuse recon. Do not copy channel_place "
+        "Dover / Manston). Do not copy channel_place "
         "geometry (french coast belts, Hawkinge) onto Normandy."
     ),
     ('schema_version must be "1"; theatre is Normandy (intercept at NeedsOarPoint).'),
@@ -695,11 +694,11 @@ _NORMANDY_INTERCEPT_NOTES: tuple[str, ...] = (
 
 _NORMANDY_ESCORT_NOTES: tuple[str, ...] = (
     (
-        "Normandy invent is free_flight, CAP, ground_attack, intercept, or escort: "
-        "airfield NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue. Package "
+        "Normandy invent is all six types: airfield NeedsOarPoint, "
+        "SpitfireLFMkIX, sunny_clear, UK blue. Package "
         "destination is the Cherbourg corridor (180° / 63 km / 4000 m — same "
         "station as cherbourg_channel_cap; not Manston 120/55). Friendly package "
-        "e.g. MosquitoFBMkVI. Refuse recon. Do not copy channel_place geometry "
+        "e.g. MosquitoFBMkVI. Do not copy channel_place geometry "
         "(french coast belts, Hawkinge) onto Normandy."
     ),
     ('schema_version must be "1"; theatre is Normandy (escort at NeedsOarPoint).'),
@@ -716,6 +715,34 @@ _NORMANDY_ESCORT_NOTES: tuple[str, ...] = (
     "destination is airfield-relative bearing/distance — never invent raw map x/y.",
     "omit strike, targets, cap, recon, and player.payload.",
     "Fill DCS ids from examples/needs_oar_point_escort.yaml.",
+    "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
+)
+
+_NORMANDY_RECON_NOTES: tuple[str, ...] = (
+    (
+        "Normandy invent is all six types: airfield NeedsOarPoint, "
+        "SpitfireLFMkIX, sunny_clear, UK blue. Recon AOI is inland of Maupertus "
+        "(180° / 133 km / 2000 m — same land station as maupertus_inland_strike; "
+        "not Manston 125/76, not CAP 180/63 sea). Observe land units from "
+        "list_strike_targets(theatre=Normandy). Weapons hold. Do not copy "
+        "channel_place geometry (french coast belts, Hawkinge) onto Normandy."
+    ),
+    ('schema_version must be "1"; theatre is Normandy (recon at NeedsOarPoint).'),
+    (
+        "Required envelope: schema_version, mission_type, theatre, date, start_time, "
+        "weather, player; enemies/objectives/triggers/zones default to empty lists."
+    ),
+    ("nested recon is required (bearing_deg, distance_km, altitude_m, radius_m?, mark?)."),
+    'objectives must include {"type":"recon_area"}; omit player.payload.',
+    (
+        "optional targets = observe-only enemy contacts (opposing coalition). "
+        "Call list_strike_targets(theatre=Normandy) for land units. Copy "
+        "maupertus_inland_strike 180/133. Sea craft stay Channel-only."
+    ),
+    "AOI is airfield-relative — never invent raw map x/y. enemies must be empty.",
+    "omit strike, cap, escort, package. zones/triggers must stay empty (find beat injected).",
+    "Not a bomb run — weapons hold; report AOI then RTB.",
+    "Fill DCS ids from examples/needs_oar_point_recon.yaml.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )
 
@@ -736,14 +763,16 @@ def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
             return _NORMANDY_INTERCEPT_NOTES
         if mission_type == MissionType.ESCORT.value:
             return _NORMANDY_ESCORT_NOTES
+        if mission_type == MissionType.RECON.value:
+            return _NORMANDY_RECON_NOTES
         extra = (
             (
-                "Normandy invent is free_flight, CAP, ground_attack, intercept, or escort: "
-                "airfield NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue. CAP, "
-                "intercept, and escort station 180° / 63 km / 4000 m (not Manston "
-                "135/25 or escort 120/55, not Hawkinge). Ground attack strike 180° / "
-                "133 km inland of Maupertus (not Manston 125/76). Do not copy "
-                "channel_place geometry (french coast belts, Hawkinge) onto Normandy."
+                "Normandy invent is all six types: airfield NeedsOarPoint, "
+                "SpitfireLFMkIX, sunny_clear, UK blue. CAP, intercept, and escort "
+                "station 180° / 63 km / 4000 m (not Manston 135/25 or escort 120/55, "
+                "not Hawkinge). Ground attack and recon AOI 180° / 133 km inland of "
+                "Maupertus (not Manston 125/76). Do not copy channel_place "
+                "geometry (french coast belts, Hawkinge) onto Normandy."
             ),
         )
         return extra + _COMMON_NOTES + _TYPE_NOTES.get(mission_type, ())
@@ -801,9 +830,9 @@ Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
 (free_flight | intercept | cap | ground_attack | escort | recon) and optional theatre.
 Copy that example's structure. Default stub is Manston / TheChannel; Normandy
-free_flight, CAP, ground_attack, intercept, or escort uses NeedsOarPoint; Caucasus free_flight uses Batumi;
+all six types use NeedsOarPoint; Caucasus free_flight uses Batumi;
 Syria free_flight uses Incirlik; Nevada free_flight uses Nellis; Falklands
-free_flight uses Mount Pleasant. Normandy recon and
+free_flight uses Mount Pleasant.
 Caucasus/Syria/Nevada/Falklands combat (including CAP) are unsupported.
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user

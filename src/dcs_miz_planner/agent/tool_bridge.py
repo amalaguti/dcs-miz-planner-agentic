@@ -156,11 +156,11 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "description": (
                 "Get a compact Mission Spec JSON example plus notes/anti-patterns for a "
                 "mission_type (free_flight, intercept, cap, ground_attack, escort, or recon). "
-                "Optional theatre: TheChannel uses Manston examples; Normandy free_flight, "
-                "CAP, ground_attack, intercept, or escort uses NeedsOarPoint; Caucasus free_flight uses Batumi; Syria "
+                "Optional theatre: TheChannel uses Manston examples; Normandy all six "
+                "types use NeedsOarPoint; Caucasus free_flight uses Batumi; Syria "
                 "free_flight uses Incirlik; Nevada free_flight uses Nellis; Falklands "
-                "free_flight uses Mount Pleasant. Normandy recon "
-                "and Caucasus/Syria/Nevada/Falklands combat (including CAP) are "
+                "free_flight uses Mount Pleasant. "
+                "Caucasus/Syria/Nevada/Falklands combat (including CAP) are "
                 "unsupported. Call before "
                 "emitting Spec JSON."
             ),
@@ -169,7 +169,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "properties": {
                     "mission_type": {
                         "type": "string",
-                        "description": "free_flight | intercept | cap | ground_attack | escort",
+                        "description": "free_flight | intercept | cap | ground_attack | escort | recon",
                     },
                     "theatre": {
                         "type": "string",

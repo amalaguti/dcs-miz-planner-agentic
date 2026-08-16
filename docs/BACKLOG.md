@@ -409,7 +409,9 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** per-map stages B–D (not a new Stage A bind).
+**Next promote / in proposal:** Caucasus Stage B (geography + identity).
+Normandy Stage C combat types are complete (all six). Then per-map stages B–D
+(not a new Stage A bind).
 Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
@@ -434,6 +436,7 @@ Stage C combat on a new map before Slice 0b is on master.
 | F1b | `normandy-ground-attack` | Normandy Stage C combat: Needs Oar Point ground_attack inland of Maupertus; UK–Cotentin domain; WWII land strike list; invent allow GA | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F1c | `normandy-intercept` | Normandy Stage C combat: Needs Oar Point dawn intercept on the Cherbourg corridor (180°/63 km); invent allow intercept; escort/recon still refuse | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F1d | `normandy-escort` | Normandy Stage C combat: Needs Oar Point Mosquito escort on the Cherbourg corridor (180°/63 km); invent allow escort; recon still refuse | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
+| F1e | `normandy-recon` | Normandy Stage C combat: Needs Oar Point recon inland of Maupertus (180°/133 km); invent allow all six types | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F2 | `caucasus-cold-freeflight` | Caucasus Stage A: bind + smoke freeflight (modern countries/aircraft). After 0 + 0b | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F3 | `syria-cold-freeflight` | Syria Stage A bind + smoke. After F2 pattern | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |

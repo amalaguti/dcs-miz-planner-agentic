@@ -18,18 +18,17 @@ You produce Mission Spec JSON only — never DCS Lua or .miz contents.
 Rules:
 - Theatre: any offerable theatre (known ∧ available ∧ planner_supported). Do not
   invent theatre ids. TheChannel supports all six mission types. Normandy invent is
-  free_flight, CAP, ground_attack, intercept, or escort (NeedsOarPoint, SpitfireLFMkIX,
-  sunny_clear, UK blue; CAP, intercept, and escort station 180°/63 km toward Cherbourg —
-  not Manston 135/25, not Hawkinge, not escort 120/55; GA strike 180°/133 km inland of Maupertus —
-  not Manston 125/76). Caucasus invent is
+  all six types (NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue; CAP, intercept,
+  and escort station 180°/63 km toward Cherbourg — not Manston 135/25, not Hawkinge,
+  not escort 120/55; GA and recon AOI 180°/133 km inland of Maupertus — not Manston
+  125/76). Caucasus invent is
   free_flight only (Batumi, Su-25T, sunny_clear, Georgia blue). Syria invent is
   free_flight only (Incirlik, Su-25T, sunny_clear, Turkey blue). Nevada invent is
   free_flight only (Nellis, Su-25T, sunny_clear, USA blue). Falklands invent is
   free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  recon on Normandy and refuse
   intercept/cap/ground_attack/escort/recon on Caucasus, Syria, Nevada, and
-  Falklands — repair toward the theatre's allowed home (NeedsOarPoint
-  FF/CAP/GA/intercept/escort, Batumi FF, Incirlik FF, Nellis FF, or Mount Pleasant FF)
+  Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
+  Batumi FF, Incirlik FF, Nellis FF, or Mount Pleasant FF)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -127,7 +126,7 @@ Rules:
   meta.payload_families must agree with the chosen payload.
 - Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
   match that example's structure (derived from packaged Specs — not invented shapes).
-  Pass theatre=Normandy for NeedsOarPoint free_flight, CAP, ground_attack, intercept, or escort;
+  Pass theatre=Normandy for NeedsOarPoint (all six types);
   theatre=Caucasus for Batumi free_flight; theatre=Syria for Incirlik free_flight;
   theatre=Nevada for Nellis free_flight; theatre=Falklands for Mount Pleasant
   free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
@@ -315,23 +314,19 @@ def host_spec_repair_nudge(
                 "\n\nTheatre repair: for Normandy land strike, use "
                 "maupertus_inland_strike 180° / 133 km (inland of Maupertus). "
                 "180° / 63 km is sea (CAP, intercept, and escort — Cherbourg corridor, "
-                "not Hawkinge/Dover, not Manston 120/55). Do not copy french_coast 125/76. "
-                "Call list_strike_targets(theatre=Normandy) for land units. "
-                "Refuse recon or switch theatre to TheChannel.\n"
+                "not Hawkinge/Dover, not Manston 120/55). Recon AOI is 180° / 133 km "
+                "inland of Maupertus (not french_coast 125/76). "
+                "Call list_strike_targets(theatre=Normandy) for land units.\n"
             )
-            schema_mt = (
-                "escort"
-                if mt == "escort"
-                else (
-                    "intercept"
-                    if mt == "intercept"
-                    else (
-                        "ground_attack"
-                        if mt == "ground_attack"
-                        else ("cap" if mt == "cap" else "free_flight")
-                    )
-                )
-            )
+            allowed = {
+                "free_flight",
+                "cap",
+                "ground_attack",
+                "intercept",
+                "escort",
+                "recon",
+            }
+            schema_mt = mt if mt in allowed else "free_flight"
         else:
             geometry_hint = (
                 "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
