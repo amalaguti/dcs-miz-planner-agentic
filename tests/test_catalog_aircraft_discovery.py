@@ -39,6 +39,8 @@ def test_harvest_skips_shared_wwii_dirs(tmp_path: Path) -> None:
     assert ("CoreMods/WWII Units", "Bf-109K-4") in names
     assert ("CoreMods/WWII Units", "FW-190A-8") in names
     assert ("CoreMods/aircraft", "Su-25T") in names
+    su = next(m for m in modules if m.folder_name == "Su-25T")
+    assert su.known_aircraft_ids == ("Su-25T",)
     assert ("CoreMods/WWII Units", "Weapons") not in names
     assert ("CoreMods/aircraft", "AircraftWeaponPack") not in names
     spit = next(m for m in modules if m.folder_name == "SpitfireLFMkIX")
@@ -146,13 +148,13 @@ def test_catalog_cli_aircraft_join(tmp_path: Path) -> None:
     rows = {r["aircraft_id"]: r for r in payload["rows"]}
     assert rows["SpitfireLFMkIX"]["known"] is True
     assert rows["SpitfireLFMkIX"]["installed"] is True
-    assert rows["Su-25T"]["known"] is False
+    assert rows["Su-25T"]["known"] is True
     assert rows["Su-25T"]["installed"] is True
     assert "note" not in payload
 
     known_only = CatalogService(db_path=db).list_aircraft(include_discovered=False)
     assert all(v.known for v in known_only)
-    assert not any(v.aircraft_id == "Su-25T" for v in known_only)
+    assert any(v.aircraft_id == "Su-25T" for v in known_only)
 
 
 def test_probe_includes_aircraft_without_terrains(tmp_path: Path) -> None:

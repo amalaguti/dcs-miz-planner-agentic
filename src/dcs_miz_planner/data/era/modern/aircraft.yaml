@@ -1,0 +1,5 @@
+# Exact DCS type ids and default group radio (MHz). Do not invent spellings.
+# 251.0 is the PyDCS/DCS modern UHF default — not Spitfire VHF 124, not Batumi ATC.
+aircraft:
+  Su-25T:
+    radio_mhz: 251.0

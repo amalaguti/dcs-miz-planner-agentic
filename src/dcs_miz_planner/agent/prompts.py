@@ -19,10 +19,13 @@ Rules:
 - Theatre: any offerable theatre (known ∧ available ∧ planner_supported). Do not
   invent theatre ids. TheChannel supports all six mission types. Normandy invent is
   free_flight or CAP (NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue; CAP
-  station 180°/63 km toward Cherbourg — not Manston 135/25). Refuse
-  intercept/ground_attack/escort/recon on Normandy — repair toward NeedsOarPoint
-  free_flight or CAP, or switch theatre to TheChannel. Do not copy channel_place
-  geometry (french coast belts, Hawkinge/Dunkirk) onto Normandy.
+  station 180°/63 km toward Cherbourg — not Manston 135/25). Caucasus invent is
+  free_flight only (Batumi, Su-25T, sunny_clear, Georgia blue). Refuse
+  intercept/ground_attack/escort/recon on Normandy and refuse
+  intercept/cap/ground_attack/escort/recon on Caucasus — repair toward the
+  theatre's allowed home (NeedsOarPoint FF/CAP or Batumi FF) or switch theatre
+  to TheChannel. Do not copy channel_place geometry (french coast belts,
+  Hawkinge/Dunkirk) onto Normandy or Caucasus.
 - Mission types allowed: free_flight, intercept, cap, ground_attack, escort, recon.
 - Call get_user_prefs early. When the user leaves a knob unspecified, prefer stored
   prefs (airfield, aircraft, weather, start type, etc.) over inventing defaults.
@@ -107,8 +110,9 @@ Rules:
   meta.payload_families must agree with the chosen payload.
 - Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
   match that example's structure (derived from packaged Specs — not invented shapes).
-  Pass theatre=Normandy for NeedsOarPoint free_flight; do not copy a Manston combat
-  skeleton onto Normandy.
+  Pass theatre=Normandy for NeedsOarPoint free_flight or CAP; theatre=Caucasus
+  for Batumi free_flight. Do not copy a Manston or NeedsOarPoint combat
+  skeleton onto Caucasus.
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
   never treat research as Spec or DCS-id authority.
@@ -252,18 +256,38 @@ def host_spec_repair_nudge(
     geometry_hint = ""
     err_l = (parse_err or "").lower()
     if "domain_unsupported_theatre" in err_l or "intercept_unsupported_theatre" in err_l:
-        geometry_hint = (
-            "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
-            "For Normandy, emit free_flight or CAP at NeedsOarPoint (SpitfireLFMkIX, "
-            "sunny_clear, UK blue; CAP 180°/63 km) or switch theatre to TheChannel "
-            "for intercept/GA/escort/recon. Do not copy french_coast / Hawkinge "
-            "geometry onto Normandy.\n"
-        )
-        schema_mt = "cap" if mt == "cap" else "free_flight"
+        if theatre == "Caucasus":
+            geometry_hint = (
+                "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
+                "For Caucasus, emit free_flight at Batumi (Su-25T, sunny_clear, Georgia "
+                "blue) or switch theatre to TheChannel for intercept/GA/escort/recon/CAP. "
+                "Do not copy french_coast / Hawkinge / NeedsOarPoint geometry onto Caucasus.\n"
+            )
+            schema_mt = "free_flight"
+        elif theatre == "Normandy":
+            geometry_hint = (
+                "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
+                "For Normandy, emit free_flight or CAP at NeedsOarPoint (SpitfireLFMkIX, "
+                "sunny_clear, UK blue; CAP 180°/63 km) or switch theatre to TheChannel "
+                "for intercept/GA/escort/recon. Do not copy french_coast / Hawkinge "
+                "geometry onto Normandy.\n"
+            )
+            schema_mt = "cap" if mt == "cap" else "free_flight"
+        else:
+            geometry_hint = (
+                "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
+                "Emit free_flight on the inferred theatre or switch to TheChannel for combat.\n"
+            )
+            schema_mt = "free_flight"
         try:
-            fragment = format_spec_schema_fragment(build_spec_schema(schema_mt, theatre="Normandy"))
+            fragment = format_spec_schema_fragment(build_spec_schema(schema_mt, theatre=theatre))
         except (ValueError, FileNotFoundError, OSError):
-            fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
+            try:
+                fragment = format_spec_schema_fragment(
+                    build_spec_schema("free_flight", theatre=theatre)
+                )
+            except (ValueError, FileNotFoundError, OSError):
+                fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
     elif "motion_domain_mismatch" in err_l or "strike_domain_mismatch" in err_l:
         geometry_hint = (
             "\n\nChannel geometry repair (domain mismatch):\n"

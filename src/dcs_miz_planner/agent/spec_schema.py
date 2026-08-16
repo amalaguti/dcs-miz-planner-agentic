@@ -44,6 +44,16 @@ _NORMANDY_UNSUPPORTED_COMBAT = frozenset(
         MissionType.RECON.value,
     }
 )
+_CAUCASUS_FREE_FLIGHT_EXAMPLE = "batumi_cold_freeflight.yaml"
+_CAUCASUS_UNSUPPORTED_COMBAT = frozenset(
+    {
+        MissionType.INTERCEPT.value,
+        MissionType.CAP.value,
+        MissionType.GROUND_ATTACK.value,
+        MissionType.ESCORT.value,
+        MissionType.RECON.value,
+    }
+)
 
 ANTI_PATTERNS: tuple[str, ...] = (
     'top-level "airfield" / "aircraft" (use nested player.aircraft / player.airfield)',
@@ -202,7 +212,8 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
 _COMMON_NOTES: tuple[str, ...] = (
     (
         'schema_version must be "1"; theatre is an offerable id '
-        "(TheChannel for combat; Normandy free_flight or CAP at NeedsOarPoint)."
+        "(TheChannel for combat; Normandy free_flight or CAP at NeedsOarPoint; "
+        "Caucasus free_flight only at Batumi)."
     ),
     (
         "Required envelope: schema_version, mission_type, theatre, date, start_time, "
@@ -275,10 +286,46 @@ _COMMON_NOTES: tuple[str, ...] = (
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )
 
+# Caucasus Stage A: do not concatenate _COMMON_NOTES / _TYPE_NOTES (those cite
+# Manston YAML, Spitfire failures, and channel_place as templates to copy).
+_CAUCASUS_FF_NOTES: tuple[str, ...] = (
+    (
+        "Caucasus invent is free_flight only: airfield Batumi, Su-25T, "
+        "sunny_clear, Georgia blue. Refuse intercept/cap/ground_attack/"
+        "escort/recon. Do not copy Channel or Normandy geometry onto Caucasus."
+    ),
+    ('schema_version must be "1"; theatre is Caucasus (free_flight only at Batumi).'),
+    (
+        "Required envelope: schema_version, mission_type, theatre, date, start_time, "
+        "weather, player; enemies/objectives/triggers/zones default to empty lists."
+    ),
+    (
+        "enemies, objectives, and targets must be empty lists; omit cap and strike; "
+        "omit player.payload. Omit failures — modern Caucasus has no curated "
+        "aircraft_failure shelf."
+    ),
+    (
+        "optional player.flight: size 2–4, role lead|wingman (default lead), "
+        "ai_skill for mates (default Average), join_up (default true — wingman "
+        "Follows AI lead + shared route). Omit for solo. Wingman emits a "
+        "separate AI lead group plus your Player ship. Do not copy other-theatre "
+        "flight YAML onto Caucasus."
+    ),
+    (
+        "Fill DCS ids from tools/prefs using examples/batumi_cold_freeflight.yaml. "
+        "Channel and Normandy example YAML paths do not apply."
+    ),
+    (
+        "Optional typed zones/triggers (no Lua) use the same condition/action "
+        "vocabulary; do not copy other-theatre immersion YAML."
+    ),
+    "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
+)
+
 _MT_IN_JSON = re.compile(r'"mission_type"\s*:\s*"([a-z_]+)"')
 _THEATRE_IN_JSON = re.compile(r'"theatre"\s*:\s*"([A-Za-z0-9_]+)"')
 _AIRFIELD_IN_JSON = re.compile(r'"airfield"\s*:\s*"([A-Za-z0-9_]+)"')
-_SCHEMA_THEATRES = frozenset({"TheChannel", "Normandy"})
+_SCHEMA_THEATRES = frozenset({"TheChannel", "Normandy", "Caucasus"})
 
 
 @dataclass(frozen=True)
@@ -302,14 +349,36 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
     """Load and validate the packaged example for ``mission_type`` (immersion-first).
 
     Default / TheChannel stubs stay Manston. ``theatre=Normandy`` + free_flight or
-    cap uses NeedsOarPoint. Normandy intercept/GA/escort/recon raise (no Manston
-    combat skeleton).
+    cap uses NeedsOarPoint. ``theatre=Caucasus`` + free_flight uses Batumi.
+    Normandy intercept/GA/escort/recon and Caucasus combat (including CAP) raise
+    (no Manston/NeedsOarPoint combat skeleton).
     """
     key = (mission_type or "").strip()
     if key not in _EXAMPLE_FILES:
         allowed = ", ".join(supported_mission_types())
         raise ValueError(f"Unsupported mission_type {mission_type!r}; expected one of: {allowed}")
     theatre_id = (theatre or "").strip() or None
+    if theatre_id == "Caucasus":
+        if key in _CAUCASUS_UNSUPPORTED_COMBAT:
+            raise ValueError(
+                f"Combat mission_type {key!r} is not supported for theatre Caucasus; "
+                "use free_flight at Batumi or theatre TheChannel"
+            )
+        filename = _CAUCASUS_FREE_FLIGHT_EXAMPLE
+        path = examples_dir() / filename
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing Spec example for {key}: {path}")
+        spec = load_mission_spec(path)
+        if spec.mission_type.value != key:
+            raise ValueError(
+                f"Example {path.name} has mission_type {spec.mission_type.value!r}, "
+                f"expected {key!r}"
+            )
+        example = json.loads(spec.model_dump_json())
+        MissionSpec.model_validate(example)
+        notes = _notes_for(key, theatre_id)
+        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+
     if theatre_id == "Normandy":
         if key in _NORMANDY_UNSUPPORTED_COMBAT:
             raise ValueError(
@@ -356,6 +425,8 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
 
 
 def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
+    if theatre == "Caucasus":
+        return _CAUCASUS_FF_NOTES
     if theatre == "Normandy":
         extra = (
             (
@@ -389,6 +460,8 @@ def infer_theatre(text: str | None) -> str | None:
     af = _AIRFIELD_IN_JSON.search(text)
     if af and af.group(1) == "NeedsOarPoint":
         return "Normandy"
+    if af and af.group(1) == "Batumi":
+        return "Caucasus"
     return None
 
 
@@ -412,7 +485,8 @@ Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
 (free_flight | intercept | cap | ground_attack | escort | recon) and optional theatre.
 Copy that example's structure. Default stub is Manston / TheChannel; Normandy
-free_flight or CAP uses NeedsOarPoint. Normandy intercept/GA/escort/recon is
+free_flight or CAP uses NeedsOarPoint; Caucasus free_flight uses Batumi.
+Normandy intercept/GA/escort/recon and Caucasus combat (including CAP) are
 unsupported.
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user

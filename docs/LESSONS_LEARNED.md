@@ -28,6 +28,9 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-15 | [Caucasus schema notes must not concatenate Channel bundles](lessons/agent-tooling.md#caucasus-schema-notes-must-not-concatenate-channel-bundles-2026-08-15) | `agent-tooling` |
+| 2026-08-15 | [Modern era + Caucasus Batumi smoke](lessons/channel-ids.md#modern-era--caucasus-batumi-smoke-2026-08-15) | `channel-ids` |
+| 2026-08-15 | [Caucasus invent is free_flight only](lessons/agent-tooling.md#caucasus-invent-is-free_flight-only-2026-08-15) | `agent-tooling` |
 | 2026-08-15 | [Curated Normandy airfields; FordAF is not Ford_AF](lessons/channel-ids.md#curated-normandy-airfields-fordaf-is-not-ford_af-2026-08-15) | `channel-ids` |
 | 2026-08-15 | [Normandy invent is free_flight or CAP](lessons/agent-tooling.md#normandy-invent-is-free_flight-or-cap-2026-08-15) | `agent-tooling` |
 | 2026-08-15 | [Theatre-keyed intercept and domain (fail closed off TheChannel)](lessons/channel-ids.md#theatre-keyed-intercept-and-domain-fail-closed-off-thechannel) | `channel-ids` |

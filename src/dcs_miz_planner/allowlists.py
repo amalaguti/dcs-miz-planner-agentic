@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 
-def known_countries() -> frozenset[str]:
-    """Known PyDCS country class names from the packaged WWII era table."""
+def known_countries(era: str | None = None) -> frozenset[str]:
+    """Known PyDCS country class names, optionally filtered by packaged era."""
     from .registry import get_channel_registry
 
-    return frozenset(get_channel_registry().list_countries())
+    return frozenset(get_channel_registry().list_countries(era=era))
 
 
 def __getattr__(name: str) -> object:
@@ -37,8 +37,8 @@ _COUNTRY_HINTS: dict[str, str] = {
 }
 
 
-def country_hint(name: str) -> str | None:
-    countries = known_countries()
+def country_hint(name: str, era: str | None = None) -> str | None:
+    countries = known_countries(era=era)
     return _COUNTRY_HINTS.get(name) or (
         f"Known countries: {', '.join(sorted(countries))}" if name not in countries else None
     )

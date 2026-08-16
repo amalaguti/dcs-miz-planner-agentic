@@ -5,6 +5,36 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus schema notes must not concatenate Channel bundles (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Symptom:** `theatre=Caucasus` schema/repair notes prepended a Batumi line
+  then still appended `_COMMON_NOTES` + `_TYPE_NOTES`, so the model was told
+  examples are Channel templates, cited `manston_*.yaml`, Spitfire failure
+  shelves, and `channel_place`.
+- **Cause:** `_notes_for` treated theatre extras as a prefix, not a replacement.
+- **Fix:** Caucasus free_flight uses a dedicated `_CAUCASUS_FF_NOTES` tuple.
+  Do not concatenate Channel/Normandy note bundles onto Stage A theatres.
+- **Code:** `agent/spec_schema.py` (`_CAUCASUS_FF_NOTES`, `_notes_for`).
+
+## Caucasus invent is free_flight only (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Invent allow-table is theatre-keyed: TheChannel all six; Normandy
+  free_flight + CAP; else (Caucasus Stage A) **free_flight only** — CAP is
+  refused every turn (never capture or write). Schema `theatre=Caucasus` +
+  free_flight loads `batumi_cold_freeflight.yaml`; combat types raise with no
+  Manston/NeedsOarPoint skeleton. `infer_theatre` accepts JSON `Caucasus` or
+  airfield `Batumi`. Host repair of `domain_unsupported_theatre` /
+  `intercept_unsupported_theatre` MUST use the inferred theatre — do not
+  hardcode `theatre="Normandy"` or a Caucasus CAP repair becomes NeedsOarPoint
+  CAP. Session/planner/accept user strings must say Batumi FF, not NeedsOarPoint
+  CAP. Stub LLM stays Manston. `list_strike_targets(theatre="Caucasus")` is
+  empty. Date realism no-ops when `era != wwii` (2024 Batumi is silent).
+- **Code:** `agent/immersion.py` (`host_theatre_mission_refuse_nudge`;
+  `host_normandy_combat_nudge` is an alias), `agent/spec_schema.py`,
+  `agent/prompts.py`, `agent/session.py`, `agent/planner.py`.
+
 ## Normandy invent is free_flight or CAP (2026-08-15)
 
 - **Date:** 2026-08-15

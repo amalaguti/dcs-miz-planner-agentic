@@ -1,0 +1,5 @@
+# Curated Spec airfield key -> DCS airdromeId for theatre Caucasus.
+# Verified from PyDCS Caucasus.airport_list(); do not dump all 21 fields.
+# PyDCS name: Batumi.
+airfields:
+  Batumi: 22 # Batumi

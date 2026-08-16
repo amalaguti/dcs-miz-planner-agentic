@@ -28,6 +28,7 @@ from .immersion import (
     host_harbour_unit_nudge,
     host_immersion_repair_nudge,
     host_normandy_combat_nudge,
+    theatre_mission_refuse_planner_error,
 )
 from .llm import LLMClient, default_tools
 from .path_clamp import try_clamp_land_paths_if_needed
@@ -220,9 +221,7 @@ def plan_mission(
         combat_nudge = host_normandy_combat_nudge(spec)
         if combat_nudge:
             # Always refuse — independent of harbour/immersion one-shot flags.
-            last_parse_error = (
-                "Normandy invent is free_flight or CAP; intercept/GA/escort/recon are refused"
-            )
+            last_parse_error = theatre_mission_refuse_planner_error(spec)
             messages.append({"role": "user", "content": combat_nudge})
             continue
 

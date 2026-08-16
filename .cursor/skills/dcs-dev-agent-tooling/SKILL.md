@@ -26,11 +26,17 @@ description: >-
    clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
    `french_coast_rail_corridor` path deltas only —
    **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy
-   is free_flight or CAP (NeedsOarPoint; CAP 180°/63 km). Intercept / GA /
-   escort / recon on Normandy refuse every turn (never a one-shot nudge that
-   then captures/writes the Spec). Host repair nudges MUST infer theatre from
-   rejected JSON and pass it to `build_spec_schema` (default Manston CAP
-   135/25 must not repair a Normandy CAP).
+   is free_flight or CAP (NeedsOarPoint; CAP 180°/63 km). Caucasus is
+   **free_flight only** (Batumi; CAP refused). Intercept / GA /
+   escort / recon on Normandy and all combat on Caucasus refuse every turn
+   (never a one-shot nudge that then captures/writes the Spec). Host repair
+   nudges MUST infer theatre from rejected JSON and pass it to
+   `build_spec_schema` — do not hardcode `theatre="Normandy"` on
+   domain/intercept errors (Caucasus must repair to Batumi FF, not
+   NeedsOarPoint CAP). Default Manston CAP 135/25 must not repair a Normandy CAP.
+   Caucasus `build_spec_schema` notes MUST NOT concatenate `_COMMON_NOTES` /
+   `_TYPE_NOTES` (those cite Manston YAML, Spitfire failures, `channel_place`).
+   Use a Caucasus-only notes tuple.
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent; soft-warn missing aircraft modules.

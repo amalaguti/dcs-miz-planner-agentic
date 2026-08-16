@@ -26,6 +26,7 @@ _AIRCRAFT_FOLDERS: dict[str, tuple[str, ...]] = {
     "Bf-109K-4": ("CoreMods/WWII Units/Bf-109K-4",),
     "FW-190A8": ("CoreMods/WWII Units/FW-190A-8",),
     "FW-190D9": ("CoreMods/WWII Units/FW-190D-9",),
+    "Su-25T": ("CoreMods/aircraft/Su-25T",),
 }
 
 # Shared asset dirs under CoreMods/WWII Units — not aircraft modules.

@@ -289,8 +289,8 @@ smoke checklist in that file.
 
 ## M4 — Mission types
 
-**Next promote / in proposal:** Full-catalog campaign **M7** (Slice F2
-`caucasus-cold-freeflight`) from Agents Window
+**Next promote / in proposal:** Full-catalog campaign **M7** (Slice F3
+`syria-cold-freeflight`) from Agents Window
 (`/full-catalog-orchestrate`). ME Instant Action smokes below stay do-soon and
 do not block that campaign. Follow
 [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Definitive map fleet
@@ -406,7 +406,7 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** `caucasus-cold-freeflight` (F2). Trigger from
+**Next promote / in proposal:** `syria-cold-freeflight` (F3). Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
 
@@ -427,7 +427,7 @@ Stage C combat on a new map before Slice 0b is on master.
 | F0 | `theatre-registry-packages` | Split `data/channel/` into per-theatre packages; registry loader walks them; shared/era shelves for WWII units used by Channel+Normandy; Channel goldens + Normandy smoke stay green | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F0b | `theatre-agnostic-planning` | Unhardcode Channel helpers before new-map combat: domain classifier, invent prompts, country allowlists, intercept spawn recipes, path clamp, strike-unit theatre tags, reweather/METAR. **Gate** for Stage C on any non-Channel map | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F1 | `normandy-airfields-places` | Deepen Normandy (already bound): more AFs, places, CAP invent at Needs Oar Point (stages B–C). After 0 + 0b | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
-| F2 | `caucasus-cold-freeflight` | Caucasus Stage A: bind + smoke freeflight (modern countries/aircraft). After 0 + 0b | `idea` |
+| F2 | `caucasus-cold-freeflight` | Caucasus Stage A: bind + smoke freeflight (modern countries/aircraft). After 0 + 0b | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F3 | `syria-cold-freeflight` | Syria Stage A bind + smoke. After F2 pattern | `idea` |
 | F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `idea` |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `idea` |
@@ -506,7 +506,7 @@ Desk probe + notes under `research/theatres/`. **Definitive owned map fleet**
 | Marianas WWII | `MarianaIslandsWWII` | available | **no module** | no |
 | Nevada | `Nevada` | available | yes | no |
 | South Atlantic | `Falklands` | available | yes | no |
-| Caucasus | `Caucasus` | available | yes | no |
+| Caucasus | `Caucasus` | available | yes | planner smoke |
 | Kola | `Kola` | available | **no module** | no |
 | Iraq | `Iraq` | available | **no module** | no |
 
@@ -576,7 +576,7 @@ Spit.” Do when expanding registry classes or theatres — not before `#15h` pr
   Answer + HTML cascade; clear soft-fail label). Revisit only if DDG HTML is blocked.
 - **Lua enrichment** — scheduled as **M6**; still never LLM-authored mission Lua.
 - **Lua IDE / MCP tooling** — see research **R5–R6**. Schema + LSP for writing snippets; VEAF MCP as a lab only. A future *project-owned* MCP that exposes *our* snippet catalog (`list` / `validate_params` / API docs) is optional once M6 `#22` exists. Native Lua compiler replacing PyDCS remains far-horizon.
-- **Normandy / multi-theatre** — **M7** full-catalog campaign (`caucasus-cold-freeflight` next after F1). R11 audit done; campaigns remain inspiration, not Spec import.
+- **Normandy / multi-theatre** — **M7** full-catalog campaign (`syria-cold-freeflight` next after F2). R11 audit done; campaigns remain inspiration, not Spec import.
 - **Historical validation engine** — date → plausible aircraft/opposition (productized form of R3).
 - **PyDCS issue watch** — research **R7**: **done** 2026-08-04 (`research/pydcs-issues.md` + LESSONS); re-run on R8 bumps / before `#22`.
 - **Dependency upgrade cadence** — research **R8**: check PyDCS + related libs; bump only when recommended.
@@ -624,7 +624,7 @@ Source: `ideas-concepts.txt` (updated 2026-08-02).
 | Optional engine / control / systems failures (fixed or random) | **M6** `#22b` `aircraft-failures` — ME Failures panel table; curated ids; opt-in Spec (**done** 2026-08-07) |
 | ME weather panel / static objects / scenery depth for richer Channel sorties | **Research** R10 `research-me-mission-content` → promote `#17a` / `#17b` (or new ideas) |
 | ME weather templates + real meteo for Channel pattern cards | **Research** R10 (+ R3 weather mentions); notes in `research/weather.md` |
-| Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research R11 done**; product expand → **M7** (Slice 0 + 0b + F1 done; `caucasus-cold-freeflight` next) |
+| Audit owned maps (Normandy, Syria, Marianas, …) for multi-theatre expand | **Research R11 done**; product expand → **M7** (Slice 0 + 0b + F1 + F2 done; `syria-cold-freeflight` next) |
 | Which AI options apply to air vs ground vs ships | **Research** R12 `research-ai-options-by-domain` → `#15h` allowlists (**done**) |
 | Full ME Options matrix (helo, armor, more ships, …) | **Research** R12b `research-ai-options-unit-matrix` — not blocking `#15h` |
 | Which AAA / ground / sea / helo types ED campaigns actually use | **Research** R13 `research-campaign-unit-inventory` — promote via `#8e`; never auto-YAML |

@@ -15,7 +15,7 @@ from typing import Any
 import yaml
 
 _DATA_PACKAGE = "dcs_miz_planner.data"
-_KNOWN_ERAS = frozenset({"wwii"})
+_KNOWN_ERAS = frozenset({"wwii", "modern"})
 
 
 class RegistryError(KeyError):
@@ -206,6 +206,79 @@ def _load_theatre_packages(
     return by_theatre, frozenset(by_theatre), theatre_eras
 
 
+def _parse_countries_doc(doc: dict[str, Any], label: str) -> frozenset[str]:
+    countries_raw = doc.get("countries") or {}
+    if isinstance(countries_raw, dict):
+        countries = frozenset(str(k) for k in countries_raw)
+    elif isinstance(countries_raw, list):
+        countries = frozenset(str(x) for x in countries_raw)
+    else:
+        raise RegistryError(f"{label}: 'countries' must be a mapping or list")
+    if not countries:
+        raise RegistryError(f"{label}: 'countries' is empty")
+    if "Germany" in countries:
+        raise RegistryError("Germany must not be a known country id (hint to ThirdReich)")
+    return countries
+
+
+def _parse_aircraft_doc(doc: dict[str, Any], label: str) -> dict[str, AircraftRef]:
+    aircraft_raw = doc.get("aircraft") or {}
+    if not isinstance(aircraft_raw, dict):
+        raise RegistryError(f"{label}: 'aircraft' must be a mapping")
+    aircraft: dict[str, AircraftRef] = {}
+    for aircraft_id, meta in aircraft_raw.items():
+        if not isinstance(meta, dict) or "radio_mhz" not in meta:
+            raise RegistryError(f"{label}: {aircraft_id!r} must map to {{radio_mhz: ...}}")
+        aircraft[str(aircraft_id)] = AircraftRef(
+            id=str(aircraft_id),
+            radio_mhz=float(meta["radio_mhz"]),
+        )
+    return aircraft
+
+
+def _load_era_identity(
+    era_root: Any,
+) -> tuple[dict[str, frozenset[str]], dict[str, dict[str, AircraftRef]], dict[str, AircraftRef]]:
+    """Walk ``data/era/<era>/`` for countries.yaml + aircraft.yaml (era-keyed)."""
+    if not era_root.is_dir():
+        raise RegistryError("packaged data/era/ is missing")
+    countries_by_era: dict[str, frozenset[str]] = {}
+    aircraft_by_era: dict[str, dict[str, AircraftRef]] = {}
+    aircraft_merged: dict[str, AircraftRef] = {}
+    for child in era_root.iterdir():
+        era_id = child.name
+        if not child.is_dir() or era_id.startswith((".", "__")):
+            continue
+        if era_id not in _KNOWN_ERAS:
+            raise RegistryError(
+                f"era/{era_id}: unknown era (expected one of {sorted(_KNOWN_ERAS)})"
+            )
+        countries_file = child / "countries.yaml"
+        aircraft_file = child / "aircraft.yaml"
+        if not countries_file.is_file():
+            raise RegistryError(f"era/{era_id}: missing countries.yaml")
+        if not aircraft_file.is_file():
+            raise RegistryError(f"era/{era_id}: missing aircraft.yaml")
+        countries = _parse_countries_doc(
+            _load_yaml_file(countries_file, f"era/{era_id}/countries.yaml"),
+            f"era/{era_id}/countries.yaml",
+        )
+        aircraft = _parse_aircraft_doc(
+            _load_yaml_file(aircraft_file, f"era/{era_id}/aircraft.yaml"),
+            f"era/{era_id}/aircraft.yaml",
+        )
+        countries_by_era[era_id] = countries
+        aircraft_by_era[era_id] = aircraft
+        for aid, ref in aircraft.items():
+            existing = aircraft_merged.get(aid)
+            if existing is not None and existing != ref:
+                raise RegistryError(f"era/{era_id}: aircraft id {aid!r} collides with another era")
+            aircraft_merged[aid] = ref
+    if not countries_by_era:
+        raise RegistryError("no era packages found under data/era/")
+    return countries_by_era, aircraft_by_era, aircraft_merged
+
+
 class ChannelRegistry:
     """In-memory packaged reference data (era + shared + per-theatre)."""
 
@@ -225,6 +298,8 @@ class ChannelRegistry:
         airfields_by_theatre: dict[str, dict[str, int]] | None = None,
         theatre_eras: dict[str, str] | None = None,
         countries: frozenset[str] | None = None,
+        countries_by_era: dict[str, frozenset[str]] | None = None,
+        aircraft_by_era: dict[str, dict[str, AircraftRef]] | None = None,
     ) -> None:
         self._aircraft = dict(aircraft)
         self._theatres = frozenset(theatres)
@@ -238,9 +313,27 @@ class ChannelRegistry:
             self._theatre_eras = {str(k): str(v) for k, v in theatre_eras.items()}
         else:
             self._theatre_eras = {t: "wwii" for t in self._theatres}
-        self._countries = (
-            frozenset(countries) if countries is not None else frozenset({"UK", "ThirdReich"})
-        )
+        if countries_by_era is not None:
+            self._countries_by_era = {str(k): frozenset(v) for k, v in countries_by_era.items()}
+            union: set[str] = set()
+            for names in self._countries_by_era.values():
+                union.update(names)
+            self._countries = frozenset(union)
+        else:
+            self._countries = (
+                frozenset(countries) if countries is not None else frozenset({"UK", "ThirdReich"})
+            )
+            self._countries_by_era = {"wwii": self._countries}
+        if aircraft_by_era is not None:
+            self._aircraft_by_era = {
+                str(k): {str(aid): ref for aid, ref in mapping.items()}
+                for k, mapping in aircraft_by_era.items()
+            }
+            for mapping in self._aircraft_by_era.values():
+                for aid, ref in mapping.items():
+                    self._aircraft.setdefault(aid, ref)
+        else:
+            self._aircraft_by_era = {"wwii": dict(self._aircraft)}
         if airfields_by_theatre is not None:
             self._airfields_by_theatre = {
                 str(tid): {str(n): int(aid) for n, aid in mapping.items()}
@@ -254,25 +347,11 @@ class ChannelRegistry:
     @classmethod
     def from_packaged_packages(cls) -> ChannelRegistry:
         root = _data_root()
-        era_root = root / "era" / "wwii"
+        era_root = root / "era"
+        wwii_root = era_root / "wwii"
         shared_root = root / "shared"
 
-        aircraft_raw = (
-            _load_yaml_file(era_root / "aircraft.yaml", "era/wwii/aircraft.yaml").get("aircraft")
-            or {}
-        )
-        if not isinstance(aircraft_raw, dict):
-            raise RegistryError("aircraft.yaml: 'aircraft' must be a mapping")
-        aircraft: dict[str, AircraftRef] = {}
-        for aircraft_id, meta in aircraft_raw.items():
-            if not isinstance(meta, dict) or "radio_mhz" not in meta:
-                raise RegistryError(
-                    f"aircraft.yaml: {aircraft_id!r} must map to {{radio_mhz: ...}}"
-                )
-            aircraft[str(aircraft_id)] = AircraftRef(
-                id=str(aircraft_id),
-                radio_mhz=float(meta["radio_mhz"]),
-            )
+        countries_by_era, aircraft_by_era, aircraft = _load_era_identity(era_root)
 
         presets_raw = (
             _load_yaml_file(
@@ -287,7 +366,7 @@ class ChannelRegistry:
         }
 
         payloads_raw = (
-            _load_yaml_file(era_root / "payloads.yaml", "era/wwii/payloads.yaml").get("payloads")
+            _load_yaml_file(wwii_root / "payloads.yaml", "era/wwii/payloads.yaml").get("payloads")
             or {}
         )
         if not isinstance(payloads_raw, dict):
@@ -297,7 +376,7 @@ class ChannelRegistry:
         }
 
         ground_raw = (
-            _load_yaml_file(era_root / "ground_units.yaml", "era/wwii/ground_units.yaml").get(
+            _load_yaml_file(wwii_root / "ground_units.yaml", "era/wwii/ground_units.yaml").get(
                 "ground_units"
             )
             or {}
@@ -309,7 +388,7 @@ class ChannelRegistry:
             ground_units[str(unit_id)] = _parse_ground_unit(str(unit_id), meta)
 
         ships_raw = (
-            _load_yaml_file(era_root / "ships.yaml", "era/wwii/ships.yaml").get("ships") or {}
+            _load_yaml_file(wwii_root / "ships.yaml", "era/wwii/ships.yaml").get("ships") or {}
         )
         if not isinstance(ships_raw, dict):
             raise RegistryError("ships.yaml: 'ships' must be a mapping")
@@ -329,7 +408,7 @@ class ChannelRegistry:
 
         failures_raw = (
             _load_yaml_file(
-                era_root / "aircraft_failures.yaml", "era/wwii/aircraft_failures.yaml"
+                wwii_root / "aircraft_failures.yaml", "era/wwii/aircraft_failures.yaml"
             ).get("aircraft")
             or {}
         )
@@ -353,21 +432,6 @@ class ChannelRegistry:
                 if tid != "TheChannel":
                     airfield_theatres[af_name] = tid
 
-        countries_raw = (
-            _load_yaml_file(era_root / "countries.yaml", "era/wwii/countries.yaml").get("countries")
-            or {}
-        )
-        if isinstance(countries_raw, dict):
-            countries = frozenset(str(k) for k in countries_raw)
-        elif isinstance(countries_raw, list):
-            countries = frozenset(str(x) for x in countries_raw)
-        else:
-            raise RegistryError("countries.yaml: 'countries' must be a mapping or list")
-        if not countries:
-            raise RegistryError("countries.yaml: 'countries' is empty")
-        if "Germany" in countries:
-            raise RegistryError("Germany must not be a known country id (hint to ThirdReich)")
-
         return cls(
             airfields=airfields,
             airfield_theatres=airfield_theatres,
@@ -375,7 +439,8 @@ class ChannelRegistry:
             aircraft=aircraft,
             theatres=theatres,
             theatre_eras=theatre_eras,
-            countries=countries,
+            countries_by_era=countries_by_era,
+            aircraft_by_era=aircraft_by_era,
             weather_presets=weather_presets,
             payloads=payloads,
             ground_units=ground_units,
@@ -444,11 +509,15 @@ class ChannelRegistry:
     def radio_mhz(self, aircraft_id: str) -> float:
         return self.get_aircraft(aircraft_id).radio_mhz
 
-    def list_aircraft(self) -> list[str]:
-        return sorted(self._aircraft)
+    def list_aircraft(self, era: str | None = None) -> list[str]:
+        return sorted(self.known_aircraft(era=era))
 
-    def known_aircraft(self) -> frozenset[str]:
-        return frozenset(self._aircraft)
+    def known_aircraft(self, era: str | None = None) -> frozenset[str]:
+        if era is None:
+            return frozenset(self._aircraft)
+        if era not in self._aircraft_by_era:
+            raise RegistryError(f"Unknown era '{era}'. Known: {sorted(self._aircraft_by_era)}")
+        return frozenset(self._aircraft_by_era[era])
 
     def list_failures(self, aircraft_id: str) -> tuple[AircraftFailureRef, ...]:
         return self._aircraft_failures.get(aircraft_id, ())
@@ -479,8 +548,12 @@ class ChannelRegistry:
             raise RegistryError(f"No era recorded for theatre '{theatre_id}'")
         return era
 
-    def list_countries(self) -> list[str]:
-        return sorted(self._countries)
+    def list_countries(self, era: str | None = None) -> list[str]:
+        if era is None:
+            return sorted(self._countries)
+        if era not in self._countries_by_era:
+            raise RegistryError(f"Unknown era '{era}'. Known: {sorted(self._countries_by_era)}")
+        return sorted(self._countries_by_era[era])
 
     def weather_preset(self, name: str) -> WeatherPresetRef:
         try:

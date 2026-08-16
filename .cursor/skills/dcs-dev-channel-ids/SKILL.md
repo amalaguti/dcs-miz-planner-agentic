@@ -33,10 +33,16 @@ description: >-
    → `domain_unsupported_theatre`. `airfield_relative_map_point` MUST pass
    `theatre=spec.theatre`.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
-   Germany is a hint, not a known id.
+   Germany is a hint, not a known id in **any** era.
+9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AF: `Batumi` = 22
+   (PyDCS name `Batumi`; do not dump 21 fields). Modern smoke: country `Georgia`
+   (not USAF), aircraft `Su-25T` at **251.0 MHz** (modern UHF default — not
+   Spitfire 124, not Batumi ATC). Validate countries/aircraft with
+   `era_for_theatre(spec.theatre)` — Channel+Georgia/Su-25T and
+   Caucasus+UK/Spitfire are unknown. Catalog listing may union eras.
 
 ## Code touchpoints
 
-`data/era/wwii/*.yaml`, `data/shared/*.yaml`, `data/theatres/<SpecId>/`,
+`data/era/wwii/*.yaml`, `data/era/modern/*.yaml`, `data/shared/*.yaml`, `data/theatres/<SpecId>/`,
 `registry.py`, `validation.py`, `channel_domain.py`, `intercept_spawn.py`,
 spawn helpers in compiler.

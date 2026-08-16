@@ -1,1 +1,1 @@
-"""Era-scoped packaged YAML (WWII aircraft, payloads, units)."""
+"""Era-scoped packaged YAML (WWII + modern countries/aircraft; WWII unit shelves)."""

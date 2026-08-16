@@ -192,34 +192,100 @@ def harbour_prompt_cues(prompt: str) -> bool:
     return bool(_HARBOUR_CUE.search(prompt or ""))
 
 
-_NORMANDY_COMBAT_TYPES = frozenset(
-    {
-        MissionType.INTERCEPT,
-        MissionType.GROUND_ATTACK,
-        MissionType.ESCORT,
-        MissionType.RECON,
-    }
-)
+_THEATRE_ALLOWED_TYPES: dict[str, frozenset[MissionType]] = {
+    "TheChannel": frozenset(MissionType),
+    "Normandy": frozenset({MissionType.FREE_FLIGHT, MissionType.CAP}),
+}
+
+
+def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
+    """Refuse mission types not allowed on this theatre. Every turn.
+
+    TheChannel: all six. Normandy: free_flight + CAP. Else (Caucasus / Stage A):
+    free_flight only. Callers MUST treat a non-None result as a hard refuse:
+    never capture a draft and never write YAML. A one-shot ``_used`` flag is not.
+    """
+    allowed = _THEATRE_ALLOWED_TYPES.get(spec.theatre, frozenset({MissionType.FREE_FLIGHT}))
+    if spec.mission_type in allowed:
+        return None
+    if spec.theatre == "Normandy":
+        return (
+            "[Host] Normandy invent is free_flight or CAP at NeedsOarPoint. "
+            "Refuse intercept/ground_attack/escort/recon — emit free_flight or CAP "
+            "(station 180°/63 km toward Cherbourg, not Manston 135/25) or switch "
+            "theatre to TheChannel. Do not copy channel_place geometry (french coast "
+            "belts, Hawkinge) onto Normandy. "
+            "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
+        )
+    if spec.theatre == "Caucasus":
+        return (
+            "[Host] Caucasus invent is free_flight only at Batumi. "
+            "Refuse intercept/cap/ground_attack/escort/recon — emit free_flight "
+            "(Su-25T, Georgia blue, sunny_clear) or switch theatre to TheChannel. "
+            "Do not copy channel_place or NeedsOarPoint geometry onto Caucasus. "
+            "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
+        )
+    return (
+        f"[Host] {spec.theatre} invent is free_flight only. "
+        "Refuse intercept/cap/ground_attack/escort/recon — emit free_flight "
+        "or switch theatre to TheChannel. "
+        "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
+    )
 
 
 def host_normandy_combat_nudge(spec: MissionSpec) -> str | None:
-    """Refuse Normandy intercept/GA/escort/recon; CAP and free_flight are allowed.
+    """Alias for :func:`host_theatre_mission_refuse_nudge` (existing tests import this)."""
+    return host_theatre_mission_refuse_nudge(spec)
 
-    Callers MUST treat a non-None result as a hard refuse: never capture a draft
-    and never write YAML. Nudging every turn is OK; a one-shot ``_used`` flag is not.
-    """
-    if spec.theatre != "Normandy":
-        return None
-    if spec.mission_type not in _NORMANDY_COMBAT_TYPES:
-        return None
+
+def theatre_mission_refuse_chat_line(spec: MissionSpec) -> str:
+    """User-facing chat refuse after a combat JSON (draft not captured)."""
+    if spec.theatre == "Normandy":
+        return (
+            "[Host] Normandy intercept/GA/escort/recon is not inventable — "
+            "commander nudged toward NeedsOarPoint free_flight or CAP, or TheChannel. "
+            "Draft NOT captured. Emit free_flight or CAP at NeedsOarPoint or switch "
+            "theatre to TheChannel, then /accept."
+        )
+    if spec.theatre == "Caucasus":
+        return (
+            "[Host] Caucasus combat (including CAP) is not inventable — "
+            "commander nudged toward Batumi free_flight, or TheChannel. "
+            "Draft NOT captured. Emit free_flight at Batumi or switch "
+            "theatre to TheChannel, then /accept."
+        )
     return (
-        "[Host] Normandy invent is free_flight or CAP at NeedsOarPoint. "
-        "Refuse intercept/ground_attack/escort/recon — emit free_flight or CAP "
-        "(station 180°/63 km toward Cherbourg, not Manston 135/25) or switch "
-        "theatre to TheChannel. Do not copy channel_place geometry (french coast "
-        "belts, Hawkinge) onto Normandy. "
-        "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
+        f"[Host] {spec.theatre} combat is not inventable — "
+        "commander nudged toward free_flight or TheChannel. "
+        "Draft NOT captured. Emit free_flight or switch theatre to TheChannel, then /accept."
     )
+
+
+def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
+    """User-facing /accept refuse (draft not written)."""
+    if spec.theatre == "Normandy":
+        return (
+            "Normandy intercept/GA/escort/recon is not inventable. Draft NOT written. "
+            "Emit free_flight or CAP at NeedsOarPoint or switch theatre to TheChannel."
+        )
+    if spec.theatre == "Caucasus":
+        return (
+            "Caucasus combat (including CAP) is not inventable. Draft NOT written. "
+            "Emit free_flight at Batumi or switch theatre to TheChannel."
+        )
+    return (
+        f"{spec.theatre} combat is not inventable. Draft NOT written. "
+        "Emit free_flight or switch theatre to TheChannel."
+    )
+
+
+def theatre_mission_refuse_planner_error(spec: MissionSpec) -> str:
+    """Planner last_parse_error when combat is refused on this theatre."""
+    if spec.theatre == "Normandy":
+        return "Normandy invent is free_flight or CAP; intercept/GA/escort/recon are refused"
+    if spec.theatre == "Caucasus":
+        return "Caucasus invent is free_flight only; intercept/cap/GA/escort/recon are refused"
+    return f"{spec.theatre} invent is free_flight only; combat types are refused"
 
 
 def host_harbour_unit_nudge(

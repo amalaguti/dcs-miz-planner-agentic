@@ -5,6 +5,24 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Modern era + Caucasus Batumi smoke (2026-08-15)
+
+- **Date:** 2026-08-15
+- **Lesson:** Era `modern` is a packaged shelf (`data/era/modern/`) walked by the
+  registry for **countries + aircraft only**. WWII payloads / ground / ships /
+  failures stay on `era/wwii/` this slice. **Georgia** is the Batumi host
+  country (`dcs.countries.Georgia`) — not USAF / `usaaf`. **Su-25T** group radio
+  is **251.0 MHz** (PyDCS/DCS modern UHF default) — not Spitfire VHF 124 and not
+  Batumi ATC. Airfield **Batumi** = airdromeId **22** (PyDCS name `Batumi`; do
+  not dump all 21 Caucasus fields). `Germany` is still not a known id in any era.
+  Validate with `era_for_theatre(spec.theatre)`: Channel+Georgia or Channel+Su-25T
+  is unknown; Caucasus+UK or Caucasus+Spitfire is unknown. Catalog listing may
+  union eras; `list_countries(era="wwii")` stays UK / ThirdReich. Install harvest
+  must map `Su-25T` → `CoreMods/aircraft/Su-25T` in `_AIRCRAFT_FOLDERS` or the
+  catalog join emits a second discovered-only row with `known=False`.
+- **Code:** `data/era/modern/`, `data/theatres/Caucasus/`, `registry.py`,
+  `allowlists.py`, `validation.py`, `install/aircraft_modules.py`.
+
 ## Curated Normandy airfields; FordAF is not Ford_AF (2026-08-15)
 
 - **Date:** 2026-08-15

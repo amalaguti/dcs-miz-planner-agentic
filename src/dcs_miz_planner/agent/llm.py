@@ -39,6 +39,31 @@ MANSTON_FREE_FLIGHT_JSON = json.dumps(
     }
 )
 
+# Optional test-only Batumi free-flight JSON (stub default stays Manston).
+BATUMI_COLD_FREE_FLIGHT_JSON = json.dumps(
+    {
+        "schema_version": "1",
+        "mission_type": "free_flight",
+        "theatre": "Caucasus",
+        "name": "Batumi Free Flight",
+        "description": "Cold start at Batumi. Free flight over the Caucasus. Clear morning.",
+        "date": {"year": 2024, "month": 6, "day": 6},
+        "start_time": "09:00",
+        "weather": "sunny_clear",
+        "player": {
+            "aircraft": "Su-25T",
+            "airfield": "Batumi",
+            "coalition": "blue",
+            "country": "Georgia",
+            "skill": "Player",
+            "start": "cold_parking",
+        },
+        "enemies": [],
+        "objectives": [],
+        "triggers": [],
+    }
+)
+
 # Optional test-only Needs Oar Point free-flight JSON (stub default stays Manston).
 NEEDS_OAR_POINT_FREE_FLIGHT_JSON = json.dumps(
     {

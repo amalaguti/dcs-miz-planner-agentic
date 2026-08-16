@@ -176,7 +176,7 @@ def normalize_mission(mission: str) -> str:
 
 
 def channel_available_inventory() -> TheatreInventory:
-    """Hermetic inventory: Channel (+ Normandy when planner-bound)."""
+    """Hermetic inventory: Channel + Normandy + Caucasus when planner-bound."""
     return TheatreInventory(
         scanned_at=datetime.now(UTC),
         dcs_roots=("S:/DCS World",),
@@ -192,6 +192,13 @@ def channel_available_inventory() -> TheatreInventory:
             TheatreRecord(
                 theatre_id="Normandy",
                 update_id="NORMANDY_terrain",
+                dcs_root="S:/DCS World",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
+            TheatreRecord(
+                theatre_id="Caucasus",
+                update_id="CAUCASUS_terrain",
                 dcs_root="S:/DCS World",
                 state=AvailabilityState.AVAILABLE,
                 planner_supported=True,
@@ -243,6 +250,24 @@ NORMANDY_CAP_MISSION_CONTRACTS = (
 
 def compile_needs_oar_point_cap(output_path: Path) -> Path:
     spec = load_mission_spec(NORMANDY_CAP_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
+CAUCASUS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_cold_freeflight.yaml"
+CAUCASUS_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=22',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+)
+
+
+def compile_batumi(output_path: Path) -> Path:
+    spec = load_mission_spec(CAUCASUS_EXAMPLE_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(
         spec, output_path, voice="raf"
     )

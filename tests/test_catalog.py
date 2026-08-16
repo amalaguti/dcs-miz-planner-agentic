@@ -173,7 +173,11 @@ def test_catalog_cli_sync_and_list(tmp_path: Path) -> None:
     with redirect_stdout(buf2):
         assert main(["catalog", "list", "--db", str(db), "--known-only", "--json"]) == 0
     known_only = json.loads(buf2.getvalue())
-    assert {r["theatre_id"] for r in known_only["rows"]} == {"TheChannel", "Normandy"}
+    assert {r["theatre_id"] for r in known_only["rows"]} == {
+        "TheChannel",
+        "Normandy",
+        "Caucasus",
+    }
 
 
 def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
@@ -181,15 +185,20 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     snap = CatalogService(db_path=db).sync()
     assert "TheChannel" in {t.theatre_id for t in snap.theatres}
     assert "Normandy" in {t.theatre_id for t in snap.theatres}
+    assert "Caucasus" in {t.theatre_id for t in snap.theatres}
     assert "Manston" in {a.name for a in snap.airfields}
     assert "NeedsOarPoint" in {a.name for a in snap.airfields}
+    assert "Batumi" in {a.name for a in snap.airfields}
     by_af = {a.name: a for a in snap.airfields}
     assert by_af["Manston"].theatre_id == "TheChannel"
     assert by_af["NeedsOarPoint"].theatre_id == "Normandy"
     assert by_af["NeedsOarPoint"].airdrome_id == 28
+    assert by_af["Batumi"].theatre_id == "Caucasus"
+    assert by_af["Batumi"].airdrome_id == 22
     assert by_af["FordAF"].theatre_id == "Normandy"
     assert by_af["FordAF"].airdrome_id == 31
     assert "SpitfireLFMkIX" in {a.aircraft_id for a in snap.aircraft}
+    assert "Su-25T" in {a.aircraft_id for a in snap.aircraft}
     assert "sunny_clear" in {w.name for w in snap.weather_presets}
     assert "dawn_clear" in {w.name for w in snap.weather_presets}
     assert "marginal_vfr" in {w.name for w in snap.weather_presets}

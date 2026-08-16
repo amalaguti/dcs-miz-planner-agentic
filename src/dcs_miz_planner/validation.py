@@ -54,23 +54,53 @@ from .sounds import get_sound_asset, list_sound_assets
 from .theatre_terrain import bound_theatre_ids
 
 
+def _era_for_spec(registry: ChannelRegistry, spec: MissionSpec) -> str | None:
+    try:
+        return registry.era_for_theatre(spec.theatre)
+    except RegistryError:
+        return None
+
+
+def _known_aircraft_ids(registry: ChannelRegistry, era: str | None) -> frozenset[str]:
+    if era is None:
+        return registry.known_aircraft()
+    return registry.known_aircraft(era=era)
+
+
+def _check_aircraft(
+    *,
+    aircraft_id: str,
+    path: str,
+    registry: ChannelRegistry,
+    era: str | None,
+    errors: list[ValidationError],
+) -> None:
+    known = _known_aircraft_ids(registry, era)
+    if aircraft_id not in known:
+        errors.append(
+            ValidationError(
+                code="unknown_aircraft",
+                path=path,
+                message=f"Unknown aircraft '{aircraft_id}'",
+                hint=f"Known: {sorted(known)}",
+            )
+        )
+
+
 def _validate_enemy_aircraft(
     spec: MissionSpec,
     registry: ChannelRegistry,
     errors: list[ValidationError],
 ) -> None:
+    era = _era_for_spec(registry, spec)
     for i, enemy in enumerate(spec.enemies):
-        try:
-            registry.get_aircraft(enemy.aircraft)
-        except RegistryError:
-            errors.append(
-                ValidationError(
-                    code="unknown_aircraft",
-                    path=f"enemies[{i}].aircraft",
-                    message=f"Unknown aircraft '{enemy.aircraft}'",
-                    hint=f"Known: {registry.list_aircraft()}",
-                )
-            )
+        _check_aircraft(
+            aircraft_id=enemy.aircraft,
+            path=f"enemies[{i}].aircraft",
+            registry=registry,
+            era=era,
+            errors=errors,
+        )
 
 
 def _validate_opposing_enemies(
@@ -101,14 +131,15 @@ def _check_country_skill(
     country_path: str,
     skill_path: str,
     errors: list[ValidationError],
+    era: str | None = None,
 ) -> None:
-    if country not in known_countries():
+    if country not in known_countries(era=era):
         errors.append(
             ValidationError(
                 code="unknown_country",
                 path=country_path,
                 message=f"Unknown or unsupported country {country!r}",
-                hint=country_hint(country),
+                hint=country_hint(country, era=era),
             )
         )
     if skill not in KNOWN_SKILLS:
@@ -122,13 +153,19 @@ def _check_country_skill(
         )
 
 
-def _validate_countries_and_skills(spec: MissionSpec, errors: list[ValidationError]) -> None:
+def _validate_countries_and_skills(
+    spec: MissionSpec,
+    errors: list[ValidationError],
+    registry: ChannelRegistry,
+) -> None:
+    era = _era_for_spec(registry, spec)
     _check_country_skill(
         country=spec.player.country,
         skill=spec.player.skill,
         country_path="player.country",
         skill_path="player.skill",
         errors=errors,
+        era=era,
     )
     for i, enemy in enumerate(spec.enemies):
         _check_country_skill(
@@ -137,6 +174,7 @@ def _validate_countries_and_skills(spec: MissionSpec, errors: list[ValidationErr
             country_path=f"enemies[{i}].country",
             skill_path=f"enemies[{i}].skill",
             errors=errors,
+            era=era,
         )
     for i, tgt in enumerate(spec.targets):
         _check_country_skill(
@@ -145,6 +183,7 @@ def _validate_countries_and_skills(spec: MissionSpec, errors: list[ValidationErr
             country_path=f"targets[{i}].country",
             skill_path=f"targets[{i}].skill",
             errors=errors,
+            era=era,
         )
     for i, flight in enumerate(spec.package):
         _check_country_skill(
@@ -153,6 +192,7 @@ def _validate_countries_and_skills(spec: MissionSpec, errors: list[ValidationErr
             country_path=f"package[{i}].country",
             skill_path=f"package[{i}].skill",
             errors=errors,
+            era=era,
         )
 
 
@@ -548,18 +588,15 @@ def _validate_escort(
                     )
                 )
 
+    era = _era_for_spec(registry, spec)
     for i, flight in enumerate(spec.package):
-        try:
-            registry.get_aircraft(flight.aircraft)
-        except RegistryError:
-            errors.append(
-                ValidationError(
-                    code="unknown_aircraft",
-                    path=f"package[{i}].aircraft",
-                    message=f"Unknown aircraft '{flight.aircraft}'",
-                    hint=f"Known: {registry.list_aircraft()}",
-                )
-            )
+        _check_aircraft(
+            aircraft_id=flight.aircraft,
+            path=f"package[{i}].aircraft",
+            registry=registry,
+            era=era,
+            errors=errors,
+        )
         if flight.coalition is not spec.player.coalition:
             errors.append(
                 ValidationError(
@@ -1338,7 +1375,7 @@ def validate_mission_spec(
         )
 
     _validate_triggers_and_zones(spec, errors)
-    _validate_countries_and_skills(spec, errors)
+    _validate_countries_and_skills(spec, errors, registry)
     _validate_player_flight(spec, errors)
     _validate_aircraft_failures(spec, registry, errors)
 
@@ -1608,17 +1645,13 @@ def validate_mission_spec(
                         )
                     )
 
-    try:
-        registry.get_aircraft(spec.player.aircraft)
-    except RegistryError:
-        errors.append(
-            ValidationError(
-                code="unknown_aircraft",
-                path="player.aircraft",
-                message=f"Unknown aircraft '{spec.player.aircraft}'",
-                hint=f"Known: {registry.list_aircraft()}",
-            )
-        )
+    _check_aircraft(
+        aircraft_id=spec.player.aircraft,
+        path="player.aircraft",
+        registry=registry,
+        era=_era_for_spec(registry, spec),
+        errors=errors,
+    )
 
     try:
         registry.weather_preset(spec.weather.value)

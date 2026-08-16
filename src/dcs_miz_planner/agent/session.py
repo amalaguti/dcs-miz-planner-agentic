@@ -29,6 +29,8 @@ from .immersion import (
     host_harbour_unit_nudge,
     host_immersion_repair_nudge,
     host_normandy_combat_nudge,
+    theatre_mission_refuse_accept_line,
+    theatre_mission_refuse_chat_line,
 )
 from .llm import LLMClient, default_tools
 from .path_clamp import try_clamp_land_paths_if_needed
@@ -158,13 +160,7 @@ class PlanSession:
                 # Always refuse — never a one-shot flag. Combat must not be captured.
                 self.messages.append({"role": "user", "content": combat_nudge})
                 return SlashResult(
-                    output=(
-                        content
-                        + "\n\n[Host] Normandy intercept/GA/escort/recon is not inventable — "
-                        "commander nudged toward NeedsOarPoint free_flight or CAP, or TheChannel. "
-                        "Draft NOT captured. Emit free_flight or CAP at NeedsOarPoint or switch "
-                        "theatre to TheChannel, then /accept."
-                    )
+                    output=content + "\n\n" + theatre_mission_refuse_chat_line(parsed)
                 )
             harbour_nudge = host_harbour_unit_nudge(user_text, parsed)
             if harbour_nudge and not getattr(self, "_harbour_nudge_used", False):
@@ -385,10 +381,7 @@ class PlanSession:
         if spec is not None:
             combat_nudge = host_normandy_combat_nudge(spec)
             if combat_nudge:
-                return (
-                    "Normandy intercept/GA/escort/recon is not inventable. Draft NOT written. "
-                    "Emit free_flight or CAP at NeedsOarPoint or switch theatre to TheChannel."
-                )
+                return theatre_mission_refuse_accept_line(spec)
         if spec is None:
             msg = "Nothing to accept — no draft Spec yet."
             if self.last_spec_error:

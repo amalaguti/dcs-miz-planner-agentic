@@ -177,6 +177,12 @@ def test_normandy_installed_and_supported(dcs_home: Path, saved_games: Path):
     assert normandy.planner_supported is True
 
 
+def test_caucasus_installed_and_supported(dcs_home: Path, saved_games: Path):
+    inv = probe_installations(dcs_root=dcs_home, saved_games=saved_games)
+    caucasus = next(t for t in inv.theatres if t.theatre_id == "Caucasus")
+    assert caucasus.planner_supported is True
+
+
 def test_missing_dcs_root(tmp_path: Path):
     inv = probe_installations(dcs_root=tmp_path / "missing", saved_games=tmp_path / "sg")
     assert inv.dcs_roots == ()

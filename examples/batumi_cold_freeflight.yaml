@@ -1,0 +1,18 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: Caucasus
+name: Batumi Free Flight
+description: Cold start at Batumi. Free flight over the Caucasus. Clear morning.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Batumi
+  coalition: blue
+  country: Georgia
+  skill: Player
+  start: cold_parking
