@@ -705,16 +705,17 @@ when inventory agrees.
 ### Requirement: Known countries and aircraft are era-filtered
 Shared validation SHALL resolve known countries and known aircraft using the
 Spec theatre’s packaged era (`era_for_theatre`). A WWII theatre MUST reject
-`Georgia` / `Turkey` / `Su-25T`. A modern Caucasus or Syria Spec MUST reject
-`UK` / `SpitfireLFMkIX`.
+`Georgia` / `Turkey` / `Su-25T`. A modern theatre MUST accept
+`SpitfireLFMkIX` (dual-era). It MUST still reject modern-only countries on
+WWII theatres.
 
 #### Scenario: Channel rejects Georgia
 - **WHEN** a TheChannel Mission Spec sets player country `Georgia`
 - **THEN** validation MUST fail with an unknown-country error
 
-#### Scenario: Caucasus rejects Spitfire
+#### Scenario: Caucasus accepts Spitfire
 - **WHEN** a Caucasus Mission Spec sets player aircraft `SpitfireLFMkIX`
-- **THEN** validation MUST fail with an unknown-aircraft error
+- **THEN** validation MUST succeed when the rest of the Spec is well-formed
 
 ### Requirement: Caucasus freeflight validates when inventory agrees
 Validation SHALL accept a free-flight Mission Spec with theatre `Caucasus`
@@ -727,6 +728,14 @@ planner-supported.
   against the registry and an inventory that reports `Caucasus` available and
   planner-supported
 - **THEN** the validation result MUST indicate success with no errors
+
+### Requirement: Batumi Spitfire freeflight validates
+Shared validation SHALL accept `examples/batumi_spitfire_freeflight.yaml`
+when inventory agrees.
+
+#### Scenario: Batumi Spitfire validates
+- **WHEN** that example is validated against offerable Caucasus inventory
+- **THEN** validation MUST succeed
 
 ### Requirement: Caucasus Mozdok freeflight validates
 Shared validation SHALL accept a well-formed Caucasus free-flight Spec with
@@ -763,9 +772,9 @@ planner-supported.
   planner-supported
 - **THEN** the validation result MUST indicate success with no errors
 
-#### Scenario: Syria rejects Spitfire
+#### Scenario: Syria accepts Spitfire
 - **WHEN** a Syria Mission Spec sets player aircraft `SpitfireLFMkIX`
-- **THEN** validation MUST fail with an unknown-aircraft error
+- **THEN** validation MUST succeed when the rest of the Spec is well-formed
 
 ### Requirement: Channel rejects USA
 Shared validation SHALL reject player country `USA` on a WWII theatre
@@ -788,9 +797,9 @@ planner-supported.
   planner-supported
 - **THEN** the validation result MUST indicate success with no errors
 
-#### Scenario: Nevada rejects Spitfire
+#### Scenario: Nevada accepts Spitfire
 - **WHEN** a Nevada Mission Spec sets player aircraft `SpitfireLFMkIX`
-- **THEN** validation MUST fail with an unknown-aircraft error
+- **THEN** validation MUST succeed when the rest of the Spec is well-formed
 
 ### Requirement: Falklands freeflight validates when inventory agrees
 Validation SHALL accept a free-flight Mission Spec with theatre `Falklands`
@@ -804,9 +813,9 @@ available and planner-supported.
   planner-supported
 - **THEN** the validation result MUST indicate success with no errors
 
-#### Scenario: Falklands rejects Spitfire
+#### Scenario: Falklands accepts Spitfire
 - **WHEN** a Falklands Mission Spec sets player aircraft `SpitfireLFMkIX`
-- **THEN** validation MUST fail with an unknown-aircraft error
+- **THEN** validation MUST succeed when the rest of the Spec is well-formed
 
 #### Scenario: Channel still accepts UK
 - **WHEN** a TheChannel Mission Spec sets player country `UK`
