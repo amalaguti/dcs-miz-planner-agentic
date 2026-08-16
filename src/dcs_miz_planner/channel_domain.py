@@ -1,8 +1,9 @@
-"""Channel map land vs sea probe for strike placement (validate + randomize).
+"""Land vs sea probe for strike placement (validate + randomize).
 
-Uses PyDCS TheChannel airport geometry — not DCS runtime land.getSurfaceType.
-Heuristic: near a Channel airport ⇒ land; roughly on the UK–FR coastal chord ⇒ sea.
-Non-Channel theatres fail closed before this chord runs.
+Uses PyDCS airport geometry — not DCS runtime land.getSurfaceType.
+Heuristic: near a curated airport ⇒ land; roughly on the UK–opposite-coast
+chord ⇒ sea. TheChannel uses UK–FR Channel ids; Normandy uses UK–Cotentin ids.
+Other theatres fail closed before a chord runs.
 """
 
 from __future__ import annotations
@@ -15,23 +16,30 @@ from .registry import ChannelRegistry, get_channel_registry
 Domain = Literal["land", "sea"]
 
 CHANNEL_THEATRE = "TheChannel"
+NORMANDY_THEATRE = "Normandy"
 
 # Channel WWII coastal clusters (PyDCS TheChannel airport ids).
 _UK_AIRPORT_IDS: frozenset[int] = frozenset({5, 6, 7, 8, 10, 12, 13, 14})
 _FR_AIRPORT_IDS: frozenset[int] = frozenset({1, 2, 3, 4})  # Abbeville…Dunkirk
 
+# Normandy curated clusters (PyDCS Normandy airport ids; not Channel ids).
+_NORMANDY_UK_AIRPORT_IDS: frozenset[int] = frozenset({28, 27, 29, 30, 31})
+_NORMANDY_FR_AIRPORT_IDS: frozenset[int] = frozenset({4, 1, 19})  # Maupertus, SPD, Carpiquet
+
 _NEAR_AIRPORT_M = 3000.0
 _CHORD_SLACK_M = 8000.0
 
+_DOMAIN_THEATRES: frozenset[str] = frozenset({CHANNEL_THEATRE, NORMANDY_THEATRE})
+
 
 class DomainUnsupportedTheatre(ValueError):
-    """Raised when land/sea domain checks are requested off TheChannel."""
+    """Raised when land/sea domain checks are requested off supported theatres."""
 
     code = "domain_unsupported_theatre"
 
 
 def domain_supported(theatre: str) -> bool:
-    return theatre == CHANNEL_THEATRE
+    return theatre in _DOMAIN_THEATRES
 
 
 def require_channel_domain(theatre: str) -> None:
@@ -41,20 +49,21 @@ def require_channel_domain(theatre: str) -> None:
         )
 
 
-def classify_channel_domain(x: float, y: float) -> Domain:
-    """Return ``land`` or ``sea`` for a Channel terrain map point (x, y).
-
-    Callers that have a Spec theatre MUST use :func:`classify_domain_for_theatre`
-    so non-Channel maps fail closed instead of running the UK–FR chord.
-    """
+def _classify_uk_fr_chord(
+    theatre: str,
+    x: float,
+    y: float,
+    uk_ids: frozenset[int],
+    fr_ids: frozenset[int],
+) -> Domain:
     from dcs.mapping import Point
 
     from .theatre_terrain import terrain_for_theatre
 
-    terrain = terrain_for_theatre("TheChannel")
+    terrain = terrain_for_theatre(theatre)
     point = Point(x, y, terrain)
-    uk = [a for a in terrain.airport_list() if a.id in _UK_AIRPORT_IDS]
-    fr = [a for a in terrain.airport_list() if a.id in _FR_AIRPORT_IDS]
+    uk = [a for a in terrain.airport_list() if a.id in uk_ids]
+    fr = [a for a in terrain.airport_list() if a.id in fr_ids]
     if not uk or not fr:
         return "land"
     nearest_uk = min(uk, key=lambda a: point.distance_to_point(a.position))
@@ -69,9 +78,31 @@ def classify_channel_domain(x: float, y: float) -> Domain:
     return "land"
 
 
+def classify_channel_domain(x: float, y: float) -> Domain:
+    """Return ``land`` or ``sea`` for a Channel terrain map point (x, y).
+
+    Callers that have a Spec theatre MUST use :func:`classify_domain_for_theatre`
+    so non-Channel maps fail closed instead of running the UK–FR chord.
+    """
+    return _classify_uk_fr_chord(CHANNEL_THEATRE, x, y, _UK_AIRPORT_IDS, _FR_AIRPORT_IDS)
+
+
+def classify_normandy_domain(x: float, y: float) -> Domain:
+    """Return ``land`` or ``sea`` for a Normandy terrain map point (x, y)."""
+    return _classify_uk_fr_chord(
+        NORMANDY_THEATRE,
+        x,
+        y,
+        _NORMANDY_UK_AIRPORT_IDS,
+        _NORMANDY_FR_AIRPORT_IDS,
+    )
+
+
 def classify_domain_for_theatre(theatre: str, x: float, y: float) -> Domain:
-    """Classify land/sea for ``theatre``; fail closed unless TheChannel."""
+    """Classify land/sea for ``theatre``; fail closed unless Channel or Normandy."""
     require_channel_domain(theatre)
+    if theatre == NORMANDY_THEATRE:
+        return classify_normandy_domain(x, y)
     return classify_channel_domain(x, y)
 
 
@@ -134,7 +165,7 @@ def strike_domain_for_spec(
 ) -> Domain:
     require_channel_domain(spec.theatre)
     x, y = strike_map_point(spec, registry=registry)
-    return classify_channel_domain(x, y)
+    return classify_domain_for_theatre(spec.theatre, x, y)
 
 
 def recon_domain_for_spec(
@@ -144,4 +175,4 @@ def recon_domain_for_spec(
 ) -> Domain:
     require_channel_domain(spec.theatre)
     x, y = recon_map_point(spec, registry=registry)
-    return classify_channel_domain(x, y)
+    return classify_domain_for_theatre(spec.theatre, x, y)

@@ -1072,14 +1072,14 @@ options:
     id: needs_oar_point_home
     label: Needs Oar Point (home field)
     description: >
-      RAF Needs Oar Point — default Normandy Spitfire start for free flight and
-      mid-Channel CAP toward Cherbourg.
+      RAF Needs Oar Point — default Normandy Spitfire start for free flight,
+      mid-Channel CAP toward Cherbourg, and Cotentin ground attack.
     support: advisory
     meta:
       theatre: Normandy
       airfield: NeedsOarPoint
       role: home_base
-      mission_types: [free_flight, cap]
+      mission_types: [free_flight, cap, ground_attack]
 
   - family: channel_place
     id: cherbourg_channel_cap
@@ -1097,6 +1097,34 @@ options:
       cap_distance_km: 63
       cap_altitude_m: 4000
       example: examples/needs_oar_point_cap.yaml
+
+  - family: channel_place
+    id: maupertus_inland_strike
+    label: Maupertus inland strike
+    description: >
+      Axis-held Cotentin land inland of Maupertus for Normandy GA — place
+      soft/AAA on French soil, not on UK fields or mid-Channel water. Copy
+      strike_bearing_deg / strike_distance_km. Do not copy Manston 125/76 or
+      Cherbourg CAP 180/63 (sea).
+    support: advisory
+    meta:
+      theatre: Normandy
+      domain: land
+      geometry_hint: inland_of_maupertus
+      related_classes: [soft_vehicles, aaa_guns]
+      mission_types: [ground_attack]
+      cues: [maupertus, cherbourg, cotentin, inland, convoy, flak, trucks]
+      preferred_ai_preset_soft: convoy_transit
+      preferred_ai_preset_aaa: aaa_alert
+      # PyDCS NeedsOarPoint (28) → Maupertus (4) ≈ 180.22° / 125.29 km;
+      # 180/133 is ~8 km inland (land). See examples/needs_oar_point_ground_attack.yaml.
+      strike_bearing_deg: 180
+      strike_distance_km: 133
+      strike_altitude_m: 2000
+      example: examples/needs_oar_point_ground_attack.yaml
+      note: >
+        Land only. Stopping short (~120 km) is still Cherbourg-channel water.
+        Do not copy french_coast_strike_belt 125/76 onto Needs Oar Point.
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

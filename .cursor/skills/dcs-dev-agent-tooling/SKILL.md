@@ -19,21 +19,22 @@ description: >-
 3. Catalog shares `inventory.sqlite` as query layer — Channel YAML remains SoT;
    schema bumps must clear `synced_at`. Strike units are a **curated** YAML shelf
    (`list_strike_targets`), not an ME/install dump. Schema v6: `era_id=wwii` and
-   combat `theatre_id=TheChannel` (do not tag Normandy).    `list_strike_targets(theatre="Normandy")`
-   is empty until a target batch ships. Before expanding theatres or
+   combat `theatre_id=TheChannel`. `list_strike_targets(theatre="Normandy")`
+   returns WWII **land** units (sea_craft stay Channel-only). Before expanding theatres or
    target shelves, follow [`docs/THEATRE_TARGET_PROMOTE.md`](../../../docs/THEATRE_TARGET_PROMOTE.md)
    (`#8e`). Local gitignored `research/` QAG HTML is `research_guidance` colour
    only — never ship those pages, never auto-promote QAG UI names into catalog
    YAML. Invent unit/preset cues ≠ geometry — use place recipes + invent path
    clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
    `french_coast_rail_corridor` path deltas only —
-   **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy
-   is free_flight or CAP (NeedsOarPoint; CAP 180°/63 km). Caucasus is
+   **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy is free_flight, CAP, or
+   ground_attack (NeedsOarPoint; CAP 180°/63 km; GA 180°/133 km inland of
+   Maupertus). Caucasus is
    **free_flight only** (Batumi; CAP refused). Syria is **free_flight only**
    (Incirlik; CAP refused). Nevada is **free_flight only**    (Nellis; CAP
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).
-   Intercept / GA /
-   escort / recon on Normandy and all combat on Caucasus/Syria/Nevada/Falklands refuse every turn
+   Intercept / escort / recon
+   on Normandy and all combat on Caucasus/Syria/Nevada/Falklands refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
    nudges MUST infer theatre from rejected JSON and pass it to
    `build_spec_schema` — do not hardcode `theatre="Normandy"`,

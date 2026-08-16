@@ -200,15 +200,15 @@ def harbour_prompt_cues(prompt: str) -> bool:
 
 _THEATRE_ALLOWED_TYPES: dict[str, frozenset[MissionType]] = {
     "TheChannel": frozenset(MissionType),
-    "Normandy": frozenset({MissionType.FREE_FLIGHT, MissionType.CAP}),
+    "Normandy": frozenset({MissionType.FREE_FLIGHT, MissionType.CAP, MissionType.GROUND_ATTACK}),
 }
 
 
 def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
     """Refuse mission types not allowed on this theatre. Every turn.
 
-    TheChannel: all six. Normandy: free_flight + CAP. Else (Caucasus / Syria /
-    Nevada / Falklands / Stage A): free_flight only. Callers MUST treat a non-None result as a hard refuse:
+    TheChannel: all six. Normandy: free_flight + CAP + ground_attack. Else
+    (Caucasus / Syria / Nevada / Falklands / Stage A): free_flight only. Callers MUST treat a non-None result as a hard refuse:
     never capture a draft and never write YAML. A one-shot ``_used`` flag is not.
     """
     allowed = _THEATRE_ALLOWED_TYPES.get(spec.theatre, frozenset({MissionType.FREE_FLIGHT}))
@@ -216,11 +216,12 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
         return None
     if spec.theatre == "Normandy":
         return (
-            "[Host] Normandy invent is free_flight or CAP at NeedsOarPoint. "
-            "Refuse intercept/ground_attack/escort/recon — emit free_flight or CAP "
-            "(station 180°/63 km toward Cherbourg, not Manston 135/25) or switch "
-            "theatre to TheChannel. Do not copy channel_place geometry (french coast "
-            "belts, Hawkinge) onto Normandy. "
+            "[Host] Normandy invent is free_flight, CAP, or ground_attack at "
+            "NeedsOarPoint. Refuse intercept/escort/recon — emit free_flight, CAP "
+            "(station 180°/63 km toward Cherbourg, not Manston 135/25), or "
+            "ground_attack (strike 180°/133 km inland of Maupertus, not Manston "
+            "125/76) or switch theatre to TheChannel. Do not copy channel_place "
+            "geometry (french coast belts, Hawkinge) onto Normandy. "
             "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
         )
     if spec.theatre == "Caucasus":
@@ -272,10 +273,11 @@ def theatre_mission_refuse_chat_line(spec: MissionSpec) -> str:
     """User-facing chat refuse after a combat JSON (draft not captured)."""
     if spec.theatre == "Normandy":
         return (
-            "[Host] Normandy intercept/GA/escort/recon is not inventable — "
-            "commander nudged toward NeedsOarPoint free_flight or CAP, or TheChannel. "
-            "Draft NOT captured. Emit free_flight or CAP at NeedsOarPoint or switch "
-            "theatre to TheChannel, then /accept."
+            "[Host] Normandy intercept/escort/recon is not inventable — "
+            "commander nudged toward NeedsOarPoint free_flight, CAP, or "
+            "ground_attack, or TheChannel. "
+            "Draft NOT captured. Emit free_flight, CAP, or ground_attack at "
+            "NeedsOarPoint or switch theatre to TheChannel, then /accept."
         )
     if spec.theatre == "Caucasus":
         return (
@@ -316,8 +318,9 @@ def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
     """User-facing /accept refuse (draft not written)."""
     if spec.theatre == "Normandy":
         return (
-            "Normandy intercept/GA/escort/recon is not inventable. Draft NOT written. "
-            "Emit free_flight or CAP at NeedsOarPoint or switch theatre to TheChannel."
+            "Normandy intercept/escort/recon is not inventable. Draft NOT written. "
+            "Emit free_flight, CAP, or ground_attack at NeedsOarPoint or switch "
+            "theatre to TheChannel."
         )
     if spec.theatre == "Caucasus":
         return (
@@ -348,7 +351,10 @@ def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
 def theatre_mission_refuse_planner_error(spec: MissionSpec) -> str:
     """Planner last_parse_error when combat is refused on this theatre."""
     if spec.theatre == "Normandy":
-        return "Normandy invent is free_flight or CAP; intercept/GA/escort/recon are refused"
+        return (
+            "Normandy invent is free_flight, CAP, or ground_attack; "
+            "intercept/escort/recon are refused"
+        )
     if spec.theatre == "Caucasus":
         return "Caucasus invent is free_flight only; intercept/cap/GA/escort/recon are refused"
     if spec.theatre == "Syria":

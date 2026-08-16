@@ -461,7 +461,7 @@ def _validate_strike_domain(
                 path="strike",
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
                 hint=(
-                    "Use theatre TheChannel for strike/recon/path geometry, or omit "
+                    "Use theatre TheChannel or Normandy for strike/recon/path geometry, or omit "
                     "land/sea combat until that theatre has a domain recipe"
                 ),
             )
@@ -754,18 +754,22 @@ def _validate_target_motion(
     area: str,
 ) -> None:
     """Domain-check path waypoints and patrol corners vs unit land|sea."""
-    from .channel_domain import DomainUnsupportedTheatre, classify_domain_for_theatre
+    from .channel_domain import (
+        DomainUnsupportedTheatre,
+        classify_domain_for_theatre,
+        domain_supported,
+    )
     from .models import TargetMotion, ground_target_motion
     from .theatre_terrain import terrain_for_theatre
 
-    if spec.theatre != "TheChannel":
+    if not domain_supported(spec.theatre):
         errors.append(
             ValidationError(
                 code="domain_unsupported_theatre",
                 path=area,
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
                 hint=(
-                    "Use theatre TheChannel for strike/recon/path geometry, or omit "
+                    "Use theatre TheChannel or Normandy for strike/recon/path geometry, or omit "
                     "land/sea combat until that theatre has a domain recipe"
                 ),
             )
@@ -831,7 +835,7 @@ def _validate_target_motion(
                             f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"
                         ),
                         hint=(
-                            "Use theatre TheChannel for strike/recon/path geometry, or omit "
+                            "Use theatre TheChannel or Normandy for strike/recon/path geometry, or omit "
                             "land/sea combat until that theatre has a domain recipe"
                         ),
                     )
@@ -938,7 +942,7 @@ def _validate_recon_domain(
                 path="recon",
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
                 hint=(
-                    "Use theatre TheChannel for strike/recon/path geometry, or omit "
+                    "Use theatre TheChannel or Normandy for strike/recon/path geometry, or omit "
                     "land/sea combat until that theatre has a domain recipe"
                 ),
             )

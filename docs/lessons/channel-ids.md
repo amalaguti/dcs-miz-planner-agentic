@@ -5,6 +5,21 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Normandy domain chord; Maupertus inland 180/133 (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Land/sea on Normandy uses a **UK–Cotentin** airport chord
+  (NeedsOarPoint 28, Chailey 27, Funtington 29, Tangmere 30, FordAF 31 vs
+  Maupertus 4, SaintPierreduMont 1, Carpiquet 19) — never Channel UK/FR ids.
+  PyDCS `heading_between_point` NeedsOarPoint → Maupertus is **180.22° /
+  125.29 km**. Integer 180° / 125 km is on the field; **180° / 120 km is
+  still sea**; **180° / 133 km** is ~8 km inland (land), analogous to
+  Channel 125/76 inland of Dunkirk. CAP 180/63 remains sea. Do not copy
+  Manston 125/76 onto Needs Oar Point.
+- **Code:** `channel_domain.py` (`classify_normandy_domain`),
+  `examples/needs_oar_point_ground_attack.yaml`,
+  `planning_options.yaml` (`maupertus_inland_strike`).
+
 ## Falklands MountPleasant key; UK dual-era (2026-08-15)
 
 - **Date:** 2026-08-15

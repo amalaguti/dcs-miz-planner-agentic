@@ -13,7 +13,7 @@ description: >-
 Parent agent in Agents Window (or chat) coordinates specialists. **You** do not
 spawn a seventh “orchestrator” subagent.
 
-Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy is smoke-only.
+Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + GA smoke.
 
 ## Read
 

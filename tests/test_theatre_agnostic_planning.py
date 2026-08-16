@@ -25,6 +25,7 @@ from dcs_miz_planner.catalog import CatalogService
 from dcs_miz_planner.channel_domain import (
     DomainUnsupportedTheatre,
     airfield_relative_map_point,
+    classify_domain_for_theatre,
     require_channel_domain,
     strike_domain_for_spec,
 )
@@ -50,6 +51,7 @@ INTERCEPT = REPO / "examples" / "manston_dawn_intercept.yaml"
 GA = REPO / "examples" / "manston_ground_attack.yaml"
 NORMANDY_FF = REPO / "examples" / "needs_oar_point_cold_freeflight.yaml"
 NORMANDY_CAP = REPO / "examples" / "needs_oar_point_cap.yaml"
+NORMANDY_GA = REPO / "examples" / "needs_oar_point_ground_attack.yaml"
 MANSTON_FF = REPO / "examples" / "manston_cold_freeflight.yaml"
 CAUCASUS_FF = REPO / "examples" / "batumi_cold_freeflight.yaml"
 SYRIA_FF = REPO / "examples" / "incirlik_cold_freeflight.yaml"
@@ -105,17 +107,30 @@ def test_airfield_relative_map_point_passes_theatre() -> None:
     assert isinstance(y, float)
 
 
-def test_domain_fail_closed_on_normandy_strike() -> None:
+def test_domain_fail_closed_on_caucasus_strike() -> None:
     spec = load_mission_spec(GA).model_copy(
-        update={"theatre": "Normandy", "player": load_mission_spec(NORMANDY_FF).player}
+        update={"theatre": "Caucasus", "player": load_mission_spec(CAUCASUS_FF).player}
     )
     result = validate_mission_spec(spec, inventory=_inv())
     assert not result.ok
     assert any(e.code == "domain_unsupported_theatre" for e in result.errors)
     with pytest.raises(DomainUnsupportedTheatre):
-        require_channel_domain("Normandy")
+        require_channel_domain("Caucasus")
     with pytest.raises(DomainUnsupportedTheatre):
         strike_domain_for_spec(spec)
+
+
+def test_normandy_strike_domain_classified() -> None:
+    spec = load_mission_spec(NORMANDY_GA)
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert result.ok, result.errors
+    assert strike_domain_for_spec(spec) == "land"
+    ff = load_mission_spec(NORMANDY_FF)
+    sea_x, sea_y = airfield_relative_map_point(ff, bearing_deg=180.0, distance_km=63.0)
+    land_x, land_y = airfield_relative_map_point(ff, bearing_deg=180.0, distance_km=133.0)
+    assert classify_domain_for_theatre("Normandy", sea_x, sea_y) == "sea"
+    assert classify_domain_for_theatre("Normandy", land_x, land_y) == "land"
+    require_channel_domain("Normandy")
 
 
 def test_channel_strike_domain_still_classified() -> None:
@@ -167,8 +182,17 @@ def test_channel_place_tagged_thechannel() -> None:
     assert cap.meta.get("theatre") == "Normandy"
     assert cap.meta.get("cap_bearing_deg") == 180
     assert cap.meta.get("cap_distance_km") == 63
+    inland = next(o for o in places if o.id == "maupertus_inland_strike")
+    assert inland.meta.get("theatre") == "Normandy"
+    assert inland.meta.get("domain") == "land"
+    assert inland.meta.get("strike_bearing_deg") == 180
+    assert inland.meta.get("strike_distance_km") == 133
     for opt in places:
-        if opt.id in {"needs_oar_point_home", "cherbourg_channel_cap"}:
+        if opt.id in {
+            "needs_oar_point_home",
+            "cherbourg_channel_cap",
+            "maupertus_inland_strike",
+        }:
             assert opt.meta.get("theatre") == "Normandy"
         else:
             assert opt.meta.get("theatre") == "TheChannel"
@@ -532,11 +556,22 @@ def test_schema_theatre_normandy_free_flight() -> None:
 def test_schema_theatre_normandy_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Normandy"):
         build_spec_schema("intercept", theatre="Normandy")
-    tool = get_mission_spec_schema("ground_attack", theatre="Normandy")
+    tool = get_mission_spec_schema("intercept", theatre="Normandy")
     assert tool["ok"] is False
     assert tool["code"] == "combat_unsupported_theatre"
     blob = json.dumps(tool)
     assert "Manston" not in blob
+    ga = build_spec_schema("ground_attack", theatre="Normandy")
+    assert ga.example["theatre"] == "Normandy"
+    assert ga.example["player"]["airfield"] == "NeedsOarPoint"
+    assert ga.example["player"]["airfield"] != "Manston"
+    assert ga.example["strike"]["bearing_deg"] == 180
+    assert ga.example["strike"]["distance_km"] == 133
+    assert ga.example["strike"]["bearing_deg"] != 125
+    assert ga.example["strike"]["distance_km"] != 76
+    notes = " ".join(ga.notes)
+    assert "french_coast" not in notes
+    assert "Maupertus" in notes or "133" in notes
     cap = build_spec_schema("cap", theatre="Normandy")
     assert cap.example["theatre"] == "Normandy"
     assert cap.example["player"]["airfield"] == "NeedsOarPoint"
@@ -587,6 +622,7 @@ def test_normandy_combat_invent_nudge() -> None:
     ff = load_mission_spec(NORMANDY_FF)
     assert host_normandy_combat_nudge(ff) is None
     assert host_normandy_combat_nudge(load_mission_spec(NORMANDY_CAP)) is None
+    assert host_normandy_combat_nudge(load_mission_spec(NORMANDY_GA)) is None
 
 
 def test_chat_second_normandy_combat_json_not_captured(tmp_path: Path) -> None:
@@ -833,6 +869,7 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     channel_ids = {o["id"] for o in channel["options"] if o["family"] == "channel_place"}
     assert "cherbourg_channel_cap" not in channel_ids
     assert "needs_oar_point_home" not in channel_ids
+    assert "maupertus_inland_strike" not in channel_ids
     assert "manston_home" in channel_ids
     assert "french_coast_strike_belt" in channel_ids
     assert any(o["family"] == "weather" for o in channel["options"])
@@ -843,10 +880,12 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "french_coast_strike_belt" not in normandy_ids
     assert "needs_oar_point_home" in normandy_ids
     assert "cherbourg_channel_cap" in normandy_ids
+    assert "maupertus_inland_strike" in normandy_ids
     all_rows = list_mission_options(db_path=db)
     all_ids = {o["id"] for o in all_rows["options"] if o["family"] == "channel_place"}
     assert "manston_home" in all_ids
     assert "cherbourg_channel_cap" in all_ids
+    assert "maupertus_inland_strike" in all_ids
 
 
 def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:
@@ -860,7 +899,10 @@ def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:
     assert any(u["unit_id"] == "Blitz_36-6700A" for u in channel["units"])
     empty = list_strike_targets(theatre="Normandy", db_path=db)
     assert empty["ok"] is True
-    assert empty["units"] == []
+    assert any(u["unit_id"] == "Blitz_36-6700A" for u in empty["units"])
+    assert any(u["unit_id"] == "flak18" for u in empty["units"])
+    assert all(u["domain"] == "land" for u in empty["units"])
+    assert not any(u["domain"] == "sea" for u in empty["units"])
     caucasus = list_strike_targets(theatre="Caucasus", db_path=db)
     assert caucasus["ok"] is True
     assert caucasus["units"] == []

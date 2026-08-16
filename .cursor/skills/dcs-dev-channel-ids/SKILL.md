@@ -29,9 +29,12 @@ description: >-
    `Chailey` = 27, `Funtington` = 29, `Tangmere` = 30, `FordAF` = 31
    (PyDCS `Ford_AF`), `Maupertus` = 4, `SaintPierreduMont` = 1, `Carpiquet` = 19.
    Do not invent ids or dump all 38 fields.
-7. Domain land/sea is TheChannel UK–FR chord only. Non-Channel strike/recon/path
-   → `domain_unsupported_theatre`. `airfield_relative_map_point` MUST pass
-   `theatre=spec.theatre`.
+7. Domain land/sea is TheChannel UK–FR chord **or** Normandy UK–Cotentin chord
+   (NeedsOarPoint cluster vs Maupertus / SaintPierreduMont / Carpiquet). Other
+   theatres fail `domain_unsupported_theatre`. `airfield_relative_map_point`
+   MUST pass `theatre=spec.theatre`. Normandy inland strike from NeedsOarPoint
+   is **180° / 133 km** (Maupertus is 180.22° / 125.29 km; 120 km is still sea).
+   Do not copy Manston 125/76 or CAP 180/63 (sea) onto Cotentin land.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
    Germany is a hint, not a known id in **any** era.
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AF: `Batumi` = 22

@@ -276,6 +276,30 @@ def compile_needs_oar_point_cap(output_path: Path) -> Path:
     )
 
 
+NORMANDY_GA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "needs_oar_point_ground_attack.yaml"
+NORMANDY_GA_MISSION_CONTRACTS = (
+    "SpitfireLFMkIX",
+    '["airdromeId"]=28',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=124.0',
+    "Ground Attack",
+    "British_GP_250LBS_Bomb_MK4_on_LH_Spitfire_Wing_Carrier",
+    "SPITFIRE_45GAL_SLIPPER_TANK",
+    "Blitz_36-6700A",
+    "flak18",
+    "Bombing",
+)
+
+
+def compile_needs_oar_point_ground_attack(output_path: Path) -> Path:
+    spec = load_mission_spec(NORMANDY_GA_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 CAUCASUS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_cold_freeflight.yaml"
 CAUCASUS_MISSION_CONTRACTS = (
     "Su-25T",

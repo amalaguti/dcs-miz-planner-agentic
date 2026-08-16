@@ -10,11 +10,12 @@ Channel Spitfire MVP through M6: Mission Spec (`schema_version: "1"`, unknown fi
 rejected) covers free_flight, intercept, CAP, ground_attack, escort, and recon, plus native ME
 triggers (zones, flags, radio, late activation, sound, markers, altitude/speed gates).
 Manston cold free flight was the first accepted-in-game slice. **Normandy 2.0** is
-planner-bound for cold freeflight and CAP at Needs Oar Point
+planner-bound for cold freeflight, CAP, and ground attack at Needs Oar Point
 (`examples/needs_oar_point_cold_freeflight.yaml`,
-`examples/needs_oar_point_cap.yaml`; Spec theatre id `Normandy`).
-Invent/chat may use any offerable theatre; Normandy invent is **free_flight or CAP**
-at Needs Oar Point. **Caucasus** is planner-bound for cold freeflight at Batumi
+`examples/needs_oar_point_cap.yaml`,
+`examples/needs_oar_point_ground_attack.yaml`; Spec theatre id `Normandy`).
+Invent/chat may use any offerable theatre; Normandy invent is **free_flight, CAP,
+or ground_attack** at Needs Oar Point. **Caucasus** is planner-bound for cold freeflight at Batumi
 (`examples/batumi_cold_freeflight.yaml`; Spec theatre id `Caucasus`; Su-25T /
 Georgia / 251.0 MHz). **Syria** is planner-bound for cold freeflight at Incirlik
 (`examples/incirlik_cold_freeflight.yaml`; Spec theatre id `Syria`; Su-25T /
@@ -24,11 +25,12 @@ USA / 251.0 MHz). **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
 251.0 MHz). Caucasus, Syria, Nevada, and Falklands invent are **free_flight
-only** — CAP and other combat types refuse. Intercept, ground_attack, escort,
-and recon still refuse off TheChannel (Normandy CAP excepted).
-Extra curated Normandy airfields (Chailey, Funtington, Tangmere, FordAF, Maupertus,
-SaintPierreduMont, Carpiquet) are packaged. Land/sea domain, intercept spawn, and
-Channel path clamp fail closed or skip off TheChannel. Optional
+only** — CAP and other combat types refuse. Intercept, escort, and recon still
+refuse on Normandy; intercept spawn stays TheChannel-only. Land/sea domain
+classifies TheChannel and Normandy (UK–Cotentin chord); other maps fail closed.
+Channel path clamp stays TheChannel-only. Extra curated Normandy airfields
+(Chailey, Funtington, Tangmere, FordAF, Maupertus,
+SaintPierreduMont, Carpiquet) are packaged. Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
 `manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
@@ -105,10 +107,11 @@ Creative decisions persist in generation
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **Intentional limits:** Channel theatre is the complete combat surface today
-(Normandy invent is free_flight or CAP at Needs Oar Point; Caucasus invent is
+(Normandy invent is free_flight, CAP, or ground_attack at Needs Oar Point; Caucasus invent is
 free_flight only at Batumi; Syria invent is free_flight only at Incirlik;
 Nevada invent is free_flight only at Nellis; Falklands invent is free_flight
-only at Mount Pleasant; intercept/GA still refuse off TheChannel).
+only at Mount Pleasant; intercept/escort/recon still refuse on Normandy;
+intercept/GA still refuse on Caucasus/Syria/Nevada/Falklands).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for
 inspiration, not imported as Spec; stub LLM + offline research fixtures keep tests

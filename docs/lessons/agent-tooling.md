@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Normandy invent allows ground_attack; land strike list (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Normandy invent/chat may emit **free_flight, CAP, or
+  ground_attack** at NeedsOarPoint (GA strike 180°/133 km from
+  `maupertus_inland_strike`, not Manston 125/76 and not CAP 180/63 sea).
+  Intercept / escort / recon still refuse every turn. Schema
+  `theatre=Normandy` + `ground_attack` loads
+  `needs_oar_point_ground_attack.yaml` with dedicated notes — do not
+  concatenate Channel `_TYPE_NOTES` (french_coast / Manston).
+  `list_strike_targets(theatre="Normandy")` returns WWII **land** units
+  (Blitz, flak18, …); sea_craft stay Channel-only; stored catalog
+  `theatre_id` remains `TheChannel`. Path clamp and soft immersion stay
+  TheChannel-only. Stub LLM stays Manston.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`,
+  `tools/surface.py` (`_strike_theatre_match`), `agent/prompts.py`.
+
 ## QAG HTML is research colour, not catalog YAML (2026-08-16)
 
 - **Date:** 2026-08-16

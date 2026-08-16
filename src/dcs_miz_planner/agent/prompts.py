@@ -18,15 +18,16 @@ You produce Mission Spec JSON only — never DCS Lua or .miz contents.
 Rules:
 - Theatre: any offerable theatre (known ∧ available ∧ planner_supported). Do not
   invent theatre ids. TheChannel supports all six mission types. Normandy invent is
-  free_flight or CAP (NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue; CAP
-  station 180°/63 km toward Cherbourg — not Manston 135/25). Caucasus invent is
+  free_flight, CAP, or ground_attack (NeedsOarPoint, SpitfireLFMkIX, sunny_clear,
+  UK blue; CAP station 180°/63 km toward Cherbourg — not Manston 135/25; GA
+  strike 180°/133 km inland of Maupertus — not Manston 125/76). Caucasus invent is
   free_flight only (Batumi, Su-25T, sunny_clear, Georgia blue). Syria invent is
   free_flight only (Incirlik, Su-25T, sunny_clear, Turkey blue). Nevada invent is
   free_flight only (Nellis, Su-25T, sunny_clear, USA blue). Falklands invent is
   free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  intercept/ground_attack/escort/recon on Normandy and refuse
+  intercept/escort/recon on Normandy and refuse
   intercept/cap/ground_attack/escort/recon on Caucasus, Syria, Nevada, and
-  Falklands — repair toward the theatre's allowed home (NeedsOarPoint FF/CAP,
+  Falklands — repair toward the theatre's allowed home (NeedsOarPoint FF/CAP/GA,
   Batumi FF, Incirlik FF, Nellis FF, or Mount Pleasant FF) or switch theatre to
   TheChannel. Do not copy channel_place geometry (french coast belts,
   Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or Falklands.
@@ -63,8 +64,13 @@ Rules:
   (~120°/68 km coastal water). Land path for soft/armor/troops: prefer 2–3 points
   from french_coast path_point_deltas — never mid-Channel distances for trucks.
   Trains: only french_coast_rail_corridor deltas. Sea targets need water geometry —
-  never a few km from Manston for harbour/shipping. Distances ~65 km toward Dunkirk
+  never a few km from Manston for harbour/shipping.   Distances ~65 km toward Dunkirk
   are still water.
+- Normandy geometry: copy maupertus_inland_strike meta strike_bearing_deg /
+  strike_distance_km (180° / 133 km inland of Maupertus). CAP 180° / 63 km is
+  sea — do not put land trucks there. Do not copy french_coast 125/76 onto
+  NeedsOarPoint. Call list_strike_targets(theatre=Normandy) for land units;
+  sea_craft stay Channel-only.
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
   list_mission_options for families dynamics_mode, strike_target_class, and
@@ -119,11 +125,11 @@ Rules:
   meta.payload_families must agree with the chosen payload.
 - Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
   match that example's structure (derived from packaged Specs — not invented shapes).
-  Pass theatre=Normandy for NeedsOarPoint free_flight or CAP; theatre=Caucasus
-  for Batumi free_flight; theatre=Syria for Incirlik free_flight; theatre=Nevada
-  for Nellis free_flight; theatre=Falklands for Mount Pleasant free_flight. Do
-  not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis combat skeleton
-  onto Falklands.
+  Pass theatre=Normandy for NeedsOarPoint free_flight, CAP, or ground_attack;
+  theatre=Caucasus for Batumi free_flight; theatre=Syria for Incirlik free_flight;
+  theatre=Nevada for Nellis free_flight; theatre=Falklands for Mount Pleasant
+  free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
+  combat skeleton onto Falklands.
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
   never treat research as Spec or DCS-id authority (including QAG fixture labels).
@@ -303,14 +309,32 @@ def host_spec_repair_nudge(
             )
             schema_mt = "free_flight"
         elif theatre == "Normandy":
-            geometry_hint = (
-                "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
-                "For Normandy, emit free_flight or CAP at NeedsOarPoint (SpitfireLFMkIX, "
-                "sunny_clear, UK blue; CAP 180°/63 km) or switch theatre to TheChannel "
-                "for intercept/GA/escort/recon. Do not copy french_coast / Hawkinge "
-                "geometry onto Normandy.\n"
-            )
-            schema_mt = "cap" if mt == "cap" else "free_flight"
+            if "intercept_unsupported_theatre" in err_l:
+                geometry_hint = (
+                    "\n\nTheatre repair: intercept spawn is TheChannel-only. "
+                    "For Normandy, emit free_flight, CAP (180°/63 km), or "
+                    "ground_attack (180°/133 km inland of Maupertus) at "
+                    "NeedsOarPoint (SpitfireLFMkIX, sunny_clear, UK blue) or "
+                    "switch theatre to TheChannel for intercept/escort/recon. "
+                    "Do not copy french_coast / Hawkinge geometry onto Normandy.\n"
+                )
+                schema_mt = (
+                    "cap"
+                    if mt == "cap"
+                    else ("ground_attack" if mt == "ground_attack" else "free_flight")
+                )
+            else:
+                geometry_hint = (
+                    "\n\nTheatre repair: for Normandy land strike, use "
+                    "maupertus_inland_strike 180° / 133 km (inland of Maupertus). "
+                    "180° / 63 km is sea (CAP). Do not copy french_coast 125/76. "
+                    "Call list_strike_targets(theatre=Normandy) for land units.\n"
+                )
+                schema_mt = (
+                    "ground_attack"
+                    if mt == "ground_attack"
+                    else ("cap" if mt == "cap" else "free_flight")
+                )
         else:
             geometry_hint = (
                 "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "

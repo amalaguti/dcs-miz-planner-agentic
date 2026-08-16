@@ -97,7 +97,8 @@ def build_snapshot_from_registry(
         for opt in registry.list_planning_options()
     )
     class_map = _class_ids_by_unit(planning_options)
-    # Strike shelves remain Channel-curated until a Normandy target batch ships.
+    # Strike shelves stay tagged TheChannel; list_strike_targets offers WWII land
+    # units on Normandy at query time (sea_craft stay Channel-only).
     strike_theatre = (
         "TheChannel"
         if "TheChannel" in registry.list_theatres()

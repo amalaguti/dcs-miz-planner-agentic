@@ -21,6 +21,24 @@ from .research import gather_research_notes, retrieval_mode
 from .results import err_result, ok_result
 
 
+def _strike_theatre_match(row: dict[str, Any], theatre_f: str) -> bool:
+    """True when a catalog strike row is offerable for ``theatre_f``.
+
+    Rows stay tagged ``TheChannel``. WWII land units are also offered on
+    Normandy; sea_craft stay Channel-only.
+    """
+    row_theatre = str(row["theatre_id"])
+    if row_theatre == theatre_f:
+        return True
+    if theatre_f != "Normandy":
+        return False
+    if row_theatre != "TheChannel":
+        return False
+    if str(row.get("era_id") or "") != "wwii":
+        return False
+    return str(row.get("domain") or "").casefold() == "land"
+
+
 def _catalog(db_path: Path | str | None = None) -> CatalogService:
     return CatalogService(db_path=db_path)
 
@@ -93,7 +111,8 @@ def list_strike_targets(
     Optional filters: ``domain`` (``land``|``sea``), ``class_id`` (strike_target_class
     id), case-insensitive substring ``q`` on unit_id/label, and ``theatre``.
     Does not read registry YAML or PyDCS at call time. Strike rows stay tagged
-    TheChannel until a Normandy target batch ships.
+    TheChannel; WWII land units are also offered when ``theatre`` is Normandy.
+    Sea-domain units stay Channel-only.
     """
     domain_f = (domain or "").strip().casefold() or None
     if domain_f is not None and domain_f not in {"land", "sea"}:
@@ -113,7 +132,7 @@ def list_strike_targets(
         row_domain = str(row["domain"])
         if domain_f is not None and row_domain.casefold() != domain_f:
             continue
-        if theatre_f is not None and str(row["theatre_id"]) != theatre_f:
+        if theatre_f is not None and not _strike_theatre_match(row, theatre_f):
             continue
         class_ids = row.get("class_ids")
         if not isinstance(class_ids, list):
