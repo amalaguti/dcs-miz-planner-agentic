@@ -455,11 +455,12 @@ Stage C combat on a new map before Slice 0b is on master.
 | F4b | `nevada-airfields` | Nevada Stage B: eight curated AFs; Groom Lake FF smoke (USA blue, id 2 ≠ MountPleasant); invent still FF-only at Nellis | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F4c | `nevada-places` | Nevada Stage C: Nellis places + desert north-range CAP (350°/40 km); invent FF+CAP; intercept/GA/escort/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F4d | `nevada-intercept` | Nevada intercept: Nellis dawn intercept on the desert north-range corridor (350°/40 km); invent allow intercept; GA/escort/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
+| F4e | `nevada-escort` | Nevada escort: Nellis USA Su-25T package on the desert north-range corridor (350°/40 km); invent allow escort; GA/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
 promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Nevada
-escort or Falklands B. Refresh
+GA (needs domain) or Falklands B. Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `MarianaIslandsWWII` / `Kola` / `Iraq` until PyDCS terrain exists (R8).
 

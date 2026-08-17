@@ -46,11 +46,12 @@ USA / 251.0 MHz) plus curated extra airfields and a Groom Lake smoke
 Mount Pleasant) and Nellis north-range CAP
 (`examples/nellis_north_range_cap.yaml`; station 350°/40 km desert north-range
 land — not Incirlik 180/40, not Batumi 270/40, not Creech 303/40) and dawn intercept
-(`examples/nellis_dawn_intercept.yaml`; same 350/40 spawn). Invent is
-**free_flight, CAP, or intercept** at Nellis. **Falklands** (South Atlantic) is planner-bound for cold
+(`examples/nellis_dawn_intercept.yaml`; same 350/40 spawn) and escort
+(`examples/nellis_north_range_escort.yaml`; same 350/40, USA package). Invent is
+**free_flight, CAP, intercept, or escort** at Nellis. **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
-251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **free_flight, CAP, or intercept**
+251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **free_flight, CAP, intercept, or escort**
 at Nellis; Falklands invent is **free_flight
 only** — other combat types refuse. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, Caucasus
@@ -143,10 +144,10 @@ Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 **Intentional limits:** Channel theatre is the complete combat surface today
 (Normandy invent is all six types at Needs Oar Point; Caucasus invent is
 all six types at Batumi; Syria invent is all six types at Incirlik;
-Nevada invent is free_flight, CAP, or intercept at Nellis (350°/40 km desert
-north-range); Falklands invent is free_flight
+Nevada invent is free_flight, CAP, intercept, or escort at Nellis (350°/40 km
+desert north-range); Falklands invent is free_flight
 only at Mount Pleasant;
-GA/escort/recon still refuse
+GA/recon still refuse
 on Nevada; intercept/CAP/GA still refuse
 on Falklands).
 Multi-theatre catalog expand is queued as
@@ -230,6 +231,10 @@ uv run dcs-miz examples/groom_lake_cold_freeflight.yaml
 uv run dcs-miz validate examples/nellis_dawn_intercept.yaml
 uv run dcs-miz examples/nellis_dawn_intercept.yaml
 # -> out/nellis_dawn_intercept.miz
+
+uv run dcs-miz validate examples/nellis_north_range_escort.yaml
+uv run dcs-miz examples/nellis_north_range_escort.yaml
+# -> out/nellis_north_range_escort.miz
 
 uv run dcs-miz validate examples/incirlik_iskenderun_escort.yaml
 uv run dcs-miz examples/incirlik_iskenderun_escort.yaml

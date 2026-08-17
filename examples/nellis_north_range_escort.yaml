@@ -1,0 +1,47 @@
+schema_version: "1"
+mission_type: escort
+theatre: Nevada
+name: Nellis North Range Escort
+description: >
+  Cold start at Nellis. Escort a Su-25T package north across desert
+  north-range land (bearing 350°, 40 km — same station as the packaged CAP /
+  intercept place; not Channel escort 120/55, not Incirlik 180/40, not
+  Batumi 270/40, not Cherbourg 180/63) at 4000 m, weapons free. Light Su-25T
+  bounce near the package destination.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Nellis
+  coalition: blue
+  country: USA
+  skill: Player
+  start: cold_parking
+escort:
+  # Airfield-relative from Nellis (id 4) 350° / 40 km / 4000 m into Desert
+  # NWR / north range. Same station as CAP/intercept. PyDCS Nellis
+  # x=-398195.375 y=-17233.236816; point_from_heading →
+  # x=-358803.06487951166 y=-24179.163922677217. Do not copy Channel
+  # escort 120/55, Incirlik 180/40, Batumi 270/40, or Cherbourg 180/63.
+  bearing_deg: 350
+  distance_km: 40
+  altitude_m: 4000
+  engagement: weapons_free
+package:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: USA
+    coalition: blue
+enemies:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Russia
+    coalition: red
+objectives:
+  - type: escort_package

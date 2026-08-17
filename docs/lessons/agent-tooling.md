@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada invent allows escort; dedicated notes (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nevada invent/chat may emit **free_flight, CAP, intercept, or
+  escort** at Nellis (Su-25T, USA blue). Escort package destination is
+  **350° / 40 km / 4000 m** north of Nellis over Desert NWR / north-range
+  land — same station as `nellis_north_range_cap`; not Channel escort 120/55,
+  not Incirlik 180/40, not Batumi 270/40, not Cherbourg 180/63. Schema
+  `theatre=Nevada` + `escort` loads `nellis_north_range_escort.yaml` with
+  dedicated `_NEVADA_ESCORT_NOTES` — do **not** concatenate Channel
+  `_COMMON_NOTES` / `_TYPE_NOTES`. Package country **USA** (defaults UK);
+  bounce country **Russia** (defaults ThirdReich). Do not put USA on red.
+  GA/recon still refuse every turn. Domain classifier stays fail-closed on
+  Nevada. Path clamp and soft immersion floor stay TheChannel-only. Stub LLM
+  stays Manston. FF/CAP/intercept schema example files stay unchanged.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`
+  (`_NEVADA_ESCORT_NOTES`), `agent/prompts.py`,
+  `examples/nellis_north_range_escort.yaml`.
+
 ## Nevada invent allows intercept; dedicated notes (2026-08-17)
 
 - **Date:** 2026-08-17

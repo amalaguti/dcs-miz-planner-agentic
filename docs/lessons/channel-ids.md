@@ -5,6 +5,24 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada escort 350/40 north-range; package USA, bounce Russia (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nevada escort reuses the packaged CAP/intercept station: Nellis
+  (id 4, x=-398195.375, y=-17233.236816) + 350° / 40 km / 4000 m
+  (station x=-358803.06487951166 y=-24179.163922677217). Compiler escort is
+  already airfield-relative — do not store raw map x/y in the Spec. **Do not
+  copy** Channel escort 120/55, Incirlik 180/40, Batumi 270/40, or Cherbourg
+  180/63. Player + package: USA + Su-25T blue at 251.0 MHz (`PackageFlight`
+  defaults to UK — MUST set `package[].country: USA`). Bounce: country
+  **Russia** + Su-25T red (`EnemyFlight` defaults to ThirdReich). Do not put
+  USA on red. `usaaf` is voice only. Domain stays fail-closed
+  (`channel_domain.py` untouched). Places: `nellis_home` and
+  `nellis_north_range_cap` now include `escort`. Do not dump all 17 Nevada
+  fields or invent id 12. Do not start Nevada GA this slice.
+- **Code:** `examples/nellis_north_range_escort.yaml`,
+  `planning_options.yaml` (`nellis_home`, `nellis_north_range_cap`).
+
 ## Nevada intercept 350/40 north-range; store Nellis offset literals (2026-08-17)
 
 - **Date:** 2026-08-17
