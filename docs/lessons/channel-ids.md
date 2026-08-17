@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada intercept 350/40 north-range; store Nellis offset literals (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nevada intercept reuses the packaged CAP station: Nellis
+  (id 4, x=-398195.375, y=-17233.236816) + live PyDCS
+  `point_from_heading(350, 40000)` offset **+39392.31012048834,
+  −6945.927106677216** (station x=-358803.06487951166
+  y=-24179.163922677217). **350° is not axis-aligned** — do not store
+  ±40000,0 (that is Incirlik 180/40 or Batumi 270/40). Do not recompute
+  Channel Hawkinge from `airport_list()` (golden `x=30989.935547` stays
+  bit-identical). Player USA + Su-25T blue at 251.0 MHz; enemies country
+  **Russia** + Su-25T red. Do not put USA on red. Do not use country Syria
+  on Nevada. `usaaf` is voice only. Domain stays fail-closed
+  (`channel_domain.py` untouched). Places: `nellis_home` and
+  `nellis_north_range_cap` now include `intercept`. Do not dump all 17
+  Nevada fields or invent id 12.
+- **Code:** `intercept_spawn.py` (`NEVADA_THEATRE` literals),
+  `examples/nellis_dawn_intercept.yaml`.
+
 ## Nevada CAP 350/40 desert north-range; country Russia opposition (2026-08-17)
 
 - **Date:** 2026-08-17

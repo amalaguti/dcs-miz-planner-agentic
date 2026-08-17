@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-17 | [Nevada invent allows intercept; dedicated notes](lessons/agent-tooling.md#nevada-invent-allows-intercept-dedicated-notes-2026-08-17) | `agent-tooling` |
+| 2026-08-17 | [Nevada intercept 350/40 north-range; store Nellis offset literals](lessons/channel-ids.md#nevada-intercept-35040-north-range-store-nellis-offset-literals-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Nevada invent allows CAP; 350/40 desert north-range](lessons/agent-tooling.md#nevada-invent-allows-cap-35040-desert-north-range-2026-08-17) | `agent-tooling` |
 | 2026-08-17 | [Nevada CAP 350/40 desert north-range; country Russia opposition](lessons/channel-ids.md#nevada-cap-35040-desert-north-range-country-russia-opposition-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Nevada eight airfields; GroomLake 2 vs MountPleasant](lessons/channel-ids.md#nevada-eight-airfields-groomlake-2-vs-mountpleasant-2026-08-17) | `channel-ids` |

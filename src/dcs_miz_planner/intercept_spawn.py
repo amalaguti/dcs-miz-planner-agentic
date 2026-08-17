@@ -15,6 +15,11 @@ station as ``batumi_black_sea_cap``). Literals from PyDCS
 Syria: Incirlik map position plus due-south 40 km (Gulf of Iskenderun corridor;
 same station as ``incirlik_iskenderun_cap``). Literals from PyDCS
 ``point_from_heading(180, 40000)`` — not invented lat/lon.
+
+Nevada: Nellis map position plus heading 350° / 40 km (desert north-range
+corridor; same station as ``nellis_north_range_cap``). Literals from live
+PyDCS ``point_from_heading(350, 40000)`` — not axis-aligned ±40000,0; do not
+recompute Channel Hawkinge from ``airport_list()``.
 """
 
 from __future__ import annotations
@@ -25,6 +30,7 @@ CHANNEL_THEATRE = "TheChannel"
 NORMANDY_THEATRE = "Normandy"
 CAUCASUS_THEATRE = "Caucasus"
 SYRIA_THEATRE = "Syria"
+NEVADA_THEATRE = "Nevada"
 
 # Source: PyDCS TheChannel airport Hawkinge (airdromeId 6) map position, offset
 # south-east toward the Strait as a Dover-approach corridor (Channel geography
@@ -51,6 +57,15 @@ _INCIRLIK_X = 221207.773438
 _INCIRLIK_Y = -35240.347656
 _ISKENDERUN_CORRIDOR_OFFSET_X = -40000.0
 _ISKENDERUN_CORRIDOR_OFFSET_Y = 0.0
+
+# Source: live PyDCS Nevada Nellis (airdromeId 4, name "Nellis")
+# x=-398195.375 y=-17233.236816 + heading 350° / 40 km.
+# point_from_heading(350, 40000) station x=-358803.06487951166
+# y=-24179.163922677217; offset is NOT axis-aligned (±40000, 0).
+_NELLIS_X = -398195.375
+_NELLIS_Y = -17233.236816
+_NORTH_RANGE_CORRIDOR_OFFSET_X = 39392.31012048834
+_NORTH_RANGE_CORRIDOR_OFFSET_Y = -6945.927106677216
 
 
 class InterceptUnsupportedTheatre(ValueError):
@@ -119,6 +134,12 @@ INTERCEPT_SPAWN_RECIPES: dict[str, InterceptSpawnRecipe] = {
         anchor_y=_INCIRLIK_Y,
         offset_x=_ISKENDERUN_CORRIDOR_OFFSET_X,
         offset_y=_ISKENDERUN_CORRIDOR_OFFSET_Y,
+    ),
+    NEVADA_THEATRE: InterceptSpawnRecipe(
+        anchor_x=_NELLIS_X,
+        anchor_y=_NELLIS_Y,
+        offset_x=_NORTH_RANGE_CORRIDOR_OFFSET_X,
+        offset_y=_NORTH_RANGE_CORRIDOR_OFFSET_Y,
     ),
 }
 

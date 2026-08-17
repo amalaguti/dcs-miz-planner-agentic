@@ -23,8 +23,12 @@ description: >-
    `airport_list()`. Normandy: NeedsOarPoint + Cherbourg corridor
    (`-63000`, `0`) — same station as `cherbourg_channel_cap` (180°/63 km).
    Caucasus: Batumi + Black Sea corridor `(0, -40000)` — same station as
-   `batumi_black_sea_cap` (270°/40 km). Other theatres fail
-   `intercept_unsupported_theatre`.
+   `batumi_black_sea_cap` (270°/40 km). Syria: Incirlik + Iskenderun
+   corridor `(-40000, 0)` — same station as `incirlik_iskenderun_cap`
+   (180°/40 km). Nevada: Nellis + north-range offset
+   `(+39392.31012048834, −6945.927106677216)` — same station as
+   `nellis_north_range_cap` (350°/40 km; **not** axis-aligned ±40000,0).
+   Other theatres fail `intercept_unsupported_theatre`.
 5. Failure ids: exact stock strings (e.g. `ENG0_MAGNETO0`) from
    `data/era/wwii/aircraft_failures.yaml`.
 6. **Normandy 2.0** Spec/inventory id is **`Normandy`**. Airfield lookup is
@@ -88,13 +92,13 @@ description: >-
     (`Henderson Executive`), `BoulderCity` = 6 (`Boulder City`),
     `Mesquite` = 13. Do not invent id 12 or dump all 17 fields. Nellis 4 is
     not Maupertus and not Dunkirk. Modern smoke: country `USA` (not `usaaf`,
-    not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**. Invent home
-    stays Nellis (**free_flight or CAP**; station **350° / 40 km / 4000 m**
+    not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**.     Invent home
+    stays Nellis (**free_flight, CAP, or intercept**; station **350° / 40 km / 4000 m**
     desert north-range land — not Incirlik 180/40, not Batumi 270/40, not
     Cherbourg 180/63, not Manston 135/25, not Creech 303/40, not 180/40
-    Henderson, not 270/40 NLV, not 79/40 Echo Bay water). CAP enemies:
+    Henderson, not 270/40 NLV, not 79/40 Echo Bay water). CAP/intercept enemies:
     Russia + Su-25T (set `enemies[].country: Russia`; default is ThirdReich).
-    Do not put USA on red. Intercept/GA/escort/recon still refuse. Add USA only
+    Do not put USA on red. GA/escort/recon still refuse. Add USA only
     to `era/modern` next to
     Georgia and Turkey — never `era/wwii`. `usaaf` is voice only, not a
     country. Channel+USA/Su-25T is unknown. Spitfire is dual-era. UK is

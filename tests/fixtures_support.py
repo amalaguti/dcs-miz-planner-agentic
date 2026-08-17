@@ -726,6 +726,28 @@ def compile_nellis_cap(output_path: Path) -> Path:
     )
 
 
+NEVADA_INTERCEPT_EXAMPLE_SPEC = REPO_ROOT / "examples" / "nellis_dawn_intercept.yaml"
+NEVADA_INTERCEPT_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=4',
+    '["start_time"]=21600',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "USA",
+    "Russia",
+    "-358803.06487951166",
+    "-24179.16392267721",
+)
+
+
+def compile_nellis_intercept(output_path: Path) -> Path:
+    spec = load_mission_spec(NEVADA_INTERCEPT_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 GROOM_LAKE_EXAMPLE_SPEC = REPO_ROOT / "examples" / "groom_lake_cold_freeflight.yaml"
 GROOM_LAKE_MISSION_CONTRACTS = (
     "Su-25T",

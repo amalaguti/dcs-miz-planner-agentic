@@ -19,7 +19,9 @@ description: >-
 2. Bind terrain via `theatre_terrain.terrain_for_theatre(spec.theatre)` — never
    hard-code `TheChannel()` while ignoring Spec. Intercept enemy spawn uses
    `intercept_spawn.intercept_spawn_for_theatre` (TheChannel Hawkinge/Dover,
-   Normandy NeedsOarPoint/Cherbourg 180/63, Caucasus Batumi/Black Sea 270/40;
+   Normandy NeedsOarPoint/Cherbourg 180/63, Caucasus Batumi/Black Sea 270/40,
+   Syria Incirlik/Iskenderun 180/40, Nevada Nellis/north-range 350/40
+   offset `+39392.31012048834, −6945.927106677216` — not ±40000,0;
    do not recompute from `airport_list()`).
 3. Keep **`_disable_payload_scan`** until a released pydcs wheel includes the
    payload KeyError fix; use registry CLSID loadouts for GA.

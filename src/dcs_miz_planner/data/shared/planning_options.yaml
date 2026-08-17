@@ -1279,30 +1279,30 @@ options:
     id: nellis_home
     label: Nellis (home field)
     description: >
-      Nellis — default Nevada Su-25T start for free_flight and desert
-      north-range CAP. Do not copy Manston, Needs Oar Point, Batumi, or
-      Incirlik geometry onto Nevada. Intercept / ground_attack / escort /
+      Nellis — default Nevada Su-25T start for free_flight, desert
+      north-range CAP, and intercept. Do not copy Manston, Needs Oar Point,
+      Batumi, or Incirlik geometry onto Nevada. Ground_attack / escort /
       recon are not inventable on Nevada yet.
     support: advisory
     meta:
       theatre: Nevada
       airfield: Nellis
       role: home_base
-      mission_types: [free_flight, cap]
+      mission_types: [free_flight, cap, intercept]
 
   - family: channel_place
     id: nellis_north_range_cap
     label: Nellis north-range CAP
     description: >
-      Desert NWR / north-range CAP station north of Nellis (bearing 350°,
-      40 km, 4000 m). Land domain — do not copy Incirlik 180/40, Batumi
-      270/40, Cherbourg 180/63, Manston 135/25, Creech 303/40, or
-      Henderson / NLV / Echo Bay headings onto this station.
+      Desert NWR / north-range CAP and intercept station north of Nellis
+      (bearing 350°, 40 km, 4000 m). Land domain — do not copy Incirlik
+      180/40, Batumi 270/40, Cherbourg 180/63, Manston 135/25, Creech
+      303/40, or Henderson / NLV / Echo Bay headings onto this station.
     support: advisory
     meta:
       theatre: Nevada
       domain: land
-      mission_types: [cap]
+      mission_types: [cap, intercept]
       cap_bearing_deg: 350
       cap_distance_km: 40
       cap_altitude_m: 4000

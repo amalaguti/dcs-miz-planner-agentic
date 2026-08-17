@@ -57,9 +57,9 @@ _SYRIA_RECON_EXAMPLE = "incirlik_aleppo_recon.yaml"
 _SYRIA_UNSUPPORTED_COMBAT: frozenset[str] = frozenset()
 _NEVADA_FREE_FLIGHT_EXAMPLE = "nellis_cold_freeflight.yaml"
 _NEVADA_CAP_EXAMPLE = "nellis_north_range_cap.yaml"
+_NEVADA_INTERCEPT_EXAMPLE = "nellis_dawn_intercept.yaml"
 _NEVADA_UNSUPPORTED_COMBAT = frozenset(
     {
-        MissionType.INTERCEPT.value,
         MissionType.GROUND_ATTACK.value,
         MissionType.ESCORT.value,
         MissionType.RECON.value,
@@ -235,7 +235,7 @@ _COMMON_NOTES: tuple[str, ...] = (
         'schema_version must be "1"; theatre is an offerable id '
         "(TheChannel for combat; Normandy all six types at NeedsOarPoint; "
         "Caucasus all six types at Batumi; Syria all six types at Incirlik; "
-        "Nevada free_flight or CAP at Nellis; Falklands free_flight only at "
+        "Nevada free_flight, CAP, or intercept at Nellis; Falklands free_flight only at "
         "Mount Pleasant)."
     ),
     (
@@ -651,13 +651,13 @@ _SYRIA_RECON_NOTES: tuple[str, ...] = (
 # Manston YAML, Spitfire failures, and channel_place as templates to copy).
 _NEVADA_FF_NOTES: tuple[str, ...] = (
     (
-        "Nevada invent is free_flight or CAP: airfield Nellis, Su-25T, "
-        "sunny_clear, USA blue. CAP station 350° / 40 km / 4000 m north over "
+        "Nevada invent is free_flight, CAP, or intercept: airfield Nellis, Su-25T, "
+        "sunny_clear, USA blue. CAP/intercept station 350° / 40 km / 4000 m north over "
         "desert north-range land (not 180/40, not 270/40, not 180/63, not "
-        "Creech 303/40). Refuse intercept/ground_attack/escort/recon. Do not "
+        "Creech 303/40). Refuse ground_attack/escort/recon. Do not "
         "copy Channel, Normandy, Caucasus, or Syria geometry onto Nevada."
     ),
-    ('schema_version must be "1"; theatre is Nevada (free_flight or CAP at Nellis).'),
+    ('schema_version must be "1"; theatre is Nevada (free_flight, CAP, or intercept at Nellis).'),
     (
         "Required envelope: schema_version, mission_type, theatre, date, start_time, "
         "weather, player; enemies/objectives/triggers/zones default to empty lists."
@@ -687,12 +687,12 @@ _NEVADA_FF_NOTES: tuple[str, ...] = (
 
 _NEVADA_CAP_NOTES: tuple[str, ...] = (
     (
-        "Nevada invent is free_flight or CAP: airfield Nellis, Su-25T, "
+        "Nevada invent is free_flight, CAP, or intercept: airfield Nellis, Su-25T, "
         "sunny_clear, USA blue. CAP station 350° / 40 km / 4000 m north over "
         "desert north-range land (not Incirlik 180/40, not Batumi 270/40, not "
         "Cherbourg 180/63, not Manston 135/25, not Creech 303/40). Enemies: "
         "Su-25T, country Russia, coalition red (do not default ThirdReich; "
-        "do not put USA on red). Refuse intercept/ground_attack/escort/recon."
+        "do not put USA on red). Refuse ground_attack/escort/recon."
     ),
     ('schema_version must be "1"; theatre is Nevada (CAP at Nellis).'),
     (
@@ -703,6 +703,29 @@ _NEVADA_CAP_NOTES: tuple[str, ...] = (
         "Fill DCS ids from tools/prefs using examples/nellis_north_range_cap.yaml. "
         "Channel, Normandy, Caucasus, and Syria example YAML paths do not apply."
     ),
+    "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
+)
+
+# Nevada intercept: do not concatenate _COMMON_NOTES / _TYPE_NOTES (those cite
+# Manston YAML, Spitfire failures, and channel_place as templates to copy).
+_NEVADA_INTERCEPT_NOTES: tuple[str, ...] = (
+    (
+        "Nevada invent is free_flight, CAP, or intercept: airfield Nellis, "
+        "Su-25T, sunny_clear, USA blue. Enemies spawn on the desert north-range "
+        "corridor (350° / 40 km from Nellis — same station as "
+        "nellis_north_range_cap; not Hawkinge / Dover / Syria 180/40 / "
+        "Caucasus 270/40 / Cherbourg 180/63). "
+        "Enemies: Su-25T, country Russia, coalition red (do not default "
+        "ThirdReich; do not put USA on red). Refuse ground_attack/escort/recon."
+    ),
+    ('schema_version must be "1"; theatre is Nevada (intercept at Nellis).'),
+    (
+        "Required envelope: schema_version, mission_type, theatre, date, start_time, "
+        "weather, player; enemies/objectives/triggers/zones default to empty lists."
+    ),
+    'enemies must be non-empty; objectives must include {"type":"intercept_enemy"}.',
+    "omit the cap and strike blocks; omit player.payload.",
+    "Fill DCS ids from examples/nellis_dawn_intercept.yaml.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )
 
@@ -772,9 +795,9 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
     Default / TheChannel stubs stay Manston. ``theatre=Normandy`` uses
     NeedsOarPoint for all six mission types. ``theatre=Caucasus`` uses Batumi
     for all six mission types. ``theatre=Syria`` uses Incirlik for
-    all six mission types. ``theatre=Nevada`` uses Nellis for free_flight
-    and CAP (350° / 40 km desert north-range). ``theatre=Falklands`` +
-    free_flight uses Mount Pleasant. Nevada intercept/GA/escort/recon and
+    all six mission types. ``theatre=Nevada`` uses Nellis for free_flight,
+    CAP, and intercept (350° / 40 km desert north-range). ``theatre=Falklands`` +
+    free_flight uses Mount Pleasant. Nevada GA/escort/recon and
     Falklands combat (including CAP)
     raise (no Manston / NeedsOarPoint / Batumi / Incirlik combat skeleton).
     """
@@ -808,10 +831,12 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
         if key in _NEVADA_UNSUPPORTED_COMBAT:
             raise ValueError(
                 f"Combat mission_type {key!r} is not supported for theatre Nevada; "
-                "use free_flight or CAP at Nellis or theatre TheChannel"
+                "use free_flight, CAP, or intercept at Nellis or theatre TheChannel"
             )
         if key == MissionType.CAP.value:
             filename = _NEVADA_CAP_EXAMPLE
+        elif key == MissionType.INTERCEPT.value:
+            filename = _NEVADA_INTERCEPT_EXAMPLE
         else:
             filename = _NEVADA_FREE_FLIGHT_EXAMPLE
         path = examples_dir() / filename
@@ -1060,6 +1085,8 @@ def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
     if theatre == "Nevada":
         if mission_type == MissionType.CAP.value:
             return _NEVADA_CAP_NOTES
+        if mission_type == MissionType.INTERCEPT.value:
+            return _NEVADA_INTERCEPT_NOTES
         return _NEVADA_FF_NOTES
     if theatre == "Syria":
         if mission_type == MissionType.CAP.value:
@@ -1187,9 +1214,10 @@ Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
 (free_flight | intercept | cap | ground_attack | escort | recon) and optional theatre.
 Copy that example's structure. Default stub is Manston / TheChannel; Normandy
 all six types use NeedsOarPoint; Caucasus all six types
-use Batumi; Syria all six types use Incirlik; Nevada free_flight or CAP uses
-Nellis (CAP 350° / 40 km desert north-range); Falklands free_flight uses
-Mount Pleasant. Nevada intercept/GA/escort/recon and Falklands combat
+use Batumi; Syria all six types use Incirlik; Nevada free_flight, CAP, or
+intercept uses Nellis (CAP/intercept 350° / 40 km desert north-range);
+Falklands free_flight uses
+Mount Pleasant. Nevada GA/escort/recon and Falklands combat
 (including CAP) are unsupported.
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user
