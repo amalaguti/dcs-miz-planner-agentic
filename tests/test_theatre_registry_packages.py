@@ -48,6 +48,13 @@ _SYRIA_AIRFIELDS = {
 
 _NEVADA_AIRFIELDS = {
     "Nellis": 4,
+    "GroomLake": 2,
+    "Creech": 1,
+    "TonopahTestRange": 18,
+    "NorthLasVegas": 15,
+    "HendersonExecutive": 8,
+    "BoulderCity": 6,
+    "Mesquite": 13,
 }
 
 _FALKLANDS_AIRFIELDS = {
@@ -142,12 +149,23 @@ def test_nevada_airfields_exactly_nellis(registry):
     names = registry.list_airfields(theatre="Nevada")
     assert {n: registry.airdrome_id(n, theatre="Nevada") for n in names} == _NEVADA_AIRFIELDS
     assert registry.airdrome_id("Nellis", theatre="Nevada") == 4
+    assert registry.airdrome_id("GroomLake", theatre="Nevada") == 2
+    assert registry.airdrome_id("MountPleasant", theatre="Falklands") == 2
+    assert registry.airdrome_id("MervilleCalonne", theatre="TheChannel") == 2
+    assert registry.airdrome_id("Maupertus", theatre="Normandy") == 4
+    assert registry.airdrome_id("Dunkirk", theatre="TheChannel") == 4
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Nellis", theatre="TheChannel")
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Manston", theatre="Nevada")
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Incirlik", theatre="Nevada")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Groom_Lake", theatre="Nevada")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("GroomLake", theatre="Falklands")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("GroomLake", theatre="TheChannel")
 
 
 def test_falklands_airfields_exactly_mount_pleasant(registry):

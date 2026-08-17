@@ -478,6 +478,7 @@ def test_schema_theatre_nevada_free_flight() -> None:
     assert view.example["player"]["airfield"] != "NeedsOarPoint"
     assert view.example["player"]["airfield"] != "Batumi"
     assert view.example["player"]["airfield"] != "Incirlik"
+    assert view.example["player"]["airfield"] != "GroomLake"
     tool = get_mission_spec_schema("free_flight", theatre="Nevada")
     assert tool["ok"] is True
     assert tool["example"]["player"]["airfield"] == "Nellis"
@@ -486,6 +487,7 @@ def test_schema_theatre_nevada_free_flight() -> None:
     assert "Su-25T" in blob
     assert "USA" in blob
     assert "nellis_cold_freeflight.yaml" in blob
+    assert "groom_lake_cold_freeflight.yaml" not in blob
     assert "manston_" not in blob.lower()
     assert "examples are Channel templates" not in blob
     assert "SpitfireLFMkIX" not in blob

@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada eight airfields; GroomLake 2 vs MountPleasant (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nevada Stage B curates **eight** airfields from
+  `Nevada.airport_list()` (17 fields — do not dump; id **12 is absent**, do
+  not invent it): `Nellis` 4, `GroomLake` 2 (PyDCS name `Groom Lake`, class
+  `Groom_Lake`), `Creech` 1, `TonopahTestRange` 18 (`Tonopah Test Range`),
+  `NorthLasVegas` 15 (`North Las Vegas`), `HendersonExecutive` 8
+  (`Henderson Executive`), `BoulderCity` 6 (`Boulder City`), `Mesquite` 13.
+  Spec keys are camelCase **without underscores**: `GroomLake` ≠
+  `Groom_Lake` (registry must reject the underscore form — same pitfall as
+  `FordAF` ≠ `Ford_AF` and `MountPleasant` ≠ `Mount_Pleasant`).
+  **GroomLake 2 ≠ MountPleasant 2 ≠ MervilleCalonne 2**; **Nellis 4 ≠
+  Maupertus 4 ≠ Dunkirk 4** — lookup is theatre-scoped. Extra-AF smoke is
+  USA blue at Groom Lake; invent/schema home stays Nellis + USA + Su-25T
+  251.0 MHz, free_flight only. `usaaf` is voice only.
+- **Code:** `data/theatres/Nevada/airfields.yaml`,
+  `examples/groom_lake_cold_freeflight.yaml`.
+
 ## Syria recon AOI 121/200; Ural-375 observe (2026-08-17)
 
 - **Date:** 2026-08-17

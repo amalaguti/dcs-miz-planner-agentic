@@ -13,7 +13,7 @@ description: >-
 Parent agent in Agents Window (or chat) coordinates specialists. **You** do not
 spawn a seventh “orchestrator” subagent.
 
-Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + GA + intercept + escort + recon smoke (all six types). Caucasus Stage C is complete: Batumi places + Black Sea CAP/intercept/escort (270°/40 km); inland GA/recon past Kutaisi (43°/110 km); invent all six types. Syria Stage C is complete: Incirlik places + Iskenderun CAP/intercept/escort (180°/40 km) + Aleppo inland GA/recon (121°/200 km, not CAP 180/40); invent all six types. Palmyra FF smoke (country Syria red, id 28 ≠ Mozdok).
+Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + GA + intercept + escort + recon smoke (all six types). Caucasus Stage C is complete: Batumi places + Black Sea CAP/intercept/escort (270°/40 km); inland GA/recon past Kutaisi (43°/110 km); invent all six types. Syria Stage C is complete: Incirlik places + Iskenderun CAP/intercept/escort (180°/40 km) + Aleppo inland GA/recon (121°/200 km, not CAP 180/40); invent all six types. Palmyra FF smoke (country Syria red, id 28 ≠ Mozdok). Nevada Stage B shipped: eight curated AFs + Groom Lake FF smoke (USA blue, id 2 ≠ MountPleasant); invent still FF-only at Nellis.
 
 ## Read
 

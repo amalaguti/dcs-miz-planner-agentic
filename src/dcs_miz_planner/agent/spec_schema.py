@@ -1122,7 +1122,16 @@ def infer_theatre(text: str | None) -> str | None:
         "KingHusseinAirCollege",
     }:
         return "Syria"
-    if af and af.group(1) == "Nellis":
+    if af and af.group(1) in {
+        "Nellis",
+        "GroomLake",
+        "Creech",
+        "TonopahTestRange",
+        "NorthLasVegas",
+        "HendersonExecutive",
+        "BoulderCity",
+        "Mesquite",
+    }:
         return "Nevada"
     if af and af.group(1) in {"MountPleasant", "Mount_Pleasant"}:
         return "Falklands"

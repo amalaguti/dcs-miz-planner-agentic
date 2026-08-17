@@ -95,6 +95,10 @@ def test_nevada_supported_and_nellis(registry):
     assert registry.era_for_theatre("Nevada") == "modern"
     assert registry.airdrome_id("Nellis", theatre="Nevada") == 4
     assert registry.airfield_theatre("Nellis") == "Nevada"
+    assert registry.airdrome_id("GroomLake", theatre="Nevada") == 2
+    assert registry.airfield_theatre("GroomLake") == "Nevada"
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Groom_Lake")
 
 
 def test_falklands_supported_and_mount_pleasant(registry):

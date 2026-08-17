@@ -70,6 +70,23 @@ def test_find_airfield_mozdok(tmp_path: Path) -> None:
     assert nop["theatre_id"] == "Normandy"
 
 
+def test_find_airfield_groom_lake(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    result = find_airfield("GroomLake", db_path=db)
+    assert result["ok"] is True
+    groom = next(a for a in result["airfields"] if a["name"] == "GroomLake")
+    assert groom["airdrome_id"] == 2
+    assert groom["theatre_id"] == "Nevada"
+    pleasant = find_airfield("MountPleasant", db_path=db)
+    assert pleasant["ok"] is True
+    mp = next(a for a in pleasant["airfields"] if a["name"] == "MountPleasant")
+    assert mp["airdrome_id"] == 2
+    assert mp["theatre_id"] == "Falklands"
+    missing = find_airfield("Groom_Lake", db_path=db)
+    assert missing["ok"] is False
+
+
 def test_get_aircraft_details_spitfire(tmp_path: Path) -> None:
     db = tmp_path / "inventory.sqlite"
     CatalogService(db_path=db).sync()

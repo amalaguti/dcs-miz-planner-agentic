@@ -41,7 +41,9 @@ Gulf of Iskenderun — not Cherbourg 180/63, not Batumi 270/40) and dawn interce
 not CAP 180/40, not Kutaisi 43/110) and Incirlik recon
 (`examples/incirlik_aleppo_recon.yaml`; same 121°/200 km inland AOI). **Nevada** is planner-bound for cold freeflight at Nellis
 (`examples/nellis_cold_freeflight.yaml`; Spec theatre id `Nevada`; Su-25T /
-USA / 251.0 MHz). **Falklands** (South Atlantic) is planner-bound for cold
+USA / 251.0 MHz) plus curated extra airfields and a Groom Lake smoke
+(`examples/groom_lake_cold_freeflight.yaml`; USA blue; airdromeId 2 is not
+Mount Pleasant). Invent is still **free_flight only** at Nellis. **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
 251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada and Falklands invent are **free_flight
@@ -55,7 +57,9 @@ Channel path clamp stays TheChannel-only. Extra curated Normandy airfields
 (Chailey, Funtington, Tangmere, FordAF, Maupertus,
 SaintPierreduMont, Carpiquet) are packaged. Extra curated Caucasus airfields
 (Kobuleti, SenakiKolkhi, Kutaisi, TbilisiLochini, Vaziani, SochiAdler, Mozdok)
-are packaged. Optional
+are packaged. Extra curated Nevada airfields
+(GroomLake, Creech, TonopahTestRange, NorthLasVegas, HendersonExecutive,
+BoulderCity, Mesquite) are packaged. Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
 `manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
@@ -211,6 +215,10 @@ uv run dcs-miz examples/batumi_kutaisi_recon.yaml
 uv run dcs-miz validate examples/palmyra_cold_freeflight.yaml
 uv run dcs-miz examples/palmyra_cold_freeflight.yaml
 # -> out/palmyra_cold_freeflight.miz
+
+uv run dcs-miz validate examples/groom_lake_cold_freeflight.yaml
+uv run dcs-miz examples/groom_lake_cold_freeflight.yaml
+# -> out/groom_lake_cold_freeflight.miz
 
 uv run dcs-miz validate examples/incirlik_iskenderun_escort.yaml
 uv run dcs-miz examples/incirlik_iskenderun_escort.yaml

@@ -79,12 +79,20 @@ description: >-
     uses coalition red; GA trucks must set `targets[].country: Syria`). Theatre id `Syria` ≠ country `Syria`. Channel+country-Syria
     is unknown. Add Syria-the-country only to `era/modern` — never `era/wwii`.
     Spitfire is dual-era.
-11. **Nevada** Spec id is **`Nevada`** (era `modern`). Curated AF: `Nellis` = 4
-    (PyDCS name `Nellis`; do not dump 17 fields). Modern smoke: country `USA`
-    (not `usaaf`, not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**.
-    Add USA only to `era/modern` next to Georgia and Turkey — never `era/wwii`.
-    `usaaf` is voice only, not a country. Channel+USA/Su-25T is unknown.
-    Spitfire is dual-era. UK is dual-era (wwii + modern).
+11. **Nevada** Spec id is **`Nevada`** (era `modern`). Curated AFs (8 of 17):
+    `Nellis` = 4 (PyDCS name `Nellis`), `GroomLake` = 2 (`Groom Lake` / class
+    `Groom_Lake` — Spec key MUST be `GroomLake`, not `Groom_Lake`; id 2 is
+    not Falklands `MountPleasant` and not Channel `MervilleCalonne`),
+    `Creech` = 1, `TonopahTestRange` = 18 (`Tonopah Test Range`),
+    `NorthLasVegas` = 15 (`North Las Vegas`), `HendersonExecutive` = 8
+    (`Henderson Executive`), `BoulderCity` = 6 (`Boulder City`),
+    `Mesquite` = 13. Do not invent id 12 or dump all 17 fields. Nellis 4 is
+    not Maupertus and not Dunkirk. Modern smoke: country `USA` (not `usaaf`,
+    not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**. Invent home
+    stays Nellis (free_flight only). Add USA only to `era/modern` next to
+    Georgia and Turkey — never `era/wwii`. `usaaf` is voice only, not a
+    country. Channel+USA/Su-25T is unknown. Spitfire is dual-era. UK is
+    dual-era (wwii + modern).
 12. **Falklands** Spec id is **`Falklands`** (product name South Atlantic;
     era `modern`). Curated AF: `MountPleasant` = 2 (PyDCS name
     `Mount Pleasant`; class `Mount_Pleasant`; do not dump 27 fields). Spec

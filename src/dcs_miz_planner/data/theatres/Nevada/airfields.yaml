@@ -1,5 +1,13 @@
 # Curated Spec airfield key -> DCS airdromeId for theatre Nevada.
 # Verified from PyDCS Nevada.airport_list(); do not dump all 17 fields.
-# PyDCS name: Nellis.
+# PyDCS names: Nellis, Groom Lake, Creech, Tonopah Test Range, North Las Vegas,
+# Henderson Executive, Boulder City, Mesquite.
 airfields:
   Nellis: 4 # Nellis
+  GroomLake: 2 # Groom Lake (class Groom_Lake; not Falklands MountPleasant, not Channel MervilleCalonne)
+  Creech: 1 # Creech
+  TonopahTestRange: 18 # Tonopah Test Range (class Tonopah_Test_Range)
+  NorthLasVegas: 15 # North Las Vegas (class North_Las_Vegas)
+  HendersonExecutive: 8 # Henderson Executive (class Henderson_Executive)
+  BoulderCity: 6 # Boulder City (class Boulder_City)
+  Mesquite: 13 # Mesquite

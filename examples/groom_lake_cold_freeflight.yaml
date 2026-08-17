@@ -1,0 +1,21 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: Nevada
+name: Groom Lake Free Flight
+description: >
+  Cold start at Groom Lake. Free flight over Nevada. Clear morning.
+  Groom Lake airdromeId 2 is not Falklands Mount Pleasant and not Channel
+  Merville Calonne.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: GroomLake
+  coalition: blue
+  country: USA
+  skill: Player
+  start: cold_parking

@@ -54,6 +54,9 @@ def test_infer_theatre_from_rejected_json() -> None:
     assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Palmyra"}}') == "Syria"
     assert infer_theatre('{"mission_type": "free_flight", "theatre": "Nevada"}') == "Nevada"
     assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Nellis"}}') == "Nevada"
+    assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "GroomLake"}}') == "Nevada"
+    assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Creech"}}') == "Nevada"
+    assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Groom_Lake"}}') is None
     assert infer_theatre('{"mission_type": "free_flight", "theatre": "Falklands"}') == "Falklands"
     assert (
         infer_theatre('{"mission_type": "cap", "player": {"airfield": "MountPleasant"}}')

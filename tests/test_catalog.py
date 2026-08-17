@@ -198,6 +198,7 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert "Mozdok" in {a.name for a in snap.airfields}
     assert "Incirlik" in {a.name for a in snap.airfields}
     assert "Nellis" in {a.name for a in snap.airfields}
+    assert "GroomLake" in {a.name for a in snap.airfields}
     assert "MountPleasant" in {a.name for a in snap.airfields}
     by_af = {a.name: a for a in snap.airfields}
     assert by_af["Manston"].theatre_id == "TheChannel"
@@ -214,6 +215,8 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert "Syria" in {c.value for c in snap.countries}
     assert by_af["Nellis"].theatre_id == "Nevada"
     assert by_af["Nellis"].airdrome_id == 4
+    assert by_af["GroomLake"].theatre_id == "Nevada"
+    assert by_af["GroomLake"].airdrome_id == 2
     assert by_af["MountPleasant"].theatre_id == "Falklands"
     assert by_af["MountPleasant"].airdrome_id == 2
     assert by_af["FordAF"].theatre_id == "Normandy"

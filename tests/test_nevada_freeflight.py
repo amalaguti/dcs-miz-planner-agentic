@@ -1,4 +1,4 @@
-"""Nevada Nellis cold freeflight smoke (no CAP)."""
+"""Nevada Nellis and Groom Lake cold freeflight smoke (no CAP)."""
 
 from __future__ import annotations
 
@@ -6,10 +6,13 @@ import zipfile
 from pathlib import Path
 
 from fixtures_support import (
+    GROOM_LAKE_EXAMPLE_SPEC,
+    GROOM_LAKE_MISSION_CONTRACTS,
     NEVADA_EXAMPLE_SPEC,
     NEVADA_MISSION_CONTRACTS,
     REQUIRED_MEMBERS,
     channel_available_inventory,
+    compile_groom_lake,
     compile_nellis,
 )
 
@@ -42,3 +45,25 @@ def test_compile_nellis_contracts(tmp_path: Path) -> None:
         mission = zf.read("mission").decode("utf-8")
         for token in NEVADA_MISSION_CONTRACTS:
             assert token in mission, f"missing mission contract {token}"
+
+
+def test_validate_groom_lake() -> None:
+    spec = load_mission_spec(GROOM_LAKE_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_groom_lake_contracts(tmp_path: Path) -> None:
+    out = compile_groom_lake(tmp_path / "groom_lake.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Nevada" in theatre
+        assert "Falklands" not in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in GROOM_LAKE_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+        assert '["type"]="Su-25T"' in mission

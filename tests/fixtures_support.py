@@ -703,6 +703,25 @@ def compile_nellis(output_path: Path) -> Path:
     )
 
 
+GROOM_LAKE_EXAMPLE_SPEC = REPO_ROOT / "examples" / "groom_lake_cold_freeflight.yaml"
+GROOM_LAKE_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=2',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "USA",
+)
+
+
+def compile_groom_lake(output_path: Path) -> Path:
+    spec = load_mission_spec(GROOM_LAKE_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 FALKLANDS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "mount_pleasant_cold_freeflight.yaml"
 FALKLANDS_MISSION_CONTRACTS = (
     "Su-25T",
