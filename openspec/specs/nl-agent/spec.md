@@ -672,15 +672,15 @@ the key is `Palmyra`).
 - **THEN** `infer_theatre` MUST return `Syria`
 
 ### Requirement: Syria invent is free_flight only
-Invent/chat SHALL allow `free_flight`, `cap`, and `intercept` when the bound
-theatre is `Syria` (home `Incirlik`, `Su-25T`, `sunny_clear`, Turkey blue; CAP
-and intercept station 180° / 40 km south over the Gulf of Iskenderun — not
-Cherbourg 180/63, not Batumi 270/40, not Hawkinge). It SHALL refuse
-`ground_attack`, `escort`, and `recon` on Syria every turn (never capture
-or write a refused Spec). Repair MUST nudge toward Incirlik free_flight,
-CAP, or intercept, or switching theatre to TheChannel — not Batumi,
-NeedsOarPoint, or Manston. Invent MUST NOT copy Channel, Normandy, or
-Caucasus `channel_place` geometry onto Syria.
+Invent/chat SHALL allow `free_flight`, `cap`, `intercept`, and `escort` when
+the bound theatre is `Syria` (home `Incirlik`, `Su-25T`, `sunny_clear`, Turkey
+blue; CAP/intercept/escort station 180° / 40 km south over the Gulf of
+Iskenderun — not Cherbourg 180/63, not Batumi 270/40, not Hawkinge, not escort
+120/55). It SHALL refuse `ground_attack` and `recon` on Syria every turn
+(never capture or write a refused Spec). Repair MUST nudge toward Incirlik
+free_flight, CAP, intercept, or escort, or switching theatre to TheChannel —
+not Batumi, NeedsOarPoint, or Manston. Invent MUST NOT copy Channel, Normandy,
+or Caucasus `channel_place` geometry onto Syria.
 
 #### Scenario: Syria free_flight invent allowed
 - **WHEN** invent is asked for a Syria free-flight
@@ -698,6 +698,17 @@ Caucasus `channel_place` geometry onto Syria.
 - **THEN** the planner MUST be allowed to emit `theatre: Syria` with
   `airfield: Incirlik` (MUST NOT be required to emit TheChannel, Hawkinge,
   Cherbourg, or Batumi spawn)
+
+#### Scenario: Syria escort invent allowed
+- **WHEN** invent is asked for an escort on Syria
+- **THEN** the planner MUST be allowed to emit `theatre: Syria` with
+  `airfield: Incirlik` (MUST NOT be required to emit TheChannel or Manston
+  120/55)
+
+#### Scenario: Syria ground_attack invent still refused every turn
+- **WHEN** invent is asked for a ground attack on Syria
+- **THEN** it MUST NOT emit a combat Mission Spec and MUST surface a repair
+  toward Incirlik free_flight, CAP, intercept, or escort (or TheChannel combat)
 
 ### Requirement: Nevada invent is free_flight only
 Invent/chat SHALL allow `free_flight` when the bound theatre is `Nevada`

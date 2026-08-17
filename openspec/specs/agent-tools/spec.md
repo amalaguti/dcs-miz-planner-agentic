@@ -868,8 +868,11 @@ Channel/Normandy/Caucasus template bundles. When mission type is `cap`, the
 derived example MUST follow the Incirlik Iskenderun CAP envelope (180° /
 40 km — not Manston 135/25, not Cherbourg 180/63, not Batumi 270/40). When
 mission type is `intercept`, the derived example MUST follow the Incirlik
-dawn intercept envelope. When mission type is GA/escort/recon, the tool MUST
-NOT return a Channel, Normandy, or Caucasus combat skeleton.
+dawn intercept envelope. When mission type is `escort`, the derived example
+MUST follow the Incirlik Iskenderun escort envelope (180° / 40 km — not
+Manston 120/55, not Cherbourg 180/63, not Batumi 270/40). When mission type
+is GA/recon, the tool MUST NOT return a Channel, Normandy, or Caucasus
+combat skeleton.
 
 #### Scenario: Syria free_flight schema uses Incirlik
 - **WHEN** a caller requests the free_flight Spec schema with theatre
@@ -885,6 +888,12 @@ NOT return a Channel, Normandy, or Caucasus combat skeleton.
 - **WHEN** a caller requests the intercept Spec schema with theatre `Syria`
 - **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, and
   country-Syria opposition
+
+#### Scenario: Syria escort schema uses Incirlik
+- **WHEN** a caller requests the escort Spec schema with theatre `Syria`
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, Turkey
+  package, Syria bounce, and escort geometry 180° / 40 km (not Manston 120° /
+  55 km, not Cherbourg 180/63, not Batumi 270/40)
 
 #### Scenario: Syria ground_attack schema has no Manston skeleton
 - **WHEN** a caller requests a ground_attack schema with theatre `Syria`
