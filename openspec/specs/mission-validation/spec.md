@@ -802,6 +802,16 @@ agrees. Well-formed Caucasus intercept Specs MUST NOT fail solely with
   an inventory that includes offerable Caucasus
 - **THEN** validation MUST succeed
 
+### Requirement: Caucasus escort Specs validate
+Shared validation SHALL accept a well-formed Caucasus escort Spec
+(theatre `Caucasus`, airfield `Batumi`, nested escort + package) when
+inventory agrees. It MUST still reject Caucasus recon invent.
+
+#### Scenario: Batumi escort validates
+- **WHEN** `examples/batumi_black_sea_escort.yaml` is validated against an
+  inventory that includes offerable Caucasus
+- **THEN** validation MUST succeed
+
 ### Requirement: Caucasus Mozdok freeflight validates
 Shared validation SHALL accept a well-formed Caucasus free-flight Spec with
 airfield `Mozdok` and player country `Russia` on coalition red when inventory
