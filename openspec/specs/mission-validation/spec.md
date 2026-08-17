@@ -976,7 +976,7 @@ planner-supported.
 ### Requirement: Extra Nevada airfields validate
 Shared validation SHALL accept a well-formed Nevada free-flight Spec whose
 player airfield is a curated extra Nevada key (e.g. `GroomLake`) when
-inventory agrees. Ground_attack / escort / recon invent on Nevada MUST still
+inventory agrees. Ground_attack / recon invent on Nevada MUST still
 be rejected.
 
 #### Scenario: Groom Lake freeflight validates
@@ -987,7 +987,7 @@ be rejected.
 ### Requirement: Nevada CAP Specs validate
 Shared validation SHALL accept a well-formed Nevada CAP Spec
 (theatre `Nevada`, airfield `Nellis`, nested cap) when inventory agrees.
-It MUST still reject Nevada ground_attack / escort / recon invent.
+It MUST still reject Nevada ground_attack / recon invent.
 
 #### Scenario: Nellis CAP validates
 - **WHEN** `examples/nellis_north_range_cap.yaml` is validated against an
@@ -1002,6 +1002,16 @@ Nevada intercept Specs MUST NOT fail solely with
 
 #### Scenario: Nellis intercept validates
 - **WHEN** `examples/nellis_dawn_intercept.yaml` is validated against an
+  inventory that includes offerable Nevada
+- **THEN** validation MUST succeed
+
+### Requirement: Nevada escort Specs validate
+Shared validation SHALL accept a well-formed Nevada escort Spec
+(theatre `Nevada`, airfield `Nellis`, nested escort + package) when
+inventory agrees. It MUST still reject Nevada ground_attack invent.
+
+#### Scenario: Nellis escort validates
+- **WHEN** `examples/nellis_north_range_escort.yaml` is validated against an
   inventory that includes offerable Nevada
 - **THEN** validation MUST succeed
 

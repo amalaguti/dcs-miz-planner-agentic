@@ -585,8 +585,8 @@ Normandy rows MUST keep `meta.theatre: Normandy`. Caucasus rows MUST keep
 Packaged `channel_place` options SHALL include `nellis_home` and
 `nellis_north_range_cap` with `meta.theatre: Nevada`. The CAP/intercept place
 MUST publish station geometry 350° / 40 km / 4000 m (Nellis north over desert
-north-range land) and MUST list mission types including `cap` and `intercept`.
-`nellis_home` MUST include `intercept`. The family name MUST remain
+north-range land) and MUST list mission types including `cap`, `intercept`, and `escort`.
+`nellis_home` MUST include `intercept` and `escort`. The family name MUST remain
 `channel_place`.
 
 #### Scenario: nellis_north_range_cap tagged Nevada
@@ -597,3 +597,8 @@ north-range land) and MUST list mission types including `cap` and `intercept`.
 #### Scenario: nellis_north_range_cap includes intercept
 - **WHEN** catalog/registry loads `nellis_north_range_cap`
 - **THEN** meta mission_types MUST include `intercept` as well as `cap`
+
+#### Scenario: nellis_north_range_cap includes escort
+- **WHEN** catalog/registry loads `nellis_north_range_cap`
+- **THEN** meta mission_types MUST include `escort` as well as `cap` and
+  `intercept`
