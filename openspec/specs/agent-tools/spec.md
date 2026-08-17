@@ -921,7 +921,7 @@ the same Incirlik Aleppo inland envelope (not Manston 125/76, not CAP 180/40).
 is `free_flight`, the derived example MUST follow the Nellis envelope (not
 Manston, NeedsOarPoint, Batumi, or Incirlik) and notes MUST NOT concatenate
 Channel/Normandy/Caucasus/Syria template bundles. When mission type is combat
-including `cap`, the tool MUST NOT return a prior-map combat skeleton.
+other than `cap`, the tool MUST NOT return a prior-map combat skeleton.
 
 #### Scenario: Nevada free_flight schema uses Nellis
 - **WHEN** a caller requests the free_flight Spec schema with theatre
@@ -935,10 +935,20 @@ including `cap`, the tool MUST NOT return a prior-map combat skeleton.
   curated keys MUST remain findable via catalog lookup
 
 #### Scenario: Nevada combat schema has no Manston skeleton
-- **WHEN** a caller requests a cap or intercept schema with theatre
-  `Nevada`
+- **WHEN** a caller requests an intercept schema with theatre `Nevada`
 - **THEN** the result MUST NOT present a Manston, NeedsOarPoint, Batumi, or
   Incirlik example as the template to copy
+
+### Requirement: Spec schema tool accepts Nevada CAP
+`get_mission_spec_schema` SHALL accept theatre `Nevada` with mission type
+`cap`. The derived example MUST follow the Nellis north-range CAP envelope
+(not Manston 135/25, not Cherbourg 180/63, not Batumi 270/40, not Incirlik
+180/40).
+
+#### Scenario: Nevada CAP schema uses Nellis
+- **WHEN** a caller requests the CAP Spec schema with theatre `Nevada`
+- **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, USA, and
+  CAP 350° / 40 km (not Incirlik 180° / 40 km)
 
 ### Requirement: Spec schema tool accepts Falklands
 `get_mission_spec_schema` SHALL accept theatre `Falklands`. When mission type

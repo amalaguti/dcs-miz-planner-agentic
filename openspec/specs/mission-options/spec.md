@@ -580,3 +580,14 @@ Normandy rows MUST keep `meta.theatre: Normandy`. Caucasus rows MUST keep
 #### Scenario: aleppo_inland_strike includes recon
 - **WHEN** catalog/registry loads `aleppo_inland_strike`
 - **THEN** meta mission_types MUST include `recon` as well as `ground_attack`
+
+### Requirement: Nevada channel_place rows
+Packaged `channel_place` options SHALL include `nellis_home` and
+`nellis_north_range_cap` with `meta.theatre: Nevada`. The CAP place MUST
+publish station geometry 350° / 40 km / 4000 m (Nellis north over desert
+north-range land). The family name MUST remain `channel_place`.
+
+#### Scenario: nellis_north_range_cap tagged Nevada
+- **WHEN** catalog/registry loads `channel_place` options
+- **THEN** `nellis_north_range_cap` MUST include meta theatre `Nevada` and
+  CAP bearing 350° / distance 40 km
