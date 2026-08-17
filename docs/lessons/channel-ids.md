@@ -5,6 +5,20 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria CAP 180/40 Iskenderun; country Syria opposition (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Incirlik CAP station is **180° / 40 km / 4000 m** from
+  Incirlik (id 16, x=221207.773438, y=-35240.347656) due south into the
+  Gulf of Iskenderun. Live PyDCS: 180/40 stays nearest Incirlik; **270/40
+  west is nearer Adana Şakirpaşa (id 2, uncurated, land)** — do not copy
+  Batumi 270/40. Same bearing as Cherbourg but **40 km not 63**. Player
+  Turkey + Su-25T blue at 251.0 MHz; enemies country **Syria** + Su-25T
+  red. Theatre id `Syria` ≠ country `Syria`. Domain and intercept spawn
+  stay fail-closed this slice.
+- **Code:** `examples/incirlik_iskenderun_cap.yaml`,
+  `planning_options.yaml` (`incirlik_iskenderun_cap`).
+
 ## Syria eight airfields; country Syria modern; Palmyra 28 (2026-08-17)
 
 - **Date:** 2026-08-17

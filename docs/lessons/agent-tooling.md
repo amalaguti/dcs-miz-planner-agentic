@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria invent allows CAP; 180/40 Iskenderun (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria invent/chat may emit **free_flight or CAP** at Incirlik
+  (Su-25T, Turkey blue). CAP station is **180° / 40 km / 4000 m** due south
+  of Incirlik over the Gulf of Iskenderun — not Cherbourg 180/**63**, not
+  Batumi 270/40 (west of Incirlik is nearer Adana Şakirpaşa, land). Schema
+  `theatre=Syria` + `cap` loads `incirlik_iskenderun_cap.yaml` with dedicated
+  `_SYRIA_CAP_NOTES` — do not concatenate Channel `_TYPE_NOTES`. Enemies:
+  Su-25T, country **Syria** red (`EnemyFlight` defaults to ThirdReich).
+  Intercept/GA/escort/recon still refuse every turn. Domain classifier and
+  intercept spawn stay fail-closed on Syria. Path clamp and soft immersion
+  floor stay TheChannel-only. Stub LLM stays Manston.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `agent/prompts.py`,
+  `planning_options.yaml` (`incirlik_home`, `incirlik_iskenderun_cap`),
+  `examples/incirlik_iskenderun_cap.yaml`.
+
 ## Caucasus invent allows recon; all six types (2026-08-17)
 
 - **Date:** 2026-08-17

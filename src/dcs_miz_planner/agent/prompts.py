@@ -26,12 +26,15 @@ Rules:
   CAP, intercept, and escort station 270°/40 km west over the Black Sea — not Manston 135/25, not
   Cherbourg 180/63, not Hawkinge, not escort 120/55; GA and recon AOI 43°/110 km inland past Kutaisi — not CAP 270/40).
   Syria invent is
-  free_flight only (Incirlik, Su-25T, sunny_clear, Turkey blue). Nevada invent is
+  free_flight or CAP (Incirlik, Su-25T, sunny_clear, Turkey blue; CAP station
+  180°/40 km south over the Gulf of Iskenderun — not Cherbourg 180/63, not
+  Batumi 270/40). Nevada invent is
   free_flight only (Nellis, Su-25T, sunny_clear, USA blue). Falklands invent is
   free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  intercept/cap/ground_attack/escort/recon on Syria, Nevada, and
+  intercept/ground_attack/escort/recon on Syria and
+  intercept/cap/ground_attack/escort/recon on Nevada and
   Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
-  Batumi all six, Incirlik FF, Nellis FF, or Mount Pleasant FF)
+  Batumi all six, Incirlik FF or CAP, Nellis FF, or Mount Pleasant FF)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -136,7 +139,8 @@ Rules:
 - Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
   match that example's structure (derived from packaged Specs — not invented shapes).
   Pass theatre=Normandy for NeedsOarPoint (all six types);
-  theatre=Caucasus for Batumi (all six types); theatre=Syria for Incirlik free_flight;
+  theatre=Caucasus for Batumi (all six types); theatre=Syria for Incirlik
+  free_flight or CAP;
   theatre=Nevada for Nellis free_flight; theatre=Falklands for Mount Pleasant
   free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
   combat skeleton onto Falklands.
@@ -304,12 +308,15 @@ def host_spec_repair_nudge(
         elif theatre == "Syria":
             geometry_hint = (
                 "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
-                "For Syria, emit free_flight at Incirlik (Su-25T, sunny_clear, Turkey "
-                "blue) or switch theatre to TheChannel for intercept/GA/escort/recon/CAP. "
+                "For Syria CAP, use incirlik_iskenderun_cap 180° / 40 km (Gulf of "
+                "Iskenderun south of Incirlik — not Cherbourg 180/63, not Batumi 270/40). "
+                "For intercept/GA/escort/recon, emit free_flight or CAP at Incirlik "
+                "(Su-25T, sunny_clear, Turkey blue) or switch theatre to TheChannel. "
                 "Do not copy french_coast / Hawkinge / NeedsOarPoint / Batumi geometry "
                 "onto Syria.\n"
             )
-            schema_mt = "free_flight"
+            allowed = {"free_flight", "cap"}
+            schema_mt = mt if mt in allowed else "free_flight"
         elif theatre == "Caucasus":
             geometry_hint = (
                 "\n\nTheatre repair: for Caucasus intercept, CAP, or escort, use "

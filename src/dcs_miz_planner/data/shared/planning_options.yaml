@@ -1211,6 +1211,37 @@ options:
         Land only. Stopping short (~120 km) is still Cherbourg-channel water.
         Do not copy french_coast_strike_belt 125/76 onto Needs Oar Point.
 
+  - family: channel_place
+    id: incirlik_home
+    label: Incirlik (home field)
+    description: >
+      Incirlik — default Syria Su-25T start for free_flight and Gulf of
+      Iskenderun CAP. Do not copy Manston, Needs Oar Point, or Batumi
+      geometry onto Syria.
+    support: advisory
+    meta:
+      theatre: Syria
+      airfield: Incirlik
+      role: home_base
+      mission_types: [free_flight, cap]
+
+  - family: channel_place
+    id: incirlik_iskenderun_cap
+    label: Incirlik Iskenderun CAP
+    description: >
+      Gulf of Iskenderun CAP station south of Incirlik (bearing 180°, 40 km,
+      4000 m). Sea domain — do not copy Batumi 270/40, Cherbourg 180/63, or
+      Manston 135/25 onto this station.
+    support: advisory
+    meta:
+      theatre: Syria
+      domain: sea
+      mission_types: [cap]
+      cap_bearing_deg: 180
+      cap_distance_km: 40
+      cap_altitude_m: 4000
+      example: examples/incirlik_iskenderun_cap.yaml
+
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure
     id: magneto_training

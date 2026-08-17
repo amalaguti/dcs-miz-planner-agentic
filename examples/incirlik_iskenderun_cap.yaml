@@ -1,0 +1,40 @@
+schema_version: "1"
+mission_type: cap
+theatre: Syria
+name: Incirlik Iskenderun CAP
+description: >
+  Cold start at Incirlik. Climb to a CAP station south over the Gulf of
+  Iskenderun (bearing 180°, 40 km — not Cherbourg 180/63, not Batumi 270/40),
+  circle at 4000 m, weapons free. Light Su-25T opposition near the station.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Incirlik
+  coalition: blue
+  country: Turkey
+  skill: Player
+  start: cold_parking
+cap:
+  # Airfield-relative from Incirlik (id 16) due south into the Gulf of
+  # Iskenderun. PyDCS Incirlik x=221207.773438 y=-35240.347656;
+  # heading 180 / 40 km stays nearest Incirlik (not Adana Sakirpasa).
+  # Do not copy Batumi 270/40 or Cherbourg 180/63.
+  bearing_deg: 180
+  distance_km: 40
+  altitude_m: 4000
+  pattern: circle
+  engagement: weapons_free
+  duration_min: 20
+enemies:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Syria
+    coalition: red
+objectives:
+  - type: patrol

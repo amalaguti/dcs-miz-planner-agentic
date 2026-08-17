@@ -30,14 +30,16 @@ Caucasus invent is **all six types** at Batumi
 `examples/batumi_black_sea_escort.yaml`; escort same 270°/40 km, Georgia package;
 `examples/batumi_kutaisi_recon.yaml`; recon same 43°/110 km inland AOI). **Syria** is planner-bound for cold freeflight at Incirlik
 (`examples/incirlik_cold_freeflight.yaml`; Spec theatre id `Syria`; Su-25T /
-Turkey / 251.0 MHz) plus curated extra airfields and a Palmyra smoke
+Turkey / 251.0 MHz) plus curated extra airfields, a Palmyra smoke
 (`examples/palmyra_cold_freeflight.yaml`; country Syria red; airdromeId 28 is
-not Mozdok). **Nevada** is planner-bound for cold freeflight at Nellis
+not Mozdok), and Incirlik CAP
+(`examples/incirlik_iskenderun_cap.yaml`; station 180°/40 km south over the
+Gulf of Iskenderun — not Cherbourg 180/63, not Batumi 270/40). **Nevada** is planner-bound for cold freeflight at Nellis
 (`examples/nellis_cold_freeflight.yaml`; Spec theatre id `Nevada`; Su-25T /
 USA / 251.0 MHz). **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
-251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria, Nevada, and Falklands invent are **free_flight
+251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **free_flight or CAP** at Incirlik; Nevada and Falklands invent are **free_flight
 only** — other combat types refuse. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, **or** Caucasus
 Batumi/Black Sea. Land/sea domain
@@ -125,11 +127,12 @@ Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **Intentional limits:** Channel theatre is the complete combat surface today
 (Normandy invent is all six types at Needs Oar Point; Caucasus invent is
-all six types at Batumi; Syria invent is free_flight only at Incirlik;
+all six types at Batumi; Syria invent is free_flight or CAP at Incirlik;
 Nevada invent is free_flight only at Nellis; Falklands invent is free_flight
 only at Mount Pleasant;
+intercept/GA/escort/recon still refuse on Syria;
 intercept/CAP/GA still refuse
-on Syria/Nevada/Falklands).
+on Nevada/Falklands).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for
 inspiration, not imported as Spec; stub LLM + offline research fixtures keep tests

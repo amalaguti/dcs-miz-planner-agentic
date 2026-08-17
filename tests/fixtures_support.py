@@ -573,6 +573,28 @@ def compile_incirlik(output_path: Path) -> Path:
     )
 
 
+INCIRLIK_CAP_EXAMPLE_SPEC = REPO_ROOT / "examples" / "incirlik_iskenderun_cap.yaml"
+INCIRLIK_CAP_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=16',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    '["task"]="CAP"',
+    "Orbit",
+    '["pattern"]="Circle"',
+    "Syria",
+)
+
+
+def compile_incirlik_cap(output_path: Path) -> Path:
+    spec = load_mission_spec(INCIRLIK_CAP_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 NEVADA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "nellis_cold_freeflight.yaml"
 NEVADA_MISSION_CONTRACTS = (
     "Su-25T",
