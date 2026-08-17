@@ -1,0 +1,18 @@
+---
+description: Standing authorization to fast-forward merge completed work into local master without asking.
+alwaysApply: true
+---
+
+# Merge to master (this project)
+
+The owner authorized agents to **fast-forward merge into local `master` without asking**.
+
+After an OpenSpec slice (or bugfix branch) is implemented, tested (`uv run pytest -q`), and archived:
+
+1. `git checkout master`
+2. `git merge --ff-only <change-branch>`
+3. Continue the next slice. Do not pause for merge approval.
+
+If Auto-review blocks `checkout master` or `merge --ff-only`, retry the **same** command with `request_smart_mode_approval` and the **exact** block reason. That is expected; it is not a reason to stop and ask.
+
+Do **not**: force-push, `--no-ff` merge, skip hooks, or push to origin unless the user asks (diff-tab push is enough).

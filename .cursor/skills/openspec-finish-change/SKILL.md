@@ -22,7 +22,7 @@ means `master` receives one coherent state: code, synced specs, archived change.
 - [ ] 2. Commit the implementation
 - [ ] 3. Sync delta specs, then archive the change
 - [ ] 4. Commit the archive + spec sync
-- [ ] 5. Merge (ask first — the user often merges themselves)
+- [ ] 5. Fast-forward merge to local master (do not ask)
 ```
 
 **1. Update docs to match reality**
@@ -52,8 +52,11 @@ Separate commit from step 2, so the archive move stays readable in history.
 
 **5. Merge**
 
-Ask before merging — the user frequently does this themselves. Delete the
-branch only once merged.
+Fast-forward into local `master` without asking (`git checkout master` then
+`git merge --ff-only <change-branch>`). Standing authorization lives in
+`.cursor/rules/merge-to-master.mdc`. If Auto-review blocks checkout/merge,
+retry with `request_smart_mode_approval` and the exact block reason. Do not
+push unless the user asks. Delete the branch only once merged.
 
 ## Guardrails
 

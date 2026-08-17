@@ -19,7 +19,7 @@ description: >-
 2. Strip/normalize **liveries** and `onboard_num` in goldens for cross-machine parity.
 3. Install inventory: SQLite cache under LocalAppData; **never execute DCS Lua** to probe.
 4. OpenSpec work stays off `master`/`main`; finish = docs → commit → sync → archive →
-   commit → ask merge (`openspec-finish-change`).
+   commit → FF-merge to local master without asking (`openspec-finish-change`).
 5. **OpenSpec CLI:** `npx openspec …` (npm `@fission-ai/openspec`). Not `uv openspec`
    / `uv run openspec`. Fallback: `.\node_modules\.bin\openspec.cmd`.
 6. After promoting a theatre into registry YAML, run **`dcs-miz theatres --refresh`**

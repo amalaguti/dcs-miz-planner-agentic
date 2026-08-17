@@ -66,8 +66,8 @@ Per-map stages (separate OpenSpecs):
 7. **Agent Review** `/agent-review`: Deep if registry/compiler/validation;
    Quick if docs-only.
 8. `openspec-finish-change`: docs → impl commit → archive+spec sync commit →
-   **ask merge**.
-9. Pause until master has the merge.
+   **FF-merge to local master without asking**.
+9. Continue the next slice on a new branch off the updated master.
 
 ## Parallelism
 
