@@ -31,10 +31,11 @@ description: >-
    (NeedsOarPoint; CAP/intercept/escort 180°/63 km Cherbourg
    corridor, not Hawkinge, not Manston escort 120/55; GA/recon AOI 180°/133 km
    inland of Maupertus). Caucasus is
-   **free_flight only** (Batumi; CAP refused). Syria is **free_flight only**
+   **free_flight or CAP** (Batumi; CAP 270°/40 km west over the Black Sea;
+   intercept/GA/escort/recon refused). Syria is **free_flight only**
    (Incirlik; CAP refused). Nevada is **free_flight only** (Nellis; CAP
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).
-   All combat on Caucasus/Syria/Nevada/Falklands refuse every turn
+   Refused types refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
    nudges MUST infer theatre from rejected JSON and pass it to
    `build_spec_schema` — do not hardcode `theatre="Normandy"`,

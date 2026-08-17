@@ -56,6 +56,7 @@ NORMANDY_ESCORT = REPO / "examples" / "needs_oar_point_escort.yaml"
 NORMANDY_RECON = REPO / "examples" / "needs_oar_point_recon.yaml"
 MANSTON_FF = REPO / "examples" / "manston_cold_freeflight.yaml"
 CAUCASUS_FF = REPO / "examples" / "batumi_cold_freeflight.yaml"
+CAUCASUS_CAP = REPO / "examples" / "batumi_black_sea_cap.yaml"
 SYRIA_FF = REPO / "examples" / "incirlik_cold_freeflight.yaml"
 NEVADA_FF = REPO / "examples" / "nellis_cold_freeflight.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
@@ -217,6 +218,12 @@ def test_channel_place_tagged_thechannel() -> None:
     inland = next(o for o in places if o.id == "maupertus_inland_strike")
     assert inland.meta.get("theatre") == "Normandy"
     assert inland.meta.get("domain") == "land"
+    batumi_home = next(o for o in places if o.id == "batumi_home")
+    batumi_cap = next(o for o in places if o.id == "batumi_black_sea_cap")
+    assert batumi_home.meta.get("theatre") == "Caucasus"
+    assert batumi_cap.meta.get("theatre") == "Caucasus"
+    assert batumi_cap.meta.get("cap_bearing_deg") == 270
+    assert batumi_cap.meta.get("cap_distance_km") == 40
     assert inland.meta.get("strike_bearing_deg") == 180
     assert inland.meta.get("strike_distance_km") == 133
     assert "recon" in inland.meta.get("mission_types", [])
@@ -227,6 +234,8 @@ def test_channel_place_tagged_thechannel() -> None:
             "maupertus_inland_strike",
         }:
             assert opt.meta.get("theatre") == "Normandy"
+        elif opt.id in {"batumi_home", "batumi_black_sea_cap"}:
+            assert opt.meta.get("theatre") == "Caucasus"
         else:
             assert opt.meta.get("theatre") == "TheChannel"
 
@@ -392,11 +401,21 @@ def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Caucasus"):
         build_spec_schema("intercept", theatre="Caucasus")
     with pytest.raises(ValueError, match="not supported for theatre Caucasus"):
-        build_spec_schema("cap", theatre="Caucasus")
+        build_spec_schema("ground_attack", theatre="Caucasus")
+    cap = build_spec_schema("cap", theatre="Caucasus")
+    assert cap.example["theatre"] == "Caucasus"
+    assert cap.example["player"]["airfield"] == "Batumi"
+    assert cap.example["player"]["aircraft"] == "Su-25T"
+    assert cap.example["cap"]["bearing_deg"] == 270
+    assert cap.example["cap"]["distance_km"] == 40
+    assert cap.example["enemies"][0]["country"] == "Russia"
     tool = get_mission_spec_schema("cap", theatre="Caucasus")
-    assert tool["ok"] is False
-    assert tool["code"] == "combat_unsupported_theatre"
-    blob = json.dumps(tool)
+    assert tool["ok"] is True
+    assert tool["example"]["player"]["airfield"] == "Batumi"
+    intercept = get_mission_spec_schema("intercept", theatre="Caucasus")
+    assert intercept["ok"] is False
+    assert intercept["code"] == "combat_unsupported_theatre"
+    blob = json.dumps(intercept)
     assert "Manston" not in blob
     assert "NeedsOarPoint" not in blob
 
@@ -523,13 +542,19 @@ def test_era_filter_caucasus_georgia_and_syria_turkey_ok() -> None:
 
 
 def test_caucasus_cap_invent_nudge() -> None:
-    spec = load_mission_spec(NORMANDY_CAP).model_copy(
-        update={"theatre": "Caucasus", "player": load_mission_spec(CAUCASUS_FF).player}
+    spec = load_mission_spec(CAUCASUS_CAP)
+    assert host_normandy_combat_nudge(spec) is None
+    intercept = load_mission_spec(NORMANDY_INTERCEPT).model_copy(
+        update={
+            "theatre": "Caucasus",
+            "player": load_mission_spec(CAUCASUS_FF).player,
+            "enemies": load_mission_spec(CAUCASUS_CAP).enemies,
+        }
     )
-    nudge = host_normandy_combat_nudge(spec)
+    nudge = host_normandy_combat_nudge(intercept)
     assert nudge is not None
     assert "Batumi" in nudge
-    assert "free_flight" in nudge
+    assert "CAP" in nudge or "cap" in nudge.lower()
     assert "CAP at NeedsOarPoint" not in nudge
     ff = load_mission_spec(CAUCASUS_FF)
     assert host_normandy_combat_nudge(ff) is None
@@ -725,15 +750,11 @@ def test_planner_normandy_recon_is_written(tmp_path: Path) -> None:
     assert host_normandy_combat_nudge(result.spec) is None
 
 
-def test_chat_caucasus_cap_not_captured(tmp_path: Path) -> None:
+def test_chat_caucasus_cap_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    cap_json = (
-        load_mission_spec(NORMANDY_CAP)
-        .model_copy(update={"theatre": "Caucasus", "player": load_mission_spec(CAUCASUS_FF).player})
-        .model_dump_json()
-    )
+    cap_json = load_mission_spec(CAUCASUS_CAP).model_dump_json()
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=cap_json)]),
         output_path=out,
@@ -741,7 +762,65 @@ def test_chat_caucasus_cap_not_captured(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    first = session.handle_line("Caucasus CAP")
+    session.handle_line("Caucasus CAP west of Batumi")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "cap"
+    assert session.proposed_spec.player.airfield == "Batumi"
+    assert session.proposed_spec.theatre == "Caucasus"
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "cap"
+    assert written.player.airfield == "Batumi"
+
+
+def test_planner_caucasus_cap_is_written(tmp_path: Path) -> None:
+    cap_json = load_mission_spec(CAUCASUS_CAP).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Caucasus CAP west of Batumi",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=cap_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Caucasus"
+    assert result.spec.mission_type.value == "cap"
+    assert result.spec.player.airfield == "Batumi"
+    assert result.spec.cap is not None
+    assert result.spec.cap.bearing_deg == 270
+    assert result.spec.cap.distance_km == 40
+
+
+def test_chat_caucasus_intercept_not_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    intercept_json = (
+        load_mission_spec(NORMANDY_INTERCEPT)
+        .model_copy(
+            update={
+                "theatre": "Caucasus",
+                "player": load_mission_spec(CAUCASUS_FF).player,
+                "enemies": load_mission_spec(CAUCASUS_CAP).enemies,
+            }
+        )
+        .model_dump_json()
+    )
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    first = session.handle_line("Caucasus intercept")
     assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
     assert "Batumi" in first.output
     assert "NeedsOarPoint" not in first.output
@@ -894,6 +973,8 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "cherbourg_channel_cap" not in channel_ids
     assert "needs_oar_point_home" not in channel_ids
     assert "maupertus_inland_strike" not in channel_ids
+    assert "batumi_home" not in channel_ids
+    assert "batumi_black_sea_cap" not in channel_ids
     assert "manston_home" in channel_ids
     assert "french_coast_strike_belt" in channel_ids
     assert any(o["family"] == "weather" for o in channel["options"])
@@ -902,14 +983,23 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     normandy_ids = {o["id"] for o in normandy["options"] if o["family"] == "channel_place"}
     assert "manston_home" not in normandy_ids
     assert "french_coast_strike_belt" not in normandy_ids
+    assert "batumi_black_sea_cap" not in normandy_ids
     assert "needs_oar_point_home" in normandy_ids
     assert "cherbourg_channel_cap" in normandy_ids
     assert "maupertus_inland_strike" in normandy_ids
+    caucasus = list_mission_options(theatre="Caucasus", db_path=db)
+    assert caucasus["ok"] is True
+    caucasus_ids = {o["id"] for o in caucasus["options"] if o["family"] == "channel_place"}
+    assert "manston_home" not in caucasus_ids
+    assert "cherbourg_channel_cap" not in caucasus_ids
+    assert "batumi_home" in caucasus_ids
+    assert "batumi_black_sea_cap" in caucasus_ids
     all_rows = list_mission_options(db_path=db)
     all_ids = {o["id"] for o in all_rows["options"] if o["family"] == "channel_place"}
     assert "manston_home" in all_ids
     assert "cherbourg_channel_cap" in all_ids
     assert "maupertus_inland_strike" in all_ids
+    assert "batumi_black_sea_cap" in all_ids
 
 
 def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:

@@ -388,6 +388,28 @@ def compile_batumi(output_path: Path) -> Path:
     )
 
 
+BATUMI_CAP_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_black_sea_cap.yaml"
+BATUMI_CAP_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=22',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    '["task"]="CAP"',
+    "Orbit",
+    '["pattern"]="Circle"',
+    "Russia",
+)
+
+
+def compile_batumi_cap(output_path: Path) -> Path:
+    spec = load_mission_spec(BATUMI_CAP_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 BATUMI_SPITFIRE_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_spitfire_freeflight.yaml"
 BATUMI_SPITFIRE_MISSION_CONTRACTS = (
     "SpitfireLFMkIX",

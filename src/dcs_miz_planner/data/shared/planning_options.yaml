@@ -1099,6 +1099,36 @@ options:
       example: examples/needs_oar_point_cap.yaml
 
   - family: channel_place
+    id: batumi_home
+    label: Batumi (home field)
+    description: >
+      Batumi — default Caucasus Su-25T start for free_flight and Black Sea CAP.
+      Do not copy Manston or Needs Oar Point geometry onto Caucasus.
+    support: advisory
+    meta:
+      theatre: Caucasus
+      airfield: Batumi
+      role: home_base
+      mission_types: [free_flight, cap]
+
+  - family: channel_place
+    id: batumi_black_sea_cap
+    label: Batumi Black Sea CAP
+    description: >
+      Black Sea CAP station west of Batumi (bearing 270°, 40 km, 4000 m).
+      Advisory sea — domain classifier stays fail-closed. Do not copy Manston
+      135/25 or Cherbourg 180/63 onto Caucasus.
+    support: advisory
+    meta:
+      theatre: Caucasus
+      domain: sea
+      mission_types: [cap]
+      cap_bearing_deg: 270
+      cap_distance_km: 40
+      cap_altitude_m: 4000
+      example: examples/batumi_black_sea_cap.yaml
+
+  - family: channel_place
     id: maupertus_inland_strike
     label: Maupertus inland strike
     description: >

@@ -6,6 +6,8 @@ import zipfile
 from pathlib import Path
 
 from fixtures_support import (
+    BATUMI_CAP_EXAMPLE_SPEC,
+    BATUMI_CAP_MISSION_CONTRACTS,
     BATUMI_SPITFIRE_EXAMPLE_SPEC,
     BATUMI_SPITFIRE_MISSION_CONTRACTS,
     CAUCASUS_EXAMPLE_SPEC,
@@ -15,6 +17,7 @@ from fixtures_support import (
     REQUIRED_MEMBERS,
     channel_available_inventory,
     compile_batumi,
+    compile_batumi_cap,
     compile_batumi_spitfire,
     compile_mozdok,
 )
@@ -89,7 +92,47 @@ def test_compile_batumi_spitfire_contracts(tmp_path: Path) -> None:
         mission = zf.read("mission").decode("utf-8")
         for token in BATUMI_SPITFIRE_MISSION_CONTRACTS:
             assert token in mission, f"missing mission contract {token}"
-            # Player unit type — not a whole-file substring: PyDCS requiredModules
-            # still lists "Su-25T by Eagle Dynamics" even when the player is a Spitfire.
-            assert '["type"]="SpitfireLFMkIX"' in mission
-            assert '["type"]="Su-25T"' not in mission
+        # Player unit type — not a whole-file substring: PyDCS requiredModules
+        # still lists "Su-25T by Eagle Dynamics" even when the player is a Spitfire.
+        assert '["type"]="SpitfireLFMkIX"' in mission
+        assert '["type"]="Su-25T"' not in mission
+
+
+def test_validate_batumi_cap() -> None:
+    spec = load_mission_spec(BATUMI_CAP_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_batumi_cap_contracts(tmp_path: Path) -> None:
+    out = compile_batumi_cap(tmp_path / "batumi_cap.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Caucasus" in theatre
+        assert "Normandy" not in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in BATUMI_CAP_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+        assert '["type"]="Su-25T"' in mission
+        assert "30989.935547" not in mission
+        assert "-35402.577148" not in mission
+
+
+def test_caucasus_intercept_still_fails_closed() -> None:
+    intercept = load_mission_spec(
+        Path(__file__).resolve().parents[1] / "examples" / "needs_oar_point_dawn_intercept.yaml"
+    )
+    spec = intercept.model_copy(
+        update={
+            "theatre": "Caucasus",
+            "player": load_mission_spec(CAUCASUS_EXAMPLE_SPEC).player,
+            "enemies": load_mission_spec(BATUMI_CAP_EXAMPLE_SPEC).enemies,
+        }
+    )
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert not result.ok
+    assert any(e.code == "intercept_unsupported_theatre" for e in result.errors)

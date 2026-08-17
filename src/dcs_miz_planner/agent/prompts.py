@@ -22,13 +22,16 @@ Rules:
   and escort station 180°/63 km toward Cherbourg — not Manston 135/25, not Hawkinge,
   not escort 120/55; GA and recon AOI 180°/133 km inland of Maupertus — not Manston
   125/76). Caucasus invent is
-  free_flight only (Batumi, Su-25T, sunny_clear, Georgia blue). Syria invent is
+  free_flight or CAP (Batumi, Su-25T, sunny_clear, Georgia blue; CAP station
+  270°/40 km west over the Black Sea — not Manston 135/25, not Cherbourg 180/63).
+  Syria invent is
   free_flight only (Incirlik, Su-25T, sunny_clear, Turkey blue). Nevada invent is
   free_flight only (Nellis, Su-25T, sunny_clear, USA blue). Falklands invent is
   free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  intercept/cap/ground_attack/escort/recon on Caucasus, Syria, Nevada, and
+  intercept/ground_attack/escort/recon on Caucasus and refuse
+  intercept/cap/ground_attack/escort/recon on Syria, Nevada, and
   Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
-  Batumi FF, Incirlik FF, Nellis FF, or Mount Pleasant FF)
+  Batumi FF or CAP, Incirlik FF, Nellis FF, or Mount Pleasant FF)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -127,7 +130,7 @@ Rules:
 - Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
   match that example's structure (derived from packaged Specs — not invented shapes).
   Pass theatre=Normandy for NeedsOarPoint (all six types);
-  theatre=Caucasus for Batumi free_flight; theatre=Syria for Incirlik free_flight;
+  theatre=Caucasus for Batumi free_flight or CAP; theatre=Syria for Incirlik free_flight;
   theatre=Nevada for Nellis free_flight; theatre=Falklands for Mount Pleasant
   free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
   combat skeleton onto Falklands.
@@ -304,11 +307,13 @@ def host_spec_repair_nudge(
         elif theatre == "Caucasus":
             geometry_hint = (
                 "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
-                "For Caucasus, emit free_flight at Batumi (Su-25T, sunny_clear, Georgia "
-                "blue) or switch theatre to TheChannel for intercept/GA/escort/recon/CAP. "
+                "For Caucasus, emit free_flight or CAP at Batumi (Su-25T, sunny_clear, Georgia "
+                "blue; CAP 270°/40 km west over the Black Sea) or switch theatre to TheChannel "
+                "for intercept/GA/escort/recon. "
                 "Do not copy french_coast / Hawkinge / NeedsOarPoint geometry onto Caucasus.\n"
             )
-            schema_mt = "free_flight"
+            allowed = {"free_flight", "cap"}
+            schema_mt = mt if mt in allowed else "free_flight"
         elif theatre == "Normandy":
             geometry_hint = (
                 "\n\nTheatre repair: for Normandy land strike, use "

@@ -5,6 +5,22 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus invent allows CAP; 270/40 Black Sea (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Caucasus invent/chat may emit **free_flight or CAP** at Batumi
+  (Su-25T, Georgia blue). CAP station is **270° / 40 km / 4000 m** west of
+  Batumi over the Black Sea — live `heading_between_point` from Batumi: Kutaisi
+  43.14°/97.20 km inland, Tbilisi 81.82°/282.11 km inland, Sochi 320.96°
+  along-coast. Do **not** copy Manston 135/25 or Cherbourg 180/63. Enemies are
+  **Russia + Su-25T** (explicit country — `EnemyFlight.country` defaults to
+  `ThirdReich`, which modern era-filter rejects). Domain, intercept spawn, and
+  path clamp stay fail-closed / Channel-only. Schema `theatre=Caucasus` + `cap`
+  loads `batumi_black_sea_cap.yaml` with dedicated `_CAUCASUS_CAP_NOTES` — do
+  not concatenate Channel `_COMMON_NOTES`. Stub LLM stays Manston.
+- **Code:** `planning_options.yaml` (`batumi_home`, `batumi_black_sea_cap`),
+  `agent/immersion.py`, `agent/spec_schema.py`, `examples/batumi_black_sea_cap.yaml`.
+
 ## Normandy invent allows recon; all six types (2026-08-16)
 
 - **Date:** 2026-08-16

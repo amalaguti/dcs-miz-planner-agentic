@@ -43,9 +43,13 @@ description: >-
    `Batumi` = 22, `Kobuleti` = 24, `SenakiKolkhi` = 23 (PyDCS `Senaki-Kolkhi`),
    `Kutaisi` = 25, `TbilisiLochini` = 29 (`Tbilisi-Lochini`), `Vaziani` = 31,
    `SochiAdler` = 18 (`Sochi-Adler`), `Mozdok` = 28 (not NeedsOarPoint).
-   Invent home: `Georgia` + `Su-25T` at **251.0 MHz** at Batumi. `Russia` is
+   Invent home: `Georgia` + `Su-25T` at **251.0 MHz** at Batumi. Invent is
+   **free_flight or CAP** (CAP 270° / 40 km west over the Black Sea — not
+   Manston 135/25, not Cherbourg 180/63). Intercept/GA/escort/recon still refuse.
+   `Russia` is
    modern-only (PyDCS red default — do not place Russia on blue). Channel+Russia
-   is unknown. **SpitfireLFMkIX is dual-era** (same 124.0 ref in wwii + modern)
+   is unknown. CAP enemies: Russia + Su-25T (set `enemies[].country: Russia`;
+   default is ThirdReich). **SpitfireLFMkIX is dual-era** (same 124.0 ref in wwii + modern)
    because DCS flies it on modern maps; Channel still rejects `Su-25T`. UK is
    dual-era. Catalog listing may union eras. Do not dump all 21 fields.
 10. **Syria** Spec id is **`Syria`** (era `modern`). Curated AF: `Incirlik` = 16

@@ -1,0 +1,36 @@
+schema_version: "1"
+mission_type: cap
+theatre: Caucasus
+name: Batumi Black Sea CAP
+description: >
+  Cold start at Batumi. Climb to a CAP station west over the Black Sea
+  (bearing 270°, 40 km), circle at 4000 m, weapons free. Light Su-25T
+  opposition near the station.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Batumi
+  coalition: blue
+  country: Georgia
+  skill: Player
+  start: cold_parking
+cap:
+  bearing_deg: 270
+  distance_km: 40
+  altitude_m: 4000
+  pattern: circle
+  engagement: weapons_free
+  duration_min: 20
+enemies:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Russia
+    coalition: red
+objectives:
+  - type: patrol

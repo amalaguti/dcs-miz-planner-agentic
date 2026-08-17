@@ -13,7 +13,7 @@ description: >-
 Parent agent in Agents Window (or chat) coordinates specialists. **You** do not
 spawn a seventh “orchestrator” subagent.
 
-Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + GA + intercept + escort + recon smoke (all six types). Caucasus Stage B: eight curated AFs + Russia + Mozdok FF; invent still FF-only at Batumi.
+Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + GA + intercept + escort + recon smoke (all six types). Caucasus Stage C: Batumi places + Black Sea CAP (270°/40 km); invent FF+CAP; intercept/GA/escort/recon still refuse.
 
 ## Read
 
