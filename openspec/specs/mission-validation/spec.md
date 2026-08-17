@@ -852,10 +852,21 @@ agrees. Channel/Normandy MUST still reject country `Syria` as unknown-country.
 ### Requirement: Syria CAP Specs validate
 Shared validation SHALL accept a well-formed Syria CAP Spec
 (theatre `Syria`, airfield `Incirlik`, nested cap) when inventory agrees.
-It MUST still reject Syria intercept invent.
+It MUST still reject Syria ground_attack invent.
 
 #### Scenario: Incirlik CAP validates
 - **WHEN** `examples/incirlik_iskenderun_cap.yaml` is validated against an
+  inventory that includes offerable Syria
+- **THEN** validation MUST succeed
+
+### Requirement: Syria intercept Specs validate
+Shared validation SHALL accept a well-formed Syria intercept Spec
+(theatre `Syria`, airfield `Incirlik`) when inventory agrees. Well-formed
+Syria intercept Specs MUST NOT fail solely with
+`intercept_unsupported_theatre`. Nevada MUST still fail closed.
+
+#### Scenario: Incirlik intercept validates
+- **WHEN** `examples/incirlik_dawn_intercept.yaml` is validated against an
   inventory that includes offerable Syria
 - **THEN** validation MUST succeed
 
