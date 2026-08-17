@@ -864,18 +864,24 @@ cite french-coast belts or Manston 125/76.
 `get_mission_spec_schema` SHALL accept theatre `Syria`. When mission type
 is `free_flight`, the derived example MUST follow the Incirlik envelope (not
 Manston, NeedsOarPoint, or Batumi) and notes MUST NOT concatenate
-Channel/Normandy/Caucasus template bundles. When mission type is combat
-including `cap`, the tool MUST NOT return a Channel, Normandy, or Caucasus
-combat skeleton.
+Channel/Normandy/Caucasus template bundles. When mission type is `cap`, the
+derived example MUST follow the Incirlik Iskenderun CAP envelope (180° /
+40 km — not Manston 135/25, not Cherbourg 180/63, not Batumi 270/40). When
+mission type is intercept/GA/escort/recon, the tool MUST NOT return a
+Channel, Normandy, or Caucasus combat skeleton.
 
 #### Scenario: Syria free_flight schema uses Incirlik
 - **WHEN** a caller requests the free_flight Spec schema with theatre
   `Syria`
 - **THEN** the example MUST use `Incirlik`, `Su-25T`, and `Turkey`
 
-#### Scenario: Syria combat schema has no Manston skeleton
-- **WHEN** a caller requests a cap or intercept schema with theatre
-  `Syria`
+#### Scenario: Syria CAP schema uses Incirlik
+- **WHEN** a caller requests the CAP Spec schema with theatre `Syria`
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, and
+  CAP 180° / 40 km (not Batumi 270° / 40 km)
+
+#### Scenario: Syria intercept schema has no Manston skeleton
+- **WHEN** a caller requests an intercept schema with theatre `Syria`
 - **THEN** the result MUST NOT present a Manston, NeedsOarPoint, or Batumi
   example as the template to copy
 

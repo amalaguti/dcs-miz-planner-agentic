@@ -539,3 +539,14 @@ Packaged `channel_place` options SHALL include `kutaisi_inland_strike` with
 #### Scenario: kutaisi_inland_strike includes recon
 - **WHEN** catalog/registry loads `kutaisi_inland_strike`
 - **THEN** meta mission_types MUST include `recon` as well as `ground_attack`
+
+### Requirement: Syria channel_place rows
+Packaged `channel_place` options SHALL include `incirlik_home` and
+`incirlik_iskenderun_cap` with `meta.theatre: Syria`. The CAP place MUST
+publish station geometry 180° / 40 km / 4000 m (Incirlik south over the
+Gulf of Iskenderun). The family name MUST remain `channel_place`.
+
+#### Scenario: incirlik_iskenderun_cap tagged Syria
+- **WHEN** catalog/registry loads `channel_place` options
+- **THEN** `incirlik_iskenderun_cap` MUST include meta theatre `Syria` and
+  CAP bearing 180° / distance 40 km

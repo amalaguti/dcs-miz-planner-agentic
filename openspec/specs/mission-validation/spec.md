@@ -849,6 +849,16 @@ agrees. Channel/Normandy MUST still reject country `Syria` as unknown-country.
 - **WHEN** a TheChannel Mission Spec sets player country `Syria`
 - **THEN** validation MUST fail with an unknown-country error
 
+### Requirement: Syria CAP Specs validate
+Shared validation SHALL accept a well-formed Syria CAP Spec
+(theatre `Syria`, airfield `Incirlik`, nested cap) when inventory agrees.
+It MUST still reject Syria intercept invent.
+
+#### Scenario: Incirlik CAP validates
+- **WHEN** `examples/incirlik_iskenderun_cap.yaml` is validated against an
+  inventory that includes offerable Syria
+- **THEN** validation MUST succeed
+
 ### Requirement: Channel rejects Turkey
 Shared validation SHALL reject player country `Turkey` on a WWII theatre
 (TheChannel / Normandy) with an unknown-country error. A Syria Spec MAY
