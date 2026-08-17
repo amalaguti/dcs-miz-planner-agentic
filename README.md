@@ -23,17 +23,18 @@ at Needs Oar Point. **Caucasus** is planner-bound for cold freeflight at Batumi
 Georgia / 251.0 MHz) plus curated extra airfields and a Mozdok smoke
 (`examples/mozdok_cold_freeflight.yaml`; Russia red). Spitfire LF Mk IX is
 **dual-era** and may fly on Caucasus (`examples/batumi_spitfire_freeflight.yaml`).
-Caucasus invent is **free_flight, CAP, ground_attack, or intercept** at Batumi
+Caucasus invent is **free_flight, CAP, ground_attack, intercept, or escort** at Batumi
 (`examples/batumi_black_sea_cap.yaml`; CAP 270°/40 km west over the Black Sea;
 `examples/batumi_kutaisi_ground_attack.yaml`; GA 43°/110 km inland past Kutaisi;
-`examples/batumi_dawn_intercept.yaml`; intercept same 270°/40 km Black Sea station). **Syria** is planner-bound for cold freeflight at Incirlik
+`examples/batumi_dawn_intercept.yaml`; intercept same 270°/40 km Black Sea station;
+`examples/batumi_black_sea_escort.yaml`; escort same 270°/40 km, Georgia package). **Syria** is planner-bound for cold freeflight at Incirlik
 (`examples/incirlik_cold_freeflight.yaml`; Spec theatre id `Syria`; Su-25T /
 Turkey / 251.0 MHz). **Nevada** is planner-bound for cold freeflight at Nellis
 (`examples/nellis_cold_freeflight.yaml`; Spec theatre id `Nevada`; Su-25T /
 USA / 251.0 MHz). **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
-251.0 MHz). Caucasus invent is **free_flight, CAP, ground_attack, or intercept** at Batumi; Syria, Nevada, and Falklands invent are **free_flight
+251.0 MHz). Caucasus invent is **free_flight, CAP, ground_attack, intercept, or escort** at Batumi (recon still refuses); Syria, Nevada, and Falklands invent are **free_flight
 only** — other combat types refuse. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, **or** Caucasus
 Batumi/Black Sea. Land/sea domain
@@ -121,10 +122,10 @@ Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **Intentional limits:** Channel theatre is the complete combat surface today
 (Normandy invent is all six types at Needs Oar Point; Caucasus invent is
-free_flight, CAP, ground_attack, or intercept at Batumi; Syria invent is free_flight only at Incirlik;
+free_flight, CAP, ground_attack, intercept, or escort at Batumi; Syria invent is free_flight only at Incirlik;
 Nevada invent is free_flight only at Nellis; Falklands invent is free_flight
 only at Mount Pleasant;
-escort/recon still refuse on Caucasus; intercept/CAP/GA still refuse
+recon still refuses on Caucasus; intercept/CAP/GA still refuse
 on Syria/Nevada/Falklands).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for
@@ -187,6 +188,10 @@ uv run dcs-miz examples/batumi_black_sea_cap.yaml
 uv run dcs-miz validate examples/batumi_dawn_intercept.yaml
 uv run dcs-miz examples/batumi_dawn_intercept.yaml
 # -> out/batumi_dawn_intercept.miz
+
+uv run dcs-miz validate examples/batumi_black_sea_escort.yaml
+uv run dcs-miz examples/batumi_black_sea_escort.yaml
+# -> out/batumi_black_sea_escort.miz
 
 uv run dcs-miz validate examples/manston_cap.yaml
 uv run dcs-miz examples/manston_cap.yaml

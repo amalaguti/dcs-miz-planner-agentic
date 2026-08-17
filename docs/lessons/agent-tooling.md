@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus invent allows escort; recon still refuses (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Caucasus invent/chat may emit **free_flight, CAP, ground_attack,
+  intercept, or escort** at Batumi (Su-25T, Georgia blue). Escort package
+  destination is **270° / 40 km / 4000 m** west of Batumi over the Black Sea —
+  same station as `batumi_black_sea_cap` / intercept, not Manston 120/55, not
+  Cherbourg 180/63. Schema `theatre=Caucasus` + `escort` loads
+  `batumi_black_sea_escort.yaml` with dedicated `_CAUCASUS_ESCORT_NOTES` — do
+  not concatenate Channel `_TYPE_NOTES` (Manston 120/55). Package country
+  **Georgia** (PackageFlight defaults to UK). Bounce country **Russia**
+  (`EnemyFlight` defaults to ThirdReich). Recon still refuses every turn.
+  Compiler escort is already airfield-relative; do not copy intercept spawn
+  x/y into the Spec. Path clamp and soft immersion floor stay TheChannel-only.
+  Stub LLM stays Manston.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `agent/prompts.py`,
+  `planning_options.yaml` (`batumi_black_sea_cap`, `batumi_home`),
+  `examples/batumi_black_sea_escort.yaml`.
+
 ## Caucasus invent allows intercept; escort/recon still refuse (2026-08-16)
 
 - **Date:** 2026-08-16

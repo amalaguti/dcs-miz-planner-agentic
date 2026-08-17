@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-17 | [Caucasus invent allows escort; recon still refuses](lessons/agent-tooling.md#caucasus-invent-allows-escort-recon-still-refuses-2026-08-17) | `agent-tooling` |
+| 2026-08-17 | [Caucasus escort 270/40; Georgia package / Russia bounce](lessons/channel-ids.md#caucasus-escort-27040-georgia-package--russia-bounce-2026-08-17) | `channel-ids` |
 | 2026-08-16 | [Caucasus invent allows intercept; escort/recon still refuse](lessons/agent-tooling.md#caucasus-invent-allows-intercept-escortrecon-still-refuse-2026-08-16) | `agent-tooling` |
 | 2026-08-16 | [Caucasus intercept spawn: Batumi + Black Sea 270/40](lessons/channel-ids.md#caucasus-intercept-spawn-batumi--black-sea-27040-2026-08-16) | `channel-ids` |
 | 2026-08-16 | [Caucasus invent allows ground_attack; modern trucks](lessons/agent-tooling.md#caucasus-invent-allows-ground_attack-modern-trucks-2026-08-16) | `agent-tooling` |

@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus escort 270/40; Georgia package / Russia bounce (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Caucasus escort package destination is **270° / 40 km / 4000 m**
+  from Batumi (airdromeId 22) — same Black Sea station as CAP/intercept, not
+  Manston 120/55, not Cherbourg 180/63, not Kutaisi inland 43/110. Spec uses
+  bearing/distance only; compiler escort is already airfield-relative
+  (`airport.position.point_from_heading`). Do **not** copy intercept spawn
+  literals (`-355810.6875`, `577386.1875`) into the Spec, and do **not** edit
+  `intercept_spawn.py` for escort. Player, package, and bounce are **Su-25T**
+  at 251.0 MHz. Package country **Georgia** blue (`PackageFlight` defaults to
+  UK). Bounce country **Russia** red (`EnemyFlight` defaults to ThirdReich).
+  MosquitoFBMkVI / Bf-109K-4 / ThirdReich must not appear. Date 2024-06-06,
+  09:00 (`start_time` 32400), `sunny_clear` (not intercept dawn 06:00).
+  Recon still refuses.
+- **Code:** `examples/batumi_black_sea_escort.yaml`,
+  `planning_options.yaml` (`batumi_black_sea_cap` `mission_types` includes
+  `escort`; keep CAP example path).
+
 ## Caucasus intercept spawn: Batumi + Black Sea 270/40 (2026-08-16)
 
 - **Date:** 2026-08-16
