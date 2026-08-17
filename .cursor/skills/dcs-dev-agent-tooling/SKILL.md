@@ -29,15 +29,15 @@ description: >-
    YAML. Invent unit/preset cues ≠ geometry — use place recipes + invent path
    clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
    `french_coast_rail_corridor` path deltas only —
-   **no** DCS rail-mesh snap (`#8m`). Invent may use offerable theatres; Normandy is **all six types**
+   **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy is **all six types**
    (NeedsOarPoint; CAP/intercept/escort 180°/63 km Cherbourg
    corridor, not Hawkinge, not Manston escort 120/55; GA/recon AOI 180°/133 km
    inland of Maupertus). Caucasus is
    **all six types** (Batumi; CAP/intercept/escort
    270°/40 km west over the Black Sea; GA/recon AOI 43°/110 km inland past Kutaisi).
-   Syria is **free_flight, CAP, or intercept**
-   (Incirlik; CAP/intercept 180°/40 km south over the Gulf of Iskenderun — not Cherbourg
-   180/63, not Batumi 270/40, not Hawkinge; GA/escort/recon refused). Nevada is **free_flight only** (Nellis; CAP
+   Syria is **free_flight, CAP, intercept, or escort**
+   (Incirlik; CAP/intercept/escort 180°/40 km south over the Gulf of Iskenderun — not Cherbourg
+   180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA/recon refused). Nevada is **free_flight only** (Nellis; CAP
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).
    Refused types refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
@@ -56,7 +56,8 @@ description: >-
    (`_CAUCASUS_FF_NOTES` / `_CAUCASUS_CAP_NOTES` / `_CAUCASUS_GA_NOTES` /
    `_CAUCASUS_INTERCEPT_NOTES` / `_CAUCASUS_ESCORT_NOTES` /
    `_CAUCASUS_RECON_NOTES` /
-   `_SYRIA_FF_NOTES` / `_SYRIA_CAP_NOTES` / `_SYRIA_INTERCEPT_NOTES` / `_NEVADA_FF_NOTES` / `_FALKLANDS_FF_NOTES`).
+   `_SYRIA_FF_NOTES` / `_SYRIA_CAP_NOTES` / `_SYRIA_INTERCEPT_NOTES` /
+   `_SYRIA_ESCORT_NOTES` / `_NEVADA_FF_NOTES` / `_FALKLANDS_FF_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent is **TheChannel-only** (Manston

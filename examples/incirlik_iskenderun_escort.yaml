@@ -1,0 +1,42 @@
+schema_version: "1"
+mission_type: escort
+theatre: Syria
+name: Incirlik Iskenderun Escort
+description: >
+  Cold start at Incirlik. Escort a Su-25T package south across the Gulf of
+  Iskenderun (bearing 180°, 40 km — same station as the packaged CAP /
+  intercept place; not Manston escort 120/55, not Cherbourg 180/63, not
+  Batumi 270/40) at 4000 m, weapons free. Light Su-25T bounce near the
+  package destination.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Incirlik
+  coalition: blue
+  country: Turkey
+  skill: Player
+  start: cold_parking
+escort:
+  bearing_deg: 180
+  distance_km: 40
+  altitude_m: 4000
+  engagement: weapons_free
+package:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Turkey
+    coalition: blue
+enemies:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Syria
+    coalition: red
+objectives:
+  - type: escort_package

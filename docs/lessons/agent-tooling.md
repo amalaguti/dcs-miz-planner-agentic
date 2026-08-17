@@ -5,6 +5,24 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria invent allows escort; 180/40 Iskenderun (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria invent/chat may emit **free_flight, CAP, intercept, or escort**
+  at Incirlik (Su-25T, Turkey blue). Escort package destination is **180° / 40 km /
+  4000 m** due south of Incirlik — same station as `incirlik_iskenderun_cap` /
+  intercept, not Manston 120/55, not Cherbourg 180/63, not Batumi 270/40. Schema
+  `theatre=Syria` + `escort` loads `incirlik_iskenderun_escort.yaml` with dedicated
+  `_SYRIA_ESCORT_NOTES` — do not concatenate Channel `_TYPE_NOTES` (Manston 120/55)
+  or `_COMMON_NOTES`. Package country **Turkey** (PackageFlight defaults to UK).
+  Bounce country **Syria** red (`EnemyFlight` defaults to ThirdReich; theatre id
+  `Syria` ≠ country `Syria`). Do **not** edit `intercept_spawn.py` for escort
+  (compiler escort is already airfield-relative). GA/recon still refuse every
+  turn. Stub LLM stays Manston.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `agent/prompts.py`,
+  `planning_options.yaml` (`incirlik_home`, `incirlik_iskenderun_cap`),
+  `examples/incirlik_iskenderun_escort.yaml`.
+
 ## Domain-mismatch repair is theatre-keyed (2026-08-17)
 
 - **Date:** 2026-08-17

@@ -67,8 +67,9 @@ description: >-
     `BeirutRaficHariri` = 6 (`Beirut-Rafic Hariri`), `Aleppo` = 27,
     `BasselAlAssad` = 21 (`Bassel Al-Assad`), `Palmyra` = 28 (not Mozdok,
     not NeedsOarPoint), `KingHusseinAirCollege` = 19. Do not dump 59 fields.
-    Invent home: `Turkey` + `Su-25T` at **251.0 MHz** at Incirlik (FF, CAP, or intercept;
-    CAP/intercept 180° / 40 km south Iskenderun — not Cherbourg 180/63, not Batumi 270/40).
+    Invent home: `Turkey` + `Su-25T` at **251.0 MHz** at Incirlik (FF, CAP, intercept, or escort;
+    CAP/intercept/escort 180° / 40 km south Iskenderun — not Cherbourg 180/63, not Batumi 270/40,
+    not escort 120/55).
     Country **`Syria`** is modern-only (PyDCS red default — Palmyra smoke
     uses coalition red). Theatre id `Syria` ≠ country `Syria`. Channel+country-Syria
     is unknown. Add Syria-the-country only to `era/modern` — never `era/wwii`.

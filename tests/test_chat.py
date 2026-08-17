@@ -202,6 +202,7 @@ def test_host_spec_repair_nudge_syria_domain_uses_incirlik() -> None:
     assert '"airfield":"Batumi"' not in nudge
     assert '"airfield": "Manston"' not in nudge
     assert '"airfield":"Manston"' not in nudge
+    assert "escort" in nudge.lower()
 
 
 def test_host_spec_repair_nudge_nevada_domain_uses_nellis() -> None:

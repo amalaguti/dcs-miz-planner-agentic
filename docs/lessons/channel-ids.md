@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria escort 180/40; Turkey package / Syria bounce (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria escort package destination is **180° / 40 km / 4000 m** from
+  Incirlik (airdromeId 16) — same Gulf of Iskenderun station as CAP/intercept, not
+  Manston 120/55, not Cherbourg 180/63, not Batumi 270/40. Spec uses
+  bearing/distance only; compiler escort is already airfield-relative
+  (`airport.position.point_from_heading`). Do **not** copy intercept spawn
+  literals into the Spec, and do **not** edit `intercept_spawn.py` for escort.
+  Player, package, and bounce are **Su-25T** at 251.0 MHz. Package country
+  **Turkey** blue (`PackageFlight` defaults to UK). Bounce country **Syria** red
+  (`EnemyFlight` defaults to ThirdReich). Theatre id `Syria` ≠ country `Syria`.
+  MosquitoFBMkVI / Bf-109K-4 / ThirdReich must not appear. Date 2024-06-06,
+  09:00 (`start_time` 32400), `sunny_clear` (not intercept dawn 06:00). GA/recon
+  still refuse.
+- **Code:** `examples/incirlik_iskenderun_escort.yaml`,
+  `planning_options.yaml` (`incirlik_iskenderun_cap` `mission_types` includes
+  `escort`; keep CAP example path).
+
 ## Syria intercept spawn: Incirlik + Iskenderun 180/40 (2026-08-17)
 
 - **Date:** 2026-08-17
