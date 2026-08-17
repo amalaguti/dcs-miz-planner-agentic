@@ -47,7 +47,10 @@ description: >-
    domain/intercept errors (Falklands must repair to Mount Pleasant FF, not
    Nellis, Incirlik, Batumi, or NeedsOarPoint).
    Default Manston CAP 135/25 must
-   not repair a Normandy CAP. Caucasus/Syria/Nevada/Falklands `build_spec_schema` notes MUST NOT
+   not repair a Normandy CAP. Domain-mismatch repair
+   (`motion_domain_mismatch` / `strike_domain_mismatch`) MUST use inferred
+   theatre: Channel 125/76; Caucasus Kutaisi 43/110; Normandy Maupertus
+   180/133 — never inject french_coast onto Batumi recon. Caucasus/Syria/Nevada/Falklands `build_spec_schema` notes MUST NOT
    concatenate `_COMMON_NOTES` / `_TYPE_NOTES` (those cite Manston YAML,
    Spitfire failures, `channel_place`). Use a dedicated notes tuple
    (`_CAUCASUS_FF_NOTES` / `_CAUCASUS_CAP_NOTES` / `_CAUCASUS_GA_NOTES` /

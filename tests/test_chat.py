@@ -302,6 +302,43 @@ def test_host_spec_repair_nudge_path_example_on_path_mismatch() -> None:
     assert "distance_km: 76" in nudge
 
 
+def test_host_spec_repair_nudge_caucasus_mismatch_uses_kutaisi() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    payload = (
+        'Validation failed:\n[{"code": "strike_domain_mismatch", '
+        '"message": "recon AOI is sea but targets are land"}]'
+    )
+    nudge = host_spec_repair_nudge(
+        payload,
+        mission_type="recon",
+        rejected_text='{"mission_type": "recon", "theatre": "Caucasus", '
+        '"player": {"airfield": "Batumi"}}',
+    )
+    assert "kutaisi_inland_strike" in nudge or "43" in nudge
+    assert "110" in nudge
+    assert "french_coast_strike_belt" not in nudge
+    assert "bearing_deg: 125" not in nudge
+    assert "Manston" not in nudge or "not Manston" in nudge
+
+
+def test_host_spec_repair_nudge_normandy_mismatch_uses_maupertus() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    payload = (
+        'Validation failed:\n[{"code": "motion_domain_mismatch", "message": "land path over sea"}]'
+    )
+    nudge = host_spec_repair_nudge(
+        payload,
+        mission_type="ground_attack",
+        rejected_text='{"mission_type": "ground_attack", "theatre": "Normandy", '
+        '"player": {"airfield": "NeedsOarPoint"}}',
+    )
+    assert "maupertus_inland_strike" in nudge or "133" in nudge
+    assert "french_coast_strike_belt" not in nudge
+    assert "bearing_deg: 125" not in nudge
+
+
 def test_invalid_embedded_spec_injects_shape_nudge(tmp_path: Path) -> None:
     bad = """Here is the Spec:
 {

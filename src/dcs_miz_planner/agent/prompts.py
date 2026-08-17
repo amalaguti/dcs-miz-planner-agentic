@@ -370,27 +370,65 @@ def host_spec_repair_nudge(
             except (ValueError, FileNotFoundError, OSError):
                 fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
     elif "motion_domain_mismatch" in err_l or "strike_domain_mismatch" in err_l:
-        geometry_hint = (
-            "\n\nChannel geometry repair (domain mismatch):\n"
-            "- Land soft/AAA: use channel_place french_coast_strike_belt — "
-            "strike ~bearing 125° / distance 76 km from Manston (inland).\n"
-            "- Land path: prefer 2–3 points from path_point_deltas near strike, e.g.\n"
-            "  path: [{bearing_deg: 125, distance_km: 76}, "
-            "{bearing_deg: 128, distance_km: 77}, "
-            "{bearing_deg: 122, distance_km: 78}]\n"
-            "  Rewrite path only; keep strike inland — not mid-Channel water.\n"
-            "- Mid-Channel sea under way: mid_channel_shipping — ~140° / 40 km water; "
-            "patrol + ship_under_way.\n"
-            "- Harbour/dock sea: coastal_harbour — ~120° / 68 km coastal water; "
-            "list_strike_targets(domain=sea) only; static + harbour_static. "
-            "Never land trucks; never place harbour a few km from Manston.\n"
-            "- Distances ~65 km toward Dunkirk are still Channel water for land units.\n"
-        )
+        if theatre == "Caucasus":
+            geometry_hint = (
+                "\n\nCaucasus geometry repair (domain mismatch):\n"
+                "- Land strike/recon: use channel_place kutaisi_inland_strike — "
+                "bearing 43° / distance 110 km from Batumi (inland past Kutaisi, "
+                "not CAP/escort 270/40 sea, not Manston 125/76).\n"
+                "- Rewrite strike or recon AOI to 43/110; keep land trucks "
+                "(Ural-375; country Russia) on Colchis soil.\n"
+                "- Call list_strike_targets(theatre=Caucasus). Do not copy "
+                "Channel french-coast 125/76, Cherbourg 180/63, or Black Sea CAP "
+                "onto a land observe/strike.\n"
+            )
+        elif theatre == "Normandy":
+            geometry_hint = (
+                "\n\nNormandy geometry repair (domain mismatch):\n"
+                "- Land strike/recon: use channel_place maupertus_inland_strike — "
+                "bearing 180° / distance 133 km from NeedsOarPoint (inland of "
+                "Maupertus, not CAP 180/63 sea, not Manston 125/76).\n"
+                "- Rewrite strike or recon AOI to 180/133; keep land units on "
+                "Cotentin soil.\n"
+                "- Call list_strike_targets(theatre=Normandy). Do not copy "
+                "Channel french-coast 125/76 or Cherbourg-channel water onto a "
+                "land observe/strike.\n"
+            )
+        elif theatre in {"Syria", "Nevada", "Falklands"}:
+            geometry_hint = (
+                "\n\nTheatre repair (domain mismatch): land/sea domain is not "
+                f"classified on {theatre}. Do not copy Channel french-coast "
+                "125/76 onto this theatre. Emit an allowed type on this theatre "
+                "or switch theatre to TheChannel for Channel land/sea geometry.\n"
+            )
+        else:
+            geometry_hint = (
+                "\n\nChannel geometry repair (domain mismatch):\n"
+                "- Land soft/AAA: use channel_place french_coast_strike_belt — "
+                "strike ~bearing 125° / distance 76 km from Manston (inland).\n"
+                "- Land path: prefer 2–3 points from path_point_deltas near strike, e.g.\n"
+                "  path: [{bearing_deg: 125, distance_km: 76}, "
+                "{bearing_deg: 128, distance_km: 77}, "
+                "{bearing_deg: 122, distance_km: 78}]\n"
+                "  Rewrite path only; keep strike inland — not mid-Channel water.\n"
+                "- Mid-Channel sea under way: mid_channel_shipping — ~140° / 40 km water; "
+                "patrol + ship_under_way.\n"
+                "- Harbour/dock sea: coastal_harbour — ~120° / 68 km coastal water; "
+                "list_strike_targets(domain=sea) only; static + harbour_static. "
+                "Never land trucks; never place harbour a few km from Manston.\n"
+                "- Distances ~65 km toward Dunkirk are still Channel water for land units.\n"
+            )
     elif "harbour" in err_l or "harbor" in err_l:
-        geometry_hint = (
-            "\n\nHarbour invent: sea units only via list_strike_targets(domain=sea), "
-            "coastal_harbour ~120°/68 km, static + harbour_static.\n"
-        )
+        if theatre and theatre != "TheChannel":
+            geometry_hint = (
+                "\n\nHarbour invent is TheChannel-only. Do not copy "
+                "coastal_harbour 120/68 onto this theatre.\n"
+            )
+        else:
+            geometry_hint = (
+                "\n\nHarbour invent: sea units only via list_strike_targets(domain=sea), "
+                "coastal_harbour ~120°/68 km, static + harbour_static.\n"
+            )
     return (
         f"[Host] Your last Spec JSON failed to load:\n{parse_err}\n"
         f"{geometry_hint}\n"

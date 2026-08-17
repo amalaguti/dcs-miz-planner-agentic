@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Domain-mismatch repair is theatre-keyed (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Symptom:** Batumi recon with CAP 270/40 sea AOI and land trucks failed
+  `strike_domain_mismatch`, then `host_spec_repair_nudge` injected Channel
+  `french_coast_strike_belt` 125°/76 km.
+- **Cause:** The mismatch branch ignored inferred theatre.
+- **Fix:** Channel (or unspecified) stays 125/76. Caucasus → Kutaisi 43/110.
+  Normandy → Maupertus 180/133. Syria/Nevada/Falklands must not copy
+  french-coast geometry.
+- **Code:** `agent/prompts.py` `host_spec_repair_nudge`.
+
 ## Syria invent allows intercept; 180/40 Iskenderun spawn (2026-08-17)
 
 - **Date:** 2026-08-17
