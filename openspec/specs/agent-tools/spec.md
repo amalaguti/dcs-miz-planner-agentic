@@ -728,8 +728,10 @@ tool MAY return all `channel_place` rows (backward compatible).
 `Normandy`, the result MUST include packaged WWII **land** strike units (not
 an empty list). Sea-domain units MUST remain omitted for Normandy. For theatre
 `Caucasus`, the result MUST include packaged modern **land** trucks (e.g.
-`Ural-375`) and MUST NOT include WWII Channel trucks or sea_craft. For Syria,
-Nevada, and Falklands the result MUST remain empty.
+`Ural-375`) and MUST NOT include WWII Channel trucks or sea_craft. For theatre
+`Syria`, the result MUST include those same modern land trucks (query-time
+dual-offer; stored `theatre_id` MAY remain `Caucasus`). Nevada and Falklands
+lists MUST remain empty.
 
 #### Scenario: Normandy strike list includes land units
 - **WHEN** `list_strike_targets` is called with theatre `Normandy` after sync
@@ -740,6 +742,11 @@ Nevada, and Falklands the result MUST remain empty.
 - **WHEN** `list_strike_targets` is called with theatre `Caucasus` after sync
 - **THEN** the result MUST include `Ural-375` and MUST NOT include
   `Blitz_36-6700A` or sea_craft
+
+#### Scenario: Syria strike list includes modern trucks
+- **WHEN** a caller lists strike targets with theatre `Syria`
+- **THEN** the result MUST include `Ural-375` and MUST NOT include Channel
+  WWII `Blitz`
 
 ### Requirement: Spec schema tool accepts Normandy intercept
 `get_mission_spec_schema` SHALL accept theatre `Normandy` with mission type
@@ -871,8 +878,10 @@ mission type is `intercept`, the derived example MUST follow the Incirlik
 dawn intercept envelope. When mission type is `escort`, the derived example
 MUST follow the Incirlik Iskenderun escort envelope (180° / 40 km — not
 Manston 120/55, not Cherbourg 180/63, not Batumi 270/40). When mission type
-is GA/recon, the tool MUST NOT return a Channel, Normandy, or Caucasus
-combat skeleton.
+is `ground_attack`, the derived example MUST follow the Incirlik Aleppo
+inland envelope (121° / 200 km — not CAP 180/40, not Kutaisi 43/110, not
+Manston 125/76). When mission type is `recon`, the tool MUST NOT return a
+Channel, Normandy, or Caucasus combat skeleton.
 
 #### Scenario: Syria free_flight schema uses Incirlik
 - **WHEN** a caller requests the free_flight Spec schema with theatre
@@ -895,8 +904,14 @@ combat skeleton.
   package, Syria bounce, and escort geometry 180° / 40 km (not Manston 120° /
   55 km, not Cherbourg 180/63, not Batumi 270/40)
 
-#### Scenario: Syria ground_attack schema has no Manston skeleton
-- **WHEN** a caller requests a ground_attack schema with theatre `Syria`
+#### Scenario: Syria ground_attack schema uses Incirlik
+- **WHEN** a caller requests the ground_attack Spec schema with theatre `Syria`
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, payload
+  `su25t_2x_fab250`, Syria-country trucks, and strike geometry 121° / 200 km
+  (not CAP 180/40, not Kutaisi 43/110, not Manston 125/76)
+
+#### Scenario: Syria recon schema still has no Manston skeleton
+- **WHEN** a caller requests a recon schema with theatre `Syria`
 - **THEN** the result MUST NOT present a Manston, NeedsOarPoint, or Batumi
   example as the template to copy
 

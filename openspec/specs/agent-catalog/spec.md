@@ -245,6 +245,9 @@ SHALL keep stored combat `theatre_id` `TheChannel`. Sync MUST NOT stamp
 MUST still return WWII **land** units (query-time offer). Sea-domain rows
 MUST NOT be returned for Normandy. `list_strike_targets(theatre="Caucasus")`
 MUST return the modern trucks and MUST NOT return WWII Channel trucks.
+`list_strike_targets(theatre="Syria")` SHALL dual-offer those modern **land**
+rows (stored `theatre_id` remains `Caucasus`). Channel MUST NOT receive Ural
+ids. Nevada and Falklands MUST stay empty.
 
 #### Scenario: Strike unit era and Channel tag
 - **WHEN** catalog sync runs
@@ -261,6 +264,11 @@ MUST return the modern trucks and MUST NOT return WWII Channel trucks.
   `Caucasus`
 - **THEN** `Ural-375` MUST have `era_id` `modern` and `theatre_id` `Caucasus`
   and the listing MUST include it and MUST NOT include `Blitz_36-6700A`
+
+#### Scenario: Syria query dual-offers Caucasus modern land trucks
+- **WHEN** catalog lists strike units for theatre `Syria`
+- **THEN** `Ural-375`, `GAZ-66`, and `ZIL-135` MUST be offerable without
+  changing stored `theatre_id` away from `Caucasus`
 
 ### Requirement: Catalog lists Caucasus and Batumi
 After catalog sync from the packaged registry, known theatres MUST include

@@ -604,11 +604,12 @@ Validation SHALL NOT run TheChannel UK–FR airport-chord domain classification
 for a Spec whose theatre is not `TheChannel`. When Spec theatre is
 `Normandy`, validation MUST run the Normandy UK–Cotentin chord instead. When
 Spec theatre is `Caucasus`, validation MUST run the Caucasus west-of-coast
-recipe instead. When a Spec theatre is none of TheChannel, Normandy, or
-Caucasus and includes strike, recon, or target-path geometry that requires
-land/sea domain checks, validation MUST fail with a stable code
-`domain_unsupported_theatre` (or equivalent). Airfield-relative map points
-MUST resolve `airdromeId` with the Spec theatre.
+recipe instead. When Spec theatre is `Syria`, validation MUST run the Syria
+coastal/inland recipe instead. When a Spec theatre is none of TheChannel,
+Normandy, Caucasus, or Syria and includes strike, recon, or target-path
+geometry that requires land/sea domain checks, validation MUST fail with a
+stable code `domain_unsupported_theatre` (or equivalent). Airfield-relative
+map points MUST resolve `airdromeId` with the Spec theatre.
 
 #### Scenario: Normandy strike domain uses Normandy chord
 - **WHEN** a Mission Spec sets theatre `Normandy` and includes land/sea strike
@@ -621,6 +622,12 @@ MUST resolve `airdromeId` with the Spec theatre.
   geometry that requires domain classification
 - **THEN** validation MUST classify using Caucasus coastal/inland airport ids
   and MUST NOT classify points using Channel or Normandy airdrome ids
+
+#### Scenario: Syria strike domain uses Syria recipe
+- **WHEN** a Mission Spec sets theatre `Syria` and includes land/sea strike
+  geometry that requires domain classification
+- **THEN** validation MUST classify using Syria coastal/inland airport ids
+  and MUST NOT classify points using Channel, Normandy, or Caucasus airdrome ids
 
 #### Scenario: Channel strike domain still classified
 - **WHEN** a TheChannel ground-attack Spec is validated
@@ -772,7 +779,7 @@ Validation SHALL classify land vs sea for Spec theatre `Caucasus` using a
 west-of-coast seaward sector (curated Caucasus coastal vs inland airdrome
 ids), not the Channel UK–FR chord and not the Normandy UK–Cotentin chord. A
 well-formed Caucasus ground-attack Spec whose strike point is inland past
-Kutaisi MUST pass domain checks when targets are land units. Syria, Nevada,
+Kutaisi MUST pass domain checks when targets are land units. Nevada
 and Falklands MUST still fail with `domain_unsupported_theatre`.
 
 #### Scenario: Caucasus inland strike is land
@@ -786,7 +793,7 @@ and Falklands MUST still fail with `domain_unsupported_theatre`.
 - **THEN** the result MUST be `sea`
 
 #### Scenario: Syria strike still fails closed
-- **WHEN** a Syria Spec includes strike geometry that requires domain
+- **WHEN** a Nevada Spec includes strike geometry that requires domain
   classification
 - **THEN** validation MUST fail with `domain_unsupported_theatre`
 
@@ -852,7 +859,7 @@ agrees. Channel/Normandy MUST still reject country `Syria` as unknown-country.
 ### Requirement: Syria CAP Specs validate
 Shared validation SHALL accept a well-formed Syria CAP Spec
 (theatre `Syria`, airfield `Incirlik`, nested cap) when inventory agrees.
-It MUST still reject Syria ground_attack invent.
+It MUST still reject Syria recon invent.
 
 #### Scenario: Incirlik CAP validates
 - **WHEN** `examples/incirlik_iskenderun_cap.yaml` is validated against an
@@ -873,11 +880,38 @@ Syria intercept Specs MUST NOT fail solely with
 ### Requirement: Syria escort Specs validate
 Shared validation SHALL accept a well-formed Syria escort Spec
 (theatre `Syria`, airfield `Incirlik`, nested escort + package) when
-inventory agrees. It MUST still reject Syria ground_attack invent.
+inventory agrees. It MUST still reject Syria recon invent.
 
 #### Scenario: Incirlik escort validates
 - **WHEN** `examples/incirlik_iskenderun_escort.yaml` is validated against an
   inventory that includes offerable Syria
+- **THEN** validation MUST succeed
+
+### Requirement: Syria land/sea domain classification
+Shared validation SHALL classify strike and recon map points on theatre
+`Syria` as land or sea using curated coastal vs inland airport ids (Incirlik
+16, Bassel Al-Assad 21, Beirut-Rafic Hariri 6 coastal; Aleppo 27, Palmyra 28,
+Damascus 7, Ramat David 30, King Hussein 19 inland). Incirlik seaward heading
+MUST be 165–195°. It MUST NOT run Channel UK–FR, Normandy UK–Cotentin, or
+Caucasus west-of-coast chords on Syria x,y. Nevada MUST still fail closed.
+
+#### Scenario: Incirlik CAP station is sea
+- **WHEN** a Syria Spec strike or CAP-equivalent point is 180° / 40 km from
+  Incirlik
+- **THEN** domain classification MUST return sea
+
+#### Scenario: Aleppo inland strike is land
+- **WHEN** a Syria Spec strike point is 121° / 200 km from Incirlik
+- **THEN** domain classification MUST return land
+
+### Requirement: Syria ground_attack Specs validate
+Shared validation SHALL accept a well-formed Syria ground_attack Spec
+(theatre `Syria`, airfield `Incirlik`, nested strike + land targets) when
+inventory agrees. It MUST still reject Syria recon invent.
+
+#### Scenario: Incirlik Aleppo ground_attack validates
+- **WHEN** `examples/incirlik_aleppo_ground_attack.yaml` is validated against
+  an inventory that includes offerable Syria
 - **THEN** validation MUST succeed
 
 ### Requirement: Channel rejects Turkey
