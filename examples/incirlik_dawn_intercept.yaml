@@ -1,0 +1,30 @@
+schema_version: "1"
+mission_type: intercept
+theatre: Syria
+name: Incirlik Dawn Intercept
+description: >
+  Cold start at Incirlik at dawn. Intercept Su-25T bandits approaching the
+  Gulf of Iskenderun corridor (bearing 180°, 40 km — same station as the
+  packaged CAP place; not Hawkinge/Dover, not Cherbourg 180/63, not Batumi
+  270/40).
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "06:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Incirlik
+  coalition: blue
+  country: Turkey
+  skill: Player
+  start: cold_parking
+enemies:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Syria
+    coalition: red
+objectives:
+  - type: intercept_enemy

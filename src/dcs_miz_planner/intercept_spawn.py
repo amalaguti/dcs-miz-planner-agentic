@@ -11,6 +11,10 @@ same station as ``cherbourg_channel_cap``). Literals from PyDCS
 Caucasus: Batumi map position plus due-west 40 km (Black Sea corridor; same
 station as ``batumi_black_sea_cap``). Literals from PyDCS
 ``point_from_heading(270, 40000)`` — not invented lat/lon.
+
+Syria: Incirlik map position plus due-south 40 km (Gulf of Iskenderun corridor;
+same station as ``incirlik_iskenderun_cap``). Literals from PyDCS
+``point_from_heading(180, 40000)`` — not invented lat/lon.
 """
 
 from __future__ import annotations
@@ -20,6 +24,7 @@ from dataclasses import dataclass
 CHANNEL_THEATRE = "TheChannel"
 NORMANDY_THEATRE = "Normandy"
 CAUCASUS_THEATRE = "Caucasus"
+SYRIA_THEATRE = "Syria"
 
 # Source: PyDCS TheChannel airport Hawkinge (airdromeId 6) map position, offset
 # south-east toward the Strait as a Dover-approach corridor (Channel geography
@@ -40,6 +45,12 @@ _BATUMI_X = -355810.6875
 _BATUMI_Y = 617386.1875
 _BLACK_SEA_CORRIDOR_OFFSET_X = 0.0
 _BLACK_SEA_CORRIDOR_OFFSET_Y = -40000.0
+
+# Source: PyDCS Syria Incirlik (airdromeId 16) + heading 180° / 40 km.
+_INCIRLIK_X = 221207.773438
+_INCIRLIK_Y = -35240.347656
+_ISKENDERUN_CORRIDOR_OFFSET_X = -40000.0
+_ISKENDERUN_CORRIDOR_OFFSET_Y = 0.0
 
 
 class InterceptUnsupportedTheatre(ValueError):
@@ -102,6 +113,12 @@ INTERCEPT_SPAWN_RECIPES: dict[str, InterceptSpawnRecipe] = {
         anchor_y=_BATUMI_Y,
         offset_x=_BLACK_SEA_CORRIDOR_OFFSET_X,
         offset_y=_BLACK_SEA_CORRIDOR_OFFSET_Y,
+    ),
+    SYRIA_THEATRE: InterceptSpawnRecipe(
+        anchor_x=_INCIRLIK_X,
+        anchor_y=_INCIRLIK_Y,
+        offset_x=_ISKENDERUN_CORRIDOR_OFFSET_X,
+        offset_y=_ISKENDERUN_CORRIDOR_OFFSET_Y,
     ),
 }
 

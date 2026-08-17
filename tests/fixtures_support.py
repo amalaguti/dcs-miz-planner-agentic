@@ -595,6 +595,27 @@ def compile_incirlik_cap(output_path: Path) -> Path:
     )
 
 
+INCIRLIK_INTERCEPT_EXAMPLE_SPEC = REPO_ROOT / "examples" / "incirlik_dawn_intercept.yaml"
+INCIRLIK_INTERCEPT_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=16',
+    '["start_time"]=21600',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Syria",
+    "181207.773438",
+    "-35240.347656",
+)
+
+
+def compile_incirlik_intercept(output_path: Path) -> Path:
+    spec = load_mission_spec(INCIRLIK_INTERCEPT_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 NEVADA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "nellis_cold_freeflight.yaml"
 NEVADA_MISSION_CONTRACTS = (
     "Su-25T",

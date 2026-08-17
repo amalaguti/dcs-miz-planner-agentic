@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria intercept spawn: Incirlik + Iskenderun 180/40 (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria intercept enemies spawn at Incirlik (id 16)
+  `x=221207.773438`, `y=-35240.347656` plus PyDCS
+  `point_from_heading(180, 40000)` → `181207.773438`, `-35240.347656`.
+  Store those literals. Channel Hawkinge/Dover goldens stay
+  `30989.935547`, `-35402.577148`. Same 180/40 station as CAP; not
+  Cherbourg 180/63, not Batumi 270/40. Country **Syria** on enemies.
+  Dawn example uses 06:00 (`start_time` 21600).
+- **Code:** `intercept_spawn.py`, `examples/incirlik_dawn_intercept.yaml`.
+
 ## Syria CAP 180/40 Iskenderun; country Syria opposition (2026-08-17)
 
 - **Date:** 2026-08-17

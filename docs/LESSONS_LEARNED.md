@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-17 | [Syria invent allows intercept; 180/40 Iskenderun spawn](lessons/agent-tooling.md#syria-invent-allows-intercept-18040-iskenderun-spawn-2026-08-17) | `agent-tooling` |
+| 2026-08-17 | [Syria intercept spawn: Incirlik + Iskenderun 180/40](lessons/channel-ids.md#syria-intercept-spawn-incirlik--iskenderun-18040-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Syria invent allows CAP; 180/40 Iskenderun](lessons/agent-tooling.md#syria-invent-allows-cap-18040-iskenderun-2026-08-17) | `agent-tooling` |
 | 2026-08-17 | [Syria CAP 180/40 Iskenderun; country Syria opposition](lessons/channel-ids.md#syria-cap-18040-iskenderun-country-syria-opposition-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Syria eight airfields; country Syria modern; Palmyra 28](lessons/channel-ids.md#syria-eight-airfields-country-syria-modern-palmyra-28-2026-08-17) | `channel-ids` |

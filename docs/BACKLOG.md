@@ -409,8 +409,8 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** Syria intercept (same Iskenderun 180/40
-station) **or** Nevada Stage B. After `syria-places`.
+**Next promote / in proposal:** Syria ground_attack (needs a Syria domain
+classifier + inland station) **or** Nevada Stage B. After `syria-intercept`.
 Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
@@ -447,6 +447,7 @@ Stage C combat on a new map before Slice 0b is on master.
 | F3 | `syria-cold-freeflight` | Syria Stage A bind + smoke. After F2 pattern | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F3b | `syria-airfields` | Syria Stage B: eight curated AFs; country `Syria` in modern; Palmyra FF smoke (Syria red, id 28 ≠ Mozdok); invent still FF-only at Incirlik | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F3c | `syria-places` | Syria Stage C: Incirlik places + Iskenderun CAP (180°/40 km); invent FF+CAP; intercept/GA/escort/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
+| F3d | `syria-intercept` | Syria intercept: Incirlik dawn intercept on the Iskenderun corridor (180°/40 km); invent allow intercept; GA/escort/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 

@@ -5,6 +5,22 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria invent allows intercept; 180/40 Iskenderun spawn (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria invent/chat may emit **free_flight, CAP, or intercept** at
+  Incirlik (Su-25T, Turkey blue). Intercept spawn is **180° / 40 km** due
+  south of Incirlik — same station as `incirlik_iskenderun_cap`, not Hawkinge,
+  not Cherbourg 180/63, not Batumi 270/40. Store literals
+  (`221207.773438`, `-35240.347656` + offset `-40000, 0` → enemy
+  `181207.773438`, `-35240.347656`). Do not recompute Channel Hawkinge from
+  `airport_list()`. Schema `theatre=Syria` + `intercept` loads
+  `incirlik_dawn_intercept.yaml` with dedicated `_SYRIA_INTERCEPT_NOTES`.
+  Enemies: Su-25T, country **Syria** red. GA/escort/recon still refuse.
+  Domain classifier stays fail-closed on Syria.
+- **Code:** `intercept_spawn.py`, `agent/immersion.py`, `agent/spec_schema.py`,
+  `examples/incirlik_dawn_intercept.yaml`.
+
 ## Syria invent allows CAP; 180/40 Iskenderun (2026-08-17)
 
 - **Date:** 2026-08-17
