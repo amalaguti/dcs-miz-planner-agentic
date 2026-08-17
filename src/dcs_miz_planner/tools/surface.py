@@ -26,11 +26,19 @@ def _strike_theatre_match(row: dict[str, Any], theatre_f: str) -> bool:
 
     WWII rows stay tagged ``TheChannel`` and land units are also offered on
     Normandy; sea_craft stay Channel-only. Modern trucks are tagged
-    ``Caucasus`` and match that theatre by stored ``theatre_id``.
+    ``Caucasus`` and match that theatre by stored ``theatre_id``. Theatre
+    ``Syria`` dual-offers those modern **land** rows at query time without
+    retagging stored ``theatre_id``.
     """
     row_theatre = str(row["theatre_id"])
     if row_theatre == theatre_f:
         return True
+    if theatre_f == "Syria":
+        return (
+            row_theatre == "Caucasus"
+            and str(row.get("era_id") or "") == "modern"
+            and str(row.get("domain") or "").casefold() == "land"
+        )
     if theatre_f != "Normandy":
         return False
     if row_theatre != "TheChannel":

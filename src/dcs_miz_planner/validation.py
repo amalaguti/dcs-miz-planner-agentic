@@ -461,7 +461,7 @@ def _validate_strike_domain(
                 path="strike",
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
                 hint=(
-                    "Use theatre TheChannel, Normandy, or Caucasus for strike/recon/path geometry, or omit "
+                    "Use theatre TheChannel, Normandy, Caucasus, or Syria for strike/recon/path geometry, or omit "
                     "land/sea combat until that theatre has a domain recipe"
                 ),
             )
@@ -769,7 +769,7 @@ def _validate_target_motion(
                 path=area,
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
                 hint=(
-                    "Use theatre TheChannel, Normandy, or Caucasus for strike/recon/path geometry, or omit "
+                    "Use theatre TheChannel, Normandy, Caucasus, or Syria for strike/recon/path geometry, or omit "
                     "land/sea combat until that theatre has a domain recipe"
                 ),
             )
@@ -835,7 +835,7 @@ def _validate_target_motion(
                             f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"
                         ),
                         hint=(
-                            "Use theatre TheChannel, Normandy, or Caucasus for strike/recon/path geometry, or omit "
+                            "Use theatre TheChannel, Normandy, Caucasus, or Syria for strike/recon/path geometry, or omit "
                             "land/sea combat until that theatre has a domain recipe"
                         ),
                     )
@@ -942,7 +942,7 @@ def _validate_recon_domain(
                 path="recon",
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
                 hint=(
-                    "Use theatre TheChannel, Normandy, or Caucasus for strike/recon/path geometry, or omit "
+                    "Use theatre TheChannel, Normandy, Caucasus, or Syria for strike/recon/path geometry, or omit "
                     "land/sea combat until that theatre has a domain recipe"
                 ),
             )

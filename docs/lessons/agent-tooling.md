@@ -5,6 +5,24 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria invent allows ground_attack; Aleppo 121/200 (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria invent/chat may emit **free_flight, CAP, intercept, escort, or
+  ground_attack** at Incirlik (Su-25T, Turkey blue). GA strike is **121° / 200 km /
+  2000 m** inland past Aleppo — not CAP 180/40 (sea), not Kutaisi 43/110, not
+  Maupertus 180/133. Schema `theatre=Syria` + `ground_attack` loads
+  `incirlik_aleppo_ground_attack.yaml` with dedicated `_SYRIA_GA_NOTES` — do
+  **not** concatenate Channel `_TYPE_NOTES` / `_COMMON_NOTES`. Targets: modern
+  trucks from `list_strike_targets(theatre=Syria)` (`Ural-375`; country **Syria**
+  red). Dual-offer is query-time: stored `theatre_id` stays `Caucasus` /
+  `era_id=modern` / `domain=land`. Recon still refuses every turn. Path clamp
+  stays TheChannel-only. Stub LLM stays Manston.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py` (`_SYRIA_GA_NOTES`),
+  `agent/prompts.py`, `tools/surface.py` (`_strike_theatre_match`),
+  `planning_options.yaml` (`aleppo_inland_strike`, `incirlik_home`),
+  `examples/incirlik_aleppo_ground_attack.yaml`.
+
 ## Syria invent allows escort; 180/40 Iskenderun (2026-08-17)
 
 - **Date:** 2026-08-17
@@ -31,8 +49,8 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
   `french_coast_strike_belt` 125°/76 km.
 - **Cause:** The mismatch branch ignored inferred theatre.
 - **Fix:** Channel (or unspecified) stays 125/76. Caucasus → Kutaisi 43/110.
-  Normandy → Maupertus 180/133. Syria/Nevada/Falklands must not copy
-  french-coast geometry.
+  Normandy → Maupertus 180/133. Syria → Aleppo 121/200 (not CAP 180/40).
+  Nevada/Falklands must not copy french-coast geometry.
 - **Code:** `agent/prompts.py` `host_spec_repair_nudge`.
 
 ## Syria invent allows intercept; 180/40 Iskenderun spawn (2026-08-17)

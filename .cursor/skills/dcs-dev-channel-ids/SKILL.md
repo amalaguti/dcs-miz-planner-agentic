@@ -34,16 +34,21 @@ description: >-
    (PyDCS `Ford_AF`), `Maupertus` = 4, `SaintPierreduMont` = 1, `Carpiquet` = 19.
    Do not invent ids or dump all 38 fields.
 7. Domain land/sea is TheChannel UK–FR chord, Normandy UK–Cotentin chord
-   (NeedsOarPoint cluster vs Maupertus / SaintPierreduMont / Carpiquet), **or**
+   (NeedsOarPoint cluster vs Maupertus / SaintPierreduMont / Carpiquet),
    Caucasus west-of-coast seaward sector (coastal 22/24/18 vs inland
-   23/25/29/31/28; heading 270°±45° from nearest coastal → sea). Other
+   23/25/29/31/28; heading 270°±45° from nearest coastal → sea), **or**
+   Syria per-coastal seaward windows (coastal 16/21/6 vs inland 27/28/7/30/19;
+   Incirlik 165–195°; Bassel/Beirut 225–315° those two fields only — never
+   apply 270±45 to Incirlik). Other
    theatres fail `domain_unsupported_theatre`. `airfield_relative_map_point`
    MUST pass `theatre=spec.theatre`. Normandy inland strike from NeedsOarPoint
    is **180° / 133 km** (Maupertus is 180.22° / 125.29 km; 120 km is still sea).
    Caucasus inland strike from Batumi is **43° / 110 km** (Kutaisi is 43.14° /
-   97.20 km; 100 km is near-field; CAP 270/40 is sea). Do not copy Manston
-   125/76 or CAP 180/63 (sea) onto Cotentin land, and do not copy CAP 270/40
-   onto Caucasus GA.
+   97.20 km; 100 km is near-field; CAP 270/40 is sea). Syria inland strike from
+   Incirlik is **121° / 200 km** (Aleppo is 121.13° / 185.00 km; 121/185 is
+   near-field; CAP 180/40 is sea). Do not copy Manston
+   125/76 or CAP 180/63 (sea) onto Cotentin land, do not copy CAP 270/40
+   onto Caucasus GA, and do not copy CAP 180/40 onto Syria GA.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
    Germany is a hint, not a known id in **any** era.
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
@@ -67,11 +72,11 @@ description: >-
     `BeirutRaficHariri` = 6 (`Beirut-Rafic Hariri`), `Aleppo` = 27,
     `BasselAlAssad` = 21 (`Bassel Al-Assad`), `Palmyra` = 28 (not Mozdok,
     not NeedsOarPoint), `KingHusseinAirCollege` = 19. Do not dump 59 fields.
-    Invent home: `Turkey` + `Su-25T` at **251.0 MHz** at Incirlik (FF, CAP, intercept, or escort;
+    Invent home: `Turkey` + `Su-25T` at **251.0 MHz** at Incirlik (FF, CAP, intercept, escort, or GA;
     CAP/intercept/escort 180° / 40 km south Iskenderun — not Cherbourg 180/63, not Batumi 270/40,
-    not escort 120/55).
+    not escort 120/55; GA 121° / 200 km inland past Aleppo — not CAP 180/40).
     Country **`Syria`** is modern-only (PyDCS red default — Palmyra smoke
-    uses coalition red). Theatre id `Syria` ≠ country `Syria`. Channel+country-Syria
+    uses coalition red; GA trucks must set `targets[].country: Syria`). Theatre id `Syria` ≠ country `Syria`. Channel+country-Syria
     is unknown. Add Syria-the-country only to `era/modern` — never `era/wwii`.
     Spitfire is dual-era.
 11. **Nevada** Spec id is **`Nevada`** (era `modern`). Curated AF: `Nellis` = 4

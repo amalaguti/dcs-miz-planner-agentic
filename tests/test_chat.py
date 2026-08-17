@@ -323,6 +323,27 @@ def test_host_spec_repair_nudge_caucasus_mismatch_uses_kutaisi() -> None:
     assert "Manston" not in nudge or "not Manston" in nudge
 
 
+def test_host_spec_repair_nudge_syria_mismatch_uses_aleppo() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    payload = (
+        'Validation failed:\n[{"code": "strike_domain_mismatch", '
+        '"message": "strike is sea but targets are land"}]'
+    )
+    nudge = host_spec_repair_nudge(
+        payload,
+        mission_type="ground_attack",
+        rejected_text='{"mission_type": "ground_attack", "theatre": "Syria", '
+        '"player": {"airfield": "Incirlik"}}',
+    )
+    assert "121" in nudge
+    assert "200" in nudge
+    assert "Aleppo" in nudge or "aleppo_inland_strike" in nudge
+    assert "french_coast_strike_belt" not in nudge
+    assert "bearing_deg: 125" not in nudge
+    assert "kutaisi_inland_strike" not in nudge
+
+
 def test_host_spec_repair_nudge_normandy_mismatch_uses_maupertus() -> None:
     from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
 

@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-17 | [Syria invent allows ground_attack; Aleppo 121/200](lessons/agent-tooling.md#syria-invent-allows-ground_attack-aleppo-121200-2026-08-17) | `agent-tooling` |
+| 2026-08-17 | [Syria GA 121/200 Aleppo; Incirlik seaward 165–195](lessons/channel-ids.md#syria-ga-121200-aleppo-incirlik-seaward-165195-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Syria invent allows escort; 180/40 Iskenderun](lessons/agent-tooling.md#syria-invent-allows-escort-18040-iskenderun-2026-08-17) | `agent-tooling` |
 | 2026-08-17 | [Syria escort 180/40; Turkey package / Syria bounce](lessons/channel-ids.md#syria-escort-18040-turkey-package--syria-bounce-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Domain-mismatch repair is theatre-keyed](lessons/agent-tooling.md#domain-mismatch-repair-is-theatre-keyed-2026-08-17) | `agent-tooling` |

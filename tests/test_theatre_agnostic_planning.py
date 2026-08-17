@@ -65,6 +65,7 @@ SYRIA_FF = REPO / "examples" / "incirlik_cold_freeflight.yaml"
 SYRIA_CAP = REPO / "examples" / "incirlik_iskenderun_cap.yaml"
 SYRIA_INTERCEPT = REPO / "examples" / "incirlik_dawn_intercept.yaml"
 SYRIA_ESCORT = REPO / "examples" / "incirlik_iskenderun_escort.yaml"
+SYRIA_GA = REPO / "examples" / "incirlik_aleppo_ground_attack.yaml"
 NEVADA_FF = REPO / "examples" / "nellis_cold_freeflight.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
 
@@ -116,17 +117,32 @@ def test_airfield_relative_map_point_passes_theatre() -> None:
     assert isinstance(y, float)
 
 
-def test_domain_fail_closed_on_syria_strike() -> None:
+def test_domain_fail_closed_on_nevada_strike() -> None:
     spec = load_mission_spec(GA).model_copy(
-        update={"theatre": "Syria", "player": load_mission_spec(SYRIA_FF).player}
+        update={"theatre": "Nevada", "player": load_mission_spec(NEVADA_FF).player}
     )
     result = validate_mission_spec(spec, inventory=_inv())
     assert not result.ok
     assert any(e.code == "domain_unsupported_theatre" for e in result.errors)
     with pytest.raises(DomainUnsupportedTheatre):
-        require_channel_domain("Syria")
+        require_channel_domain("Nevada")
     with pytest.raises(DomainUnsupportedTheatre):
         strike_domain_for_spec(spec)
+
+
+def test_syria_strike_domain_classified() -> None:
+    spec = load_mission_spec(SYRIA_GA)
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert result.ok, result.errors
+    assert strike_domain_for_spec(spec) == "land"
+    ff = load_mission_spec(SYRIA_FF)
+    sea_x, sea_y = airfield_relative_map_point(ff, bearing_deg=180.0, distance_km=40.0)
+    land_x, land_y = airfield_relative_map_point(ff, bearing_deg=121.0, distance_km=200.0)
+    adana_x, adana_y = airfield_relative_map_point(ff, bearing_deg=270.0, distance_km=40.0)
+    assert classify_domain_for_theatre("Syria", sea_x, sea_y) == "sea"
+    assert classify_domain_for_theatre("Syria", land_x, land_y) == "land"
+    assert classify_domain_for_theatre("Syria", adana_x, adana_y) == "land"
+    require_channel_domain("Syria")
 
 
 def test_caucasus_strike_domain_classified() -> None:
@@ -361,6 +377,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "cap" in incirlik_home.meta.get("mission_types", [])
     assert "intercept" in incirlik_home.meta.get("mission_types", [])
     assert "escort" in incirlik_home.meta.get("mission_types", [])
+    assert "ground_attack" in incirlik_home.meta.get("mission_types", [])
     incirlik_cap = next(o for o in places if o.id == "incirlik_iskenderun_cap")
     assert incirlik_cap.meta.get("theatre") == "Syria"
     assert incirlik_cap.meta.get("cap_bearing_deg") == 180
@@ -369,6 +386,13 @@ def test_channel_place_tagged_thechannel() -> None:
     assert incirlik_cap.meta.get("cap_bearing_deg") != 270
     assert "intercept" in incirlik_cap.meta.get("mission_types", [])
     assert "escort" in incirlik_cap.meta.get("mission_types", [])
+    assert "ground_attack" not in incirlik_cap.meta.get("mission_types", [])
+    aleppo = next(o for o in places if o.id == "aleppo_inland_strike")
+    assert aleppo.meta.get("theatre") == "Syria"
+    assert aleppo.meta.get("domain") == "land"
+    assert aleppo.meta.get("strike_bearing_deg") == 121
+    assert aleppo.meta.get("strike_distance_km") == 200
+    assert "ground_attack" in aleppo.meta.get("mission_types", [])
     assert inland.meta.get("strike_bearing_deg") == 180
     assert inland.meta.get("strike_distance_km") == 133
     assert "recon" in inland.meta.get("mission_types", [])
@@ -381,7 +405,7 @@ def test_channel_place_tagged_thechannel() -> None:
             assert opt.meta.get("theatre") == "Normandy"
         elif opt.id in {"batumi_home", "batumi_black_sea_cap", "kutaisi_inland_strike"}:
             assert opt.meta.get("theatre") == "Caucasus"
-        elif opt.id in {"incirlik_home", "incirlik_iskenderun_cap"}:
+        elif opt.id in {"incirlik_home", "incirlik_iskenderun_cap", "aleppo_inland_strike"}:
             assert opt.meta.get("theatre") == "Syria"
         else:
             assert opt.meta.get("theatre") == "TheChannel"
@@ -501,7 +525,22 @@ def test_schema_theatre_falklands_free_flight() -> None:
 
 def test_schema_theatre_syria_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Syria"):
-        build_spec_schema("ground_attack", theatre="Syria")
+        build_spec_schema("recon", theatre="Syria")
+    ga = build_spec_schema("ground_attack", theatre="Syria")
+    assert ga.example["theatre"] == "Syria"
+    assert ga.example["player"]["airfield"] == "Incirlik"
+    assert ga.example["player"]["aircraft"] == "Su-25T"
+    assert ga.example["player"]["payload"] == "su25t_2x_fab250"
+    assert ga.example["strike"]["bearing_deg"] == 121
+    assert ga.example["strike"]["distance_km"] == 200
+    assert ga.example["targets"][0]["unit"] == "Ural-375"
+    assert ga.example["targets"][0]["country"] == "Syria"
+    ga_blob = " ".join(ga.notes)
+    assert "aleppo_inland_strike" in ga_blob or "Aleppo" in ga_blob
+    assert "incirlik_aleppo_ground_attack.yaml" in ga_blob
+    assert "french_coast" not in ga_blob
+    assert "manston_" not in ga_blob.lower()
+    assert "kutaisi_inland_strike" not in ga_blob
     cap = build_spec_schema("cap", theatre="Syria")
     assert cap.example["theatre"] == "Syria"
     assert cap.example["player"]["airfield"] == "Incirlik"
@@ -555,9 +594,15 @@ def test_schema_theatre_syria_combat_no_manston_skeleton() -> None:
     assert "incirlik_iskenderun_escort.yaml" in escort_notes
     assert "manston_" not in escort_notes.lower()
     ga_tool = get_mission_spec_schema("ground_attack", theatre="Syria")
-    assert ga_tool["ok"] is False
-    assert ga_tool["code"] == "combat_unsupported_theatre"
-    blob = json.dumps(ga_tool)
+    assert ga_tool["ok"] is True
+    assert ga_tool["example"]["player"]["airfield"] == "Incirlik"
+    assert ga_tool["example"]["strike"]["bearing_deg"] == 121
+    assert ga_tool["example"]["strike"]["distance_km"] == 200
+    assert ga_tool["example"]["targets"][0]["country"] == "Syria"
+    recon_tool = get_mission_spec_schema("recon", theatre="Syria")
+    assert recon_tool["ok"] is False
+    assert recon_tool["code"] == "combat_unsupported_theatre"
+    blob = json.dumps(recon_tool)
     assert "Manston" not in blob
     assert "NeedsOarPoint" not in blob
     assert "Batumi" not in blob
@@ -808,13 +853,15 @@ def test_syria_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(intercept) is None
     escort = load_mission_spec(SYRIA_ESCORT)
     assert host_normandy_combat_nudge(escort) is None
-    ga = load_mission_spec(CAUCASUS_GA).model_copy(
+    ga = load_mission_spec(SYRIA_GA)
+    assert host_normandy_combat_nudge(ga) is None
+    recon = load_mission_spec(CAUCASUS_RECON).model_copy(
         update={"theatre": "Syria", "player": load_mission_spec(SYRIA_FF).player}
     )
-    nudge = host_normandy_combat_nudge(ga)
+    nudge = host_normandy_combat_nudge(recon)
     assert nudge is not None
     assert "Incirlik" in nudge
-    assert "Iskenderun" in nudge or "180" in nudge
+    assert "recon" in nudge.lower()
     assert "CAP at NeedsOarPoint" not in nudge
     assert "free_flight at Batumi" not in nudge
     ff = load_mission_spec(SYRIA_FF)
@@ -1368,17 +1415,11 @@ def test_planner_syria_escort_is_written(tmp_path: Path) -> None:
     assert result.spec.escort.distance_km == 40
 
 
-def test_chat_syria_ga_not_captured(tmp_path: Path) -> None:
+def test_chat_syria_ga_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    ga_spec = load_mission_spec(CAUCASUS_GA)
-    syria_player = load_mission_spec(SYRIA_FF).player.model_copy(
-        update={"payload": ga_spec.player.payload}
-    )
-    ga_json = ga_spec.model_copy(
-        update={"theatre": "Syria", "player": syria_player}
-    ).model_dump_json()
+    ga_json = load_mission_spec(SYRIA_GA).model_dump_json()
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=ga_json)]),
         output_path=out,
@@ -1386,7 +1427,66 @@ def test_chat_syria_ga_not_captured(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    first = session.handle_line("Syria ground attack")
+    session.handle_line("Syria ground attack inland past Aleppo")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "ground_attack"
+    assert session.proposed_spec.player.airfield == "Incirlik"
+    assert session.proposed_spec.theatre == "Syria"
+    assert session.proposed_spec.strike is not None
+    assert session.proposed_spec.strike.bearing_deg == 121
+    assert session.proposed_spec.strike.distance_km == 200
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "ground_attack"
+    assert written.player.airfield == "Incirlik"
+    assert written.targets[0].unit == "Ural-375"
+    assert written.targets[0].country == "Syria"
+
+
+def test_planner_syria_ground_attack_is_written(tmp_path: Path) -> None:
+    ga_json = load_mission_spec(SYRIA_GA).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Syria ground attack inland past Aleppo",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=ga_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Syria"
+    assert result.spec.mission_type.value == "ground_attack"
+    assert result.spec.player.airfield == "Incirlik"
+    assert result.spec.strike is not None
+    assert result.spec.strike.bearing_deg == 121
+    assert result.spec.strike.distance_km == 200
+    assert result.spec.targets[0].unit == "Ural-375"
+    assert result.spec.targets[0].country == "Syria"
+
+
+def test_chat_syria_recon_not_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    recon_json = (
+        load_mission_spec(CAUCASUS_RECON)
+        .model_copy(update={"theatre": "Syria", "player": load_mission_spec(SYRIA_FF).player})
+        .model_dump_json()
+    )
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=recon_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    first = session.handle_line("Syria recon inland past Aleppo")
     assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
     assert "Incirlik" in first.output
     assert "NeedsOarPoint" not in first.output
@@ -1543,6 +1643,7 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     syria_ids = {o["id"] for o in syria["options"] if o["family"] == "channel_place"}
     assert "incirlik_home" in syria_ids
     assert "incirlik_iskenderun_cap" in syria_ids
+    assert "aleppo_inland_strike" in syria_ids
     assert "manston_home" not in syria_ids
     assert "cherbourg_channel_cap" not in syria_ids
     assert "batumi_home" not in syria_ids
@@ -1555,6 +1656,7 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "batumi_black_sea_cap" in all_ids
     assert "kutaisi_inland_strike" in all_ids
     assert "incirlik_iskenderun_cap" in all_ids
+    assert "aleppo_inland_strike" in all_ids
 
 
 def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:
@@ -1587,7 +1689,12 @@ def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:
     assert "Ural-375" not in channel_ids
     syria = list_strike_targets(theatre="Syria", db_path=db)
     assert syria["ok"] is True
-    assert syria["units"] == []
+    syria_ids = {u["unit_id"] for u in syria["units"]}
+    assert "Ural-375" in syria_ids
+    assert "GAZ-66" in syria_ids
+    assert "ZIL-135" in syria_ids
+    assert "Blitz_36-6700A" not in syria_ids
+    assert all(u["domain"] == "land" for u in syria["units"])
     nevada = list_strike_targets(theatre="Nevada", db_path=db)
     assert nevada["ok"] is True
     assert nevada["units"] == []

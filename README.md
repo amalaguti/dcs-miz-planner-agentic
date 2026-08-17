@@ -36,17 +36,20 @@ not Mozdok), and Incirlik CAP
 (`examples/incirlik_iskenderun_cap.yaml`; station 180°/40 km south over the
 Gulf of Iskenderun — not Cherbourg 180/63, not Batumi 270/40) and dawn intercept
 (`examples/incirlik_dawn_intercept.yaml`; same 180/40 spawn) and escort
-(`examples/incirlik_iskenderun_escort.yaml`; same 180/40, Turkey package). **Nevada** is planner-bound for cold freeflight at Nellis
+(`examples/incirlik_iskenderun_escort.yaml`; same 180/40, Turkey package) and Incirlik ground attack
+(`examples/incirlik_aleppo_ground_attack.yaml`; strike 121°/200 km inland past Aleppo —
+not CAP 180/40, not Kutaisi 43/110). **Nevada** is planner-bound for cold freeflight at Nellis
 (`examples/nellis_cold_freeflight.yaml`; Spec theatre id `Nevada`; Su-25T /
 USA / 251.0 MHz). **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
-251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **free_flight, CAP, intercept, or escort** at Incirlik; Nevada and Falklands invent are **free_flight
+251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **free_flight, CAP, intercept, escort, or ground_attack** at Incirlik; Nevada and Falklands invent are **free_flight
 only** — other combat types refuse. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, Caucasus
 Batumi/Black Sea, **or** Syria Incirlik/Iskenderun. Land/sea domain
-classifies TheChannel, Normandy (UK–Cotentin chord), and Caucasus (west-of-coast
-seaward sector); other maps fail closed.
+classifies TheChannel, Normandy (UK–Cotentin chord), Caucasus (west-of-coast
+seaward sector), and Syria (Incirlik seaward 165–195°; Bassel/Beirut 225–315° only);
+other maps fail closed.
 Channel path clamp stays TheChannel-only. Extra curated Normandy airfields
 (Chailey, Funtington, Tangmere, FordAF, Maupertus,
 SaintPierreduMont, Carpiquet) are packaged. Extra curated Caucasus airfields
@@ -129,10 +132,10 @@ Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **Intentional limits:** Channel theatre is the complete combat surface today
 (Normandy invent is all six types at Needs Oar Point; Caucasus invent is
-all six types at Batumi; Syria invent is free_flight, CAP, intercept, or escort at Incirlik;
+all six types at Batumi; Syria invent is free_flight, CAP, intercept, escort, or ground_attack at Incirlik;
 Nevada invent is free_flight only at Nellis; Falklands invent is free_flight
 only at Mount Pleasant;
-GA/recon still refuse on Syria;
+recon still refuses on Syria;
 intercept/CAP/GA still refuse
 on Nevada/Falklands).
 Multi-theatre catalog expand is queued as

@@ -2,8 +2,9 @@
 
 Uses PyDCS airport geometry — not DCS runtime land.getSurfaceType.
 Heuristic: near a curated airport ⇒ land; TheChannel/Normandy use a
-UK–opposite-coast chord ⇒ sea; Caucasus uses a west-of-coast seaward sector.
-Other theatres fail closed before a recipe runs.
+UK–opposite-coast chord ⇒ sea; Caucasus uses a west-of-coast seaward sector;
+Syria uses per-coastal seaward windows (Incirlik 165–195°, Bassel/Beirut
+225–315° only). Other theatres fail closed before a recipe runs.
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ Domain = Literal["land", "sea"]
 CHANNEL_THEATRE = "TheChannel"
 NORMANDY_THEATRE = "Normandy"
 CAUCASUS_THEATRE = "Caucasus"
+SYRIA_THEATRE = "Syria"
 
 # Channel WWII coastal clusters (PyDCS TheChannel airport ids).
 _UK_AIRPORT_IDS: frozenset[int] = frozenset({5, 6, 7, 8, 10, 12, 13, 14})
@@ -38,7 +40,22 @@ _CAUCASUS_INLAND_IDS: frozenset[int] = frozenset(
 _CAUCASUS_SEAWARD_MIN_DEG = 225.0  # 270° ± 45° from nearest coastal AF
 _CAUCASUS_SEAWARD_MAX_DEG = 315.0
 
-_DOMAIN_THEATRES: frozenset[str] = frozenset({CHANNEL_THEATRE, NORMANDY_THEATRE, CAUCASUS_THEATRE})
+# Syria coastal vs inland clusters (PyDCS Syria airport ids; not Caucasus/Channel).
+# Do not promote Adana Şakirpaşa id 2.
+_SYRIA_COASTAL_IDS: frozenset[int] = frozenset({16, 21, 6})  # Incirlik, Bassel, Beirut
+_SYRIA_INLAND_IDS: frozenset[int] = frozenset(
+    {27, 28, 7, 30, 19}
+)  # Aleppo, Palmyra, Damascus, Ramat David, King Hussein
+_SYRIA_INCIRLIK_ID = 16
+_SYRIA_INCIRLIK_SEAWARD_MIN_DEG = 165.0  # 180° ± 15° — not 270±45 (Adana land)
+_SYRIA_INCIRLIK_SEAWARD_MAX_DEG = 195.0
+_SYRIA_MED_COASTAL_IDS: frozenset[int] = frozenset({21, 6})  # Bassel / Beirut ONLY
+_SYRIA_MED_SEAWARD_MIN_DEG = 225.0
+_SYRIA_MED_SEAWARD_MAX_DEG = 315.0
+
+_DOMAIN_THEATRES: frozenset[str] = frozenset(
+    {CHANNEL_THEATRE, NORMANDY_THEATRE, CAUCASUS_THEATRE, SYRIA_THEATRE}
+)
 
 
 class DomainUnsupportedTheatre(ValueError):
@@ -136,13 +153,56 @@ def classify_caucasus_domain(x: float, y: float) -> Domain:
     return "land"
 
 
+def _syria_heading_is_seaward(airport_id: int, heading: float) -> bool:
+    """Incirlik 165–195°; Bassel/Beirut 225–315° only — never apply Med window to Incirlik."""
+    heading = heading % 360.0
+    if airport_id == _SYRIA_INCIRLIK_ID:
+        return _SYRIA_INCIRLIK_SEAWARD_MIN_DEG <= heading <= _SYRIA_INCIRLIK_SEAWARD_MAX_DEG
+    if airport_id in _SYRIA_MED_COASTAL_IDS:
+        return _SYRIA_MED_SEAWARD_MIN_DEG <= heading <= _SYRIA_MED_SEAWARD_MAX_DEG
+    return False
+
+
+def classify_syria_domain(x: float, y: float) -> Domain:
+    """Return ``land`` or ``sea`` for a Syria terrain map point (x, y).
+
+    Not an Incirlik–Aleppo chord (that heading is over Levant land) and not
+    Caucasus 270±45 on Incirlik (west is nearer Adana Şakirpaşa id 2, land).
+    Near a curated airfield ⇒ land. Else if the nearest curated field is
+    inland ⇒ land. Else if the nearest is coastal and the heading from that
+    field is seaward (Incirlik 165–195°; Bassel/Beirut 225–315° only) ⇒ sea.
+    Else land.
+    """
+    from dcs.mapping import Point
+
+    from .theatre_terrain import terrain_for_theatre
+
+    terrain = terrain_for_theatre(SYRIA_THEATRE)
+    point = Point(x, y, terrain)
+    curated_ids = _SYRIA_COASTAL_IDS | _SYRIA_INLAND_IDS
+    airports = [a for a in terrain.airport_list() if a.id in curated_ids]
+    if not airports:
+        return "land"
+    nearest = min(airports, key=lambda a: point.distance_to_point(a.position))
+    if point.distance_to_point(nearest.position) <= _NEAR_AIRPORT_M:
+        return "land"
+    if nearest.id in _SYRIA_INLAND_IDS:
+        return "land"
+    heading = float(nearest.position.heading_between_point(point)) % 360.0
+    if _syria_heading_is_seaward(nearest.id, heading):
+        return "sea"
+    return "land"
+
+
 def classify_domain_for_theatre(theatre: str, x: float, y: float) -> Domain:
-    """Classify land/sea for ``theatre``; fail closed unless Channel, Normandy, or Caucasus."""
+    """Classify land/sea for ``theatre``; fail closed unless Channel, Normandy, Caucasus, or Syria."""
     require_channel_domain(theatre)
     if theatre == NORMANDY_THEATRE:
         return classify_normandy_domain(x, y)
     if theatre == CAUCASUS_THEATRE:
         return classify_caucasus_domain(x, y)
+    if theatre == SYRIA_THEATRE:
+        return classify_syria_domain(x, y)
     return classify_channel_domain(x, y)
 
 

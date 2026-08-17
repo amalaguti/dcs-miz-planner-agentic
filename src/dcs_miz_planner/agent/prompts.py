@@ -26,15 +26,16 @@ Rules:
   CAP, intercept, and escort station 270°/40 km west over the Black Sea — not Manston 135/25, not
   Cherbourg 180/63, not Hawkinge, not escort 120/55; GA and recon AOI 43°/110 km inland past Kutaisi — not CAP 270/40).
   Syria invent is
-  free_flight, CAP, intercept, or escort (Incirlik, Su-25T, sunny_clear, Turkey blue;
+  free_flight, CAP, intercept, escort, or ground_attack (Incirlik, Su-25T, sunny_clear, Turkey blue;
   CAP, intercept, and escort station 180°/40 km south over the Gulf of Iskenderun — not
-  Cherbourg 180/63, not Batumi 270/40, not Hawkinge, not escort 120/55). Nevada invent is
+  Cherbourg 180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA strike 121°/200 km
+  inland past Aleppo — not CAP 180/40, not Kutaisi 43/110, not Maupertus 180/133). Nevada invent is
   free_flight only (Nellis, Su-25T, sunny_clear, USA blue). Falklands invent is
   free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  ground_attack/recon on Syria and
+  recon on Syria and
   intercept/cap/ground_attack/escort/recon on Nevada and
   Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
-  Batumi all six, Incirlik FF/CAP/intercept/escort, Nellis FF, or Mount Pleasant FF)
+  Batumi all six, Incirlik FF/CAP/intercept/escort/GA, Nellis FF, or Mount Pleasant FF)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -84,6 +85,12 @@ Rules:
   270° / 40 km is sea — do not put land trucks there. Do not copy french_coast 125/76,
   Manston escort 120/55, or Maupertus 180/133 onto Batumi. Call list_strike_targets(theatre=Caucasus) for
   modern trucks (Ural-375); country Russia red; payload su25t_2x_fab250 (GA only).
+- Syria geometry: copy aleppo_inland_strike meta strike_bearing_deg /
+  strike_distance_km (121° / 200 km inland past Aleppo) for GA.
+  CAP, intercept, and escort 180° / 40 km is sea — do not put land trucks there.
+  Do not copy french_coast 125/76, Kutaisi 43/110, Maupertus 180/133, or CAP 180/40
+  onto Incirlik GA. Call list_strike_targets(theatre=Syria) for modern trucks
+  (Ural-375); country Syria red; payload su25t_2x_fab250 (GA only).
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
   list_mission_options for families dynamics_mode, strike_target_class, and
@@ -140,7 +147,7 @@ Rules:
   match that example's structure (derived from packaged Specs — not invented shapes).
   Pass theatre=Normandy for NeedsOarPoint (all six types);
   theatre=Caucasus for Batumi (all six types); theatre=Syria for Incirlik
-  free_flight, CAP, intercept, or escort;
+  free_flight, CAP, intercept, escort, or ground_attack;
   theatre=Nevada for Nellis free_flight; theatre=Falklands for Mount Pleasant
   free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
   combat skeleton onto Falklands.
@@ -307,16 +314,18 @@ def host_spec_repair_nudge(
             schema_mt = "free_flight"
         elif theatre == "Syria":
             geometry_hint = (
-                "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
-                "For Syria CAP, intercept, or escort, use incirlik_iskenderun_cap 180° / 40 km "
+                "\n\nTheatre repair: for Syria CAP, intercept, or escort, use "
+                "incirlik_iskenderun_cap 180° / 40 km "
                 "(Gulf of Iskenderun south of Incirlik — not Cherbourg 180/63, not Batumi 270/40, "
                 "not Manston escort 120/55). "
-                "For GA/recon, emit free_flight, CAP, intercept, or escort at Incirlik "
+                "For land strike, use aleppo_inland_strike 121° / 200 km (inland past Aleppo — "
+                "not CAP 180/40, not Kutaisi 43/110, not french_coast 125/76). "
+                "Refuse recon — emit free_flight, CAP, intercept, escort, or ground_attack at Incirlik "
                 "(Su-25T, sunny_clear, Turkey blue) or switch theatre to TheChannel. "
                 "Do not copy french_coast / Hawkinge / NeedsOarPoint / Batumi geometry "
                 "onto Syria.\n"
             )
-            allowed = {"free_flight", "cap", "intercept", "escort"}
+            allowed = {"free_flight", "cap", "intercept", "escort", "ground_attack"}
             schema_mt = mt if mt in allowed else "free_flight"
         elif theatre == "Caucasus":
             geometry_hint = (
@@ -383,6 +392,18 @@ def host_spec_repair_nudge(
                 "Channel french-coast 125/76, Cherbourg 180/63, or Black Sea CAP "
                 "onto a land observe/strike.\n"
             )
+        elif theatre == "Syria":
+            geometry_hint = (
+                "\n\nSyria geometry repair (domain mismatch):\n"
+                "- Land strike: use channel_place aleppo_inland_strike — "
+                "bearing 121° / distance 200 km from Incirlik (inland past Aleppo, "
+                "not CAP/escort 180/40 sea, not french_coast 125/76, not Maupertus 180/133).\n"
+                "- Rewrite strike to 121/200; keep land trucks "
+                "(Ural-375; country Syria) on Levant soil.\n"
+                "- Call list_strike_targets(theatre=Syria). Do not copy "
+                "Channel french-coast 125/76, Iskenderun CAP 180/40, or Kutaisi 43/110 "
+                "onto a land strike.\n"
+            )
         elif theatre == "Normandy":
             geometry_hint = (
                 "\n\nNormandy geometry repair (domain mismatch):\n"
@@ -395,7 +416,7 @@ def host_spec_repair_nudge(
                 "Channel french-coast 125/76 or Cherbourg-channel water onto a "
                 "land observe/strike.\n"
             )
-        elif theatre in {"Syria", "Nevada", "Falklands"}:
+        elif theatre in {"Nevada", "Falklands"}:
             geometry_hint = (
                 "\n\nTheatre repair (domain mismatch): land/sea domain is not "
                 f"classified on {theatre}. Do not copy Channel french-coast "

@@ -706,9 +706,11 @@ options:
     id: modern_soft_vehicles
     label: Modern soft vehicles / trucks
     description: >
-      Caucasus land soft targets (Ural / GAZ / ZIL trucks) on Colchis inland —
-      not Black Sea water, not Channel WWII trucks. Country Russia red.
-      Su-25T FAB-250 payload. Example: batumi_kutaisi_ground_attack.
+      Modern land soft targets (Ural / GAZ / ZIL trucks) on Caucasus Colchis
+      inland or Syria Levant inland past Aleppo — not Black Sea / Iskenderun
+      water, not Channel WWII trucks. Country Russia red on Caucasus; country
+      Syria red on Syria. Su-25T FAB-250 payload. Examples:
+      batumi_kutaisi_ground_attack, incirlik_aleppo_ground_attack.
     support: supported
     meta:
       domain: land
@@ -717,7 +719,7 @@ options:
       mission_types: [ground_attack]
       preferred_motion: static
       preferred_ai_preset: convoy_transit
-      cues: [ural, gaz, zil, truck, convoy, kutaisi, colchis]
+      cues: [ural, gaz, zil, truck, convoy, kutaisi, colchis, aleppo, syria]
 
   - family: strike_target_class
     id: halftracks_apc
@@ -1215,15 +1217,15 @@ options:
     id: incirlik_home
     label: Incirlik (home field)
     description: >
-      Incirlik — default Syria Su-25T start for free_flight and Gulf of
-      Iskenderun CAP / intercept / escort. Do not copy Manston, Needs Oar Point,
-      or Batumi geometry onto Syria.
+      Incirlik — default Syria Su-25T start for free_flight, Gulf of
+      Iskenderun CAP / intercept / escort, and inland ground_attack past Aleppo.
+      Do not copy Manston, Needs Oar Point, or Batumi geometry onto Syria.
     support: advisory
     meta:
       theatre: Syria
       airfield: Incirlik
       role: home_base
-      mission_types: [free_flight, cap, intercept, escort]
+      mission_types: [free_flight, cap, intercept, escort, ground_attack]
 
   - family: channel_place
     id: incirlik_iskenderun_cap
@@ -1241,6 +1243,34 @@ options:
       cap_distance_km: 40
       cap_altitude_m: 4000
       example: examples/incirlik_iskenderun_cap.yaml
+
+  - family: channel_place
+    id: aleppo_inland_strike
+    label: Aleppo inland strike
+    description: >
+      Levant land inland of Aleppo for Syria GA — place modern soft trucks on
+      Syria-country soil, not on Incirlik field or Gulf of Iskenderun water.
+      Copy strike_bearing_deg / strike_distance_km. Do not copy CAP 180/40
+      (sea), Kutaisi 43/110, or Maupertus 180/133.
+    support: advisory
+    meta:
+      theatre: Syria
+      domain: land
+      geometry_hint: inland_of_aleppo
+      related_classes: [modern_soft_vehicles]
+      mission_types: [ground_attack]
+      cues: [aleppo, inland, convoy, trucks, ural, syria]
+      preferred_ai_preset_soft: convoy_transit
+      # PyDCS Incirlik (16) → Aleppo (27) ≈ 121.13° / 185.00 km;
+      # 121/185 is ~0.41 km from Aleppo (reject); 121/200 is ~15.01 km inland
+      # (land). See examples/incirlik_aleppo_ground_attack.yaml.
+      strike_bearing_deg: 121
+      strike_distance_km: 200
+      strike_altitude_m: 2000
+      example: examples/incirlik_aleppo_ground_attack.yaml
+      note: >
+        Land only. Stopping at ~185 km is near Aleppo field.
+        Do not copy CAP 180/40 onto Incirlik ground_attack.
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

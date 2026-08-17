@@ -159,9 +159,9 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "Optional theatre: TheChannel uses Manston examples; Normandy all six "
                 "types use NeedsOarPoint; Caucasus all six types "
                 "use Batumi; Syria "
-                "free_flight, CAP, intercept, or escort uses Incirlik; Nevada free_flight uses Nellis; Falklands "
+                "free_flight, CAP, intercept, escort, or ground_attack uses Incirlik; Nevada free_flight uses Nellis; Falklands "
                 "free_flight uses Mount Pleasant. "
-                "Syria GA/recon and Nevada/Falklands combat "
+                "Syria recon and Nevada/Falklands combat "
                 "(including CAP) are unsupported. Call before "
                 "emitting Spec JSON."
             ),

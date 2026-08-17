@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria GA 121/200 Aleppo; Incirlik seaward 165–195 (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Incirlik → Aleppo PyDCS heading is **121.13° / 185.00 km**. Integer
+  121° / 185 km is ~0.41 km from Aleppo (near-airport land — reject). Packaged
+  strike is **121° / 200 km / 2000 m** (~15.01 km past Aleppo, nearest Aleppo,
+  land). Do not copy CAP 180/40 (sea) onto trucks. Domain is per-coastal seaward
+  windows, not a chord and not Caucasus 270±45: Incirlik (id 16) seaward
+  **165–195°**; Bassel (21) / Beirut (6) **225–315° those two fields only**.
+  180/40 from Incirlik is sea; 270/40 from Incirlik is land (nearer Adana
+  Şakirpaşa id 2 — do not promote id 2). Player Turkey + Su-25T blue; targets
+  country **Syria** red (`GroundTarget` defaults to ThirdReich). Payload
+  `su25t_2x_fab250`. Do not dump 59 airfields.
+- **Code:** `channel_domain.py` (`classify_syria_domain`),
+  `examples/incirlik_aleppo_ground_attack.yaml`,
+  `planning_options.yaml` (`aleppo_inland_strike`).
+
 ## Syria escort 180/40; Turkey package / Syria bounce (2026-08-17)
 
 - **Date:** 2026-08-17
