@@ -880,8 +880,8 @@ MUST follow the Incirlik Iskenderun escort envelope (180° / 40 km — not
 Manston 120/55, not Cherbourg 180/63, not Batumi 270/40). When mission type
 is `ground_attack`, the derived example MUST follow the Incirlik Aleppo
 inland envelope (121° / 200 km — not CAP 180/40, not Kutaisi 43/110, not
-Manston 125/76). When mission type is `recon`, the tool MUST NOT return a
-Channel, Normandy, or Caucasus combat skeleton.
+Manston 125/76). When mission type is `recon`, the derived example MUST follow
+the same Incirlik Aleppo inland envelope (not Manston 125/76, not CAP 180/40).
 
 #### Scenario: Syria free_flight schema uses Incirlik
 - **WHEN** a caller requests the free_flight Spec schema with theatre
@@ -910,10 +910,11 @@ Channel, Normandy, or Caucasus combat skeleton.
   `su25t_2x_fab250`, Syria-country trucks, and strike geometry 121° / 200 km
   (not CAP 180/40, not Kutaisi 43/110, not Manston 125/76)
 
-#### Scenario: Syria recon schema still has no Manston skeleton
-- **WHEN** a caller requests a recon schema with theatre `Syria`
-- **THEN** the result MUST NOT present a Manston, NeedsOarPoint, or Batumi
-  example as the template to copy
+#### Scenario: Syria recon schema uses Incirlik
+- **WHEN** a caller requests the recon Spec schema with theatre `Syria`
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, Syria-country
+  trucks, and recon AOI 121° / 200 km (not CAP 180/40, not Kutaisi 43/110,
+  not Manston 125/76)
 
 ### Requirement: Spec schema tool accepts Nevada
 `get_mission_spec_schema` SHALL accept theatre `Nevada`. When mission type

@@ -859,7 +859,6 @@ agrees. Channel/Normandy MUST still reject country `Syria` as unknown-country.
 ### Requirement: Syria CAP Specs validate
 Shared validation SHALL accept a well-formed Syria CAP Spec
 (theatre `Syria`, airfield `Incirlik`, nested cap) when inventory agrees.
-It MUST still reject Syria recon invent.
 
 #### Scenario: Incirlik CAP validates
 - **WHEN** `examples/incirlik_iskenderun_cap.yaml` is validated against an
@@ -880,7 +879,7 @@ Syria intercept Specs MUST NOT fail solely with
 ### Requirement: Syria escort Specs validate
 Shared validation SHALL accept a well-formed Syria escort Spec
 (theatre `Syria`, airfield `Incirlik`, nested escort + package) when
-inventory agrees. It MUST still reject Syria recon invent.
+inventory agrees.
 
 #### Scenario: Incirlik escort validates
 - **WHEN** `examples/incirlik_iskenderun_escort.yaml` is validated against an
@@ -907,11 +906,21 @@ Caucasus west-of-coast chords on Syria x,y. Nevada MUST still fail closed.
 ### Requirement: Syria ground_attack Specs validate
 Shared validation SHALL accept a well-formed Syria ground_attack Spec
 (theatre `Syria`, airfield `Incirlik`, nested strike + land targets) when
-inventory agrees. It MUST still reject Syria recon invent.
+inventory agrees.
 
 #### Scenario: Incirlik Aleppo ground_attack validates
 - **WHEN** `examples/incirlik_aleppo_ground_attack.yaml` is validated against
   an inventory that includes offerable Syria
+- **THEN** validation MUST succeed
+
+### Requirement: Syria recon Specs validate
+Shared validation SHALL accept a well-formed Syria recon Spec
+(theatre `Syria`, airfield `Incirlik`, nested recon + land observe targets)
+when inventory agrees.
+
+#### Scenario: Incirlik Aleppo recon validates
+- **WHEN** `examples/incirlik_aleppo_recon.yaml` is validated against an
+  inventory that includes offerable Syria
 - **THEN** validation MUST succeed
 
 ### Requirement: Channel rejects Turkey
