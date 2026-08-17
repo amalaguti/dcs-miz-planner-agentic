@@ -817,8 +817,7 @@ Normandy combat skeleton.
 `ground_attack`. The derived example MUST follow the Batumi inland
 ground-attack envelope (not Manston, not Needs Oar Point) and notes MUST NOT
 concatenate Channel template bundles that cite french-coast belts or Manston
-YAML paths. When mission type is `recon` on
-Caucasus, the tool MUST NOT return a Channel combat skeleton.
+YAML paths.
 
 #### Scenario: Caucasus ground_attack schema uses Batumi
 - **WHEN** a caller requests the ground_attack Spec schema with theatre
@@ -831,9 +830,7 @@ Caucasus, the tool MUST NOT return a Channel combat skeleton.
 `get_mission_spec_schema` SHALL accept theatre `Caucasus` with mission type
 `intercept`. The derived example MUST follow the Batumi dawn-intercept
 envelope (not Manston, not Needs Oar Point, not Hawkinge) and notes MUST NOT
-concatenate Channel template bundles that cite Hawkinge. When mission type is
-`recon` on Caucasus, the tool MUST NOT return a Channel combat
-skeleton.
+concatenate Channel template bundles that cite Hawkinge.
 
 #### Scenario: Caucasus intercept schema uses Batumi
 - **WHEN** a caller requests the intercept Spec schema with theatre
@@ -845,18 +842,23 @@ skeleton.
 `get_mission_spec_schema` SHALL accept theatre `Caucasus` with mission type
 `escort`. The derived example MUST follow the Batumi Black Sea escort envelope
 (not Manston, not Needs Oar Point) and notes MUST NOT concatenate Channel
-template bundles that cite Manston 120/55. When mission type is `recon` on
-Caucasus, the tool MUST NOT return a Channel combat skeleton.
+template bundles that cite Manston 120/55.
 
 #### Scenario: Caucasus escort schema uses Batumi
 - **WHEN** a caller requests the escort Spec schema with theatre `Caucasus`
 - **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, Georgia
   package, and escort geometry 270° / 40 km (not Manston 120° / 55 km)
 
-#### Scenario: Caucasus recon schema still has no Manston skeleton
-- **WHEN** a caller requests a recon schema with theatre `Caucasus`
-- **THEN** the result MUST NOT present a Manston combat example as the
-  template to copy
+### Requirement: Spec schema tool accepts Caucasus recon
+`get_mission_spec_schema` SHALL accept theatre `Caucasus` with mission type
+`recon`. The derived example MUST follow the Batumi Kutaisi recon envelope
+(not Manston) and notes MUST NOT concatenate Channel template bundles that
+cite french-coast belts or Manston 125/76.
+
+#### Scenario: Caucasus recon schema uses Batumi
+- **WHEN** a caller requests the recon Spec schema with theatre `Caucasus`
+- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, and
+  recon AOI 43° / 110 km (not Manston 125° / 76 km, not CAP 270° / 40 km)
 
 ### Requirement: Spec schema tool accepts Syria
 `get_mission_spec_schema` SHALL accept theatre `Syria`. When mission type

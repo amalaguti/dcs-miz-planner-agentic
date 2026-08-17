@@ -409,8 +409,8 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** Caucasus recon **or** Caucasus
-Stage D unit expand **or** Syria Stage B. After `caucasus-escort`.
+**Next promote / in proposal:** Caucasus Stage D unit expand **or** Syria Stage B.
+After `caucasus-recon`. Caucasus Stage C (all six types) is done.
 Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
@@ -443,6 +443,7 @@ Stage C combat on a new map before Slice 0b is on master.
 | F2e | `caucasus-ground-attack` | Caucasus GA: Batumi inland strike past Kutaisi (43°/110 km); west-of-coast domain; modern Ural/GAZ/ZIL; Su-25T FAB-250; invent FF+CAP+GA | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F2f | `caucasus-intercept` | Caucasus intercept: Batumi dawn intercept on the Black Sea corridor (270°/40 km); invent allow intercept; escort/recon still refuse | `done` (CLI/API 2026-08-16; ME Instant Action do-soon) |
 | F2g | `caucasus-escort` | Caucasus escort: Batumi Su-25T package on the Black Sea corridor (270°/40 km); invent allow escort; recon still refuses | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
+| F2h | `caucasus-recon` | Caucasus recon: Batumi observe inland past Kutaisi (43°/110 km); invent allow all six types | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F3 | `syria-cold-freeflight` | Syria Stage A bind + smoke. After F2 pattern | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |

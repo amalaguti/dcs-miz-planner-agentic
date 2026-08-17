@@ -1128,14 +1128,14 @@ options:
     label: Batumi (home field)
     description: >
       Batumi — default Caucasus Su-25T start for free_flight, Black Sea CAP /
-      intercept / escort, and inland ground_attack past Kutaisi. Do not copy
+      intercept / escort, inland ground_attack past Kutaisi, and recon. Do not copy
       Manston or Needs Oar Point geometry onto Caucasus.
     support: advisory
     meta:
       theatre: Caucasus
       airfield: Batumi
       role: home_base
-      mission_types: [free_flight, cap, ground_attack, intercept, escort]
+      mission_types: [free_flight, cap, ground_attack, intercept, escort, recon]
 
   - family: channel_place
     id: batumi_black_sea_cap
@@ -1158,28 +1158,30 @@ options:
     id: kutaisi_inland_strike
     label: Kutaisi inland strike
     description: >
-      Colchis land inland of Kutaisi for Caucasus GA — place modern soft
-      trucks on Georgia soil, not on Batumi field or Black Sea water. Copy
-      strike_bearing_deg / strike_distance_km. Do not copy CAP 270/40 (sea),
-      Manston 125/76, or Cherbourg 180/63.
+      Colchis land inland of Kutaisi for Caucasus GA and recon —
+      place modern soft trucks on Georgia soil, not on Batumi field or Black Sea
+      water. Copy strike_bearing_deg / strike_distance_km (recon AOI uses the
+      same numbers). Do not copy CAP 270/40 (sea), Manston 125/76, or Cherbourg
+      180/63.
     support: advisory
     meta:
       theatre: Caucasus
       domain: land
       geometry_hint: inland_of_kutaisi
       related_classes: [modern_soft_vehicles]
-      mission_types: [ground_attack]
+      mission_types: [ground_attack, recon]
       cues: [kutaisi, colchis, inland, convoy, trucks, ural]
       preferred_ai_preset_soft: convoy_transit
       # PyDCS Batumi (22) → Kutaisi (25) ≈ 43.14° / 97.20 km;
-      # 43/110 is ~12.8 km inland (land). See examples/batumi_kutaisi_ground_attack.yaml.
+      # 43/110 is ~12.8 km inland (land). See examples/batumi_kutaisi_ground_attack.yaml
+      # and examples/batumi_kutaisi_recon.yaml.
       strike_bearing_deg: 43
       strike_distance_km: 110
       strike_altitude_m: 2000
       example: examples/batumi_kutaisi_ground_attack.yaml
       note: >
         Land only. Stopping at ~100 km is near Kutaisi field.
-        Do not copy CAP 270/40 onto Batumi ground_attack.
+        Do not copy CAP 270/40 onto Batumi ground_attack or recon.
 
   - family: channel_place
     id: maupertus_inland_strike

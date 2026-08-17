@@ -594,15 +594,13 @@ clamp SHALL apply `channel_place` recipes only when Spec theatre is
 - **THEN** the host MUST NOT rewrite those Channel deltas onto the Spec
 
 ### Requirement: Caucasus invent is free_flight or CAP
-Invent/chat SHALL allow `free_flight`, `cap`, `ground_attack`, `intercept`,
-and `escort` when the bound theatre is `Caucasus` (home `Batumi`, `Su-25T`,
-`sunny_clear`, Georgia blue; CAP/intercept/escort station from Caucasus
-`channel_place` meta — 270° / 40 km west over the Black Sea — not Manston
-135/25, not Cherbourg 180/63, not Hawkinge, not escort 120/55; GA strike
-43° / 110 km inland past Kutaisi). It SHALL refuse `recon` on Caucasus every
-turn (never capture or write a refused Spec). Repair for refused types MUST
-nudge toward Batumi free_flight, CAP, ground_attack, intercept, or escort, or
-switching theatre to TheChannel. Invent MUST NOT copy Channel or Normandy
+Invent/chat SHALL allow all six mission types when the bound theatre is
+`Caucasus` (home `Batumi`, `Su-25T`, `sunny_clear`, Georgia blue;
+CAP/intercept/escort station from Caucasus `channel_place` meta — 270° / 40 km
+west over the Black Sea — not Manston 135/25, not Cherbourg 180/63, not
+Hawkinge, not escort 120/55; GA/recon AOI 43° / 110 km inland past Kutaisi).
+Repair for unexpected types MUST nudge toward Batumi (all six) or switching
+theatre to TheChannel. Invent MUST NOT copy Channel or Normandy
 `channel_place` geometry onto Caucasus.
 
 #### Scenario: Caucasus free_flight invent allowed
@@ -632,11 +630,11 @@ switching theatre to TheChannel. Invent MUST NOT copy Channel or Normandy
 - **THEN** the planner MUST be allowed to emit `theatre: Caucasus` with
   `airfield: Batumi` (MUST NOT be required to emit TheChannel or Manston 120/55)
 
-#### Scenario: Caucasus recon invent still refused every turn
+#### Scenario: Caucasus recon invent allowed
 - **WHEN** invent is asked for recon on Caucasus
-- **THEN** it MUST NOT emit a combat Mission Spec and MUST surface a repair
-  toward Batumi free_flight, CAP, ground_attack, intercept, or escort (or
-  TheChannel combat)
+- **THEN** the planner MUST be allowed to emit `theatre: Caucasus` with
+  `airfield: Batumi` and AOI geometry from the Caucasus inland
+  place/schema (MUST NOT be required to emit TheChannel or Manston 125/76)
 
 ### Requirement: Infer Caucasus from curated airfield keys
 When rejected Spec JSON names a curated Caucasus airfield and omits a usable

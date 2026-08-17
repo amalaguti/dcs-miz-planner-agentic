@@ -5,6 +5,20 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus recon AOI 43/110; Ural-375 observe (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Caucasus recon AOI is **43° / 110 km / 2000 m** from Batumi
+  (airdromeId 22) — same Colchis land station as GA, not CAP/escort 270/40
+  (sea), not Manston 125/76, not Maupertus 180/133. Observe-only contacts are
+  modern trucks (`Ural-375`) with country **Russia** red. Player Su-25T,
+  Georgia blue, 251.0 MHz. Date 2024-06-06, 09:00 (`start_time` 32400),
+  `sunny_clear`. Weapons hold; no payload. Do not put recon on
+  `batumi_black_sea_cap`. Compiler recon is already airfield-relative.
+- **Code:** `examples/batumi_kutaisi_recon.yaml`,
+  `planning_options.yaml` (`kutaisi_inland_strike` `mission_types` includes
+  `recon`).
+
 ## Caucasus escort 270/40; Georgia package / Russia bounce (2026-08-17)
 
 - **Date:** 2026-08-17

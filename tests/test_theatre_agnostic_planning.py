@@ -60,6 +60,7 @@ CAUCASUS_CAP = REPO / "examples" / "batumi_black_sea_cap.yaml"
 CAUCASUS_GA = REPO / "examples" / "batumi_kutaisi_ground_attack.yaml"
 CAUCASUS_INTERCEPT = REPO / "examples" / "batumi_dawn_intercept.yaml"
 CAUCASUS_ESCORT = REPO / "examples" / "batumi_black_sea_escort.yaml"
+CAUCASUS_RECON = REPO / "examples" / "batumi_kutaisi_recon.yaml"
 SYRIA_FF = REPO / "examples" / "incirlik_cold_freeflight.yaml"
 NEVADA_FF = REPO / "examples" / "nellis_cold_freeflight.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
@@ -248,6 +249,21 @@ def test_recon_succeeds_on_normandy(tmp_path: Path) -> None:
         assert "Blitz_36-6700A" in mission
 
 
+def test_recon_succeeds_on_caucasus(tmp_path: Path) -> None:
+    spec = load_mission_spec(CAUCASUS_RECON)
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert result.ok, result.errors
+    out = tmp_path / "caucasus_recon.miz"
+    PyDCSCompiler(inventory=_inv()).compile(spec, out)
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8")
+        assert "Reconnaissance" in mission
+        assert "Ural-375" in mission
+        assert "Blitz_36-6700A" not in mission
+        assert "30989.935547" not in mission
+
+
 def test_channel_intercept_recipe_literals() -> None:
     recipe = intercept_spawn_for_theatre("TheChannel")
     assert recipe.hawkinge_x == 26989.935547
@@ -287,6 +303,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "ground_attack" in batumi_home.meta.get("mission_types", [])
     assert "intercept" in batumi_home.meta.get("mission_types", [])
     assert "escort" in batumi_home.meta.get("mission_types", [])
+    assert "recon" in batumi_home.meta.get("mission_types", [])
     batumi_cap = next(o for o in places if o.id == "batumi_black_sea_cap")
     assert batumi_cap.meta.get("theatre") == "Caucasus"
     assert batumi_cap.meta.get("cap_bearing_deg") == 270
@@ -299,6 +316,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert kutaisi.meta.get("strike_bearing_deg") == 43
     assert kutaisi.meta.get("strike_distance_km") == 110
     assert "escort" not in kutaisi.meta.get("mission_types", [])
+    assert "recon" in kutaisi.meta.get("mission_types", [])
     assert inland.meta.get("strike_bearing_deg") == 180
     assert inland.meta.get("strike_distance_km") == 133
     assert "recon" in inland.meta.get("mission_types", [])
@@ -473,8 +491,6 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
 
 
 def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
-    with pytest.raises(ValueError, match="not supported for theatre Caucasus"):
-        build_spec_schema("recon", theatre="Caucasus")
     ga = build_spec_schema("ground_attack", theatre="Caucasus")
     assert ga.example["theatre"] == "Caucasus"
     assert ga.example["player"]["airfield"] == "Batumi"
@@ -523,11 +539,20 @@ def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     assert "MosquitoFBMkVI" not in escort_blob
     assert "Bf-109K-4" not in escort_blob
     recon = get_mission_spec_schema("recon", theatre="Caucasus")
-    assert recon["ok"] is False
-    assert recon["code"] == "combat_unsupported_theatre"
-    blob = json.dumps(recon)
-    assert "Manston" not in blob
-    assert "NeedsOarPoint" not in blob
+    assert recon["ok"] is True
+    assert recon["example"]["theatre"] == "Caucasus"
+    assert recon["example"]["player"]["airfield"] == "Batumi"
+    assert recon["example"]["player"]["aircraft"] == "Su-25T"
+    assert recon["example"]["recon"]["bearing_deg"] == 43
+    assert recon["example"]["recon"]["distance_km"] == 110
+    assert recon["example"]["targets"][0]["unit"] == "Ural-375"
+    assert recon["example"]["targets"][0]["country"] == "Russia"
+    assert recon["example"]["player"]["airfield"] != "Manston"
+    assert recon["example"]["player"]["airfield"] != "NeedsOarPoint"
+    recon_notes = " ".join(build_spec_schema("recon", theatre="Caucasus").notes)
+    assert "kutaisi_inland_strike" in recon_notes or "Kutaisi" in recon_notes
+    assert "french_coast" not in recon_notes
+    assert "manston_" not in recon_notes.lower()
 
 
 def test_era_filter_channel_rejects_georgia_turkey_and_su25t() -> None:
@@ -658,17 +683,8 @@ def test_caucasus_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(intercept) is None
     escort = load_mission_spec(CAUCASUS_ESCORT)
     assert host_normandy_combat_nudge(escort) is None
-    recon = load_mission_spec(NORMANDY_RECON).model_copy(
-        update={
-            "theatre": "Caucasus",
-            "player": load_mission_spec(CAUCASUS_FF).player,
-        }
-    )
-    nudge = host_normandy_combat_nudge(recon)
-    assert nudge is not None
-    assert "Batumi" in nudge
-    assert "recon" in nudge.lower()
-    assert "CAP at NeedsOarPoint" not in nudge
+    recon = load_mission_spec(CAUCASUS_RECON)
+    assert host_normandy_combat_nudge(recon) is None
     ff = load_mission_spec(CAUCASUS_FF)
     assert host_normandy_combat_nudge(ff) is None
 
@@ -1032,20 +1048,11 @@ def test_planner_caucasus_escort_is_written(tmp_path: Path) -> None:
     assert result.spec.escort.distance_km == 40
 
 
-def test_chat_caucasus_recon_not_captured(tmp_path: Path) -> None:
+def test_chat_caucasus_recon_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    recon_json = (
-        load_mission_spec(NORMANDY_RECON)
-        .model_copy(
-            update={
-                "theatre": "Caucasus",
-                "player": load_mission_spec(CAUCASUS_FF).player,
-            }
-        )
-        .model_dump_json()
-    )
+    recon_json = load_mission_spec(CAUCASUS_RECON).model_dump_json()
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=recon_json)]),
         output_path=out,
@@ -1053,14 +1060,45 @@ def test_chat_caucasus_recon_not_captured(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    first = session.handle_line("Caucasus recon")
-    assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
-    assert "Batumi" in first.output
-    assert "NeedsOarPoint" not in first.output
-    assert session.proposed_spec is None
+    session.handle_line("Caucasus recon inland of Kutaisi")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "recon"
+    assert session.proposed_spec.player.airfield == "Batumi"
+    assert session.proposed_spec.theatre == "Caucasus"
     accepted = session.handle_line("/accept")
-    assert not out.exists()
-    assert "Wrote Spec" not in accepted.output
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "recon"
+    assert written.player.airfield == "Batumi"
+    assert written.recon is not None
+    assert written.recon.bearing_deg == 43
+    assert written.recon.distance_km == 110
+    assert written.targets[0].unit == "Ural-375"
+    assert written.targets[0].country == "Russia"
+
+
+def test_planner_caucasus_recon_is_written(tmp_path: Path) -> None:
+    recon_json = load_mission_spec(CAUCASUS_RECON).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Caucasus recon inland of Kutaisi",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=recon_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Caucasus"
+    assert result.spec.mission_type.value == "recon"
+    assert result.spec.player.airfield == "Batumi"
+    assert result.spec.recon is not None
+    assert result.spec.recon.bearing_deg == 43
+    assert result.spec.recon.distance_km == 110
 
 
 def test_chat_syria_cap_not_captured(tmp_path: Path) -> None:

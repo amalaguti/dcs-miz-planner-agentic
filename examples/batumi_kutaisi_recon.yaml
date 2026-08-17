@@ -1,0 +1,41 @@
+schema_version: "1"
+mission_type: recon
+theatre: Caucasus
+name: Batumi Kutaisi Recon
+description: >
+  Cold start at Batumi. Cross inland to an AOI past Kutaisi on Colchis
+  (bearing 43°, 110 km — same land station as the packaged GA place; not
+  Channel french-coast 125/76, not CAP 270/40 sea). Locate and observe soft
+  enemy truck contacts. Weapons hold — report the area and RTB. No bomb
+  loadout.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Batumi
+  coalition: blue
+  country: Georgia
+  skill: Player
+  start: cold_parking
+recon:
+  # Airfield-relative from Batumi onto Colchis land inland of Kutaisi.
+  # Same 43/110 inland-of-Kutaisi station as ground_attack. Do not copy
+  # Channel french-coast 125/76 or Batumi CAP 270/40 (sea).
+  bearing_deg: 43
+  distance_km: 110
+  altitude_m: 2000
+  radius_m: 3000
+  mark: true
+enemies: []
+targets:
+  - unit: Ural-375
+    count: 3
+    skill: Average
+    country: Russia
+    coalition: red
+objectives:
+  - type: recon_area

@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus invent allows recon; all six types (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Caucasus invent/chat may emit **all six types** at Batumi
+  (Su-25T, Georgia blue). Recon AOI is **43° / 110 km / 2000 m** inland past
+  Kutaisi — same land station as `kutaisi_inland_strike` / GA, not CAP 270/40
+  sea, not Manston 125/76. Schema `theatre=Caucasus` + `recon` loads
+  `batumi_kutaisi_recon.yaml` with dedicated `_CAUCASUS_RECON_NOTES` — do not
+  concatenate Channel `_TYPE_NOTES` (french_coast / U-boat / 125/76). Observe
+  modern trucks from `list_strike_targets(theatre=Caucasus)` (`Ural-375`;
+  country Russia). Weapons hold; omit payload. Path clamp and soft immersion
+  floor stay TheChannel-only. Stub LLM stays Manston. Fail-closed invent
+  coverage moves to Syria combat.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `agent/prompts.py`,
+  `planning_options.yaml` (`kutaisi_inland_strike`, `batumi_home`),
+  `examples/batumi_kutaisi_recon.yaml`.
+
 ## Caucasus invent allows escort; recon still refuses (2026-08-17)
 
 - **Date:** 2026-08-17

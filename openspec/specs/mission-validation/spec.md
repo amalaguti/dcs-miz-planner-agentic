@@ -639,8 +639,7 @@ Validation SHALL reject `mission_type: intercept` when Spec theatre is not
 Shared validation SHALL accept a well-formed Caucasus intercept Spec
 (theatre `Caucasus`, airfield `Batumi`, enemies present) when inventory
 agrees. It MUST NOT fail Caucasus intercept solely with
-`intercept_unsupported_theatre`. It MUST still reject Caucasus escort/recon
-invent.
+`intercept_unsupported_theatre`.
 
 #### Scenario: Batumi intercept validates
 - **WHEN** `examples/batumi_dawn_intercept.yaml` is validated against an
@@ -805,11 +804,21 @@ agrees. Well-formed Caucasus intercept Specs MUST NOT fail solely with
 ### Requirement: Caucasus escort Specs validate
 Shared validation SHALL accept a well-formed Caucasus escort Spec
 (theatre `Caucasus`, airfield `Batumi`, nested escort + package) when
-inventory agrees. It MUST still reject Caucasus recon invent.
+inventory agrees.
 
 #### Scenario: Batumi escort validates
 - **WHEN** `examples/batumi_black_sea_escort.yaml` is validated against an
   inventory that includes offerable Caucasus
+- **THEN** validation MUST succeed
+
+### Requirement: Caucasus recon Specs validate
+Shared validation SHALL accept a well-formed Caucasus recon Spec
+(theatre `Caucasus`, airfield `Batumi`, nested recon + land contacts)
+when inventory agrees.
+
+#### Scenario: Batumi recon validates
+- **WHEN** `examples/batumi_kutaisi_recon.yaml` is validated against
+  an inventory that includes offerable Caucasus
 - **THEN** validation MUST succeed
 
 ### Requirement: Caucasus Mozdok freeflight validates

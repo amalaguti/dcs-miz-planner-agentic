@@ -201,22 +201,14 @@ def harbour_prompt_cues(prompt: str) -> bool:
 _THEATRE_ALLOWED_TYPES: dict[str, frozenset[MissionType]] = {
     "TheChannel": frozenset(MissionType),
     "Normandy": frozenset(MissionType),
-    "Caucasus": frozenset(
-        {
-            MissionType.FREE_FLIGHT,
-            MissionType.CAP,
-            MissionType.GROUND_ATTACK,
-            MissionType.INTERCEPT,
-            MissionType.ESCORT,
-        }
-    ),
+    "Caucasus": frozenset(MissionType),
 }
 
 
 def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
     """Refuse mission types not allowed on this theatre. Every turn.
 
-    TheChannel: all six. Normandy: all six. Caucasus: free_flight, CAP, ground_attack, intercept, and escort.
+    TheChannel: all six. Normandy: all six. Caucasus: all six.
     Else (Syria / Nevada / Falklands / Stage A): free_flight only. Callers MUST treat a non-None result as a hard refuse:
     never capture a draft and never write YAML. A one-shot ``_used`` flag is not.
     """
@@ -236,11 +228,11 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
         )
     if spec.theatre == "Caucasus":
         return (
-            "[Host] Caucasus invent is free_flight, CAP, ground_attack, intercept, or escort at Batumi. "
-            "CAP, intercept, and escort station 270°/40 km west over the Black Sea (not Manston 135/25, "
-            "not Cherbourg 180/63, not Hawkinge, not escort 120/55). Ground attack 43°/110 km inland past Kutaisi "
-            "(not CAP 270/40). Refuse recon — "
-            "emit free_flight, CAP, ground_attack, intercept, or escort (Su-25T, Georgia blue, sunny_clear) "
+            "[Host] Caucasus invent is all six types at Batumi. "
+            "Emit free_flight, CAP (station 270°/40 km west over the Black Sea, not Manston 135/25), "
+            "ground_attack or recon (AOI 43°/110 km inland past Kutaisi, not Manston "
+            "125/76, not CAP 270/40), intercept or escort on the Black Sea corridor (not Hawkinge, "
+            "not Manston 120/55) "
             "or switch theatre to TheChannel. Do not copy channel_place or NeedsOarPoint "
             "geometry onto Caucasus. "
             "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
@@ -293,10 +285,10 @@ def theatre_mission_refuse_chat_line(spec: MissionSpec) -> str:
         )
     if spec.theatre == "Caucasus":
         return (
-            "[Host] Caucasus recon is not inventable — "
-            "commander nudged toward Batumi free_flight, CAP, ground_attack, intercept, or escort, "
-            "or TheChannel. Draft NOT captured. Emit free_flight, CAP, ground_attack, "
-            "intercept, or escort at Batumi or switch theatre to TheChannel, then /accept."
+            "[Host] Caucasus unexpected mission type is not inventable — "
+            "commander nudged toward Batumi (all six types) or TheChannel. "
+            "Draft NOT captured. Emit a Caucasus-supported type at Batumi "
+            "or switch theatre to TheChannel, then /accept."
         )
     if spec.theatre == "Syria":
         return (
@@ -336,8 +328,9 @@ def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
         )
     if spec.theatre == "Caucasus":
         return (
-            "Caucasus recon is not inventable. Draft NOT written. "
-            "Emit free_flight, CAP, ground_attack, intercept, or escort at Batumi or switch theatre to TheChannel."
+            "Caucasus unexpected mission type is not inventable. Draft NOT written. "
+            "Emit a Caucasus-supported type at Batumi "
+            "or switch theatre to TheChannel."
         )
     if spec.theatre == "Syria":
         return (
@@ -365,7 +358,7 @@ def theatre_mission_refuse_planner_error(spec: MissionSpec) -> str:
     if spec.theatre == "Normandy":
         return "Normandy invent is all six types at NeedsOarPoint"
     if spec.theatre == "Caucasus":
-        return "Caucasus invent is free_flight, CAP, ground_attack, intercept, or escort at Batumi; recon is refused"
+        return "Caucasus invent is all six types at Batumi"
     if spec.theatre == "Syria":
         return "Syria invent is free_flight only; intercept/cap/GA/escort/recon are refused"
     if spec.theatre == "Nevada":

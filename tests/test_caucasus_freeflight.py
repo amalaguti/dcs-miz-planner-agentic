@@ -1,4 +1,4 @@
-"""Caucasus Batumi smoke (free_flight, CAP, GA, intercept, escort)."""
+"""Caucasus Batumi smoke (free_flight, CAP, GA, intercept, escort, recon)."""
 
 from __future__ import annotations
 
@@ -14,6 +14,8 @@ from fixtures_support import (
     BATUMI_GA_MISSION_CONTRACTS,
     BATUMI_INTERCEPT_EXAMPLE_SPEC,
     BATUMI_INTERCEPT_MISSION_CONTRACTS,
+    BATUMI_RECON_EXAMPLE_SPEC,
+    BATUMI_RECON_MISSION_CONTRACTS,
     BATUMI_SPITFIRE_EXAMPLE_SPEC,
     BATUMI_SPITFIRE_MISSION_CONTRACTS,
     CAUCASUS_EXAMPLE_SPEC,
@@ -27,6 +29,7 @@ from fixtures_support import (
     compile_batumi_escort,
     compile_batumi_ground_attack,
     compile_batumi_intercept,
+    compile_batumi_recon,
     compile_batumi_spitfire,
     compile_mozdok,
 )
@@ -205,3 +208,28 @@ def test_compile_batumi_escort_contracts(tmp_path: Path) -> None:
         assert "Bf-109K-4" not in mission
         assert "30989.935547" not in mission
         assert "78296.390625" not in mission
+
+
+def test_validate_batumi_recon() -> None:
+    spec = load_mission_spec(BATUMI_RECON_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_batumi_recon_contracts(tmp_path: Path) -> None:
+    out = compile_batumi_recon(tmp_path / "batumi_recon.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Caucasus" in theatre
+        assert "Normandy" not in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in BATUMI_RECON_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+        assert '["type"]="Su-25T"' in mission
+        assert "Blitz_36-6700A" not in mission
+        assert "30989.935547" not in mission
+        assert "-35402.577148" not in mission

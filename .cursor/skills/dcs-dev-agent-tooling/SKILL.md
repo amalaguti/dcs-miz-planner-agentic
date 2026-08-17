@@ -29,13 +29,12 @@ description: >-
    YAML. Invent unit/preset cues ≠ geometry — use place recipes + invent path
    clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
    `french_coast_rail_corridor` path deltas only —
-   **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy is **all six types**
+   **no** DCS rail-mesh snap (`#8m`). Invent may use offerable theatres; Normandy is **all six types**
    (NeedsOarPoint; CAP/intercept/escort 180°/63 km Cherbourg
    corridor, not Hawkinge, not Manston escort 120/55; GA/recon AOI 180°/133 km
    inland of Maupertus). Caucasus is
-   **free_flight, CAP, ground_attack, intercept, or escort** (Batumi; CAP/intercept/escort
-   270°/40 km west over the Black Sea; GA 43°/110 km inland past Kutaisi;
-   recon refused).
+   **all six types** (Batumi; CAP/intercept/escort
+   270°/40 km west over the Black Sea; GA/recon AOI 43°/110 km inland past Kutaisi).
    Syria is **free_flight only**
    (Incirlik; CAP refused). Nevada is **free_flight only** (Nellis; CAP
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).
@@ -52,6 +51,7 @@ description: >-
    Spitfire failures, `channel_place`). Use a dedicated notes tuple
    (`_CAUCASUS_FF_NOTES` / `_CAUCASUS_CAP_NOTES` / `_CAUCASUS_GA_NOTES` /
    `_CAUCASUS_INTERCEPT_NOTES` / `_CAUCASUS_ESCORT_NOTES` /
+   `_CAUCASUS_RECON_NOTES` /
    `_SYRIA_FF_NOTES` / `_NEVADA_FF_NOTES` / `_FALKLANDS_FF_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.

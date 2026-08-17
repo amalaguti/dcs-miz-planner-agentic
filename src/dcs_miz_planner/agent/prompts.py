@@ -22,17 +22,16 @@ Rules:
   and escort station 180°/63 km toward Cherbourg — not Manston 135/25, not Hawkinge,
   not escort 120/55; GA and recon AOI 180°/133 km inland of Maupertus — not Manston
   125/76). Caucasus invent is
-  free_flight, CAP, ground_attack, intercept, or escort (Batumi, Su-25T, sunny_clear, Georgia blue;
+  all six types (Batumi, Su-25T, sunny_clear, Georgia blue;
   CAP, intercept, and escort station 270°/40 km west over the Black Sea — not Manston 135/25, not
-  Cherbourg 180/63, not Hawkinge, not escort 120/55; GA strike 43°/110 km inland past Kutaisi — not CAP 270/40).
+  Cherbourg 180/63, not Hawkinge, not escort 120/55; GA and recon AOI 43°/110 km inland past Kutaisi — not CAP 270/40).
   Syria invent is
   free_flight only (Incirlik, Su-25T, sunny_clear, Turkey blue). Nevada invent is
   free_flight only (Nellis, Su-25T, sunny_clear, USA blue). Falklands invent is
   free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  recon on Caucasus and refuse
   intercept/cap/ground_attack/escort/recon on Syria, Nevada, and
   Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
-  Batumi FF/CAP/GA/intercept/escort, Incirlik FF, Nellis FF, or Mount Pleasant FF)
+  Batumi all six, Incirlik FF, Nellis FF, or Mount Pleasant FF)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -77,10 +76,11 @@ Rules:
   NeedsOarPoint. Call list_strike_targets(theatre=Normandy) for land units;
   sea_craft stay Channel-only.
 - Caucasus geometry: copy kutaisi_inland_strike meta strike_bearing_deg /
-  strike_distance_km (43° / 110 km inland past Kutaisi). CAP, intercept, and escort
+  strike_distance_km (43° / 110 km inland past Kutaisi) for GA and recon AOI.
+  CAP, intercept, and escort
   270° / 40 km is sea — do not put land trucks there. Do not copy french_coast 125/76,
   Manston escort 120/55, or Maupertus 180/133 onto Batumi. Call list_strike_targets(theatre=Caucasus) for
-  modern trucks (Ural-375); country Russia red; payload su25t_2x_fab250.
+  modern trucks (Ural-375); country Russia red; payload su25t_2x_fab250 (GA only).
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
   list_mission_options for families dynamics_mode, strike_target_class, and
@@ -136,7 +136,7 @@ Rules:
 - Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
   match that example's structure (derived from packaged Specs — not invented shapes).
   Pass theatre=Normandy for NeedsOarPoint (all six types);
-  theatre=Caucasus for Batumi free_flight, CAP, ground_attack, intercept, or escort; theatre=Syria for Incirlik free_flight;
+  theatre=Caucasus for Batumi (all six types); theatre=Syria for Incirlik free_flight;
   theatre=Nevada for Nellis free_flight; theatre=Falklands for Mount Pleasant
   free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
   combat skeleton onto Falklands.
@@ -314,13 +314,20 @@ def host_spec_repair_nudge(
             geometry_hint = (
                 "\n\nTheatre repair: for Caucasus intercept, CAP, or escort, use "
                 "batumi_black_sea_cap 270° / 40 km (Black Sea, not Hawkinge/Dover, "
-                "not Cherbourg 180/63, not Manston 120/55). For land strike, use "
+                "not Cherbourg 180/63, not Manston 120/55). For land strike or recon, use "
                 "kutaisi_inland_strike 43° / 110 km (inland past Kutaisi). "
                 "Call list_strike_targets(theatre=Caucasus) for modern trucks "
                 "(Ural-375; country Russia). "
                 "Do not copy french_coast / Hawkinge / NeedsOarPoint geometry onto Caucasus.\n"
             )
-            allowed = {"free_flight", "cap", "ground_attack", "intercept", "escort"}
+            allowed = {
+                "free_flight",
+                "cap",
+                "ground_attack",
+                "intercept",
+                "escort",
+                "recon",
+            }
             schema_mt = mt if mt in allowed else "free_flight"
         elif theatre == "Normandy":
             geometry_hint = (

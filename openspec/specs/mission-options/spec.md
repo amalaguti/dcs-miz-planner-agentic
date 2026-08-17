@@ -504,7 +504,8 @@ Packaged `channel_place` options SHALL include `batumi_home`,
 `meta.theatre: Caucasus`. The CAP/intercept/escort place MUST publish station
 geometry 270° / 40 km / 4000 m (Batumi west over the Black Sea) and MUST list
 mission types including `cap`, `intercept`, and `escort`. The GA place MUST
-publish strike geometry 43° / 110 km / 2000 m (inland past Kutaisi). The family name
+publish strike/AOI geometry 43° / 110 km / 2000 m (inland past Kutaisi) and
+MUST list mission types including `ground_attack` and `recon`. The family name
 MUST remain `channel_place` (not renamed to `theatre_place`). Channel rows
 MUST keep `meta.theatre: TheChannel`.
 Normandy rows MUST keep `meta.theatre: Normandy`.
@@ -525,11 +526,16 @@ Normandy rows MUST keep `meta.theatre: Normandy`.
 
 ### Requirement: kutaisi_inland_strike place
 Packaged `channel_place` options SHALL include `kutaisi_inland_strike` with
-`meta.theatre: Caucasus`, domain `land`, and strike geometry 43° / 110 km /
-2000 m (Batumi inland past Kutaisi). The family name MUST remain
+`meta.theatre: Caucasus`, domain `land`, strike/AOI geometry 43° / 110 km /
+2000 m (Batumi inland past Kutaisi), and mission types including
+`ground_attack` and `recon`. The family name MUST remain
 `channel_place`. Channel rows MUST keep `meta.theatre: TheChannel`.
 
 #### Scenario: kutaisi_inland_strike tagged Caucasus
 - **WHEN** catalog/registry loads `channel_place` options
 - **THEN** `kutaisi_inland_strike` MUST include meta theatre `Caucasus`,
   domain land, and strike bearing 43° / distance 110 km
+
+#### Scenario: kutaisi_inland_strike includes recon
+- **WHEN** catalog/registry loads `kutaisi_inland_strike`
+- **THEN** meta mission_types MUST include `recon` as well as `ground_attack`

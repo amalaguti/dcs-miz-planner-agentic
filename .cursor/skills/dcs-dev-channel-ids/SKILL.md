@@ -50,11 +50,11 @@ description: >-
    `Batumi` = 22, `Kobuleti` = 24, `SenakiKolkhi` = 23 (PyDCS `Senaki-Kolkhi`),
    `Kutaisi` = 25, `TbilisiLochini` = 29 (`Tbilisi-Lochini`), `Vaziani` = 31,
    `SochiAdler` = 18 (`Sochi-Adler`), `Mozdok` = 28 (not NeedsOarPoint).
-   Invent home: `Georgia` + `Su-25T` at **251.0 MHz** at Batumi. Invent is
-   **free_flight, CAP, ground_attack, intercept, or escort** (CAP/intercept/escort 270° / 40 km
+   Invent home: `Georgia` + `Su-25T` at **251.0 MHz** at Batumi.    Invent is
+   **all six types** (CAP/intercept/escort 270° / 40 km
    west over the Black Sea — not Manston 135/25, not Cherbourg 180/63, not
-   Hawkinge, not escort 120/55; GA 43° / 110 km inland past Kutaisi — not CAP 270/40). Recon
-   still refuses.
+   Hawkinge, not escort 120/55; GA/recon AOI 43° / 110 km inland past Kutaisi —
+   not CAP 270/40).
    Modern trucks: `Ural-375`, `GAZ-66`, `ZIL-135` (not Channel `soft_vehicles`).
    Payload `su25t_2x_fab250` (FAB-250 on pylons 5 and 7). `Russia` is
    modern-only (PyDCS red default — do not place Russia on blue). Channel+Russia
