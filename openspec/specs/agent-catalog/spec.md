@@ -272,6 +272,15 @@ include `Russia`.
 - **THEN** the catalog MUST contain airfield `Mozdok` with `airdromeId` 28
   and theatre `Caucasus`, and country `Russia`
 
+### Requirement: Caucasus CAP places sync into catalog
+After `dcs-miz catalog sync`, `channel_place` rows `batumi_home` and
+`batumi_black_sea_cap` SHALL be queryable with theatre `Caucasus`.
+
+#### Scenario: Batumi CAP place listed
+- **WHEN** catalog planning options are queried after sync
+- **THEN** `batumi_black_sea_cap` MUST appear with theatre Caucasus and CAP
+  meta 270° / 40 km
+
 ### Requirement: Catalog lists Syria and Incirlik
 After catalog sync from the packaged registry, known theatres MUST include
 `Syria` and known airfields MUST include `Incirlik` with `airdromeId` 16
