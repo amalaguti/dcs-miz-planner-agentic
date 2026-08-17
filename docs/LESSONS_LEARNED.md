@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-17 | [Syria invent allows recon; all six types](lessons/agent-tooling.md#syria-invent-allows-recon-all-six-types-2026-08-17) | `agent-tooling` |
+| 2026-08-17 | [Syria recon AOI 121/200; Ural-375 observe](lessons/channel-ids.md#syria-recon-aoi-121200-ural-375-observe-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Syria invent allows ground_attack; Aleppo 121/200](lessons/agent-tooling.md#syria-invent-allows-ground_attack-aleppo-121200-2026-08-17) | `agent-tooling` |
 | 2026-08-17 | [Syria GA 121/200 Aleppo; Incirlik seaward 165–195](lessons/channel-ids.md#syria-ga-121200-aleppo-incirlik-seaward-165195-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Syria invent allows escort; 180/40 Iskenderun](lessons/agent-tooling.md#syria-invent-allows-escort-18040-iskenderun-2026-08-17) | `agent-tooling` |

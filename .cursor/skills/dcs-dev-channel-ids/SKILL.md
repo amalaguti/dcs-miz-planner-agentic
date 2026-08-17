@@ -44,11 +44,11 @@ description: >-
    MUST pass `theatre=spec.theatre`. Normandy inland strike from NeedsOarPoint
    is **180° / 133 km** (Maupertus is 180.22° / 125.29 km; 120 km is still sea).
    Caucasus inland strike from Batumi is **43° / 110 km** (Kutaisi is 43.14° /
-   97.20 km; 100 km is near-field; CAP 270/40 is sea). Syria inland strike from
+   97.20 km; 100 km is near-field; CAP 270/40 is sea). Syria inland strike/recon from
    Incirlik is **121° / 200 km** (Aleppo is 121.13° / 185.00 km; 121/185 is
    near-field; CAP 180/40 is sea). Do not copy Manston
    125/76 or CAP 180/63 (sea) onto Cotentin land, do not copy CAP 270/40
-   onto Caucasus GA, and do not copy CAP 180/40 onto Syria GA.
+   onto Caucasus GA, and do not copy CAP 180/40 onto Syria GA or recon.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
    Germany is a hint, not a known id in **any** era.
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
@@ -72,9 +72,9 @@ description: >-
     `BeirutRaficHariri` = 6 (`Beirut-Rafic Hariri`), `Aleppo` = 27,
     `BasselAlAssad` = 21 (`Bassel Al-Assad`), `Palmyra` = 28 (not Mozdok,
     not NeedsOarPoint), `KingHusseinAirCollege` = 19. Do not dump 59 fields.
-    Invent home: `Turkey` + `Su-25T` at **251.0 MHz** at Incirlik (FF, CAP, intercept, escort, or GA;
+    Invent home: `Turkey` + `Su-25T` at **251.0 MHz** at Incirlik (all six types;
     CAP/intercept/escort 180° / 40 km south Iskenderun — not Cherbourg 180/63, not Batumi 270/40,
-    not escort 120/55; GA 121° / 200 km inland past Aleppo — not CAP 180/40).
+    not escort 120/55; GA/recon AOI 121° / 200 km inland past Aleppo — not CAP 180/40).
     Country **`Syria`** is modern-only (PyDCS red default — Palmyra smoke
     uses coalition red; GA trucks must set `targets[].country: Syria`). Theatre id `Syria` ≠ country `Syria`. Channel+country-Syria
     is unknown. Add Syria-the-country only to `era/modern` — never `era/wwii`.

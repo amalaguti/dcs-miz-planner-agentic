@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria invent allows recon; all six types (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria invent/chat may emit **all six types** at Incirlik
+  (Su-25T, Turkey blue). Recon AOI is **121° / 200 km / 2000 m** inland past
+  Aleppo — same land station as `aleppo_inland_strike` / GA, not CAP 180/40
+  sea, not Kutaisi 43/110, not Manston 125/76. Schema `theatre=Syria` + `recon`
+  loads `incirlik_aleppo_recon.yaml` with dedicated `_SYRIA_RECON_NOTES` — do
+  **not** concatenate Channel `_TYPE_NOTES` (french_coast / U-boat / 125/76).
+  Observe modern trucks from `list_strike_targets(theatre=Syria)` (`Ural-375`;
+  country **Syria** red). Weapons hold; omit payload. Path clamp and soft
+  immersion floor stay TheChannel-only. Stub LLM stays Manston. Fail-closed
+  invent coverage moves to Nevada/Falklands combat.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py` (`_SYRIA_RECON_NOTES`),
+  `agent/prompts.py`, `planning_options.yaml` (`aleppo_inland_strike`,
+  `incirlik_home`), `examples/incirlik_aleppo_recon.yaml`.
+
 ## Syria invent allows ground_attack; Aleppo 121/200 (2026-08-17)
 
 - **Date:** 2026-08-17

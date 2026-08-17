@@ -38,10 +38,10 @@ description: >-
    inland of Maupertus). Caucasus is
    **all six types** (Batumi; CAP/intercept/escort
    270°/40 km west over the Black Sea; GA/recon AOI 43°/110 km inland past Kutaisi).
-   Syria is **free_flight, CAP, intercept, escort, or ground_attack**
+   Syria is **all six types**
    (Incirlik; CAP/intercept/escort 180°/40 km south over the Gulf of Iskenderun — not Cherbourg
-   180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA 121°/200 km inland past Aleppo —
-   not CAP 180/40; recon refused). Nevada is **free_flight only** (Nellis; CAP
+   180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA/recon AOI 121°/200 km inland past Aleppo —
+   not CAP 180/40). Nevada is **free_flight only** (Nellis; CAP
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).
    Refused types refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
@@ -55,7 +55,8 @@ description: >-
    (`motion_domain_mismatch` / `strike_domain_mismatch`) MUST use inferred
    theatre: Channel 125/76; Caucasus Kutaisi 43/110; Normandy Maupertus
    180/133; Syria Aleppo 121/200 — never inject french_coast onto Batumi recon
-   or Incirlik GA, and never copy CAP 180/40 onto Syria land strike.
+   or Incirlik GA/recon, and never copy CAP 180/40 onto Syria land strike or
+   recon AOI.
    Caucasus/Syria/Nevada/Falklands `build_spec_schema` notes MUST NOT
    concatenate `_COMMON_NOTES` / `_TYPE_NOTES` (those cite Manston YAML,
    Spitfire failures, `channel_place`). Use a dedicated notes tuple
@@ -63,7 +64,8 @@ description: >-
    `_CAUCASUS_INTERCEPT_NOTES` / `_CAUCASUS_ESCORT_NOTES` /
    `_CAUCASUS_RECON_NOTES` /
    `_SYRIA_FF_NOTES` / `_SYRIA_CAP_NOTES` / `_SYRIA_INTERCEPT_NOTES` /
-   `_SYRIA_ESCORT_NOTES` / `_SYRIA_GA_NOTES` / `_NEVADA_FF_NOTES` / `_FALKLANDS_FF_NOTES`).
+   `_SYRIA_ESCORT_NOTES` / `_SYRIA_GA_NOTES` / `_SYRIA_RECON_NOTES` /
+   `_NEVADA_FF_NOTES` / `_FALKLANDS_FF_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent is **TheChannel-only** (Manston

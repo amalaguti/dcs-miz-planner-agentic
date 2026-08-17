@@ -26,16 +26,15 @@ Rules:
   CAP, intercept, and escort station 270°/40 km west over the Black Sea — not Manston 135/25, not
   Cherbourg 180/63, not Hawkinge, not escort 120/55; GA and recon AOI 43°/110 km inland past Kutaisi — not CAP 270/40).
   Syria invent is
-  free_flight, CAP, intercept, escort, or ground_attack (Incirlik, Su-25T, sunny_clear, Turkey blue;
+  all six types (Incirlik, Su-25T, sunny_clear, Turkey blue;
   CAP, intercept, and escort station 180°/40 km south over the Gulf of Iskenderun — not
-  Cherbourg 180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA strike 121°/200 km
+  Cherbourg 180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA and recon AOI 121°/200 km
   inland past Aleppo — not CAP 180/40, not Kutaisi 43/110, not Maupertus 180/133). Nevada invent is
   free_flight only (Nellis, Su-25T, sunny_clear, USA blue). Falklands invent is
   free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  recon on Syria and
   intercept/cap/ground_attack/escort/recon on Nevada and
   Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
-  Batumi all six, Incirlik FF/CAP/intercept/escort/GA, Nellis FF, or Mount Pleasant FF)
+  Batumi all six, Incirlik all six, Nellis FF, or Mount Pleasant FF)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -86,10 +85,10 @@ Rules:
   Manston escort 120/55, or Maupertus 180/133 onto Batumi. Call list_strike_targets(theatre=Caucasus) for
   modern trucks (Ural-375); country Russia red; payload su25t_2x_fab250 (GA only).
 - Syria geometry: copy aleppo_inland_strike meta strike_bearing_deg /
-  strike_distance_km (121° / 200 km inland past Aleppo) for GA.
+  strike_distance_km (121° / 200 km inland past Aleppo) for GA and recon AOI.
   CAP, intercept, and escort 180° / 40 km is sea — do not put land trucks there.
   Do not copy french_coast 125/76, Kutaisi 43/110, Maupertus 180/133, or CAP 180/40
-  onto Incirlik GA. Call list_strike_targets(theatre=Syria) for modern trucks
+  onto Incirlik GA or recon. Call list_strike_targets(theatre=Syria) for modern trucks
   (Ural-375); country Syria red; payload su25t_2x_fab250 (GA only).
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
@@ -147,7 +146,7 @@ Rules:
   match that example's structure (derived from packaged Specs — not invented shapes).
   Pass theatre=Normandy for NeedsOarPoint (all six types);
   theatre=Caucasus for Batumi (all six types); theatre=Syria for Incirlik
-  free_flight, CAP, intercept, escort, or ground_attack;
+  (all six types);
   theatre=Nevada for Nellis free_flight; theatre=Falklands for Mount Pleasant
   free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
   combat skeleton onto Falklands.
@@ -318,14 +317,21 @@ def host_spec_repair_nudge(
                 "incirlik_iskenderun_cap 180° / 40 km "
                 "(Gulf of Iskenderun south of Incirlik — not Cherbourg 180/63, not Batumi 270/40, "
                 "not Manston escort 120/55). "
-                "For land strike, use aleppo_inland_strike 121° / 200 km (inland past Aleppo — "
+                "For land strike or recon, use aleppo_inland_strike 121° / 200 km (inland past Aleppo — "
                 "not CAP 180/40, not Kutaisi 43/110, not french_coast 125/76). "
-                "Refuse recon — emit free_flight, CAP, intercept, escort, or ground_attack at Incirlik "
-                "(Su-25T, sunny_clear, Turkey blue) or switch theatre to TheChannel. "
+                "Call list_strike_targets(theatre=Syria) for modern trucks "
+                "(Ural-375; country Syria). "
                 "Do not copy french_coast / Hawkinge / NeedsOarPoint / Batumi geometry "
                 "onto Syria.\n"
             )
-            allowed = {"free_flight", "cap", "intercept", "escort", "ground_attack"}
+            allowed = {
+                "free_flight",
+                "cap",
+                "intercept",
+                "escort",
+                "ground_attack",
+                "recon",
+            }
             schema_mt = mt if mt in allowed else "free_flight"
         elif theatre == "Caucasus":
             geometry_hint = (
@@ -395,14 +401,14 @@ def host_spec_repair_nudge(
         elif theatre == "Syria":
             geometry_hint = (
                 "\n\nSyria geometry repair (domain mismatch):\n"
-                "- Land strike: use channel_place aleppo_inland_strike — "
+                "- Land strike/recon: use channel_place aleppo_inland_strike — "
                 "bearing 121° / distance 200 km from Incirlik (inland past Aleppo, "
                 "not CAP/escort 180/40 sea, not french_coast 125/76, not Maupertus 180/133).\n"
-                "- Rewrite strike to 121/200; keep land trucks "
+                "- Rewrite strike or recon AOI to 121/200; keep land trucks "
                 "(Ural-375; country Syria) on Levant soil.\n"
                 "- Call list_strike_targets(theatre=Syria). Do not copy "
                 "Channel french-coast 125/76, Iskenderun CAP 180/40, or Kutaisi 43/110 "
-                "onto a land strike.\n"
+                "onto a land observe/strike.\n"
             )
         elif theatre == "Normandy":
             geometry_hint = (

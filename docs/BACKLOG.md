@@ -409,8 +409,8 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** Syria recon **or** Nevada Stage B. After
-`syria-ground-attack`.
+**Next promote / in proposal:** Nevada Stage B (or Falklands B). After
+`syria-recon`.
 Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
@@ -450,12 +450,13 @@ Stage C combat on a new map before Slice 0b is on master.
 | F3d | `syria-intercept` | Syria intercept: Incirlik dawn intercept on the Iskenderun corridor (180°/40 km); invent allow intercept; GA/escort/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F3e | `syria-escort` | Syria escort: Incirlik Su-25T package on the Iskenderun corridor (180°/40 km); invent allow escort; GA/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F3f | `syria-ground-attack` | Syria GA: Incirlik inland strike past Aleppo (121°/200 km); coastal/inland domain; modern Ural/GAZ/ZIL country Syria red; invent FF+CAP+intercept+escort+GA; recon still refuses | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
+| F3g | `syria-recon` | Syria recon: Incirlik observe inland past Aleppo (121°/200 km); invent allow all six types | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
-promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Syria
-recon or Nevada Stage B. Refresh
+promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Nevada
+Stage B (or Falklands B). Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `MarianaIslandsWWII` / `Kola` / `Iraq` until PyDCS terrain exists (R8).
 

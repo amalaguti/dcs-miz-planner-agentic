@@ -660,6 +660,31 @@ def compile_incirlik_ground_attack(output_path: Path) -> Path:
     )
 
 
+INCIRLIK_RECON_EXAMPLE_SPEC = REPO_ROOT / "examples" / "incirlik_aleppo_recon.yaml"
+INCIRLIK_RECON_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=16',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Reconnaissance",
+    "Ural-375",
+    "recon_aoi",
+    "recon_area_observed",
+    "a_out_text_delay",
+    '["value"]=4',
+    "Syria",
+)
+
+
+def compile_incirlik_recon(output_path: Path) -> Path:
+    spec = load_mission_spec(INCIRLIK_RECON_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 NEVADA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "nellis_cold_freeflight.yaml"
 NEVADA_MISSION_CONTRACTS = (
     "Su-25T",

@@ -5,6 +5,22 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria recon AOI 121/200; Ural-375 observe (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria recon AOI is **121° / 200 km / 2000 m** from Incirlik
+  (airdromeId 16) — same Levant land station as GA, not CAP/escort 180/40
+  (sea), not Kutaisi 43/110, not Manston 125/76. PyDCS Incirlik (16) → Aleppo
+  (27) is 121.13° / 185.00 km; integer 121/185 is near-field reject. Observe-only
+  contacts are modern trucks (`Ural-375`) with country **Syria** red (not
+  Russia, not ThirdReich). Player Su-25T, Turkey blue, 251.0 MHz. Date
+  2024-06-06, 09:00 (`start_time` 32400), `sunny_clear`. Weapons hold; no
+  payload. Do not put recon on `incirlik_iskenderun_cap`. Compiler recon is
+  already airfield-relative.
+- **Code:** `examples/incirlik_aleppo_recon.yaml`,
+  `planning_options.yaml` (`aleppo_inland_strike` `mission_types` includes
+  `recon`).
+
 ## Syria GA 121/200 Aleppo; Incirlik seaward 165–195 (2026-08-17)
 
 - **Date:** 2026-08-17

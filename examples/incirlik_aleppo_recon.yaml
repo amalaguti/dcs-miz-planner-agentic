@@ -1,0 +1,43 @@
+schema_version: "1"
+mission_type: recon
+theatre: Syria
+name: Incirlik Aleppo Recon
+description: >
+  Cold start at Incirlik. Cross inland to an AOI past Aleppo on the Levant
+  (bearing 121°, 200 km — same land station as the packaged GA place; not
+  Channel french-coast 125/76, not CAP 180/40 sea). Locate and observe soft
+  enemy truck contacts. Weapons hold — report the area and RTB. No bomb
+  loadout.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Incirlik
+  coalition: blue
+  country: Turkey
+  skill: Player
+  start: cold_parking
+recon:
+  # Airfield-relative from Incirlik onto Levant land inland of Aleppo.
+  # PyDCS Incirlik (id 16) → Aleppo (id 27) is 121.13° / 185.00 km.
+  # Integer 121/185 is near-field reject. Same 121/200 inland-of-Aleppo
+  # station as ground_attack. Do not copy Channel french-coast 125/76,
+  # Kutaisi 43/110, or CAP 180/40 (sea).
+  bearing_deg: 121
+  distance_km: 200
+  altitude_m: 2000
+  radius_m: 3000
+  mark: true
+enemies: []
+targets:
+  - unit: Ural-375
+    count: 3
+    skill: Average
+    country: Syria
+    coalition: red
+objectives:
+  - type: recon_area
