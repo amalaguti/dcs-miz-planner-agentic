@@ -7,6 +7,10 @@ stay bit-identical).
 Normandy: Needs Oar Point map position plus due-south 63 km (Cherbourg corridor;
 same station as ``cherbourg_channel_cap``). Literals from PyDCS
 ``point_from_heading(180, 63000)`` — not invented lat/lon.
+
+Caucasus: Batumi map position plus due-west 40 km (Black Sea corridor; same
+station as ``batumi_black_sea_cap``). Literals from PyDCS
+``point_from_heading(270, 40000)`` — not invented lat/lon.
 """
 
 from __future__ import annotations
@@ -15,6 +19,7 @@ from dataclasses import dataclass
 
 CHANNEL_THEATRE = "TheChannel"
 NORMANDY_THEATRE = "Normandy"
+CAUCASUS_THEATRE = "Caucasus"
 
 # Source: PyDCS TheChannel airport Hawkinge (airdromeId 6) map position, offset
 # south-east toward the Strait as a Dover-approach corridor (Channel geography
@@ -29,6 +34,12 @@ _NEEDS_OAR_POINT_X = 141296.390625
 _NEEDS_OAR_POINT_Y = -84372.234375
 _CHERBOURG_CORRIDOR_OFFSET_X = -63000.0
 _CHERBOURG_CORRIDOR_OFFSET_Y = 0.0
+
+# Source: PyDCS Caucasus Batumi (airdromeId 22) + heading 270° / 40 km.
+_BATUMI_X = -355810.6875
+_BATUMI_Y = 617386.1875
+_BLACK_SEA_CORRIDOR_OFFSET_X = 0.0
+_BLACK_SEA_CORRIDOR_OFFSET_Y = -40000.0
 
 
 class InterceptUnsupportedTheatre(ValueError):
@@ -85,6 +96,12 @@ INTERCEPT_SPAWN_RECIPES: dict[str, InterceptSpawnRecipe] = {
         anchor_y=_NEEDS_OAR_POINT_Y,
         offset_x=_CHERBOURG_CORRIDOR_OFFSET_X,
         offset_y=_CHERBOURG_CORRIDOR_OFFSET_Y,
+    ),
+    CAUCASUS_THEATRE: InterceptSpawnRecipe(
+        anchor_x=_BATUMI_X,
+        anchor_y=_BATUMI_Y,
+        offset_x=_BLACK_SEA_CORRIDOR_OFFSET_X,
+        offset_y=_BLACK_SEA_CORRIDOR_OFFSET_Y,
     ),
 }
 

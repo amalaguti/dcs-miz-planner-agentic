@@ -5,6 +5,22 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus intercept spawn: Batumi + Black Sea 270/40 (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Caucasus intercept enemy spawn is Batumi map position
+  (`-355810.6875`, `617386.1875`, airdromeId 22) plus due-west 40 km
+  (`point_from_heading(270, 40000)` → offset `(0, -40000)`). Enemy
+  `-355810.6875`, `577386.1875` — same station as `batumi_black_sea_cap`
+  (sea). Store literals in `intercept_spawn.py`; do **not** copy Hawkinge /
+  Dover (`30989.935547`, `-35402.577148`) or Cherbourg `(-63000, 0)`, and do
+  **not** recompute Channel goldens from `airport_list()`. Enemies are
+  **Russia + Su-25T** (explicit country — default is ThirdReich). Syria /
+  Nevada / Falklands still fail `intercept_unsupported_theatre`.
+- **Code:** `intercept_spawn.py` (`CAUCASUS_THEATRE` recipe),
+  `examples/batumi_dawn_intercept.yaml`,
+  `planning_options.yaml` (`batumi_black_sea_cap` `mission_types: [cap, intercept]`).
+
 ## Caucasus inland GA 43/110; west-of-coast domain (2026-08-16)
 
 - **Date:** 2026-08-16

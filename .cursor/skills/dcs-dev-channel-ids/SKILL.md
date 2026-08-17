@@ -22,7 +22,9 @@ description: >-
    TheChannel: Hawkinge + Dover-approach offset. Do not recompute from
    `airport_list()`. Normandy: NeedsOarPoint + Cherbourg corridor
    (`-63000`, `0`) — same station as `cherbourg_channel_cap` (180°/63 km).
-   Other theatres fail `intercept_unsupported_theatre`.
+   Caucasus: Batumi + Black Sea corridor `(0, -40000)` — same station as
+   `batumi_black_sea_cap` (270°/40 km). Other theatres fail
+   `intercept_unsupported_theatre`.
 5. Failure ids: exact stock strings (e.g. `ENG0_MAGNETO0`) from
    `data/era/wwii/aircraft_failures.yaml`.
 6. **Normandy 2.0** Spec/inventory id is **`Normandy`**. Airfield lookup is
@@ -49,9 +51,10 @@ description: >-
    `Kutaisi` = 25, `TbilisiLochini` = 29 (`Tbilisi-Lochini`), `Vaziani` = 31,
    `SochiAdler` = 18 (`Sochi-Adler`), `Mozdok` = 28 (not NeedsOarPoint).
    Invent home: `Georgia` + `Su-25T` at **251.0 MHz** at Batumi. Invent is
-   **free_flight, CAP, or ground_attack** (CAP 270° / 40 km west over the Black
-   Sea — not Manston 135/25, not Cherbourg 180/63; GA 43° / 110 km inland past
-   Kutaisi — not CAP 270/40). Intercept/escort/recon still refuse.
+   **free_flight, CAP, ground_attack, or intercept** (CAP/intercept 270° / 40 km
+   west over the Black Sea — not Manston 135/25, not Cherbourg 180/63, not
+   Hawkinge; GA 43° / 110 km inland past Kutaisi — not CAP 270/40). Escort/recon
+   still refuse.
    Modern trucks: `Ural-375`, `GAZ-66`, `ZIL-135` (not Channel `soft_vehicles`).
    Payload `su25t_2x_fab250` (FAB-250 on pylons 5 and 7). `Russia` is
    modern-only (PyDCS red default — do not place Russia on blue). Channel+Russia

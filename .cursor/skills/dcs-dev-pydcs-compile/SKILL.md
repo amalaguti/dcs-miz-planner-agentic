@@ -18,8 +18,9 @@ description: >-
 1. **Only** `compiler/pydcs_compiler.py` (and emit helpers) import `dcs.*`.
 2. Bind terrain via `theatre_terrain.terrain_for_theatre(spec.theatre)` — never
    hard-code `TheChannel()` while ignoring Spec. Intercept enemy spawn uses
-   `intercept_spawn.intercept_spawn_for_theatre` (TheChannel Hawkinge/Dover
-   literals only; do not recompute from `airport_list()`).
+   `intercept_spawn.intercept_spawn_for_theatre` (TheChannel Hawkinge/Dover,
+   Normandy NeedsOarPoint/Cherbourg 180/63, Caucasus Batumi/Black Sea 270/40;
+   do not recompute from `airport_list()`).
 3. Keep **`_disable_payload_scan`** until a released pydcs wheel includes the
    payload KeyError fix; use registry CLSID loadouts for GA.
 4. Ensure **theatre** zip member (`_ensure_theatre_member`); PyDCS may omit it.

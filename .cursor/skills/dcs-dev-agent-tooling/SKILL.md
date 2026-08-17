@@ -33,8 +33,9 @@ description: >-
    (NeedsOarPoint; CAP/intercept/escort 180°/63 km Cherbourg
    corridor, not Hawkinge, not Manston escort 120/55; GA/recon AOI 180°/133 km
    inland of Maupertus). Caucasus is
-   **free_flight, CAP, or ground_attack** (Batumi; CAP 270°/40 km west over the
-   Black Sea; GA 43°/110 km inland past Kutaisi; intercept/escort/recon refused).
+   **free_flight, CAP, ground_attack, or intercept** (Batumi; CAP/intercept
+   270°/40 km west over the Black Sea; GA 43°/110 km inland past Kutaisi;
+   escort/recon refused).
    Syria is **free_flight only**
    (Incirlik; CAP refused). Nevada is **free_flight only** (Nellis; CAP
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).

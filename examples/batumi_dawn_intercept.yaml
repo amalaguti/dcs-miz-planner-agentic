@@ -1,0 +1,29 @@
+schema_version: "1"
+mission_type: intercept
+theatre: Caucasus
+name: Batumi Dawn Intercept
+description: >
+  Cold start at Batumi at dawn. Intercept Su-25T bandits approaching the
+  Black Sea corridor (bearing 270°, 40 km — same station as the packaged CAP
+  place; not Hawkinge/Dover, not Cherbourg).
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "06:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Batumi
+  coalition: blue
+  country: Georgia
+  skill: Player
+  start: cold_parking
+enemies:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Russia
+    coalition: red
+objectives:
+  - type: intercept_enemy

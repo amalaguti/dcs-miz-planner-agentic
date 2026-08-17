@@ -54,7 +54,7 @@ Spec geometry is already airfield-relative. These helpers are Channel-hardcoded:
 | Countries WWII-only | `allowlists.py`, `catalog/sync.py`, `models.py` defaults |
 | Domain classifier always TheChannel | `channel_domain.py`; validation still calls it |
 | Path clamp one Channel place | `agent/path_clamp.py` `french_coast_strike_belt` |
-| Intercept spawn Hawkinge/Dover | `compiler/pydcs_compiler.py` `_HAWKINGE_*` |
+| Intercept spawn theatre recipes | `intercept_spawn.py` (TheChannel + Normandy + Caucasus) |
 | Join-up outbound 120° | same compiler |
 | Strike units tagged Channel | `catalog/sync.py` |
 | Places family `channel_place` | planning_options |

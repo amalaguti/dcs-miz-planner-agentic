@@ -434,6 +434,27 @@ def compile_batumi_ground_attack(output_path: Path) -> Path:
     )
 
 
+BATUMI_INTERCEPT_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_dawn_intercept.yaml"
+BATUMI_INTERCEPT_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=22',
+    '["start_time"]=21600',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Russia",
+    "-355810.6875",
+    "577386.1875",
+)
+
+
+def compile_batumi_intercept(output_path: Path) -> Path:
+    spec = load_mission_spec(BATUMI_INTERCEPT_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 BATUMI_SPITFIRE_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_spitfire_freeflight.yaml"
 BATUMI_SPITFIRE_MISSION_CONTRACTS = (
     "SpitfireLFMkIX",

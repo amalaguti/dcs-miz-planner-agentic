@@ -1437,7 +1437,7 @@ def validate_mission_spec(
                     code="intercept_unsupported_theatre",
                     path="theatre",
                     message=f"Intercept spawn is not supported for theatre {spec.theatre!r}",
-                    hint=("Use theatre TheChannel or Normandy for intercept"),
+                    hint=("Use theatre TheChannel, Normandy, or Caucasus for intercept"),
                 )
             )
         if spec.cap is not None:

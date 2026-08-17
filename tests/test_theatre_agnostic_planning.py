@@ -58,6 +58,7 @@ MANSTON_FF = REPO / "examples" / "manston_cold_freeflight.yaml"
 CAUCASUS_FF = REPO / "examples" / "batumi_cold_freeflight.yaml"
 CAUCASUS_CAP = REPO / "examples" / "batumi_black_sea_cap.yaml"
 CAUCASUS_GA = REPO / "examples" / "batumi_kutaisi_ground_attack.yaml"
+CAUCASUS_INTERCEPT = REPO / "examples" / "batumi_dawn_intercept.yaml"
 SYRIA_FF = REPO / "examples" / "incirlik_cold_freeflight.yaml"
 NEVADA_FF = REPO / "examples" / "nellis_cold_freeflight.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
@@ -172,6 +173,37 @@ def test_intercept_succeeds_on_normandy(tmp_path: Path) -> None:
         assert "30989.935547" not in mission
 
 
+def test_intercept_succeeds_on_caucasus(tmp_path: Path) -> None:
+    spec = load_mission_spec(CAUCASUS_INTERCEPT)
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert result.ok, result.errors
+    assert intercept_supported("Caucasus")
+    recipe = intercept_spawn_for_theatre("Caucasus")
+    assert recipe.enemy_x == -355810.6875
+    assert recipe.enemy_y == 577386.1875
+    out = tmp_path / "caucasus_intercept.miz"
+    PyDCSCompiler(inventory=_inv()).compile(spec, out)
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8")
+        assert "-355810.6875" in mission
+        assert "577386.1875" in mission
+        assert "30989.935547" not in mission
+
+
+def test_syria_intercept_still_fails_closed() -> None:
+    intercept = load_mission_spec(CAUCASUS_INTERCEPT)
+    spec = intercept.model_copy(
+        update={
+            "theatre": "Syria",
+            "player": load_mission_spec(SYRIA_FF).player,
+        }
+    )
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert not result.ok
+    assert any(e.code == "intercept_unsupported_theatre" for e in result.errors)
+
+
 def test_escort_succeeds_on_normandy(tmp_path: Path) -> None:
     spec = load_mission_spec(NORMANDY_ESCORT)
     result = validate_mission_spec(spec, inventory=_inv())
@@ -235,10 +267,12 @@ def test_channel_place_tagged_thechannel() -> None:
     batumi_home = next(o for o in places if o.id == "batumi_home")
     assert batumi_home.meta.get("theatre") == "Caucasus"
     assert "ground_attack" in batumi_home.meta.get("mission_types", [])
+    assert "intercept" in batumi_home.meta.get("mission_types", [])
     batumi_cap = next(o for o in places if o.id == "batumi_black_sea_cap")
     assert batumi_cap.meta.get("theatre") == "Caucasus"
     assert batumi_cap.meta.get("cap_bearing_deg") == 270
     assert batumi_cap.meta.get("cap_distance_km") == 40
+    assert "intercept" in batumi_cap.meta.get("mission_types", [])
     kutaisi = next(o for o in places if o.id == "kutaisi_inland_strike")
     assert kutaisi.meta.get("theatre") == "Caucasus"
     assert kutaisi.meta.get("domain") == "land"
@@ -419,7 +453,7 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
 
 def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Caucasus"):
-        build_spec_schema("intercept", theatre="Caucasus")
+        build_spec_schema("escort", theatre="Caucasus")
     ga = build_spec_schema("ground_attack", theatre="Caucasus")
     assert ga.example["theatre"] == "Caucasus"
     assert ga.example["player"]["airfield"] == "Batumi"
@@ -444,9 +478,17 @@ def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     assert tool["ok"] is True
     assert tool["example"]["player"]["airfield"] == "Batumi"
     intercept = get_mission_spec_schema("intercept", theatre="Caucasus")
-    assert intercept["ok"] is False
-    assert intercept["code"] == "combat_unsupported_theatre"
-    blob = json.dumps(intercept)
+    assert intercept["ok"] is True
+    assert intercept["example"]["player"]["airfield"] == "Batumi"
+    assert intercept["example"]["player"]["aircraft"] == "Su-25T"
+    assert intercept["example"]["enemies"][0]["country"] == "Russia"
+    intercept_blob = json.dumps(intercept)
+    assert "Manston" not in intercept_blob
+    assert "NeedsOarPoint" not in intercept_blob
+    escort = get_mission_spec_schema("escort", theatre="Caucasus")
+    assert escort["ok"] is False
+    assert escort["code"] == "combat_unsupported_theatre"
+    blob = json.dumps(escort)
     assert "Manston" not in blob
     assert "NeedsOarPoint" not in blob
 
@@ -575,17 +617,18 @@ def test_era_filter_caucasus_georgia_and_syria_turkey_ok() -> None:
 def test_caucasus_cap_invent_nudge() -> None:
     spec = load_mission_spec(CAUCASUS_CAP)
     assert host_normandy_combat_nudge(spec) is None
-    intercept = load_mission_spec(NORMANDY_INTERCEPT).model_copy(
+    intercept = load_mission_spec(CAUCASUS_INTERCEPT)
+    assert host_normandy_combat_nudge(intercept) is None
+    escort = load_mission_spec(NORMANDY_ESCORT).model_copy(
         update={
             "theatre": "Caucasus",
             "player": load_mission_spec(CAUCASUS_FF).player,
-            "enemies": load_mission_spec(CAUCASUS_CAP).enemies,
         }
     )
-    nudge = host_normandy_combat_nudge(intercept)
+    nudge = host_normandy_combat_nudge(escort)
     assert nudge is not None
     assert "Batumi" in nudge
-    assert "CAP" in nudge or "cap" in nudge.lower()
+    assert "intercept" in nudge.lower()
     assert "CAP at NeedsOarPoint" not in nudge
     ff = load_mission_spec(CAUCASUS_FF)
     assert host_normandy_combat_nudge(ff) is None
@@ -852,21 +895,11 @@ def test_planner_caucasus_ground_attack_is_written(tmp_path: Path) -> None:
     assert result.spec.strike.distance_km == 110
 
 
-def test_chat_caucasus_intercept_not_captured(tmp_path: Path) -> None:
+def test_chat_caucasus_intercept_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    intercept_json = (
-        load_mission_spec(NORMANDY_INTERCEPT)
-        .model_copy(
-            update={
-                "theatre": "Caucasus",
-                "player": load_mission_spec(CAUCASUS_FF).player,
-                "enemies": load_mission_spec(CAUCASUS_CAP).enemies,
-            }
-        )
-        .model_dump_json()
-    )
+    intercept_json = load_mission_spec(CAUCASUS_INTERCEPT).model_dump_json()
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
         output_path=out,
@@ -874,7 +907,61 @@ def test_chat_caucasus_intercept_not_captured(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    first = session.handle_line("Caucasus intercept")
+    session.handle_line("Caucasus intercept")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "intercept"
+    assert session.proposed_spec.player.airfield == "Batumi"
+    assert session.proposed_spec.theatre == "Caucasus"
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "intercept"
+    assert written.player.airfield == "Batumi"
+
+
+def test_planner_caucasus_intercept_is_written(tmp_path: Path) -> None:
+    intercept_json = load_mission_spec(CAUCASUS_INTERCEPT).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Caucasus intercept west of Batumi",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Caucasus"
+    assert result.spec.mission_type.value == "intercept"
+    assert result.spec.player.airfield == "Batumi"
+
+
+def test_chat_caucasus_escort_not_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    escort_json = (
+        load_mission_spec(NORMANDY_ESCORT)
+        .model_copy(
+            update={
+                "theatre": "Caucasus",
+                "player": load_mission_spec(CAUCASUS_FF).player,
+            }
+        )
+        .model_dump_json()
+    )
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=escort_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    first = session.handle_line("Caucasus escort")
     assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
     assert "Batumi" in first.output
     assert "NeedsOarPoint" not in first.output

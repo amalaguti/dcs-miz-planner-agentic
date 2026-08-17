@@ -5,6 +5,22 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus invent allows intercept; escort/recon still refuse (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Caucasus invent/chat may emit **free_flight, CAP, ground_attack,
+  or intercept** at Batumi (Su-25T, Georgia blue). Intercept spawn is **270° /
+  40 km** west of Batumi over the Black Sea — same station as
+  `batumi_black_sea_cap`, not Hawkinge/Dover, not Cherbourg 180/63. Schema
+  `theatre=Caucasus` + `intercept` loads `batumi_dawn_intercept.yaml` with
+  dedicated `_CAUCASUS_INTERCEPT_NOTES` — do not concatenate Channel
+  `_TYPE_NOTES` (Hawkinge / `manston_dawn_intercept_radio`). Enemies: Russia +
+  Su-25T (set `enemies[].country: Russia`). Escort / recon still refuse every
+  turn. Path clamp and soft immersion floor stay TheChannel-only. Stub LLM
+  stays Manston.
+- **Code:** `intercept_spawn.py`, `agent/immersion.py`, `agent/spec_schema.py`,
+  `planning_options.yaml` (`batumi_black_sea_cap`, `batumi_home`).
+
 ## Caucasus invent allows ground_attack; modern trucks (2026-08-16)
 
 - **Date:** 2026-08-16

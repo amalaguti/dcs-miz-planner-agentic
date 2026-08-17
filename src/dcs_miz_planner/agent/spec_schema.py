@@ -44,9 +44,9 @@ _NORMANDY_UNSUPPORTED_COMBAT: frozenset[str] = frozenset()
 _CAUCASUS_FREE_FLIGHT_EXAMPLE = "batumi_cold_freeflight.yaml"
 _CAUCASUS_CAP_EXAMPLE = "batumi_black_sea_cap.yaml"
 _CAUCASUS_GROUND_ATTACK_EXAMPLE = "batumi_kutaisi_ground_attack.yaml"
+_CAUCASUS_INTERCEPT_EXAMPLE = "batumi_dawn_intercept.yaml"
 _CAUCASUS_UNSUPPORTED_COMBAT = frozenset(
     {
-        MissionType.INTERCEPT.value,
         MissionType.ESCORT.value,
         MissionType.RECON.value,
     }
@@ -240,7 +240,7 @@ _COMMON_NOTES: tuple[str, ...] = (
     (
         'schema_version must be "1"; theatre is an offerable id '
         "(TheChannel for combat; Normandy all six types at NeedsOarPoint; "
-        "Caucasus free_flight, CAP, or ground_attack at Batumi; Syria free_flight only at Incirlik; "
+        "Caucasus free_flight, CAP, ground_attack, or intercept at Batumi; Syria free_flight only at Incirlik; "
         "Nevada free_flight only at Nellis; Falklands free_flight only at "
         "Mount Pleasant)."
     ),
@@ -319,15 +319,15 @@ _COMMON_NOTES: tuple[str, ...] = (
 # Manston YAML, Spitfire failures, and channel_place as templates to copy).
 _CAUCASUS_FF_NOTES: tuple[str, ...] = (
     (
-        "Caucasus invent is free_flight, CAP, or ground_attack: airfield Batumi, "
-        "Su-25T, sunny_clear, Georgia blue. CAP station 270° / 40 km / 4000 m west "
-        "over the Black Sea (not Manston 135/25, not Cherbourg 180/63). "
+        "Caucasus invent is free_flight, CAP, ground_attack, or intercept: airfield Batumi, "
+        "Su-25T, sunny_clear, Georgia blue. CAP and intercept station 270° / 40 km / 4000 m west "
+        "over the Black Sea (not Manston 135/25, not Cherbourg 180/63, not Hawkinge). "
         "Ground attack 43° / 110 km inland past Kutaisi (not CAP 270/40). "
-        "Refuse intercept/escort/recon. Do not copy Channel or "
+        "Refuse escort/recon. Do not copy Channel or "
         "Normandy geometry onto Caucasus."
     ),
     (
-        'schema_version must be "1"; theatre is Caucasus (free_flight, CAP, or ground_attack at Batumi).'
+        'schema_version must be "1"; theatre is Caucasus (free_flight, CAP, ground_attack, or intercept at Batumi).'
     ),
     (
         "Required envelope: schema_version, mission_type, theatre, date, start_time, "
@@ -358,11 +358,11 @@ _CAUCASUS_FF_NOTES: tuple[str, ...] = (
 
 _CAUCASUS_CAP_NOTES: tuple[str, ...] = (
     (
-        "Caucasus invent is free_flight, CAP, or ground_attack: airfield Batumi, "
+        "Caucasus invent is free_flight, CAP, ground_attack, or intercept: airfield Batumi, "
         "Su-25T, sunny_clear, Georgia blue. CAP station 270° / 40 km / 4000 m west "
         "over the Black Sea (not Manston 135/25, not Cherbourg 180/63). "
         "Enemies: Su-25T, country Russia, coalition red (do not default "
-        "ThirdReich). Refuse intercept/escort/recon."
+        "ThirdReich). Refuse escort/recon."
     ),
     ('schema_version must be "1"; theatre is Caucasus (CAP at Batumi).'),
     (
@@ -378,7 +378,7 @@ _CAUCASUS_CAP_NOTES: tuple[str, ...] = (
 
 _CAUCASUS_GA_NOTES: tuple[str, ...] = (
     (
-        "Caucasus invent is free_flight, CAP, or ground_attack: airfield Batumi, "
+        "Caucasus invent is free_flight, CAP, ground_attack, or intercept: airfield Batumi, "
         "Su-25T, sunny_clear, Georgia blue. Strike 43° / 110 km / 2000 m inland "
         "past Kutaisi (not CAP 270/40 which is sea, not Manston 125/76, not "
         "Cherbourg 180/63). Call list_strike_targets(theatre=Caucasus) for "
@@ -404,6 +404,27 @@ _CAUCASUS_GA_NOTES: tuple[str, ...] = (
     ),
     'objectives must include {"type":"attack_ground"}; enemies must be empty.',
     "omit the cap block. Do not copy Channel or Normandy example YAML paths.",
+    "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
+)
+
+_CAUCASUS_INTERCEPT_NOTES: tuple[str, ...] = (
+    (
+        "Caucasus invent is free_flight, CAP, ground_attack, or intercept: airfield Batumi, "
+        "Su-25T, sunny_clear, Georgia blue. "
+        "Enemies spawn on the Black Sea corridor (270° / 40 km from "
+        "Batumi — same station as batumi_black_sea_cap; not Hawkinge / "
+        "Dover / Cherbourg). Enemies: Su-25T, country Russia, coalition red "
+        "(do not default ThirdReich). Do not copy Channel or "
+        "Normandy geometry onto Caucasus."
+    ),
+    ('schema_version must be "1"; theatre is Caucasus (intercept at Batumi).'),
+    (
+        "Required envelope: schema_version, mission_type, theatre, date, start_time, "
+        "weather, player; enemies/objectives/triggers/zones default to empty lists."
+    ),
+    'enemies must be non-empty; objectives must include {"type":"intercept_enemy"}.',
+    "omit the cap and strike blocks; omit player.payload.",
+    "Fill DCS ids from examples/batumi_dawn_intercept.yaml.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )
 
@@ -546,9 +567,9 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
 
     Default / TheChannel stubs stay Manston. ``theatre=Normandy`` uses
     NeedsOarPoint for all six mission types. ``theatre=Caucasus`` uses Batumi
-    for free_flight, CAP, and ground_attack. ``theatre=Syria`` + free_flight uses Incirlik.
+    for free_flight, CAP, ground_attack, and intercept. ``theatre=Syria`` + free_flight uses Incirlik.
     ``theatre=Nevada`` + free_flight uses Nellis. ``theatre=Falklands`` +
-    free_flight uses Mount Pleasant. Caucasus intercept/escort/recon and
+    free_flight uses Mount Pleasant. Caucasus escort/recon and
     Syria/Nevada/Falklands combat (including CAP) raise (no Manston /
     NeedsOarPoint combat skeleton).
     """
@@ -624,17 +645,16 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
         if key in _CAUCASUS_UNSUPPORTED_COMBAT:
             raise ValueError(
                 f"Combat mission_type {key!r} is not supported for theatre Caucasus; "
-                "use free_flight, CAP, or ground_attack at Batumi or theatre TheChannel"
+                "use free_flight, CAP, ground_attack, or intercept at Batumi or theatre TheChannel"
             )
-        filename = (
-            _CAUCASUS_CAP_EXAMPLE
-            if key == MissionType.CAP.value
-            else (
-                _CAUCASUS_GROUND_ATTACK_EXAMPLE
-                if key == MissionType.GROUND_ATTACK.value
-                else _CAUCASUS_FREE_FLIGHT_EXAMPLE
-            )
-        )
+        if key == MissionType.CAP.value:
+            filename = _CAUCASUS_CAP_EXAMPLE
+        elif key == MissionType.GROUND_ATTACK.value:
+            filename = _CAUCASUS_GROUND_ATTACK_EXAMPLE
+        elif key == MissionType.INTERCEPT.value:
+            filename = _CAUCASUS_INTERCEPT_EXAMPLE
+        else:
+            filename = _CAUCASUS_FREE_FLIGHT_EXAMPLE
         path = examples_dir() / filename
         if not path.is_file():
             raise FileNotFoundError(f"Missing Spec example for {key}: {path}")
@@ -823,6 +843,8 @@ def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
             return _CAUCASUS_CAP_NOTES
         if mission_type == MissionType.GROUND_ATTACK.value:
             return _CAUCASUS_GA_NOTES
+        if mission_type == MissionType.INTERCEPT.value:
+            return _CAUCASUS_INTERCEPT_NOTES
         return _CAUCASUS_FF_NOTES
     if theatre == "Normandy":
         if mission_type == MissionType.GROUND_ATTACK.value:
@@ -907,10 +929,10 @@ Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
 (free_flight | intercept | cap | ground_attack | escort | recon) and optional theatre.
 Copy that example's structure. Default stub is Manston / TheChannel; Normandy
-all six types use NeedsOarPoint; Caucasus free_flight, CAP, and ground_attack
+all six types use NeedsOarPoint; Caucasus free_flight, CAP, ground_attack, and intercept
 use Batumi; Syria free_flight uses Incirlik; Nevada free_flight uses Nellis;
 Falklands free_flight uses Mount Pleasant.
-Caucasus intercept/escort/recon and Syria/Nevada/Falklands combat
+Caucasus escort/recon and Syria/Nevada/Falklands combat
 (including CAP) are unsupported.
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user
