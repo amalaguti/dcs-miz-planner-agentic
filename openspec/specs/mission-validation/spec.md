@@ -869,7 +869,7 @@ Shared validation SHALL accept a well-formed Syria CAP Spec
 Shared validation SHALL accept a well-formed Syria intercept Spec
 (theatre `Syria`, airfield `Incirlik`) when inventory agrees. Well-formed
 Syria intercept Specs MUST NOT fail solely with
-`intercept_unsupported_theatre`. Nevada MUST still fail closed.
+`intercept_unsupported_theatre`. Falklands MUST still fail closed.
 
 #### Scenario: Incirlik intercept validates
 - **WHEN** `examples/incirlik_dawn_intercept.yaml` is validated against an
@@ -976,8 +976,8 @@ planner-supported.
 ### Requirement: Extra Nevada airfields validate
 Shared validation SHALL accept a well-formed Nevada free-flight Spec whose
 player airfield is a curated extra Nevada key (e.g. `GroomLake`) when
-inventory agrees. Intercept / ground_attack / escort / recon invent on
-Nevada MUST still be rejected.
+inventory agrees. Ground_attack / escort / recon invent on Nevada MUST still
+be rejected.
 
 #### Scenario: Groom Lake freeflight validates
 - **WHEN** `examples/groom_lake_cold_freeflight.yaml` is validated against an
@@ -987,10 +987,21 @@ Nevada MUST still be rejected.
 ### Requirement: Nevada CAP Specs validate
 Shared validation SHALL accept a well-formed Nevada CAP Spec
 (theatre `Nevada`, airfield `Nellis`, nested cap) when inventory agrees.
-It MUST still reject Nevada intercept invent.
+It MUST still reject Nevada ground_attack / escort / recon invent.
 
 #### Scenario: Nellis CAP validates
 - **WHEN** `examples/nellis_north_range_cap.yaml` is validated against an
+  inventory that includes offerable Nevada
+- **THEN** validation MUST succeed
+
+### Requirement: Nevada intercept Specs validate
+Shared validation SHALL accept a well-formed Nevada intercept Spec
+(theatre `Nevada`, airfield `Nellis`) when inventory agrees. Well-formed
+Nevada intercept Specs MUST NOT fail solely with
+`intercept_unsupported_theatre`. Falklands MUST still fail closed.
+
+#### Scenario: Nellis intercept validates
+- **WHEN** `examples/nellis_dawn_intercept.yaml` is validated against an
   inventory that includes offerable Nevada
 - **THEN** validation MUST succeed
 

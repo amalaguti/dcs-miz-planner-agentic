@@ -935,7 +935,7 @@ other than `cap`, the tool MUST NOT return a prior-map combat skeleton.
   curated keys MUST remain findable via catalog lookup
 
 #### Scenario: Nevada combat schema has no Manston skeleton
-- **WHEN** a caller requests an intercept schema with theatre `Nevada`
+- **WHEN** a caller requests a ground_attack schema with theatre `Nevada`
 - **THEN** the result MUST NOT present a Manston, NeedsOarPoint, Batumi, or
   Incirlik example as the template to copy
 
@@ -949,6 +949,16 @@ other than `cap`, the tool MUST NOT return a prior-map combat skeleton.
 - **WHEN** a caller requests the CAP Spec schema with theatre `Nevada`
 - **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, USA, and
   CAP 350° / 40 km (not Incirlik 180° / 40 km)
+
+### Requirement: Spec schema tool accepts Nevada intercept
+`get_mission_spec_schema` SHALL accept theatre `Nevada` with mission type
+`intercept`. The derived example MUST follow the Nellis dawn intercept
+envelope (not Hawkinge/Dover, not Incirlik, not Batumi, not Cherbourg).
+
+#### Scenario: Nevada intercept schema uses Nellis
+- **WHEN** a caller requests the intercept Spec schema with theatre `Nevada`
+- **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, USA, and
+  country-Russia opposition
 
 ### Requirement: Spec schema tool accepts Falklands
 `get_mission_spec_schema` SHALL accept theatre `Falklands`. When mission type
