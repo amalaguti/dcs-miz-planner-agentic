@@ -594,16 +594,15 @@ clamp SHALL apply `channel_place` recipes only when Spec theatre is
 - **THEN** the host MUST NOT rewrite those Channel deltas onto the Spec
 
 ### Requirement: Caucasus invent is free_flight or CAP
-Invent/chat SHALL allow `free_flight`, `cap`, and `ground_attack` when the
-bound theatre is `Caucasus` (home `Batumi`, `Su-25T`, `sunny_clear`, Georgia
-blue; CAP station from Caucasus `channel_place` meta — 270° / 40 km west over
-the Black Sea — not Manston 135/25, not Cherbourg 180/63; GA strike from
-Caucasus inland place meta — 43° / 110 km inland past Kutaisi — not CAP
-270/40). It SHALL refuse `intercept`, `escort`, and `recon` on Caucasus every
-turn (never capture or write a refused Spec). Repair for refused types MUST
-nudge toward Batumi free_flight, CAP, or ground_attack, or switching theatre
-to TheChannel. Invent MUST NOT copy Channel or Normandy `channel_place`
-geometry onto Caucasus.
+Invent/chat SHALL allow `free_flight`, `cap`, `ground_attack`, and `intercept`
+when the bound theatre is `Caucasus` (home `Batumi`, `Su-25T`, `sunny_clear`,
+Georgia blue; CAP/intercept station from Caucasus `channel_place` meta —
+270° / 40 km west over the Black Sea — not Manston 135/25, not Cherbourg
+180/63, not Hawkinge; GA strike 43° / 110 km inland past Kutaisi). It SHALL
+refuse `escort` and `recon` on Caucasus every turn (never capture or write a
+refused Spec). Repair for refused types MUST nudge toward Batumi free_flight,
+CAP, ground_attack, or intercept, or switching theatre to TheChannel. Invent
+MUST NOT copy Channel or Normandy `channel_place` geometry onto Caucasus.
 
 #### Scenario: Caucasus free_flight invent allowed
 - **WHEN** invent is asked for a Caucasus free-flight
@@ -622,10 +621,16 @@ geometry onto Caucasus.
   `airfield: Batumi` and strike geometry from the Caucasus inland place/schema
   (MUST NOT be required to emit TheChannel, Manston 125/76, or CAP 270/40)
 
-#### Scenario: Caucasus intercept invent still refused every turn
+#### Scenario: Caucasus intercept invent allowed
 - **WHEN** invent is asked for an intercept on Caucasus
+- **THEN** the planner MUST be allowed to emit `theatre: Caucasus` with
+  `airfield: Batumi` (MUST NOT be required to emit TheChannel or Hawkinge spawn)
+
+#### Scenario: Caucasus escort invent still refused every turn
+- **WHEN** invent is asked for an escort on Caucasus
 - **THEN** it MUST NOT emit a combat Mission Spec and MUST surface a repair
-  toward Batumi free_flight, CAP, or ground_attack (or TheChannel combat)
+  toward Batumi free_flight, CAP, ground_attack, or intercept (or TheChannel
+  combat)
 
 ### Requirement: Infer Caucasus from curated airfield keys
 When rejected Spec JSON names a curated Caucasus airfield and omits a usable

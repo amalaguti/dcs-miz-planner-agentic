@@ -702,10 +702,10 @@ Normandy combat skeleton.
 - **THEN** the example MUST use `Batumi`, `Su-25T`, CAP 270° / 40 km, and
   MUST NOT use Manston or NeedsOarPoint CAP stations
 
-#### Scenario: Caucasus intercept schema has no Manston skeleton
+#### Scenario: Caucasus intercept schema uses Batumi
 - **WHEN** a caller requests an intercept schema with theatre `Caucasus`
-- **THEN** the result MUST NOT present a Manston or NeedsOarPoint combat
-  example as the template to copy
+- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, and
+  Russia opposition (not Hawkinge / Manston)
 
 ### Requirement: list_mission_options can filter channel_place by theatre
 `list_mission_options` SHALL accept an optional theatre id. When theatre is
@@ -796,9 +796,9 @@ NOT return a Channel combat skeleton.
 is `free_flight`, the derived example MUST follow the Batumi envelope (not
 Manston or NeedsOarPoint) and notes MUST NOT concatenate Channel/Normandy
 template bundles (Manston YAML paths, Spitfire failure shelves,
-`channel_place`). When mission type is `cap` or `ground_attack`, the derived
-example MUST follow the Batumi envelope (not Manston). When mission type is
-`intercept`, `escort`, or `recon`, the tool MUST NOT return a Channel or
+`channel_place`). When mission type is `cap`, `ground_attack`, or `intercept`,
+the derived example MUST follow the Batumi envelope (not Manston). When
+mission type is `escort` or `recon`, the tool MUST NOT return a Channel or
 Normandy combat skeleton.
 
 #### Scenario: Caucasus free_flight schema uses Batumi
@@ -817,7 +817,7 @@ Normandy combat skeleton.
 `ground_attack`. The derived example MUST follow the Batumi inland
 ground-attack envelope (not Manston, not Needs Oar Point) and notes MUST NOT
 concatenate Channel template bundles that cite french-coast belts or Manston
-YAML paths. When mission type is `intercept`, `escort`, or `recon` on
+YAML paths. When mission type is `escort` or `recon` on
 Caucasus, the tool MUST NOT return a Channel combat skeleton.
 
 #### Scenario: Caucasus ground_attack schema uses Batumi
@@ -827,8 +827,22 @@ Caucasus, the tool MUST NOT return a Channel combat skeleton.
   strike geometry inland past Kutaisi (not Manston 125° / 76 km, not CAP
   270° / 40 km)
 
-#### Scenario: Caucasus intercept schema still has no Manston skeleton
-- **WHEN** a caller requests an intercept schema with theatre `Caucasus`
+### Requirement: Spec schema tool accepts Caucasus intercept
+`get_mission_spec_schema` SHALL accept theatre `Caucasus` with mission type
+`intercept`. The derived example MUST follow the Batumi dawn-intercept
+envelope (not Manston, not Needs Oar Point, not Hawkinge) and notes MUST NOT
+concatenate Channel template bundles that cite Hawkinge. When mission type is
+`escort` or `recon` on Caucasus, the tool MUST NOT return a Channel combat
+skeleton.
+
+#### Scenario: Caucasus intercept schema uses Batumi
+- **WHEN** a caller requests the intercept Spec schema with theatre
+  `Caucasus`
+- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, and
+  Russia opposition (not Hawkinge / Manston)
+
+#### Scenario: Caucasus escort schema still has no Manston skeleton
+- **WHEN** a caller requests an escort schema with theatre `Caucasus`
 - **THEN** the result MUST NOT present a Manston combat example as the
   template to copy
 

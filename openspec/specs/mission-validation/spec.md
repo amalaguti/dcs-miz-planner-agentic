@@ -628,12 +628,24 @@ MUST resolve `airdromeId` with the Spec theatre.
 
 ### Requirement: Intercept spawn is Channel-only
 Validation SHALL reject `mission_type: intercept` when Spec theatre is not
-`TheChannel` or `Normandy`, with stable code `intercept_unsupported_theatre`
-(or equivalent).
+`TheChannel`, `Normandy`, or `Caucasus`, with stable code
+`intercept_unsupported_theatre` (or equivalent).
 
-#### Scenario: Caucasus intercept fails validation
-- **WHEN** a Mission Spec sets theatre `Caucasus` and `mission_type: intercept`
+#### Scenario: Syria intercept fails validation
+- **WHEN** a Mission Spec sets theatre `Syria` and `mission_type: intercept`
 - **THEN** validation MUST fail with `intercept_unsupported_theatre`
+
+### Requirement: Caucasus intercept Specs validate
+Shared validation SHALL accept a well-formed Caucasus intercept Spec
+(theatre `Caucasus`, airfield `Batumi`, enemies present) when inventory
+agrees. It MUST NOT fail Caucasus intercept solely with
+`intercept_unsupported_theatre`. It MUST still reject Caucasus escort/recon
+invent.
+
+#### Scenario: Batumi intercept validates
+- **WHEN** `examples/batumi_dawn_intercept.yaml` is validated against an
+  inventory that includes offerable Caucasus
+- **THEN** validation MUST succeed
 
 ### Requirement: Normandy intercept Specs validate
 Shared validation SHALL accept a well-formed Normandy intercept Spec
@@ -747,8 +759,7 @@ when inventory agrees.
 ### Requirement: Caucasus CAP Specs validate
 Shared validation SHALL accept a well-formed Caucasus CAP Spec (theatre
 `Caucasus`, airfield `Batumi`, CAP geometry present, player Georgia `Su-25T`,
-enemies Russia `Su-25T` red) when inventory agrees. It MUST still reject
-Caucasus intercept with `intercept_unsupported_theatre`. Well-formed
+enemies Russia `Su-25T` red) when inventory agrees. Well-formed
 Caucasus ground-attack Specs MUST NOT fail solely with
 `domain_unsupported_theatre`.
 
@@ -756,10 +767,6 @@ Caucasus ground-attack Specs MUST NOT fail solely with
 - **WHEN** `examples/batumi_black_sea_cap.yaml` is validated against an
   inventory that includes offerable Caucasus
 - **THEN** validation MUST succeed
-
-#### Scenario: Caucasus intercept still fails closed
-- **WHEN** a Mission Spec sets theatre `Caucasus` and `mission_type: intercept`
-- **THEN** validation MUST fail with `intercept_unsupported_theatre`
 
 ### Requirement: Caucasus land/sea domain is classified
 Validation SHALL classify land vs sea for Spec theatre `Caucasus` using a
@@ -787,8 +794,8 @@ and Falklands MUST still fail with `domain_unsupported_theatre`.
 ### Requirement: Caucasus ground_attack Specs validate
 Shared validation SHALL accept a well-formed Caucasus ground-attack Spec
 (theatre `Caucasus`, airfield `Batumi`, strike + land targets) when inventory
-agrees. It MUST still reject Caucasus intercept with
-`combat_unsupported_theatre` at the schema/invent layer.
+agrees. Well-formed Caucasus intercept Specs MUST NOT fail solely with
+`intercept_unsupported_theatre`.
 
 #### Scenario: Batumi ground_attack validates
 - **WHEN** `examples/batumi_kutaisi_ground_attack.yaml` is validated against
