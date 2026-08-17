@@ -31,12 +31,17 @@ description: >-
    `Chailey` = 27, `Funtington` = 29, `Tangmere` = 30, `FordAF` = 31
    (PyDCS `Ford_AF`), `Maupertus` = 4, `SaintPierreduMont` = 1, `Carpiquet` = 19.
    Do not invent ids or dump all 38 fields.
-7. Domain land/sea is TheChannel UK–FR chord **or** Normandy UK–Cotentin chord
-   (NeedsOarPoint cluster vs Maupertus / SaintPierreduMont / Carpiquet). Other
+7. Domain land/sea is TheChannel UK–FR chord, Normandy UK–Cotentin chord
+   (NeedsOarPoint cluster vs Maupertus / SaintPierreduMont / Carpiquet), **or**
+   Caucasus west-of-coast seaward sector (coastal 22/24/18 vs inland
+   23/25/29/31/28; heading 270°±45° from nearest coastal → sea). Other
    theatres fail `domain_unsupported_theatre`. `airfield_relative_map_point`
    MUST pass `theatre=spec.theatre`. Normandy inland strike from NeedsOarPoint
    is **180° / 133 km** (Maupertus is 180.22° / 125.29 km; 120 km is still sea).
-   Do not copy Manston 125/76 or CAP 180/63 (sea) onto Cotentin land.
+   Caucasus inland strike from Batumi is **43° / 110 km** (Kutaisi is 43.14° /
+   97.20 km; 100 km is near-field; CAP 270/40 is sea). Do not copy Manston
+   125/76 or CAP 180/63 (sea) onto Cotentin land, and do not copy CAP 270/40
+   onto Caucasus GA.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
    Germany is a hint, not a known id in **any** era.
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
@@ -44,9 +49,11 @@ description: >-
    `Kutaisi` = 25, `TbilisiLochini` = 29 (`Tbilisi-Lochini`), `Vaziani` = 31,
    `SochiAdler` = 18 (`Sochi-Adler`), `Mozdok` = 28 (not NeedsOarPoint).
    Invent home: `Georgia` + `Su-25T` at **251.0 MHz** at Batumi. Invent is
-   **free_flight or CAP** (CAP 270° / 40 km west over the Black Sea — not
-   Manston 135/25, not Cherbourg 180/63). Intercept/GA/escort/recon still refuse.
-   `Russia` is
+   **free_flight, CAP, or ground_attack** (CAP 270° / 40 km west over the Black
+   Sea — not Manston 135/25, not Cherbourg 180/63; GA 43° / 110 km inland past
+   Kutaisi — not CAP 270/40). Intercept/escort/recon still refuse.
+   Modern trucks: `Ural-375`, `GAZ-66`, `ZIL-135` (not Channel `soft_vehicles`).
+   Payload `su25t_2x_fab250` (FAB-250 on pylons 5 and 7). `Russia` is
    modern-only (PyDCS red default — do not place Russia on blue). Channel+Russia
    is unknown. CAP enemies: Russia + Su-25T (set `enemies[].country: Russia`;
    default is ThirdReich). **SpitfireLFMkIX is dual-era** (same 124.0 ref in wwii + modern)

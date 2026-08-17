@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus inland GA 43/110; west-of-coast domain (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Caucasus land strike from Batumi is **43° / 110 km / 2000 m**
+  (~12.8 km past Kutaisi). Live `heading_between_point` Batumi (22) → Kutaisi
+  (25) is 43.14° / 97.20 km; 43°/100 km is near-field — reject. Do **not** copy
+  CAP 270/40 (sea), Manston 125/76, or Cherbourg 180/63. Domain is **not** a
+  Batumi–Kutaisi chord (that's Colchis land). Coastal ids 22/24/18; inland
+  23/25/29/31/28. Near-AF 3 km → land; nearest inland → land; nearest coastal
+  and heading 270°±45° → sea; else land. CAP 270/40 must classify sea. Modern
+  trucks `Ural-375` / `GAZ-66` / `ZIL-135` (pydcs `vehicle_map`); country
+  **Russia** red. Do not append Ural ids onto Channel `soft_vehicles`. Su-25T
+  FAB-250 CLSID `{3C612111-C7AD-476E-8A8E-2485812F4E5C}` on inner pylons **5
+  and 7** (dumped from `Su_25T.PylonN`; do not invent stations). Mozdok 28 is
+  still not NeedsOarPoint 28.
+- **Code:** `channel_domain.py` (`classify_caucasus_domain`),
+  `data/era/modern/ground_units.yaml`, `data/era/modern/payloads.yaml`,
+  `examples/batumi_kutaisi_ground_attack.yaml`.
+
 ## Spitfire is dual-era; DCS map capability wins (2026-08-16)
 
 - **Date:** 2026-08-16

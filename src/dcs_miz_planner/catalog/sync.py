@@ -11,7 +11,7 @@ from ..models import (
     ObjectiveType,
     StartType,
 )
-from ..registry import ChannelRegistry, RegistryError, get_channel_registry
+from ..registry import ChannelRegistry, get_channel_registry
 from .models import (
     CatalogAircraft,
     CatalogAirfield,
@@ -97,24 +97,21 @@ def build_snapshot_from_registry(
         for opt in registry.list_planning_options()
     )
     class_map = _class_ids_by_unit(planning_options)
-    # Strike shelves stay tagged TheChannel; list_strike_targets offers WWII land
-    # units on Normandy at query time (sea_craft stay Channel-only).
+    # WWII strike shelves stay tagged TheChannel; list_strike_targets offers WWII
+    # land units on Normandy at query time (sea_craft stay Channel-only).
+    # Modern land trucks are tagged Caucasus / modern.
     strike_theatre = (
         "TheChannel"
         if "TheChannel" in registry.list_theatres()
         else (theatres[0].theatre_id if theatres else "TheChannel")
     )
-    try:
-        strike_era = registry.era_for_theatre(strike_theatre)
-    except RegistryError:
-        strike_era = "wwii"
     strike_units = tuple(
         CatalogStrikeUnit(
             unit_id=uid,
             label=ref.label or uid,
             domain=ref.domain,
-            theatre_id=strike_theatre,
-            era_id=strike_era,
+            theatre_id=("Caucasus" if ref.era == "modern" else strike_theatre),
+            era_id=ref.era,
             class_ids_json=json.dumps(class_map.get(uid, []), sort_keys=True),
         )
         for uid in registry.list_strike_units()

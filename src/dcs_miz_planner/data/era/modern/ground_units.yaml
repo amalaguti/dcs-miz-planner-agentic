@@ -1,0 +1,13 @@
+# Exact DCS / PyDCS vehicle type ids for modern Caucasus ground-attack land targets.
+# Keys must match dcs.vehicles.vehicle_map ids (pydcs 0.15.0). domain is always land.
+# Do not copy these onto Channel soft_vehicles unit_ids. Country in Specs: Russia red.
+ground_units:
+  Ural-375:
+    label: Ural-375 truck
+    domain: land
+  GAZ-66:
+    label: GAZ-66 truck
+    domain: land
+  ZIL-135:
+    label: ZIL-135 truck
+    domain: land

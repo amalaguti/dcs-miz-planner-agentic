@@ -75,11 +75,12 @@ class PlanningOptionRef:
 
 @dataclass(frozen=True)
 class GroundUnitRef:
-    """Known Channel land strike target (exact DCS / PyDCS vehicle type id)."""
+    """Known land strike target (exact DCS / PyDCS vehicle type id)."""
 
     id: str
     label: str = ""
     domain: str = "land"
+    era: str = "wwii"
 
 
 @dataclass(frozen=True)
@@ -98,6 +99,7 @@ class StrikeUnitRef:
     id: str
     domain: str  # land | sea
     label: str = ""
+    era: str = "wwii"
 
 
 @dataclass(frozen=True)
@@ -374,6 +376,20 @@ class ChannelRegistry:
         payloads = {
             str(name): _parse_payload(str(name), meta) for name, meta in payloads_raw.items()
         }
+        modern_payloads_path = era_root / "modern" / "payloads.yaml"
+        if modern_payloads_path.is_file():
+            modern_payloads_raw = (
+                _load_yaml_file(modern_payloads_path, "era/modern/payloads.yaml").get("payloads")
+                or {}
+            )
+            if not isinstance(modern_payloads_raw, dict):
+                raise RegistryError("era/modern/payloads.yaml: 'payloads' must be a mapping")
+            for name, meta in modern_payloads_raw.items():
+                parsed = _parse_payload(str(name), meta)
+                existing = payloads.get(str(name))
+                if existing is not None and existing != parsed:
+                    raise RegistryError(f"era/modern: payload {name!r} collides with another era")
+                payloads[str(name)] = parsed
 
         ground_raw = (
             _load_yaml_file(wwii_root / "ground_units.yaml", "era/wwii/ground_units.yaml").get(
@@ -385,7 +401,27 @@ class ChannelRegistry:
             raise RegistryError("ground_units.yaml: 'ground_units' must be a mapping")
         ground_units: dict[str, GroundUnitRef] = {}
         for unit_id, meta in ground_raw.items():
-            ground_units[str(unit_id)] = _parse_ground_unit(str(unit_id), meta)
+            ground_units[str(unit_id)] = _parse_ground_unit(str(unit_id), meta, era="wwii")
+        modern_ground_path = era_root / "modern" / "ground_units.yaml"
+        if modern_ground_path.is_file():
+            modern_ground_raw = (
+                _load_yaml_file(modern_ground_path, "era/modern/ground_units.yaml").get(
+                    "ground_units"
+                )
+                or {}
+            )
+            if not isinstance(modern_ground_raw, dict):
+                raise RegistryError(
+                    "era/modern/ground_units.yaml: 'ground_units' must be a mapping"
+                )
+            for unit_id, meta in modern_ground_raw.items():
+                parsed = _parse_ground_unit(str(unit_id), meta, era="modern")
+                existing = ground_units.get(str(unit_id))
+                if existing is not None and existing != parsed:
+                    raise RegistryError(
+                        f"era/modern: ground unit {unit_id!r} collides with another era"
+                    )
+                ground_units[str(unit_id)] = parsed
 
         ships_raw = (
             _load_yaml_file(wwii_root / "ships.yaml", "era/wwii/ships.yaml").get("ships") or {}
@@ -613,7 +649,7 @@ class ChannelRegistry:
         """Resolve a land or sea strike target id."""
         if unit_id in self._ground_units:
             g = self._ground_units[unit_id]
-            return StrikeUnitRef(id=g.id, domain="land", label=g.label)
+            return StrikeUnitRef(id=g.id, domain="land", label=g.label, era=g.era)
         if unit_id in self._ships:
             s = self._ships[unit_id]
             return StrikeUnitRef(id=s.id, domain="sea", label=s.label)
@@ -677,15 +713,15 @@ def _parse_weather_preset(name: str, meta: Any) -> WeatherPresetRef:
     )
 
 
-def _parse_ground_unit(unit_id: str, meta: Any) -> GroundUnitRef:
+def _parse_ground_unit(unit_id: str, meta: Any, *, era: str = "wwii") -> GroundUnitRef:
     if meta is None:
-        return GroundUnitRef(id=unit_id, domain="land")
+        return GroundUnitRef(id=unit_id, domain="land", era=era)
     if not isinstance(meta, dict):
         raise RegistryError(f"ground_units.yaml: {unit_id!r} must map to a mapping")
     domain = str(meta.get("domain") or "land").strip()
     if domain != "land":
         raise RegistryError(f"ground_units.yaml: {unit_id!r} domain must be 'land'")
-    return GroundUnitRef(id=unit_id, label=str(meta.get("label") or ""), domain="land")
+    return GroundUnitRef(id=unit_id, label=str(meta.get("label") or ""), domain="land", era=era)
 
 
 def _parse_ship(ship_id: str, meta: Any) -> ShipRef:

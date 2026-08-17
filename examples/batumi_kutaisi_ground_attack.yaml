@@ -1,0 +1,44 @@
+schema_version: "1"
+mission_type: ground_attack
+theatre: Caucasus
+name: Batumi Kutaisi Ground Attack
+description: >
+  Cold start at Batumi with 2x FAB-250 on the inner wing stations. Strike a
+  soft truck park inland past Kutaisi on the opposing (red) side.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Batumi
+  coalition: blue
+  country: Georgia
+  skill: Player
+  start: cold_parking
+  payload: su25t_2x_fab250
+strike:
+  # Airfield-relative from Batumi onto Colchis land inland of Kutaisi.
+  # PyDCS heading_between_point Batumi (id 22) → Kutaisi (id 25) is
+  # 43.14° / 97.20 km. Integer 43° / 100 km is ~2.8 km from the field
+  # (near-airport). 43° / 110 km ≈ 12.8 km past Kutaisi (land).
+  # Do not copy CAP 270° / 40 km (sea), Manston 125° / 76 km, or Cherbourg 180° / 63 km.
+  bearing_deg: 43
+  distance_km: 110
+  altitude_m: 2000
+enemies: []
+targets:
+  - unit: Ural-375
+    count: 3
+    skill: Average
+    country: Russia
+    coalition: red
+  - unit: GAZ-66
+    count: 2
+    skill: Average
+    country: Russia
+    coalition: red
+objectives:
+  - type: attack_ground

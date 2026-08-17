@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Caucasus invent allows ground_attack; modern trucks (2026-08-16)
+
+- **Date:** 2026-08-16
+- **Lesson:** Caucasus invent/chat may emit **free_flight, CAP, or
+  ground_attack** at Batumi (Su-25T, Georgia blue). GA strike is **43° / 110 km
+  / 2000 m** inland past Kutaisi — not CAP 270/40. Schema
+  `theatre=Caucasus` + `ground_attack` loads
+  `batumi_kutaisi_ground_attack.yaml` with dedicated `_CAUCASUS_GA_NOTES` — do
+  not concatenate Channel `_TYPE_NOTES` (french_coast / Manston). Catalog
+  tags modern trucks `theatre_id=Caucasus` / `era_id=modern`;
+  `list_strike_targets(theatre="Caucasus")` returns Ural-375 not Blitz.
+  Channel `soft_vehicles` unit_ids stay WWII. Intercept/escort/recon still
+  refuse every turn. Path clamp and soft immersion floor stay TheChannel-only.
+  Stub LLM stays Manston.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`, `catalog/sync.py`,
+  `planning_options.yaml` (`kutaisi_inland_strike`, `modern_soft_vehicles`).
+
 ## Caucasus invent allows CAP; 270/40 Black Sea (2026-08-16)
 
 - **Date:** 2026-08-16

@@ -410,6 +410,30 @@ def compile_batumi_cap(output_path: Path) -> Path:
     )
 
 
+BATUMI_GA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_kutaisi_ground_attack.yaml"
+BATUMI_GA_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=22',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Ground Attack",
+    "{3C612111-C7AD-476E-8A8E-2485812F4E5C}",
+    '["type"]="Ural-375"',
+    '["type"]="GAZ-66"',
+    "Russia",
+    "Bombing",
+)
+
+
+def compile_batumi_ground_attack(output_path: Path) -> Path:
+    spec = load_mission_spec(BATUMI_GA_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 BATUMI_SPITFIRE_EXAMPLE_SPEC = REPO_ROOT / "examples" / "batumi_spitfire_freeflight.yaml"
 BATUMI_SPITFIRE_MISSION_CONTRACTS = (
     "SpitfireLFMkIX",

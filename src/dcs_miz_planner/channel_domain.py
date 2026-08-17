@@ -1,9 +1,9 @@
 """Land vs sea probe for strike placement (validate + randomize).
 
 Uses PyDCS airport geometry — not DCS runtime land.getSurfaceType.
-Heuristic: near a curated airport ⇒ land; roughly on the UK–opposite-coast
-chord ⇒ sea. TheChannel uses UK–FR Channel ids; Normandy uses UK–Cotentin ids.
-Other theatres fail closed before a chord runs.
+Heuristic: near a curated airport ⇒ land; TheChannel/Normandy use a
+UK–opposite-coast chord ⇒ sea; Caucasus uses a west-of-coast seaward sector.
+Other theatres fail closed before a recipe runs.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ Domain = Literal["land", "sea"]
 
 CHANNEL_THEATRE = "TheChannel"
 NORMANDY_THEATRE = "Normandy"
+CAUCASUS_THEATRE = "Caucasus"
 
 # Channel WWII coastal clusters (PyDCS TheChannel airport ids).
 _UK_AIRPORT_IDS: frozenset[int] = frozenset({5, 6, 7, 8, 10, 12, 13, 14})
@@ -29,7 +30,15 @@ _NORMANDY_FR_AIRPORT_IDS: frozenset[int] = frozenset({4, 1, 19})  # Maupertus, S
 _NEAR_AIRPORT_M = 3000.0
 _CHORD_SLACK_M = 8000.0
 
-_DOMAIN_THEATRES: frozenset[str] = frozenset({CHANNEL_THEATRE, NORMANDY_THEATRE})
+# Caucasus coastal vs inland clusters (PyDCS Caucasus airport ids; not Channel/Normandy).
+_CAUCASUS_COASTAL_IDS: frozenset[int] = frozenset({22, 24, 18})  # Batumi, Kobuleti, Sochi-Adler
+_CAUCASUS_INLAND_IDS: frozenset[int] = frozenset(
+    {23, 25, 29, 31, 28}
+)  # Senaki, Kutaisi, Tbilisi, Vaziani, Mozdok
+_CAUCASUS_SEAWARD_MIN_DEG = 225.0  # 270° ± 45° from nearest coastal AF
+_CAUCASUS_SEAWARD_MAX_DEG = 315.0
+
+_DOMAIN_THEATRES: frozenset[str] = frozenset({CHANNEL_THEATRE, NORMANDY_THEATRE, CAUCASUS_THEATRE})
 
 
 class DomainUnsupportedTheatre(ValueError):
@@ -98,11 +107,42 @@ def classify_normandy_domain(x: float, y: float) -> Domain:
     )
 
 
+def classify_caucasus_domain(x: float, y: float) -> Domain:
+    """Return ``land`` or ``sea`` for a Caucasus terrain map point (x, y).
+
+    Not a Batumi–Kutaisi chord (that heading is over Colchis land). Near a
+    curated airfield ⇒ land. Else if the nearest curated field is inland ⇒
+    land. Else if the nearest is coastal and the heading from that field is
+    west (270° ± 45°) ⇒ sea. Else land. Sochi-due-south water is a known gap.
+    """
+    from dcs.mapping import Point
+
+    from .theatre_terrain import terrain_for_theatre
+
+    terrain = terrain_for_theatre(CAUCASUS_THEATRE)
+    point = Point(x, y, terrain)
+    curated_ids = _CAUCASUS_COASTAL_IDS | _CAUCASUS_INLAND_IDS
+    airports = [a for a in terrain.airport_list() if a.id in curated_ids]
+    if not airports:
+        return "land"
+    nearest = min(airports, key=lambda a: point.distance_to_point(a.position))
+    if point.distance_to_point(nearest.position) <= _NEAR_AIRPORT_M:
+        return "land"
+    if nearest.id in _CAUCASUS_INLAND_IDS:
+        return "land"
+    heading = float(nearest.position.heading_between_point(point)) % 360.0
+    if _CAUCASUS_SEAWARD_MIN_DEG <= heading <= _CAUCASUS_SEAWARD_MAX_DEG:
+        return "sea"
+    return "land"
+
+
 def classify_domain_for_theatre(theatre: str, x: float, y: float) -> Domain:
-    """Classify land/sea for ``theatre``; fail closed unless Channel or Normandy."""
+    """Classify land/sea for ``theatre``; fail closed unless Channel, Normandy, or Caucasus."""
     require_channel_domain(theatre)
     if theatre == NORMANDY_THEATRE:
         return classify_normandy_domain(x, y)
+    if theatre == CAUCASUS_THEATRE:
+        return classify_caucasus_domain(x, y)
     return classify_channel_domain(x, y)
 
 

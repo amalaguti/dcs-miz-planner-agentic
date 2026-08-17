@@ -65,6 +65,14 @@ def test_caucasus_supported_and_batumi(registry):
     assert "Russia" not in registry.list_countries(era="wwii")
     assert "usaaf" not in registry.list_countries(era="modern")
     assert "usaaf" not in registry.list_countries(era="wwii")
+    assert "Ural-375" in registry.list_ground_units()
+    assert registry.get_ground_unit("Ural-375").era == "modern"
+    assert "Blitz_36-6700A" in registry.list_ground_units()
+    assert registry.get_ground_unit("Blitz_36-6700A").era == "wwii"
+    fab = registry.get_payload("su25t_2x_fab250")
+    assert fab.aircraft == "Su-25T"
+    assert {p.pylon for p in fab.pylons} == {5, 7}
+    assert all(p.clsid == "{3C612111-C7AD-476E-8A8E-2485812F4E5C}" for p in fab.pylons)
 
 
 def test_syria_supported_and_incirlik(registry):

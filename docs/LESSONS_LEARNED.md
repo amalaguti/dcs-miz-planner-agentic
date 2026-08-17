@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-16 | [Caucasus invent allows ground_attack; modern trucks](lessons/agent-tooling.md#caucasus-invent-allows-ground_attack-modern-trucks-2026-08-16) | `agent-tooling` |
+| 2026-08-16 | [Caucasus inland GA 43/110; west-of-coast domain](lessons/channel-ids.md#caucasus-inland-ga-43110-west-of-coast-domain-2026-08-16) | `channel-ids` |
 | 2026-08-16 | [Caucasus invent allows CAP; 270/40 Black Sea](lessons/agent-tooling.md#caucasus-invent-allows-cap-27040-black-sea-2026-08-16) | `agent-tooling` |
 | 2026-08-16 | [requiredModules lists ED aircraft even when unused](lessons/pydcs-compile.md#requiredmodules-lists-ed-aircraft-even-when-unused-2026-08-16) | `pydcs-compile` |
 | 2026-08-16 | [Spitfire is dual-era; DCS map capability wins](lessons/channel-ids.md#spitfire-is-dual-era-dcs-map-capability-wins-2026-08-16) | `channel-ids` |

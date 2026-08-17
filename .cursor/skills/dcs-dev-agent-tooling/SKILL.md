@@ -18,9 +18,11 @@ description: >-
 2. Tools return **structured dicts**; no dedicated research CLI required.
 3. Catalog shares `inventory.sqlite` as query layer — Channel YAML remains SoT;
    schema bumps must clear `synced_at`. Strike units are a **curated** YAML shelf
-   (`list_strike_targets`), not an ME/install dump. Schema v6: `era_id=wwii` and
-   combat `theatre_id=TheChannel`. `list_strike_targets(theatre="Normandy")`
-   returns WWII **land** units (sea_craft stay Channel-only). Before expanding theatres or
+   (`list_strike_targets`), not an ME/install dump. Schema v6: WWII rows
+   `era_id=wwii` and combat `theatre_id=TheChannel`. Modern trucks
+   `era_id=modern` / `theatre_id=Caucasus`. `list_strike_targets(theatre="Normandy")`
+   returns WWII **land** units (sea_craft stay Channel-only).
+   `list_strike_targets(theatre="Caucasus")` returns Ural-375 not Blitz. Before expanding theatres or
    target shelves, follow [`docs/THEATRE_TARGET_PROMOTE.md`](../../../docs/THEATRE_TARGET_PROMOTE.md)
    (`#8e`). Local gitignored `research/` QAG HTML is `research_guidance` colour
    only — never ship those pages, never auto-promote QAG UI names into catalog
@@ -31,8 +33,9 @@ description: >-
    (NeedsOarPoint; CAP/intercept/escort 180°/63 km Cherbourg
    corridor, not Hawkinge, not Manston escort 120/55; GA/recon AOI 180°/133 km
    inland of Maupertus). Caucasus is
-   **free_flight or CAP** (Batumi; CAP 270°/40 km west over the Black Sea;
-   intercept/GA/escort/recon refused). Syria is **free_flight only**
+   **free_flight, CAP, or ground_attack** (Batumi; CAP 270°/40 km west over the
+   Black Sea; GA 43°/110 km inland past Kutaisi; intercept/escort/recon refused).
+   Syria is **free_flight only**
    (Incirlik; CAP refused). Nevada is **free_flight only** (Nellis; CAP
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).
    Refused types refuse every turn
@@ -46,8 +49,8 @@ description: >-
    not repair a Normandy CAP. Caucasus/Syria/Nevada/Falklands `build_spec_schema` notes MUST NOT
    concatenate `_COMMON_NOTES` / `_TYPE_NOTES` (those cite Manston YAML,
    Spitfire failures, `channel_place`). Use a dedicated notes tuple
-   (`_CAUCASUS_FF_NOTES` / `_SYRIA_FF_NOTES` / `_NEVADA_FF_NOTES` /
-   `_FALKLANDS_FF_NOTES`).
+   (`_CAUCASUS_FF_NOTES` / `_CAUCASUS_CAP_NOTES` / `_CAUCASUS_GA_NOTES` /
+   `_SYRIA_FF_NOTES` / `_NEVADA_FF_NOTES` / `_FALKLANDS_FF_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent is **TheChannel-only** (Manston

@@ -201,14 +201,14 @@ def harbour_prompt_cues(prompt: str) -> bool:
 _THEATRE_ALLOWED_TYPES: dict[str, frozenset[MissionType]] = {
     "TheChannel": frozenset(MissionType),
     "Normandy": frozenset(MissionType),
-    "Caucasus": frozenset({MissionType.FREE_FLIGHT, MissionType.CAP}),
+    "Caucasus": frozenset({MissionType.FREE_FLIGHT, MissionType.CAP, MissionType.GROUND_ATTACK}),
 }
 
 
 def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
     """Refuse mission types not allowed on this theatre. Every turn.
 
-    TheChannel: all six. Normandy: all six. Caucasus: free_flight and CAP.
+    TheChannel: all six. Normandy: all six. Caucasus: free_flight, CAP, and ground_attack.
     Else (Syria / Nevada / Falklands / Stage A): free_flight only. Callers MUST treat a non-None result as a hard refuse:
     never capture a draft and never write YAML. A one-shot ``_used`` flag is not.
     """
@@ -228,11 +228,12 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
         )
     if spec.theatre == "Caucasus":
         return (
-            "[Host] Caucasus invent is free_flight or CAP at Batumi. "
+            "[Host] Caucasus invent is free_flight, CAP, or ground_attack at Batumi. "
             "CAP station 270°/40 km west over the Black Sea (not Manston 135/25, "
-            "not Cherbourg 180/63). Refuse intercept/ground_attack/escort/recon — "
-            "emit free_flight or CAP (Su-25T, Georgia blue, sunny_clear) or switch "
-            "theatre to TheChannel. Do not copy channel_place or NeedsOarPoint "
+            "not Cherbourg 180/63). Ground attack 43°/110 km inland past Kutaisi "
+            "(not CAP 270/40). Refuse intercept/escort/recon — "
+            "emit free_flight, CAP, or ground_attack (Su-25T, Georgia blue, sunny_clear) "
+            "or switch theatre to TheChannel. Do not copy channel_place or NeedsOarPoint "
             "geometry onto Caucasus. "
             "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
         )
@@ -284,10 +285,10 @@ def theatre_mission_refuse_chat_line(spec: MissionSpec) -> str:
         )
     if spec.theatre == "Caucasus":
         return (
-            "[Host] Caucasus intercept/GA/escort/recon is not inventable — "
-            "commander nudged toward Batumi free_flight or CAP, or TheChannel. "
-            "Draft NOT captured. Emit free_flight or CAP at Batumi or switch "
-            "theatre to TheChannel, then /accept."
+            "[Host] Caucasus intercept/escort/recon is not inventable — "
+            "commander nudged toward Batumi free_flight, CAP, or ground_attack, "
+            "or TheChannel. Draft NOT captured. Emit free_flight, CAP, or "
+            "ground_attack at Batumi or switch theatre to TheChannel, then /accept."
         )
     if spec.theatre == "Syria":
         return (
@@ -327,8 +328,8 @@ def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
         )
     if spec.theatre == "Caucasus":
         return (
-            "Caucasus intercept/GA/escort/recon is not inventable. Draft NOT written. "
-            "Emit free_flight or CAP at Batumi or switch theatre to TheChannel."
+            "Caucasus intercept/escort/recon is not inventable. Draft NOT written. "
+            "Emit free_flight, CAP, or ground_attack at Batumi or switch theatre to TheChannel."
         )
     if spec.theatre == "Syria":
         return (
@@ -356,9 +357,7 @@ def theatre_mission_refuse_planner_error(spec: MissionSpec) -> str:
     if spec.theatre == "Normandy":
         return "Normandy invent is all six types at NeedsOarPoint"
     if spec.theatre == "Caucasus":
-        return (
-            "Caucasus invent is free_flight or CAP at Batumi; intercept/GA/escort/recon are refused"
-        )
+        return "Caucasus invent is free_flight, CAP, or ground_attack at Batumi; intercept/escort/recon are refused"
     if spec.theatre == "Syria":
         return "Syria invent is free_flight only; intercept/cap/GA/escort/recon are refused"
     if spec.theatre == "Nevada":

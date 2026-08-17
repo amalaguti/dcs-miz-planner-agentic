@@ -24,8 +24,9 @@ from .results import err_result, ok_result
 def _strike_theatre_match(row: dict[str, Any], theatre_f: str) -> bool:
     """True when a catalog strike row is offerable for ``theatre_f``.
 
-    Rows stay tagged ``TheChannel``. WWII land units are also offered on
-    Normandy; sea_craft stay Channel-only.
+    WWII rows stay tagged ``TheChannel`` and land units are also offered on
+    Normandy; sea_craft stay Channel-only. Modern trucks are tagged
+    ``Caucasus`` and match that theatre by stored ``theatre_id``.
     """
     row_theatre = str(row["theatre_id"])
     if row_theatre == theatre_f:
