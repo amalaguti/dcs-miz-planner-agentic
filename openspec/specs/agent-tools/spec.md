@@ -928,6 +928,12 @@ including `cap`, the tool MUST NOT return a prior-map combat skeleton.
   `Nevada`
 - **THEN** the example MUST use `Nellis`, `Su-25T`, and `USA`
 
+#### Scenario: Extra Nevada airfields do not replace Nellis schema
+- **WHEN** a caller requests the free_flight Spec schema with theatre
+  `Nevada`
+- **THEN** the example MUST still use `Nellis` (not `GroomLake`); extra
+  curated keys MUST remain findable via catalog lookup
+
 #### Scenario: Nevada combat schema has no Manston skeleton
 - **WHEN** a caller requests a cap or intercept schema with theatre
   `Nevada`

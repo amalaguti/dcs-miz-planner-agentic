@@ -973,6 +973,16 @@ planner-supported.
 - **WHEN** a Nevada Mission Spec sets player aircraft `SpitfireLFMkIX`
 - **THEN** validation MUST succeed when the rest of the Spec is well-formed
 
+### Requirement: Extra Nevada airfields validate
+Shared validation SHALL accept a well-formed Nevada free-flight Spec whose
+player airfield is a curated extra Nevada key (e.g. `GroomLake`) when
+inventory agrees. Combat invent on Nevada MUST still be rejected.
+
+#### Scenario: Groom Lake freeflight validates
+- **WHEN** `examples/groom_lake_cold_freeflight.yaml` is validated against an
+  inventory that includes offerable Nevada
+- **THEN** validation MUST succeed
+
 ### Requirement: Falklands freeflight validates when inventory agrees
 Validation SHALL accept a free-flight Mission Spec with theatre `Falklands`
 and airfield `MountPleasant` when the packaged registry supports Falklands, a

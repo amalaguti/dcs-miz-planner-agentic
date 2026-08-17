@@ -327,6 +327,16 @@ and theatre `Nevada`.
 - **THEN** the catalog MUST contain theatre `Nevada` and airfield `Nellis`
   with `airdromeId` 4
 
+### Requirement: Catalog lists extra Nevada airfields
+After catalog sync from the packaged registry, known airfields MUST include
+`GroomLake` with `airdromeId` 2 and theatre `Nevada` (and the other curated
+Nevada keys besides `Nellis`).
+
+#### Scenario: GroomLake is a known Nevada airfield
+- **WHEN** catalog sync runs after the Nevada Stage B airfield table is present
+- **THEN** airfield listing MUST include `GroomLake` with theatre `Nevada`
+  and `airdromeId` 2
+
 ### Requirement: Catalog lists Falklands and MountPleasant
 After catalog sync from the packaged registry, known theatres MUST include
 `Falklands` and known airfields MUST include `MountPleasant` with

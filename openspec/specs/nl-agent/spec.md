@@ -717,6 +717,15 @@ Syria.
   (MUST NOT be required to emit TheChannel, Manston 125/76, CAP 180/40, or
   Kutaisi 43/110)
 
+### Requirement: Infer Nevada from curated airfield keys
+When rejected Spec JSON names a curated Nevada airfield and omits a usable
+theatre field, theatre inference MUST return `Nevada` (not Falklands when
+the key is `GroomLake`). Invent MUST remain free_flight-only at Nellis.
+
+#### Scenario: GroomLake infers Nevada
+- **WHEN** rejected JSON contains `"airfield": "GroomLake"` without theatre
+- **THEN** `infer_theatre` MUST return `Nevada`
+
 ### Requirement: Nevada invent is free_flight only
 Invent/chat SHALL allow `free_flight` when the bound theatre is `Nevada`
 (home `Nellis`, `Su-25T`, `sunny_clear`, USA blue). It SHALL refuse
