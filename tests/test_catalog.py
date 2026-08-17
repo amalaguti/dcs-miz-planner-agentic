@@ -209,6 +209,9 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert by_af["Mozdok"].airdrome_id == 28
     assert by_af["Incirlik"].theatre_id == "Syria"
     assert by_af["Incirlik"].airdrome_id == 16
+    assert by_af["Palmyra"].theatre_id == "Syria"
+    assert by_af["Palmyra"].airdrome_id == 28
+    assert "Syria" in {c.value for c in snap.countries}
     assert by_af["Nellis"].theatre_id == "Nevada"
     assert by_af["Nellis"].airdrome_id == 4
     assert by_af["MountPleasant"].theatre_id == "Falklands"

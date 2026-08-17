@@ -427,11 +427,11 @@ MUST NOT dump every Caucasus airport. Lookup MUST remain theatre-scoped
 ### Requirement: Modern era countries and aircraft are era-keyed
 The packaged registry SHALL load countries and aircraft from each
 `data/era/<era>/` package (`wwii` and `modern`). Era `modern` SHALL include
-PyDCS countries `Georgia`, `Turkey`, `USA`, `UK`, and `Russia`, aircraft
+PyDCS countries `Georgia`, `Turkey`, `USA`, `UK`, `Russia`, and `Syria`, aircraft
 `Su-25T` with group radio 251.0 MHz, and dual-era `SpitfireLFMkIX` /
 `SpitfireLFMkIXCW` with group radio 124.0 MHz (same refs as WWII). `UK` and
 those Spitfire types MUST remain in the WWII era package as well. It MUST
-NOT add Georgia/Turkey/USA/Russia or `Su-25T` to the WWII era package.
+NOT add Georgia/Turkey/USA/Russia/Syria or `Su-25T` to the WWII era package.
 Known-country and known-aircraft queries used for validation SHALL be
 filterable by era so Channel/Normandy remain `UK` / `ThirdReich` and WWII
 aircraft (including Spitfire) only for jets — `Su-25T` stays modern-only.
@@ -441,12 +441,12 @@ in any era.
 #### Scenario: WWII countries unchanged
 - **WHEN** the registry lists countries for era `wwii`
 - **THEN** the set MUST be `UK` and `ThirdReich` and MUST NOT include
-  `Georgia`, `Turkey`, `USA`, `Russia`, or `Germany`
+  `Georgia`, `Turkey`, `USA`, `Russia`, `Syria`, or `Germany`
 
 #### Scenario: Modern smoke identity
 - **WHEN** the registry lists countries and aircraft for era `modern`
-- **THEN** countries MUST include `Georgia`, `Turkey`, `USA`, `UK`, and
-  `Russia` and aircraft MUST include `Su-25T` at 251.0 MHz and
+- **THEN** countries MUST include `Georgia`, `Turkey`, `USA`, `UK`,
+  `Russia`, and `Syria` and aircraft MUST include `Su-25T` at 251.0 MHz and
   `SpitfireLFMkIX` at 124.0 MHz
 
 #### Scenario: Spitfire is dual-era
@@ -492,6 +492,26 @@ package. It MUST NOT dump every Syria airport.
 - **WHEN** the registry is queried for airfield `Incirlik` with theatre
   `Syria`
 - **THEN** it MUST return `airdromeId` 16
+
+### Requirement: Curated Syria airfields beyond Incirlik
+The packaged `Syria` theatre airfield table SHALL map these curated Spec
+keys to DCS `airdromeId` values from PyDCS `Syria.airport_list()` (never
+invented): `Incirlik` 16, `RamatDavid` 30 (PyDCS name `Ramat David`),
+`Damascus` 7, `BeirutRaficHariri` 6 (`Beirut-Rafic Hariri`), `Aleppo` 27,
+`BasselAlAssad` 21 (`Bassel Al-Assad`), `Palmyra` 28,
+`KingHusseinAirCollege` 19 (`King Hussein Air College`). The registry
+MUST NOT dump every Syria airport. Lookup MUST remain theatre-scoped
+(Syria id 28 is Palmyra, not Caucasus Mozdok, not Normandy Needs Oar Point).
+
+#### Scenario: Palmyra resolves on Syria
+- **WHEN** the registry is queried for airfield `Palmyra` with theatre
+  `Syria`
+- **THEN** it MUST return `airdromeId` 28
+
+#### Scenario: Palmyra is not Mozdok
+- **WHEN** the registry is queried for `Palmyra` with theatre `Syria`
+- **THEN** it MUST return `airdromeId` 28 and MUST NOT treat that id as a
+  Caucasus or Normandy airfield
 
 ### Requirement: Nevada theatre in packaged registry
 The packaged registry SHALL list Spec theatre id `Nevada` as

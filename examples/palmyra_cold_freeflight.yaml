@@ -1,0 +1,21 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: Syria
+name: Palmyra Free Flight
+description: >
+  Cold start at Palmyra. Free flight over Syria. Clear morning.
+  Country Syria red — PyDCS parks Syria on red; do not place Syria on blue.
+  Palmyra airdromeId 28 is not Caucasus Mozdok and not Normandy Needs Oar Point.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Palmyra
+  coalition: red
+  country: Syria
+  skill: Player
+  start: cold_parking

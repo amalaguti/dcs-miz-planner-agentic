@@ -1,9 +1,12 @@
 # Exact PyDCS country class names for modern Specs. Do not invent ids.
 # Germany is a hint to ThirdReich (modern blue in PyDCS), not a known country.
 # Russia is a Caucasus north-of-ridge host (PyDCS defaults Russia to red).
+# Syria (country) is a Syria-map inland host (PyDCS defaults Syria to red).
+# Theatre id Syria ≠ country Syria.
 countries:
   Georgia: {}
   Turkey: {}
   USA: {}
   UK: {}
   Russia: {}
+  Syria: {}

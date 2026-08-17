@@ -835,6 +835,20 @@ agrees. Channel/Normandy MUST still reject `Russia` as unknown-country.
 - **WHEN** a TheChannel Mission Spec sets player country `Russia`
 - **THEN** validation MUST fail with an unknown-country error
 
+### Requirement: Syria Palmyra freeflight validates
+Shared validation SHALL accept a well-formed Syria free-flight Spec with
+airfield `Palmyra` and player country `Syria` on coalition red when inventory
+agrees. Channel/Normandy MUST still reject country `Syria` as unknown-country.
+
+#### Scenario: Palmyra freeflight validates
+- **WHEN** `examples/palmyra_cold_freeflight.yaml` is validated against
+  an inventory that includes offerable Syria
+- **THEN** validation MUST succeed
+
+#### Scenario: Channel rejects country Syria
+- **WHEN** a TheChannel Mission Spec sets player country `Syria`
+- **THEN** validation MUST fail with an unknown-country error
+
 ### Requirement: Channel rejects Turkey
 Shared validation SHALL reject player country `Turkey` on a WWII theatre
 (TheChannel / Normandy) with an unknown-country error. A Syria Spec MAY

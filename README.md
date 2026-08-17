@@ -30,7 +30,9 @@ Caucasus invent is **all six types** at Batumi
 `examples/batumi_black_sea_escort.yaml`; escort same 270°/40 km, Georgia package;
 `examples/batumi_kutaisi_recon.yaml`; recon same 43°/110 km inland AOI). **Syria** is planner-bound for cold freeflight at Incirlik
 (`examples/incirlik_cold_freeflight.yaml`; Spec theatre id `Syria`; Su-25T /
-Turkey / 251.0 MHz). **Nevada** is planner-bound for cold freeflight at Nellis
+Turkey / 251.0 MHz) plus curated extra airfields and a Palmyra smoke
+(`examples/palmyra_cold_freeflight.yaml`; country Syria red; airdromeId 28 is
+not Mozdok). **Nevada** is planner-bound for cold freeflight at Nellis
 (`examples/nellis_cold_freeflight.yaml`; Spec theatre id `Nevada`; Su-25T /
 USA / 251.0 MHz). **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
@@ -197,6 +199,10 @@ uv run dcs-miz examples/batumi_black_sea_escort.yaml
 uv run dcs-miz validate examples/batumi_kutaisi_recon.yaml
 uv run dcs-miz examples/batumi_kutaisi_recon.yaml
 # -> out/batumi_kutaisi_recon.miz
+
+uv run dcs-miz validate examples/palmyra_cold_freeflight.yaml
+uv run dcs-miz examples/palmyra_cold_freeflight.yaml
+# -> out/palmyra_cold_freeflight.miz
 
 uv run dcs-miz validate examples/manston_cap.yaml
 uv run dcs-miz examples/manston_cap.yaml

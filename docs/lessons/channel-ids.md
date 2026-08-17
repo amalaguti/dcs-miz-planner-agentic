@@ -5,6 +5,21 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Syria eight airfields; country Syria modern; Palmyra 28 (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Syria Stage B curates **eight** airfields from
+  `Syria.airport_list()` (59 fields — do not dump): `Incirlik` 16,
+  `RamatDavid` 30 (`Ramat David`), `Damascus` 7, `BeirutRaficHariri` 6
+  (`Beirut-Rafic Hariri`), `Aleppo` 27, `BasselAlAssad` 21 (`Bassel Al-Assad`),
+  `Palmyra` 28, `KingHusseinAirCollege` 19. **Palmyra 28 ≠ Mozdok 28 ≠
+  NeedsOarPoint 28** — lookup is theatre-scoped. Country **`Syria`** is
+  modern-only (PyDCS red default — do not place Syria on blue). Theatre id
+  `Syria` ≠ country `Syria`. Invent home stays Incirlik + Turkey + Su-25T
+  251.0 MHz, free_flight only. Channel+country-Syria is unknown.
+- **Code:** `data/theatres/Syria/airfields.yaml`,
+  `data/era/modern/countries.yaml`, `examples/palmyra_cold_freeflight.yaml`.
+
 ## Caucasus recon AOI 43/110; Ural-375 observe (2026-08-17)
 
 - **Date:** 2026-08-17

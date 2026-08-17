@@ -92,6 +92,7 @@ def test_countries_uk_and_thirdreich_only() -> None:
         "USA",
         "UK",
         "Russia",
+        "Syria",
     }
 
 
@@ -588,6 +589,14 @@ def test_era_filter_channel_rejects_georgia_turkey_and_su25t() -> None:
     result_ru = validate_mission_spec(spec_ru, inventory=_inv())
     assert not result_ru.ok
     assert any(e.code == "unknown_country" for e in result_ru.errors)
+    spec_sy = load_mission_spec(MANSTON_FF).model_copy(
+        update={
+            "player": load_mission_spec(MANSTON_FF).player.model_copy(update={"country": "Syria"})
+        }
+    )
+    result_sy = validate_mission_spec(spec_sy, inventory=_inv())
+    assert not result_sy.ok
+    assert any(e.code == "unknown_country" for e in result_sy.errors)
     spec_ac = load_mission_spec(MANSTON_FF).model_copy(
         update={
             "player": load_mission_spec(MANSTON_FF).player.model_copy(update={"aircraft": "Su-25T"})

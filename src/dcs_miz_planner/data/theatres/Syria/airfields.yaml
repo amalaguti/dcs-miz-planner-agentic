@@ -1,5 +1,13 @@
 # Curated Spec airfield key -> DCS airdromeId for theatre Syria.
 # Verified from PyDCS Syria.airport_list(); do not dump all 59 fields.
-# PyDCS name: Incirlik.
+# PyDCS names: Incirlik, Ramat David, Damascus, Beirut-Rafic Hariri, Aleppo,
+# Bassel Al-Assad, Palmyra, King Hussein Air College.
 airfields:
   Incirlik: 16 # Incirlik
+  RamatDavid: 30 # Ramat David (class Ramat_David)
+  Damascus: 7 # Damascus
+  BeirutRaficHariri: 6 # Beirut-Rafic Hariri (class Beirut_Rafic_Hariri)
+  Aleppo: 27 # Aleppo
+  BasselAlAssad: 21 # Bassel Al-Assad (class Bassel_Al_Assad)
+  Palmyra: 28 # Palmyra (not Caucasus Mozdok, not Normandy NeedsOarPoint)
+  KingHusseinAirCollege: 19 # King Hussein Air College (class King_Hussein_Air_College)

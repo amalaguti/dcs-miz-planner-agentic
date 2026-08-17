@@ -960,7 +960,16 @@ def infer_theatre(text: str | None) -> str | None:
         "Mozdok",
     }:
         return "Caucasus"
-    if af and af.group(1) == "Incirlik":
+    if af and af.group(1) in {
+        "Incirlik",
+        "RamatDavid",
+        "Damascus",
+        "BeirutRaficHariri",
+        "Aleppo",
+        "BasselAlAssad",
+        "Palmyra",
+        "KingHusseinAirCollege",
+    }:
         return "Syria"
     if af and af.group(1) == "Nellis":
         return "Nevada"

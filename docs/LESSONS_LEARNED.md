@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-17 | [Syria eight airfields; country Syria modern; Palmyra 28](lessons/channel-ids.md#syria-eight-airfields-country-syria-modern-palmyra-28-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Caucasus invent allows recon; all six types](lessons/agent-tooling.md#caucasus-invent-allows-recon-all-six-types-2026-08-17) | `agent-tooling` |
 | 2026-08-17 | [Caucasus recon AOI 43/110; Ural-375 observe](lessons/channel-ids.md#caucasus-recon-aoi-43110-ural-375-observe-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Caucasus invent allows escort; recon still refuses](lessons/agent-tooling.md#caucasus-invent-allows-escort-recon-still-refuses-2026-08-17) | `agent-tooling` |

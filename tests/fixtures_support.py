@@ -536,6 +536,25 @@ def compile_mozdok(output_path: Path) -> Path:
     )
 
 
+PALMYRA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "palmyra_cold_freeflight.yaml"
+PALMYRA_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=28',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Syria",
+)
+
+
+def compile_palmyra(output_path: Path) -> Path:
+    spec = load_mission_spec(PALMYRA_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 SYRIA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "incirlik_cold_freeflight.yaml"
 SYRIA_MISSION_CONTRACTS = (
     "Su-25T",

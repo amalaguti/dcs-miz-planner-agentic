@@ -62,11 +62,16 @@ description: >-
    default is ThirdReich). **SpitfireLFMkIX is dual-era** (same 124.0 ref in wwii + modern)
    because DCS flies it on modern maps; Channel still rejects `Su-25T`. UK is
    dual-era. Catalog listing may union eras. Do not dump all 21 fields.
-10. **Syria** Spec id is **`Syria`** (era `modern`). Curated AF: `Incirlik` = 16
-    (PyDCS name `Incirlik`; do not dump 59 fields). Modern smoke: country
-    `Turkey` (not USA / `usaaf`, not Georgia, not Syria-on-red), aircraft
-    `Su-25T` at **251.0 MHz**.     Add Turkey only to `era/modern` next to Georgia —
-    never `era/wwii`. Channel+Turkey/Su-25T is unknown. Spitfire is dual-era.
+10. **Syria** Spec id is **`Syria`** (era `modern`). Curated AFs (8 of 59):
+    `Incirlik` = 16, `RamatDavid` = 30 (`Ramat David`), `Damascus` = 7,
+    `BeirutRaficHariri` = 6 (`Beirut-Rafic Hariri`), `Aleppo` = 27,
+    `BasselAlAssad` = 21 (`Bassel Al-Assad`), `Palmyra` = 28 (not Mozdok,
+    not NeedsOarPoint), `KingHusseinAirCollege` = 19. Do not dump 59 fields.
+    Invent home: `Turkey` + `Su-25T` at **251.0 MHz** at Incirlik (FF only).
+    Country **`Syria`** is modern-only (PyDCS red default — Palmyra smoke
+    uses coalition red). Theatre id `Syria` ≠ country `Syria`. Channel+country-Syria
+    is unknown. Add Syria-the-country only to `era/modern` — never `era/wwii`.
+    Spitfire is dual-era.
 11. **Nevada** Spec id is **`Nevada`** (era `modern`). Curated AF: `Nellis` = 4
     (PyDCS name `Nellis`; do not dump 17 fields). Modern smoke: country `USA`
     (not `usaaf`, not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**.
