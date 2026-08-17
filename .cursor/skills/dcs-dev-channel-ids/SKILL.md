@@ -89,7 +89,13 @@ description: >-
     `Mesquite` = 13. Do not invent id 12 or dump all 17 fields. Nellis 4 is
     not Maupertus and not Dunkirk. Modern smoke: country `USA` (not `usaaf`,
     not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**. Invent home
-    stays Nellis (free_flight only). Add USA only to `era/modern` next to
+    stays Nellis (**free_flight or CAP**; station **350° / 40 km / 4000 m**
+    desert north-range land — not Incirlik 180/40, not Batumi 270/40, not
+    Cherbourg 180/63, not Manston 135/25, not Creech 303/40, not 180/40
+    Henderson, not 270/40 NLV, not 79/40 Echo Bay water). CAP enemies:
+    Russia + Su-25T (set `enemies[].country: Russia`; default is ThirdReich).
+    Do not put USA on red. Intercept/GA/escort/recon still refuse. Add USA only
+    to `era/modern` next to
     Georgia and Turkey — never `era/wwii`. `usaaf` is voice only, not a
     country. Channel+USA/Su-25T is unknown. Spitfire is dual-era. UK is
     dual-era (wwii + modern).

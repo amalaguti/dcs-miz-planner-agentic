@@ -41,7 +41,9 @@ description: >-
    Syria is **all six types**
    (Incirlik; CAP/intercept/escort 180°/40 km south over the Gulf of Iskenderun — not Cherbourg
    180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA/recon AOI 121°/200 km inland past Aleppo —
-   not CAP 180/40). Nevada is **free_flight only** (Nellis; CAP
+   not CAP 180/40). Nevada is **free_flight or CAP** (Nellis; CAP station
+   350°/40 km desert north-range — not Incirlik 180/40, not Batumi 270/40,
+   not Cherbourg 180/63, not Creech 303/40; intercept/GA/escort/recon
    refused). Falklands is **free_flight only** (MountPleasant; CAP refused).
    Refused types refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
@@ -64,8 +66,8 @@ description: >-
    `_CAUCASUS_INTERCEPT_NOTES` / `_CAUCASUS_ESCORT_NOTES` /
    `_CAUCASUS_RECON_NOTES` /
    `_SYRIA_FF_NOTES` / `_SYRIA_CAP_NOTES` / `_SYRIA_INTERCEPT_NOTES` /
-   `_SYRIA_ESCORT_NOTES` / `_SYRIA_GA_NOTES` / `_SYRIA_RECON_NOTES` /
-   `_NEVADA_FF_NOTES` / `_FALKLANDS_FF_NOTES`).
+   `_SYRIA_ESCORT_NOTES` /    `_SYRIA_GA_NOTES` / `_SYRIA_RECON_NOTES` /
+   `_NEVADA_FF_NOTES` / `_NEVADA_CAP_NOTES` / `_FALKLANDS_FF_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent is **TheChannel-only** (Manston

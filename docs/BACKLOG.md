@@ -409,8 +409,8 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** Nevada places/CAP (Stage C) or Falklands B.
-After `nevada-airfields`.
+**Next promote / in proposal:** Nevada intercept or Falklands B.
+After `nevada-places`.
 Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
@@ -453,11 +453,12 @@ Stage C combat on a new map before Slice 0b is on master.
 | F3g | `syria-recon` | Syria recon: Incirlik observe inland past Aleppo (121°/200 km); invent allow all six types | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F4 | `nevada-cold-freeflight` | Nevada Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F4b | `nevada-airfields` | Nevada Stage B: eight curated AFs; Groom Lake FF smoke (USA blue, id 2 ≠ MountPleasant); invent still FF-only at Nellis | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
+| F4c | `nevada-places` | Nevada Stage C: Nellis places + desert north-range CAP (350°/40 km); invent FF+CAP; intercept/GA/escort/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
 promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Nevada
-places/CAP (Stage C) or Falklands B. Refresh
+intercept or Falklands B. Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `MarianaIslandsWWII` / `Kola` / `Iraq` until PyDCS terrain exists (R8).
 

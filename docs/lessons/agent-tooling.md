@@ -5,6 +5,26 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada invent allows CAP; 350/40 desert north-range (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nevada invent/chat may emit **free_flight or CAP** at Nellis
+  (Su-25T, USA blue). CAP station is **350° / 40 km / 4000 m** north of
+  Nellis over Desert NWR / north-range land — not Incirlik 180/40, not
+  Batumi 270/40, not Cherbourg 180/63, not Manston 135/25, not Creech 303/40.
+  180/40 is nearer Henderson; 270/40 is nearer North Las Vegas; 79/40 is
+  Echo Bay water. Schema `theatre=Nevada` + `cap` loads
+  `nellis_north_range_cap.yaml` with dedicated `_NEVADA_CAP_NOTES` — do not
+  concatenate Channel `_COMMON_NOTES` / `_TYPE_NOTES`. Enemies: Su-25T,
+  country **Russia** red (`EnemyFlight` defaults to ThirdReich). Do not put
+  USA on red. Intercept/GA/escort/recon still refuse every turn. Domain
+  classifier and intercept spawn stay fail-closed on Nevada. Path clamp and
+  soft immersion floor stay TheChannel-only. Stub LLM stays Manston. FF
+  schema example stays `nellis_cold_freeflight.yaml`.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py` (`_NEVADA_CAP_NOTES`),
+  `agent/prompts.py`, `planning_options.yaml` (`nellis_home`,
+  `nellis_north_range_cap`), `examples/nellis_north_range_cap.yaml`.
+
 ## Syria invent allows recon; all six types (2026-08-17)
 
 - **Date:** 2026-08-17

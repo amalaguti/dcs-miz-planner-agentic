@@ -5,6 +5,26 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada CAP 350/40 desert north-range; country Russia opposition (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nellis CAP station is **350° / 40 km / 4000 m** from Nellis
+  (id 4, x=-398195.375, y=-17233.236816) north-by-west into Desert NWR /
+  north range. Live PyDCS `point_from_heading` → x=-358803.06488
+  y=-24179.16392, nearest Nellis 40 km (land). **Do not copy** Incirlik
+  180/40, Batumi 270/40, Cherbourg 180/63, Manston 135/25, Creech 303/40.
+  180/40 is nearer Henderson Executive (13.74 km from that station);
+  270/40 is nearer North Las Vegas (25.65 km); 79/40 is Echo Bay water.
+  Player USA + Su-25T blue at 251.0 MHz; enemies country **Russia** +
+  Su-25T red (MUST set `enemies[].country: Russia`; default is ThirdReich).
+  Do not put USA on red. Do not use country Syria on Nevada. `usaaf` is
+  voice only. Domain and intercept spawn stay fail-closed this slice.
+  Places: `nellis_home` (FF+CAP) and `nellis_north_range_cap` (CAP only,
+  domain land). Family stays `channel_place`. Do not dump all 17 Nevada
+  fields or invent id 12.
+- **Code:** `examples/nellis_north_range_cap.yaml`,
+  `planning_options.yaml` (`nellis_home`, `nellis_north_range_cap`).
+
 ## Nevada eight airfields; GroomLake 2 vs MountPleasant (2026-08-17)
 
 - **Date:** 2026-08-17
