@@ -65,6 +65,10 @@ def test_caucasus_supported_and_batumi(registry):
     assert "Russia" not in registry.list_countries(era="wwii")
     assert "Syria" in registry.list_countries(era="modern")
     assert "Syria" not in registry.list_countries(era="wwii")
+    assert "Argentina" in registry.list_countries(era="modern")
+    assert "Argentina" not in registry.list_countries(era="wwii")
+    assert "Chile" not in registry.list_countries(era="modern")
+    assert "Chile" not in registry.list_countries(era="wwii")
     assert "usaaf" not in registry.list_countries(era="modern")
     assert "usaaf" not in registry.list_countries(era="wwii")
     assert "Ural-375" in registry.list_ground_units()
@@ -107,6 +111,17 @@ def test_falklands_supported_and_mount_pleasant(registry):
     assert registry.era_for_theatre("Falklands") == "modern"
     assert registry.airdrome_id("MountPleasant", theatre="Falklands") == 2
     assert registry.airfield_theatre("MountPleasant") == "Falklands"
+    assert registry.airdrome_id("RioGallegos", theatre="Falklands") == 5
+    assert registry.airfield_theatre("RioGallegos") == "Falklands"
+    assert registry.airdrome_id("PortStanley", theatre="Falklands") == 1
+    assert registry.airfield_theatre("PortStanley") == "Falklands"
+    assert "Argentina" in registry.list_countries(era="modern")
+    assert "Argentina" not in registry.list_countries(era="wwii")
+    assert "Chile" not in registry.list_countries(era="modern")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Rio_Gallegos")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Port_Stanley")
 
 
 def test_known_wwii_aircraft(registry):

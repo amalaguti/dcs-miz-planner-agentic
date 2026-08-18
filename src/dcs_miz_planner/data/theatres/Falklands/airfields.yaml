@@ -1,5 +1,14 @@
 # Curated Spec airfield key -> DCS airdromeId for theatre Falklands.
 # Verified from PyDCS Falklands.airport_list(); do not dump all 27 fields.
-# PyDCS name: Mount Pleasant (class Mount_Pleasant). Spec key is MountPleasant.
+# Ids 4 and 28 are absent from airport_list(); do not invent them.
+# PyDCS names: Mount Pleasant, Port Stanley, San Carlos FOB, Rio Gallegos,
+# Rio Grande, Ushuaia, Punta Arenas, San Julian.
 airfields:
-  MountPleasant: 2 # Mount Pleasant
+  MountPleasant: 2 # Mount Pleasant (class Mount_Pleasant; invent home)
+  PortStanley: 1 # Port Stanley (class Port_Stanley; lookup-only heli)
+  SanCarlosFOB: 3 # San Carlos FOB (class San_Carlos_FOB)
+  RioGallegos: 5 # Rio Gallegos (class Rio_Gallegos; not Channel Manston)
+  RioGrande: 6 # Rio Grande (class Rio_Grande)
+  Ushuaia: 7 # Ushuaia
+  PuntaArenas: 9 # Punta Arenas (class Punta_Arenas)
+  SanJulian: 11 # San Julian (class San_Julian)

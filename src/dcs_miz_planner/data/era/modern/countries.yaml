@@ -3,6 +3,8 @@
 # Russia is a Caucasus north-of-ridge host (PyDCS defaults Russia to red).
 # Syria (country) is a Syria-map inland host (PyDCS defaults Syria to red).
 # Theatre id Syria ≠ country Syria.
+# Argentina is a Falklands extra-AF host (PyDCS countries.Argentina id 83; red).
+# Chile is deferred.
 countries:
   Georgia: {}
   Turkey: {}
@@ -10,3 +12,4 @@ countries:
   UK: {}
   Russia: {}
   Syria: {}
+  Argentina: {}

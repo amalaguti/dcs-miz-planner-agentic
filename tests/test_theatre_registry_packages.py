@@ -59,6 +59,13 @@ _NEVADA_AIRFIELDS = {
 
 _FALKLANDS_AIRFIELDS = {
     "MountPleasant": 2,
+    "PortStanley": 1,
+    "SanCarlosFOB": 3,
+    "RioGallegos": 5,
+    "RioGrande": 6,
+    "Ushuaia": 7,
+    "PuntaArenas": 9,
+    "SanJulian": 11,
 }
 
 _NORMANDY_AIRFIELDS = {
@@ -168,16 +175,29 @@ def test_nevada_airfields_exactly_nellis(registry):
         registry.airdrome_id("GroomLake", theatre="TheChannel")
 
 
-def test_falklands_airfields_exactly_mount_pleasant(registry):
+def test_falklands_airfields_exactly_curated_eight(registry):
     names = registry.list_airfields(theatre="Falklands")
     assert {n: registry.airdrome_id(n, theatre="Falklands") for n in names} == _FALKLANDS_AIRFIELDS
     assert registry.airdrome_id("MountPleasant", theatre="Falklands") == 2
+    assert registry.airdrome_id("RioGallegos", theatre="Falklands") == 5
+    assert registry.airdrome_id("Manston", theatre="TheChannel") == 5
+    assert registry.airdrome_id("GroomLake", theatre="Nevada") == 2
+    assert registry.airdrome_id("MervilleCalonne", theatre="TheChannel") == 2
+    ids = {registry.airdrome_id(n, theatre="Falklands") for n in names}
+    assert 4 not in ids
+    assert 28 not in ids
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("MountPleasant", theatre="TheChannel")
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Manston", theatre="Falklands")
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Nellis", theatre="Falklands")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("RioGallegos", theatre="TheChannel")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Rio_Gallegos", theatre="Falklands")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Port_Stanley", theatre="Falklands")
 
 
 def test_normandy_airfields_exactly_curated_eight(registry):

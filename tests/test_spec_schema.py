@@ -66,6 +66,36 @@ def test_infer_theatre_from_rejected_json() -> None:
         infer_theatre('{"mission_type": "cap", "player": {"airfield": "Mount_Pleasant"}}')
         == "Falklands"
     )
+    assert (
+        infer_theatre('{"mission_type": "free_flight", "player": {"airfield": "RioGallegos"}}')
+        == "Falklands"
+    )
+    assert (
+        infer_theatre('{"mission_type": "free_flight", "player": {"airfield": "PortStanley"}}')
+        == "Falklands"
+    )
+    assert (
+        infer_theatre('{"mission_type": "free_flight", "player": {"airfield": "SanCarlosFOB"}}')
+        == "Falklands"
+    )
+    assert (
+        infer_theatre('{"mission_type": "free_flight", "player": {"airfield": "RioGrande"}}')
+        == "Falklands"
+    )
+    assert (
+        infer_theatre('{"mission_type": "free_flight", "player": {"airfield": "Ushuaia"}}')
+        == "Falklands"
+    )
+    assert (
+        infer_theatre('{"mission_type": "free_flight", "player": {"airfield": "PuntaArenas"}}')
+        == "Falklands"
+    )
+    assert (
+        infer_theatre('{"mission_type": "free_flight", "player": {"airfield": "SanJulian"}}')
+        == "Falklands"
+    )
+    assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Rio_Gallegos"}}') is None
+    assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Port_Stanley"}}') is None
 
 
 def test_get_mission_spec_schema_tool() -> None:

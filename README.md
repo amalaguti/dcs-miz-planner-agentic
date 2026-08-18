@@ -54,7 +54,9 @@ Creech — not CAP 350/40) and inland recon
 **all six types** at Nellis. **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
-251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
+251.0 MHz) plus curated extra airfields and a Rio Gallegos smoke
+(`examples/rio_gallegos_cold_freeflight.yaml`; Argentina red; airdromeId 5 is
+not Channel Manston). Port Stanley is lookup-only (heli). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
 at Nellis; Falklands invent is **free_flight
 only** — other combat types refuse. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, Caucasus
@@ -69,7 +71,9 @@ SaintPierreduMont, Carpiquet) are packaged. Extra curated Caucasus airfields
 (Kobuleti, SenakiKolkhi, Kutaisi, TbilisiLochini, Vaziani, SochiAdler, Mozdok)
 are packaged. Extra curated Nevada airfields
 (GroomLake, Creech, TonopahTestRange, NorthLasVegas, HendersonExecutive,
-BoulderCity, Mesquite) are packaged. Optional
+BoulderCity, Mesquite) are packaged. Extra curated Falklands airfields
+(PortStanley, SanCarlosFOB, RioGallegos, RioGrande, Ushuaia, PuntaArenas,
+SanJulian) are packaged; PortStanley is lookup-only (heli). Optional
 `player.flight` (size 2–4, role lead|wingman) emits a multi-ship player section
 (accepted ME 2026-08-07; `examples/manston_freeflight_flight_lead.yaml` /
 `manston_freeflight_flight_wingman.yaml`; wingman `join_up` Follow/shared route
@@ -231,6 +235,10 @@ uv run dcs-miz examples/palmyra_cold_freeflight.yaml
 uv run dcs-miz validate examples/groom_lake_cold_freeflight.yaml
 uv run dcs-miz examples/groom_lake_cold_freeflight.yaml
 # -> out/groom_lake_cold_freeflight.miz
+
+uv run dcs-miz validate examples/rio_gallegos_cold_freeflight.yaml
+uv run dcs-miz examples/rio_gallegos_cold_freeflight.yaml
+# -> out/rio_gallegos_cold_freeflight.miz
 
 uv run dcs-miz validate examples/nellis_dawn_intercept.yaml
 uv run dcs-miz examples/nellis_dawn_intercept.yaml

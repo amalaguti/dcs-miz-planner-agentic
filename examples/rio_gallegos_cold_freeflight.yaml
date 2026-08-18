@@ -1,0 +1,21 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: Falklands
+name: Rio Gallegos Free Flight
+description: >
+  Cold start at Rio Gallegos. Free flight over the Falklands. Clear morning.
+  Country Argentina red (opposing-host extra-AF smoke; UK stays blue at
+  Mount Pleasant). Rio Gallegos airdromeId 5 is not Channel Manston.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: RioGallegos
+  coalition: red
+  country: Argentina
+  skill: Player
+  start: cold_parking

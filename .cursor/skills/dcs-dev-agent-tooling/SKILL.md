@@ -47,7 +47,12 @@ description: >-
    CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
    not Batumi 270/40, not Cherbourg 180/63, not Channel escort 120/55, not Creech 303/40;
    GA/recon AOI 303°/85 km inland past Creech — not CAP 350/40).
-   Falklands is **free_flight only** (MountPleasant; CAP refused).
+   Falklands is **free_flight only** (MountPleasant UK blue; CAP refused).
+   Extra Falklands AFs (`PortStanley`, `SanCarlosFOB`, `RioGallegos`,
+   `RioGrande`, `Ushuaia`, `PuntaArenas`, `SanJulian`) are catalog/lookup;
+   they MUST NOT replace the invent/schema home. Port Stanley is heli
+   lookup-only. Country `Argentina` is modern-only; Channel+Argentina is
+   unknown. Chile is deferred.
    Refused types refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
    nudges MUST infer theatre from rejected JSON and pass it to

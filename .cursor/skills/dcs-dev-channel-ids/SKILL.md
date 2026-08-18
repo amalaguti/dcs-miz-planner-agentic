@@ -114,13 +114,23 @@ description: >-
     country. Channel+USA/Su-25T is unknown. Spitfire is dual-era. UK is
     dual-era (wwii + modern).
 12. **Falklands** Spec id is **`Falklands`** (product name South Atlantic;
-    era `modern`). Curated AF: `MountPleasant` = 2 (PyDCS name
-    `Mount Pleasant`; class `Mount_Pleasant`; do not dump 27 fields). Spec
-    key MUST be `MountPleasant`, not `Mount_Pleasant` (same pitfall as
-    Normandy `FordAF` ≠ `Ford_AF`). Modern smoke: country `UK` (keep UK in
-    `era/wwii` as well), aircraft `Su-25T` at **251.0 MHz**. Spitfire is
-    dual-era (same 124.0 in wwii + modern). Channel+UK still ok (wwii);
-    Channel+Su-25T is unknown.
+    era `modern`). Curated AFs (8 of 27): `MountPleasant` = 2 (PyDCS name
+    `Mount Pleasant`; class `Mount_Pleasant` — Spec key MUST be
+    `MountPleasant`, not `Mount_Pleasant`), `PortStanley` = 1 (`Port Stanley`
+    / `Port_Stanley`; lookup-only heli), `SanCarlosFOB` = 3
+    (`San Carlos FOB` / `San_Carlos_FOB`), `RioGallegos` = 5
+    (`Rio Gallegos` / `Rio_Gallegos`; not Channel Manston), `RioGrande` = 6,
+    `Ushuaia` = 7, `PuntaArenas` = 9 (`Punta Arenas`), `SanJulian` = 11
+    (`San Julian`). Do not invent ids 4 or 28 or dump all 27 fields.
+    Underscore forms (`Rio_Gallegos`, `Port_Stanley`) MUST be unknown
+    (same pitfall as `GroomLake` ≠ `Groom_Lake`); infer keeps
+    `Mount_Pleasant` only. Modern smoke: country `UK` (keep UK in
+    `era/wwii` as well), aircraft `Su-25T` at **251.0 MHz** at MountPleasant.
+    Extra-AF smoke: country **`Argentina`** modern-only (PyDCS id 83; red —
+    `examples/rio_gallegos_cold_freeflight.yaml`). Channel+Argentina is
+    unknown. Chile is deferred. Spitfire is dual-era (same 124.0 in wwii +
+    modern). Channel+UK still ok (wwii); Channel+Su-25T is unknown. Invent
+    home stays MountPleasant UK blue, **free_flight only**.
 
 ## Code touchpoints
 

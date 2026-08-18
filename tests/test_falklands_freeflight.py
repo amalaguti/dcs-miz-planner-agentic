@@ -9,8 +9,11 @@ from fixtures_support import (
     FALKLANDS_EXAMPLE_SPEC,
     FALKLANDS_MISSION_CONTRACTS,
     REQUIRED_MEMBERS,
+    RIO_GALLEGOS_EXAMPLE_SPEC,
+    RIO_GALLEGOS_MISSION_CONTRACTS,
     channel_available_inventory,
     compile_mount_pleasant,
+    compile_rio_gallegos,
 )
 
 from dcs_miz_planner.loader import load_mission_spec
@@ -42,3 +45,26 @@ def test_compile_mount_pleasant_contracts(tmp_path: Path) -> None:
         mission = zf.read("mission").decode("utf-8")
         for token in FALKLANDS_MISSION_CONTRACTS:
             assert token in mission, f"missing mission contract {token}"
+
+
+def test_validate_rio_gallegos() -> None:
+    spec = load_mission_spec(RIO_GALLEGOS_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_rio_gallegos_contracts(tmp_path: Path) -> None:
+    out = compile_rio_gallegos(tmp_path / "rio_gallegos.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Falklands" in theatre
+        assert "TheChannel" not in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in RIO_GALLEGOS_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+        assert '["type"]="Su-25T"' in mission
+        assert "Argentina" in mission

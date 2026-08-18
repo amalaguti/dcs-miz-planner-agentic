@@ -5,6 +5,31 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands eight airfields; Argentina modern; RioGallegos 5 (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands Stage B curates **eight** airfields from
+  `Falklands.airport_list()` (27 fields — do not dump; ids **4 and 28 are
+  absent**, do not invent them): `MountPleasant` 2 (PyDCS name
+  `Mount Pleasant`, class `Mount_Pleasant`; invent home), `PortStanley` 1
+  (`Port Stanley` / `Port_Stanley`; lookup-only heli — do not compile
+  Su-25T there), `SanCarlosFOB` 3 (`San Carlos FOB` / `San_Carlos_FOB`),
+  `RioGallegos` 5 (`Rio Gallegos` / `Rio_Gallegos`), `RioGrande` 6
+  (`Rio Grande`), `Ushuaia` 7, `PuntaArenas` 9 (`Punta Arenas`),
+  `SanJulian` 11 (`San Julian`). Spec keys are camelCase **without
+  underscores**: `RioGallegos` ≠ `Rio_Gallegos` (registry must reject the
+  underscore form — same pitfall as `GroomLake` ≠ `Groom_Lake` and
+  `MountPleasant` ≠ `Mount_Pleasant`). Infer keeps the `Mount_Pleasant`
+  alias only; `Rio_Gallegos` / `Port_Stanley` infer None.
+  **RioGallegos 5 ≠ Manston 5**; **MountPleasant 2 ≠ GroomLake 2 ≠
+  MervilleCalonne 2** — lookup is theatre-scoped. Country **`Argentina`**
+  is modern-only (PyDCS `countries.Argentina` id 83; red default — extra-AF
+  smoke uses coalition red). Channel+Argentina is unknown. Chile is
+  deferred. Extra-AF smoke is Argentina red at Rio Gallegos; invent/schema
+  home stays MountPleasant + UK + Su-25T 251.0 MHz, free_flight only.
+- **Code:** `data/theatres/Falklands/airfields.yaml`,
+  `data/era/modern/countries.yaml`, `examples/rio_gallegos_cold_freeflight.yaml`.
+
 ## Nevada recon AOI 303/85; Ural-375 observe (2026-08-17)
 
 - **Date:** 2026-08-17

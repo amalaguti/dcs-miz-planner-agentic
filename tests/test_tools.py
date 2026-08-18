@@ -87,6 +87,30 @@ def test_find_airfield_groom_lake(tmp_path: Path) -> None:
     assert missing["ok"] is False
 
 
+def test_find_airfield_rio_gallegos(tmp_path: Path) -> None:
+    db = tmp_path / "inventory.sqlite"
+    CatalogService(db_path=db).sync()
+    result = find_airfield("RioGallegos", db_path=db)
+    assert result["ok"] is True
+    rio = next(a for a in result["airfields"] if a["name"] == "RioGallegos")
+    assert rio["airdrome_id"] == 5
+    assert rio["theatre_id"] == "Falklands"
+    manston = find_airfield("Manston", db_path=db)
+    assert manston["ok"] is True
+    mn = next(a for a in manston["airfields"] if a["name"] == "Manston")
+    assert mn["airdrome_id"] == 5
+    assert mn["theatre_id"] == "TheChannel"
+    stanley = find_airfield("PortStanley", db_path=db)
+    assert stanley["ok"] is True
+    ps = next(a for a in stanley["airfields"] if a["name"] == "PortStanley")
+    assert ps["airdrome_id"] == 1
+    assert ps["theatre_id"] == "Falklands"
+    missing = find_airfield("Rio_Gallegos", db_path=db)
+    assert missing["ok"] is False
+    missing_stanley = find_airfield("Port_Stanley", db_path=db)
+    assert missing_stanley["ok"] is False
+
+
 def test_get_aircraft_details_spitfire(tmp_path: Path) -> None:
     db = tmp_path / "inventory.sqlite"
     CatalogService(db_path=db).sync()

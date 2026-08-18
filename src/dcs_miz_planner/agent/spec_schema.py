@@ -1299,7 +1299,17 @@ def infer_theatre(text: str | None) -> str | None:
         "Mesquite",
     }:
         return "Nevada"
-    if af and af.group(1) in {"MountPleasant", "Mount_Pleasant"}:
+    if af and af.group(1) in {
+        "MountPleasant",
+        "Mount_Pleasant",
+        "PortStanley",
+        "SanCarlosFOB",
+        "RioGallegos",
+        "RioGrande",
+        "Ushuaia",
+        "PuntaArenas",
+        "SanJulian",
+    }:
         return "Falklands"
     return None
 

@@ -103,7 +103,10 @@ def test_countries_uk_and_thirdreich_only() -> None:
         "UK",
         "Russia",
         "Syria",
+        "Argentina",
     }
+    assert "Chile" not in registry.list_countries(era="modern")
+    assert "Chile" not in registry.list_countries()
 
 
 def test_era_for_theatre_wwii() -> None:
@@ -596,6 +599,9 @@ def test_schema_theatre_falklands_free_flight() -> None:
     assert "Su-25T" in blob
     assert "UK" in blob
     assert "mount_pleasant_cold_freeflight.yaml" in blob
+    assert "rio_gallegos_cold_freeflight.yaml" not in blob
+    assert view.example["player"]["airfield"] != "RioGallegos"
+    assert view.example["player"]["airfield"] != "PortStanley"
     assert "manston_" not in blob.lower()
     assert "examples are Channel templates" not in blob
     assert "SpitfireLFMkIX" not in blob
@@ -967,6 +973,16 @@ def test_era_filter_channel_rejects_georgia_turkey_and_su25t() -> None:
     result_sy = validate_mission_spec(spec_sy, inventory=_inv())
     assert not result_sy.ok
     assert any(e.code == "unknown_country" for e in result_sy.errors)
+    spec_ar = load_mission_spec(MANSTON_FF).model_copy(
+        update={
+            "player": load_mission_spec(MANSTON_FF).player.model_copy(
+                update={"country": "Argentina"}
+            )
+        }
+    )
+    result_ar = validate_mission_spec(spec_ar, inventory=_inv())
+    assert not result_ar.ok
+    assert any(e.code == "unknown_country" for e in result_ar.errors)
     spec_ac = load_mission_spec(MANSTON_FF).model_copy(
         update={
             "player": load_mission_spec(MANSTON_FF).player.model_copy(update={"aircraft": "Su-25T"})

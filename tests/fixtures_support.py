@@ -857,6 +857,25 @@ def compile_mount_pleasant(output_path: Path) -> Path:
     )
 
 
+RIO_GALLEGOS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "rio_gallegos_cold_freeflight.yaml"
+RIO_GALLEGOS_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=5',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Argentina",
+)
+
+
+def compile_rio_gallegos(output_path: Path) -> Path:
+    spec = load_mission_spec(RIO_GALLEGOS_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 def compile_intercept(output_path: Path) -> Path:
     spec = load_mission_spec(INTERCEPT_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(
