@@ -26,7 +26,8 @@ description: >-
    `list_strike_targets(theatre="Syria")` dual-offers those same modern **land**
    trucks at query time (stored `theatre_id` stays Caucasus).
    `list_strike_targets(theatre="Nevada")` dual-offers those same modern **land**
-   trucks (same predicate). Falklands stay empty.
+   trucks (same predicate). `list_strike_targets(theatre="Falklands")`
+   dual-offers those same modern **land** trucks (same predicate).
    Before expanding theatres or
    target shelves, follow [`docs/THEATRE_TARGET_PROMOTE.md`](../../../docs/THEATRE_TARGET_PROMOTE.md)
    (`#8e`). Local gitignored `research/` QAG HTML is `research_guidance` colour
@@ -47,9 +48,12 @@ description: >-
    CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
    not Batumi 270/40, not Cherbourg 180/63, not Channel escort 120/55, not Creech 303/40;
    GA/recon AOI 303°/85 km inland past Creech — not CAP 350/40).
-   Falklands is **free_flight, CAP, intercept, or escort** (MountPleasant UK blue;
+   Falklands is **free_flight, CAP, intercept, escort, or ground_attack**
+   (MountPleasant UK blue;
    CAP/intercept/escort station 150°/40 km South Atlantic sea — not Nellis 350/40,
-   not Channel escort 120/55, not Hawkinge; Argentina enemies; Chile deferred; Port Stanley not CAP
+   not Channel escort 120/55, not Hawkinge; GA strike 269°/21 km inland short of
+   Goose Green — not CAP 150/40, not 269/36, not 269/51; Argentina enemies/trucks;
+   Chile deferred; Port Stanley not CAP
    home). Extra Falklands AFs (`PortStanley`, `SanCarlosFOB`, `RioGallegos`,
    `RioGrande`, `Ushuaia`, `PuntaArenas`, `SanJulian`) are catalog/lookup;
    they MUST NOT replace the invent/schema home. Port Stanley is heli
@@ -61,16 +65,17 @@ description: >-
    `build_spec_schema` — do not hardcode `theatre="Normandy"`,
    `theatre="Caucasus"`, `theatre="Syria"`, or `theatre="Nevada"` on
    domain/intercept errors (Falklands must repair to Mount Pleasant FF, CAP,
-   intercept, or escort 150/40 — not “switch to TheChannel for intercept”, not
+   intercept, escort, or ground_attack 269/21 — not “switch to TheChannel for intercept”, not
    Nellis, Incirlik, Batumi, or NeedsOarPoint).
    Default Manston CAP 135/25 must
    not repair a Normandy CAP.    Domain-mismatch repair
    (`motion_domain_mismatch` / `strike_domain_mismatch`) MUST use inferred
    theatre: Channel 125/76; Caucasus Kutaisi 43/110; Normandy Maupertus
-   180/133; Syria Aleppo 121/200; Nevada Creech 303/85 — never inject french_coast onto Batumi recon
+   180/133; Syria Aleppo 121/200; Nevada Creech 303/85; Falklands East
+   Falkland 269/21 — never inject french_coast onto Batumi recon
    or Incirlik GA/recon, never copy CAP 180/40 onto Syria land strike or
-   recon AOI, and never copy CAP 350/40 onto Nevada land strike or recon
-   AOI.
+   recon AOI, never copy CAP 350/40 onto Nevada land strike or recon
+   AOI, and never copy CAP 150/40 onto Falklands land strike.
    Caucasus/Syria/Nevada/Falklands `build_spec_schema` notes MUST NOT
    concatenate `_COMMON_NOTES` / `_TYPE_NOTES` (those cite Manston YAML,
    Spitfire failures, `channel_place`). Use a dedicated notes tuple
@@ -82,7 +87,8 @@ description: >-
    `_NEVADA_FF_NOTES` / `_NEVADA_CAP_NOTES` / `_NEVADA_INTERCEPT_NOTES` /
    `_NEVADA_ESCORT_NOTES` /    `_NEVADA_GA_NOTES` / `_NEVADA_RECON_NOTES` /
    `_FALKLANDS_FF_NOTES` / `_FALKLANDS_CAP_NOTES` /
-   `_FALKLANDS_INTERCEPT_NOTES` / `_FALKLANDS_ESCORT_NOTES`).
+   `_FALKLANDS_INTERCEPT_NOTES` / `_FALKLANDS_ESCORT_NOTES` /
+   `_FALKLANDS_GA_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent is **TheChannel-only** (Manston

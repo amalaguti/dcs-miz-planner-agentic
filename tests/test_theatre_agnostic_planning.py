@@ -79,6 +79,7 @@ FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
 FALKLANDS_CAP = REPO / "examples" / "mount_pleasant_south_atlantic_cap.yaml"
 FALKLANDS_INTERCEPT = REPO / "examples" / "mount_pleasant_dawn_intercept.yaml"
 FALKLANDS_ESCORT = REPO / "examples" / "mount_pleasant_south_atlantic_escort.yaml"
+FALKLANDS_GA = REPO / "examples" / "mount_pleasant_east_falkland_ground_attack.yaml"
 
 
 def _inv():
@@ -131,15 +132,27 @@ def test_airfield_relative_map_point_passes_theatre() -> None:
     assert isinstance(y, float)
 
 
-def test_domain_fail_closed_on_falklands_strike() -> None:
-    spec = load_mission_spec(GA).model_copy(
-        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
-    )
+def test_falklands_strike_domain_classified() -> None:
+    spec = load_mission_spec(FALKLANDS_GA)
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert result.ok, result.errors
+    assert strike_domain_for_spec(spec) == "land"
+    ff = load_mission_spec(FALKLANDS_FF)
+    sea_x, sea_y = airfield_relative_map_point(ff, bearing_deg=150.0, distance_km=40.0)
+    land_x, land_y = airfield_relative_map_point(ff, bearing_deg=269.0, distance_km=21.0)
+    assert classify_domain_for_theatre("Falklands", sea_x, sea_y) == "sea"
+    assert classify_domain_for_theatre("Falklands", land_x, land_y) == "land"
+    assert (sea_x, sea_y) != (land_x, land_y)
+    require_channel_domain("Falklands")
+
+
+def test_domain_fail_closed_on_kola_strike() -> None:
+    spec = load_mission_spec(GA).model_copy(update={"theatre": "Kola"})
     result = validate_mission_spec(spec, inventory=_inv())
     assert not result.ok
     assert any(e.code == "domain_unsupported_theatre" for e in result.errors)
     with pytest.raises(DomainUnsupportedTheatre):
-        require_channel_domain("Falklands")
+        require_channel_domain("Kola")
     with pytest.raises(DomainUnsupportedTheatre):
         strike_domain_for_spec(spec)
 
@@ -316,9 +329,7 @@ def test_intercept_unsupported_hint_lists_recipe_keys() -> None:
 
 
 def test_domain_unsupported_hint_lists_supported_theatres() -> None:
-    spec = load_mission_spec(GA).model_copy(
-        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
-    )
+    spec = load_mission_spec(GA).model_copy(update={"theatre": "Kola"})
     result = validate_mission_spec(spec, inventory=_inv())
     assert not result.ok
     err = next(e for e in result.errors if e.code == "domain_unsupported_theatre")
@@ -326,7 +337,7 @@ def test_domain_unsupported_hint_lists_supported_theatres() -> None:
     for key in DOMAIN_THEATRES:
         assert key in hint
     assert "Nevada" in hint
-    assert "Falklands" not in hint
+    assert "Falklands" in hint
     assert "TheChannel, Normandy, Caucasus, or Syria" not in hint
 
 
@@ -559,7 +570,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "free_flight" in mp_home.meta.get("mission_types", [])
     assert "intercept" in mp_home.meta.get("mission_types", [])
     assert "escort" in mp_home.meta.get("mission_types", [])
-    assert "ground_attack" not in mp_home.meta.get("mission_types", [])
+    assert "ground_attack" in mp_home.meta.get("mission_types", [])
     assert "recon" not in mp_home.meta.get("mission_types", [])
     mp_cap = next(o for o in places if o.id == "mount_pleasant_south_atlantic_cap")
     assert mp_cap.meta.get("theatre") == "Falklands"
@@ -577,6 +588,14 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "escort" in mp_cap.meta.get("mission_types", [])
     assert "ground_attack" not in mp_cap.meta.get("mission_types", [])
     assert "recon" not in mp_cap.meta.get("mission_types", [])
+    east_fk = next(o for o in places if o.id == "east_falkland_inland_strike")
+    assert east_fk.meta.get("theatre") == "Falklands"
+    assert east_fk.meta.get("domain") == "land"
+    assert east_fk.meta.get("strike_bearing_deg") == 269
+    assert east_fk.meta.get("strike_distance_km") == 21
+    assert "ground_attack" in east_fk.meta.get("mission_types", [])
+    assert "recon" not in east_fk.meta.get("mission_types", [])
+    assert "cap" not in east_fk.meta.get("mission_types", [])
     assert inland.meta.get("strike_bearing_deg") == 180
     assert inland.meta.get("strike_distance_km") == 133
     assert "recon" in inland.meta.get("mission_types", [])
@@ -593,7 +612,11 @@ def test_channel_place_tagged_thechannel() -> None:
             assert opt.meta.get("theatre") == "Syria"
         elif opt.id in {"nellis_home", "nellis_north_range_cap", "creech_range_strike"}:
             assert opt.meta.get("theatre") == "Nevada"
-        elif opt.id in {"mount_pleasant_home", "mount_pleasant_south_atlantic_cap"}:
+        elif opt.id in {
+            "mount_pleasant_home",
+            "mount_pleasant_south_atlantic_cap",
+            "east_falkland_inland_strike",
+        }:
             assert opt.meta.get("theatre") == "Falklands"
         else:
             assert opt.meta.get("theatre") == "TheChannel"
@@ -955,9 +978,34 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
 
 def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Falklands"):
-        build_spec_schema("ground_attack", theatre="Falklands")
-    with pytest.raises(ValueError, match="not supported for theatre Falklands"):
         build_spec_schema("recon", theatre="Falklands")
+    ga = build_spec_schema("ground_attack", theatre="Falklands")
+    assert ga.example["theatre"] == "Falklands"
+    assert ga.example["player"]["airfield"] == "MountPleasant"
+    assert ga.example["player"]["aircraft"] == "Su-25T"
+    assert ga.example["player"]["country"] == "UK"
+    assert ga.example["player"]["payload"] == "su25t_2x_fab250"
+    assert ga.example["strike"]["bearing_deg"] == 269
+    assert ga.example["strike"]["distance_km"] == 21
+    assert ga.example["strike"]["altitude_m"] == 2000
+    assert ga.example["strike"]["bearing_deg"] != 150
+    assert ga.example["strike"]["distance_km"] != 40
+    assert ga.example["targets"][0]["unit"] == "Ural-375"
+    assert ga.example["targets"][0]["country"] == "Argentina"
+    assert ga.example["player"]["airfield"] != "Manston"
+    assert ga.example["player"]["airfield"] != "Nellis"
+    assert ga.example["player"]["airfield"] != "Incirlik"
+    assert ga.example["player"]["airfield"] != "Batumi"
+    ga_blob = " ".join(ga.notes)
+    assert "east_falkland_inland_strike" in ga_blob or "Goose Green" in ga_blob
+    assert "mount_pleasant_east_falkland_ground_attack.yaml" in ga_blob
+    assert "french_coast" not in ga_blob
+    assert "manston_" not in ga_blob.lower()
+    ga_tool = get_mission_spec_schema("ground_attack", theatre="Falklands")
+    assert ga_tool["ok"] is True
+    assert ga_tool["example"]["player"]["airfield"] == "MountPleasant"
+    assert ga_tool["example"]["strike"]["bearing_deg"] == 269
+    assert ga_tool["example"]["targets"][0]["country"] == "Argentina"
     cap = build_spec_schema("cap", theatre="Falklands")
     assert cap.example["theatre"] == "Falklands"
     assert cap.example["player"]["airfield"] == "MountPleasant"
@@ -1027,11 +1075,9 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     assert escort_tool["example"]["package"][0]["country"] == "UK"
     assert escort_tool["example"]["enemies"][0]["country"] == "Argentina"
     assert escort_tool["example"]["escort"]["bearing_deg"] == 150
-    ga = get_mission_spec_schema("ground_attack", theatre="Falklands")
-    assert ga["ok"] is False
-    assert ga["code"] == "combat_unsupported_theatre"
     recon = get_mission_spec_schema("recon", theatre="Falklands")
     assert recon["ok"] is False
+    assert recon["code"] == "combat_unsupported_theatre"
 
 
 def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
@@ -1290,16 +1336,8 @@ def test_falklands_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(intercept) is None
     escort = load_mission_spec(FALKLANDS_ESCORT)
     assert host_normandy_combat_nudge(escort) is None
-    ga = load_mission_spec(NEVADA_GA).model_copy(
-        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
-    )
-    nudge = host_normandy_combat_nudge(ga)
-    assert nudge is not None
-    assert "Mount Pleasant" in nudge
-    assert "CAP at NeedsOarPoint" not in nudge
-    assert "free_flight at Batumi" not in nudge
-    assert "free_flight at Incirlik" not in nudge
-    assert "free_flight at Nellis" not in nudge
+    ga = load_mission_spec(FALKLANDS_GA)
+    assert host_normandy_combat_nudge(ga) is None
     recon = load_mission_spec(NEVADA_RECON).model_copy(
         update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
     )
@@ -2352,6 +2390,61 @@ def test_planner_falklands_escort_is_written(tmp_path: Path) -> None:
     assert result.spec.enemies[0].country == "Argentina"
 
 
+def test_chat_falklands_ga_is_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    ga_json = load_mission_spec(FALKLANDS_GA).model_dump_json()
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=ga_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    session.handle_line("Falklands ground attack inland short of Goose Green")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "ground_attack"
+    assert session.proposed_spec.player.airfield == "MountPleasant"
+    assert session.proposed_spec.theatre == "Falklands"
+    assert session.proposed_spec.strike is not None
+    assert session.proposed_spec.strike.bearing_deg == 269
+    assert session.proposed_spec.strike.distance_km == 21
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "ground_attack"
+    assert written.player.airfield == "MountPleasant"
+    assert written.targets[0].unit == "Ural-375"
+    assert written.targets[0].country == "Argentina"
+
+
+def test_planner_falklands_ground_attack_is_written(tmp_path: Path) -> None:
+    ga_json = load_mission_spec(FALKLANDS_GA).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Falklands ground attack inland short of Goose Green",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=ga_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Falklands"
+    assert result.spec.mission_type.value == "ground_attack"
+    assert result.spec.player.airfield == "MountPleasant"
+    assert result.spec.strike is not None
+    assert result.spec.strike.bearing_deg == 269
+    assert result.spec.strike.distance_km == 21
+    assert result.spec.targets[0].unit == "Ural-375"
+    assert result.spec.targets[0].country == "Argentina"
+
+
 def test_chat_normandy_cap_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
@@ -2467,6 +2560,7 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     falklands_ids = {o["id"] for o in falklands["options"] if o["family"] == "channel_place"}
     assert "mount_pleasant_home" in falklands_ids
     assert "mount_pleasant_south_atlantic_cap" in falklands_ids
+    assert "east_falkland_inland_strike" in falklands_ids
     assert "manston_home" not in falklands_ids
     assert "nellis_home" not in falklands_ids
     assert "nellis_north_range_cap" not in falklands_ids
@@ -2486,6 +2580,7 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "creech_range_strike" in all_ids
     assert "mount_pleasant_home" in all_ids
     assert "mount_pleasant_south_atlantic_cap" in all_ids
+    assert "east_falkland_inland_strike" in all_ids
 
 
 def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:
@@ -2534,7 +2629,12 @@ def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:
     assert all(u["domain"] == "land" for u in nevada["units"])
     falklands = list_strike_targets(theatre="Falklands", db_path=db)
     assert falklands["ok"] is True
-    assert falklands["units"] == []
+    falklands_ids = {u["unit_id"] for u in falklands["units"]}
+    assert "Ural-375" in falklands_ids
+    assert "GAZ-66" in falklands_ids
+    assert "ZIL-135" in falklands_ids
+    assert "Blitz_36-6700A" not in falklands_ids
+    assert all(u["domain"] == "land" for u in falklands["units"])
 
 
 def test_metar_egmh_channel_only() -> None:

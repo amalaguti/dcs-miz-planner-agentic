@@ -34,12 +34,14 @@ Rules:
   CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
   not Batumi 270/40, not Cherbourg 180/63, not Creech 303/40, not Channel escort
   120/55; GA and recon AOI 303°/85 km inland past Creech — not CAP 350/40). Falklands invent is
-  free_flight, CAP, intercept, or escort (MountPleasant, Su-25T, sunny_clear, UK blue; CAP/intercept/escort
+  free_flight, CAP, intercept, escort, or ground_attack (MountPleasant, Su-25T, sunny_clear, UK blue; CAP/intercept/escort
   station 150°/40 km SSE over the South Atlantic — not Nellis 350/40, not Incirlik 180/40, not
-  Batumi 270/40, not Cherbourg 180/63, not Manston 135/25, not Hawkinge, not Channel escort 120/55). Refuse
-  ground_attack/recon on
+  Batumi 270/40, not Cherbourg 180/63, not Manston 135/25, not Hawkinge, not Channel escort 120/55;
+  GA strike 269°/21 km inland short of Goose Green — not CAP 150/40, not 269/36, not 269/51, not
+  Nevada 303/85, not Aleppo 121/200, not Kutaisi 43/110). Refuse
+  recon on
   Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
-  Batumi all six, Incirlik all six, Nellis all six, or Mount Pleasant FF, CAP, intercept, or escort)
+  Batumi all six, Incirlik all six, Nellis all six, or Mount Pleasant FF, CAP, intercept, escort, or GA)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -105,8 +107,12 @@ Rules:
   Russia red; payload su25t_2x_fab250 (GA only).
 - Falklands geometry: copy mount_pleasant_south_atlantic_cap meta cap_bearing_deg /
   cap_distance_km (150° / 40 km SSE South Atlantic sea) for CAP, intercept, and
-  escort. Do not copy Nellis 350/40, Incirlik 180/40, Batumi 270/40, Cherbourg
-  180/63, Manston 135/25, or Channel escort 120/55. GA and recon still refuse.
+  escort. Copy east_falkland_inland_strike meta strike_bearing_deg / strike_distance_km
+  (269° / 21 km inland short of Goose Green) for GA. Do not copy Nellis 350/40,
+  Incirlik 180/40, Batumi 270/40, Cherbourg 180/63, Manston 135/25, Channel escort
+  120/55, or CAP 150/40 onto Mount Pleasant GA. Call
+  list_strike_targets(theatre=Falklands) for modern trucks (Ural-375); country
+  Argentina red; payload su25t_2x_fab250 (GA only). Recon still refuses.
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
   list_mission_options for families dynamics_mode, strike_target_class, and
@@ -167,7 +173,8 @@ Rules:
   theatre=Nevada for Nellis free_flight, CAP, intercept, escort (350°/40 km
   desert north-range), or ground_attack (303°/85 km inland past Creech);
   theatre=Falklands for Mount Pleasant
-  free_flight, CAP, intercept, or escort (150°/40 km South Atlantic). Do not copy a Manston,
+  free_flight, CAP, intercept, escort (150°/40 km South Atlantic), or
+  ground_attack (269°/21 km inland short of Goose Green). Do not copy a Manston,
   NeedsOarPoint, Batumi, Incirlik, or Nellis GA/recon
   skeleton onto Falklands.
 - Call research_guidance when you need tactics, procedures, historical context, or
@@ -318,13 +325,20 @@ def host_spec_repair_nudge(
                 "\n\nTheatre repair: for Falklands intercept, CAP, or escort, use Mount Pleasant "
                 "150° / 40 km South Atlantic (not Nellis 350/40, not Incirlik 180/40, "
                 "not Batumi 270/40, not Cherbourg 180/63, not Hawkinge, not Channel escort 120/55). "
-                "Land/sea domain is not classified on Falklands — emit free_flight, CAP, "
-                "intercept, or escort at Mount Pleasant (Su-25T, UK blue, sunny_clear) or switch "
-                "theatre to TheChannel for GA/recon. "
+                "For land strike, use east_falkland_inland_strike 269° / 21 km (inland short of "
+                "Goose Green — not CAP 150/40, not 269/36, not 269/51, not Nevada 303/85). "
+                "Call list_strike_targets(theatre=Falklands) for modern trucks "
+                "(Ural-375; country Argentina). "
                 "Do not copy french_coast / Hawkinge / NeedsOarPoint / Batumi / Incirlik / "
                 "Nellis geometry onto Falklands.\n"
             )
-            allowed = {"free_flight", "cap", "intercept", "escort"}
+            allowed = {
+                "free_flight",
+                "cap",
+                "intercept",
+                "escort",
+                "ground_attack",
+            }
             schema_mt = mt if mt in allowed else "free_flight"
         elif theatre == "Nevada":
             geometry_hint = (
@@ -473,10 +487,16 @@ def host_spec_repair_nudge(
             )
         elif theatre == "Falklands":
             geometry_hint = (
-                "\n\nTheatre repair (domain mismatch): land/sea domain is not "
-                "classified on Falklands. Do not copy Channel french-coast "
-                "125/76 onto this theatre. Emit free_flight, CAP, intercept, or escort at Mount Pleasant "
-                "or switch theatre to TheChannel for Channel land/sea geometry.\n"
+                "\n\nFalklands geometry repair (domain mismatch):\n"
+                "- Land strike: use channel_place east_falkland_inland_strike — "
+                "bearing 269° / distance 21 km from Mount Pleasant (inland short of "
+                "Goose Green, not CAP/escort 150/40 sea, not 269/36 near-field, "
+                "not 269/51 Sound, not french_coast 125/76).\n"
+                "- Rewrite strike to 269/21; keep land trucks "
+                "(Ural-375; country Argentina) on East Falkland camp soil.\n"
+                "- Call list_strike_targets(theatre=Falklands). Do not copy "
+                "Channel french-coast 125/76, South Atlantic CAP 150/40, or Nevada 303/85 "
+                "onto a land strike.\n"
             )
         else:
             geometry_hint = (

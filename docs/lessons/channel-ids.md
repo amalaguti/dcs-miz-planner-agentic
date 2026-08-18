@@ -5,6 +5,35 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands GA 269/21 short of Goose Green; Syria-style seaward windows (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands land strike is **269° / 21 km / 2000 m** from Mount
+  Pleasant (id 2, x=73318.320312, y=47168.748047) — 15 km **SHORT** of Goose
+  Green, not 15 km past. Live PyDCS: MPA → Goose Green 24 is 268.80° /
+  36.01 km. **269/36 REJECT** (0.13 km from GG). **269/51 REJECT** (Falkland
+  Sound sea, x=72428.24758369854 y=-3823.484405975956). Station
+  **x=72951.81977681704 y=26171.946448715786**. CAP 150/40
+  **x=38677.30416062245 y=67168.748047** MUST NOT equal the GA station. Do
+  not copy Nevada 303/85, Syria 121/200, Caucasus 43/110, Channel 125/76, or
+  CAP 150/40 onto East Falkland trucks. Domain is **Syria-style seaward
+  windows** on classifier AFs `{1,2,3,24,29}` (near AF 3 km → land; MPA
+  120–180° so CAP 150/40 is sea; GA 269/21 is land). Do **not** use Nevada
+  desert-default (that would classify CAP 150/40 as land). Known gap: 269/51
+  Sound water can still classify **land** when the nearest classifier AF
+  heading is outside that field's seaward window — do not use 269/51 as a
+  strike station; do not "fix" it by dumping more AFs or copying Nevada
+  desert-default. 180/40 from MPA may also classify land via Gull Point.
+  Do not include
+  mainland ids 5/6/7/9/11. Do not promote Goose Green 24 or Gull Point 29 as
+  Spec keys. Do not invent ids 4 or 28 or dump all 27 AFs. Trucks country
+  **Argentina** red (default ThirdReich). Payload `su25t_2x_fab250`. Place
+  `east_falkland_inland_strike` is GA only — do not add GA to
+  `mount_pleasant_south_atlantic_cap`.
+- **Code:** `examples/mount_pleasant_east_falkland_ground_attack.yaml`,
+  `channel_domain.py` (`classify_falklands_domain`), `planning_options.yaml`
+  (`east_falkland_inland_strike`, `mount_pleasant_home`).
+
 ## Falklands escort 150/40 South Atlantic; package UK, bounce Argentina (2026-08-18)
 
 - **Date:** 2026-08-18

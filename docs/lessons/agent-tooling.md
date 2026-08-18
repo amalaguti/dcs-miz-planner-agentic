@@ -5,6 +5,27 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands invent allows ground_attack; dedicated GA notes (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands invent/chat may emit **free_flight, CAP, intercept,
+  escort, or ground_attack** at Mount Pleasant (Su-25T, UK blue). GA strike
+  is **269° / 21 km / 2000 m** inland short of Goose Green — not CAP 150/40,
+  not 269/36, not 269/51, not Nevada 303/85. Schema `theatre=Falklands` +
+  `ground_attack` loads `mount_pleasant_east_falkland_ground_attack.yaml`
+  with dedicated `_FALKLANDS_GA_NOTES` — do **not** concatenate Channel
+  `_COMMON_NOTES` / `_TYPE_NOTES`. Trucks country **Argentina** red. Recon
+  still refuses every turn. Domain classifier now includes Falklands
+  (`DOMAIN_THEATRES`); unbound Kola still fail-closes. Dual-offer modern
+  land trucks on `list_strike_targets(theatre=Falklands)` (stored
+  `theatre_id` stays Caucasus). Path clamp and soft immersion floor stay
+  TheChannel-only. Domain-mismatch repair MUST use East Falkland 269/21 —
+  never inject CAP 150/40 or french_coast onto Mount Pleasant GA.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`
+  (`_FALKLANDS_GA_NOTES`), `agent/prompts.py`, `tools/surface.py`
+  (`_strike_theatre_match`),
+  `examples/mount_pleasant_east_falkland_ground_attack.yaml`.
+
 ## Falklands invent allows escort; dedicated notes (2026-08-18)
 
 - **Date:** 2026-08-18

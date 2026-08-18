@@ -707,11 +707,13 @@ options:
     label: Modern soft vehicles / trucks
     description: >
       Modern land soft targets (Ural / GAZ / ZIL trucks) on Caucasus Colchis
-      inland, Syria Levant inland past Aleppo, or Nevada desert inland past
-      Creech — not Black Sea / Iskenderun water, not Channel WWII trucks.
-      Country Russia red on Caucasus and Nevada; country Syria red on Syria.
-      Su-25T FAB-250 payload. Examples: batumi_kutaisi_ground_attack,
-      incirlik_aleppo_ground_attack, nellis_creech_ground_attack.
+      inland, Syria Levant inland past Aleppo, Nevada desert inland past
+      Creech, or Falklands East Falkland camp inland short of Goose Green —
+      not Black Sea / Iskenderun / South Atlantic water, not Channel WWII trucks.
+      Country Russia red on Caucasus and Nevada; country Syria red on Syria;
+      country Argentina red on Falklands. Su-25T FAB-250 payload. Examples:
+      batumi_kutaisi_ground_attack, incirlik_aleppo_ground_attack,
+      nellis_creech_ground_attack, mount_pleasant_east_falkland_ground_attack.
     support: supported
     meta:
       domain: land
@@ -720,7 +722,7 @@ options:
       mission_types: [ground_attack]
       preferred_motion: static
       preferred_ai_preset: convoy_transit
-      cues: [ural, gaz, zil, truck, convoy, kutaisi, colchis, aleppo, syria, nevada, creech, nellis]
+      cues: [ural, gaz, zil, truck, convoy, kutaisi, colchis, aleppo, syria, nevada, creech, nellis, falklands, mount pleasant, argentina]
 
   - family: strike_target_class
     id: halftracks_apc
@@ -1345,15 +1347,15 @@ options:
     label: Mount Pleasant (home field)
     description: >
       Mount Pleasant — default Falklands Su-25T start for free_flight,
-      South Atlantic CAP, intercept, and escort. Do not copy Manston, Needs
-      Oar Point, Batumi, Incirlik, or Nellis geometry onto Falklands. Port
-      Stanley is not a CAP home.
+      South Atlantic CAP, intercept, escort, and inland ground_attack short
+      of Goose Green. Do not copy Manston, Needs Oar Point, Batumi, Incirlik,
+      or Nellis geometry onto Falklands. Port Stanley is not a CAP home.
     support: advisory
     meta:
       theatre: Falklands
       airfield: MountPleasant
       role: home_base
-      mission_types: [free_flight, cap, intercept, escort]
+      mission_types: [free_flight, cap, intercept, escort, ground_attack]
 
   - family: channel_place
     id: mount_pleasant_south_atlantic_cap
@@ -1374,6 +1376,37 @@ options:
       cap_distance_km: 40
       cap_altitude_m: 4000
       example: examples/mount_pleasant_south_atlantic_cap.yaml
+
+  - family: channel_place
+    id: east_falkland_inland_strike
+    label: East Falkland inland strike
+    description: >
+      East Falkland camp land short of Goose Green for Falklands GA — place
+      modern soft trucks on Argentina-country soil, not on Mount Pleasant
+      field or the South Atlantic CAP station. Copy strike_bearing_deg /
+      strike_distance_km. Do not copy CAP 150/40, Goose Green 269/36
+      (near-field), 269/51 (Sound sea), Nevada 303/85, Aleppo 121/200, or
+      Kutaisi 43/110.
+    support: advisory
+    meta:
+      theatre: Falklands
+      domain: land
+      geometry_hint: inland_short_of_goose_green
+      related_classes: [modern_soft_vehicles]
+      mission_types: [ground_attack]
+      cues: [falklands, mount pleasant, argentina]
+      preferred_ai_preset_soft: convoy_transit
+      # PyDCS MountPleasant (2) → Goose Green (24) ≈ 268.80° / 36.01 km;
+      # 269/36 is ~0.13 km from GG (reject); 269/51 is Falkland Sound sea
+      # (reject); 269/21 is ~15.02 km short of GG (land). See
+      # examples/mount_pleasant_east_falkland_ground_attack.yaml.
+      strike_bearing_deg: 269
+      strike_distance_km: 21
+      strike_altitude_m: 2000
+      example: examples/mount_pleasant_east_falkland_ground_attack.yaml
+      note: >
+        Land only. Stopping at ~36 km is near Goose Green field; 51 km is
+        Sound water. Do not copy CAP 150/40 onto Mount Pleasant ground_attack.
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

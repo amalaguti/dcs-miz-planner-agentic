@@ -4,8 +4,9 @@ Uses PyDCS airport geometry — not DCS runtime land.getSurfaceType.
 Heuristic: near a curated airport ⇒ land; TheChannel/Normandy use a
 UK–opposite-coast chord ⇒ sea; Caucasus uses a west-of-coast seaward sector;
 Syria uses per-coastal seaward windows (Incirlik 165–195°, Bassel/Beirut
-225–315° only); Nevada is desert-default land on eight curated AFs.
-Falklands and other theatres fail closed before a recipe runs.
+225–315° only); Nevada is desert-default land on eight curated AFs;
+Falklands uses Syria-style seaward windows on island classifier AFs
+{1,2,3,24,29}. Other theatres fail closed before a recipe runs.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ NORMANDY_THEATRE = "Normandy"
 CAUCASUS_THEATRE = "Caucasus"
 SYRIA_THEATRE = "Syria"
 NEVADA_THEATRE = "Nevada"
+FALKLANDS_THEATRE = "Falklands"
 
 # Channel WWII coastal clusters (PyDCS TheChannel airport ids).
 _UK_AIRPORT_IDS: frozenset[int] = frozenset({5, 6, 7, 8, 10, 12, 13, 14})
@@ -62,13 +64,34 @@ _NEVADA_CURATED_IDS: frozenset[int] = frozenset(
 )  # Nellis, GroomLake, Creech, TonopahTestRange, NorthLasVegas,
 # HendersonExecutive, BoulderCity, Mesquite
 
-# Ordered for validation hints. Do not add Falklands until a domain recipe ships.
+# Falklands island classifier AFs only (PyDCS Falklands airport ids).
+# Do not include mainland 5/6/7/9/11. Do not invent ids 4 or 28. Goose Green
+# 24 and Gull Point 29 are uncurated landmarks — not Spec airfield keys.
+_FALKLANDS_CLASSIFIER_IDS: frozenset[int] = frozenset({1, 2, 3, 24, 29})
+_FALKLANDS_MPA_ID = 2
+_FALKLANDS_MPA_SEAWARD_MIN_DEG = 120.0
+_FALKLANDS_MPA_SEAWARD_MAX_DEG = 180.0
+_FALKLANDS_STANLEY_ID = 1
+_FALKLANDS_STANLEY_SEAWARD_MIN_DEG = 45.0
+_FALKLANDS_STANLEY_SEAWARD_MAX_DEG = 135.0
+_FALKLANDS_SAN_CARLOS_ID = 3
+_FALKLANDS_SAN_CARLOS_SEAWARD_MIN_DEG = 240.0
+_FALKLANDS_SAN_CARLOS_SEAWARD_MAX_DEG = 330.0
+_FALKLANDS_GOOSE_GREEN_ID = 24
+_FALKLANDS_GOOSE_GREEN_SEAWARD_MIN_DEG = 250.0
+_FALKLANDS_GOOSE_GREEN_SEAWARD_MAX_DEG = 290.0
+_FALKLANDS_GULL_POINT_ID = 29
+_FALKLANDS_GULL_POINT_SEAWARD_MIN_DEG = 180.0
+_FALKLANDS_GULL_POINT_SEAWARD_MAX_DEG = 240.0
+
+# Ordered for validation hints.
 DOMAIN_THEATRES: tuple[str, ...] = (
     CHANNEL_THEATRE,
     NORMANDY_THEATRE,
     CAUCASUS_THEATRE,
     SYRIA_THEATRE,
     NEVADA_THEATRE,
+    FALKLANDS_THEATRE,
 )
 _DOMAIN_THEATRES: frozenset[str] = frozenset(DOMAIN_THEATRES)
 
@@ -232,8 +255,64 @@ def classify_nevada_domain(x: float, y: float) -> Domain:
     return "land"
 
 
+def _falklands_heading_is_seaward(airport_id: int, heading: float) -> bool:
+    """Per-field seaward windows — never apply MPA 120–180° to Stanley/San Carlos."""
+    heading = heading % 360.0
+    if airport_id == _FALKLANDS_MPA_ID:
+        return _FALKLANDS_MPA_SEAWARD_MIN_DEG <= heading <= _FALKLANDS_MPA_SEAWARD_MAX_DEG
+    if airport_id == _FALKLANDS_STANLEY_ID:
+        return _FALKLANDS_STANLEY_SEAWARD_MIN_DEG <= heading <= _FALKLANDS_STANLEY_SEAWARD_MAX_DEG
+    if airport_id == _FALKLANDS_SAN_CARLOS_ID:
+        return (
+            _FALKLANDS_SAN_CARLOS_SEAWARD_MIN_DEG
+            <= heading
+            <= _FALKLANDS_SAN_CARLOS_SEAWARD_MAX_DEG
+        )
+    if airport_id == _FALKLANDS_GOOSE_GREEN_ID:
+        return (
+            _FALKLANDS_GOOSE_GREEN_SEAWARD_MIN_DEG
+            <= heading
+            <= _FALKLANDS_GOOSE_GREEN_SEAWARD_MAX_DEG
+        )
+    if airport_id == _FALKLANDS_GULL_POINT_ID:
+        return (
+            _FALKLANDS_GULL_POINT_SEAWARD_MIN_DEG
+            <= heading
+            <= _FALKLANDS_GULL_POINT_SEAWARD_MAX_DEG
+        )
+    return False
+
+
+def classify_falklands_domain(x: float, y: float) -> Domain:
+    """Return ``land`` or ``sea`` for a Falklands terrain map point (x, y).
+
+    Syria-style seaward windows on classifier AFs {1,2,3,24,29} — not Nevada
+    desert-default and not Channel/Normandy/Caucasus/Syria chords. Near a
+    classifier AF ⇒ land. Else if the nearest classifier field's heading is
+    seaward (MPA 120–180°, Stanley 45–135°, San Carlos 240–330°, Goose Green
+    250–290°, Gull Point 180–240°) ⇒ sea. Else land. Do not include mainland
+    ids 5/6/7/9/11. Do not promote Goose Green 24 or Gull Point 29 as Spec keys.
+    """
+    from dcs.mapping import Point
+
+    from .theatre_terrain import terrain_for_theatre
+
+    terrain = terrain_for_theatre(FALKLANDS_THEATRE)
+    point = Point(x, y, terrain)
+    airports = [a for a in terrain.airport_list() if a.id in _FALKLANDS_CLASSIFIER_IDS]
+    if not airports:
+        return "land"
+    nearest = min(airports, key=lambda a: point.distance_to_point(a.position))
+    if point.distance_to_point(nearest.position) <= _NEAR_AIRPORT_M:
+        return "land"
+    heading = float(nearest.position.heading_between_point(point)) % 360.0
+    if _falklands_heading_is_seaward(nearest.id, heading):
+        return "sea"
+    return "land"
+
+
 def classify_domain_for_theatre(theatre: str, x: float, y: float) -> Domain:
-    """Classify land/sea for ``theatre``; fail closed unless Channel, Normandy, Caucasus, Syria, or Nevada."""
+    """Classify land/sea for ``theatre``; fail closed unless a DOMAIN_THEATRES recipe exists."""
     require_channel_domain(theatre)
     if theatre == NORMANDY_THEATRE:
         return classify_normandy_domain(x, y)
@@ -243,6 +322,8 @@ def classify_domain_for_theatre(theatre: str, x: float, y: float) -> Domain:
         return classify_syria_domain(x, y)
     if theatre == NEVADA_THEATRE:
         return classify_nevada_domain(x, y)
+    if theatre == FALKLANDS_THEATRE:
+        return classify_falklands_domain(x, y)
     return classify_channel_domain(x, y)
 
 

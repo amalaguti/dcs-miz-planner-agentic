@@ -34,7 +34,7 @@ description: >-
    ±40000,0). Other theatres fail `intercept_unsupported_theatre`.
    Derive the unsupported hint from `INTERCEPT_SPAWN_RECIPES` keys.
    Derive `domain_unsupported_theatre` hints from `DOMAIN_THEATRES` (include
-   Nevada; do not add Falklands until a domain recipe ships).
+   Nevada and Falklands).
 5. Failure ids: exact stock strings (e.g. `ENG0_MAGNETO0`) from
    `data/era/wwii/aircraft_failures.yaml`.
 6. **Normandy 2.0** Spec/inventory id is **`Normandy`**. Airfield lookup is
@@ -51,11 +51,15 @@ description: >-
    Incirlik 165–195°; Bassel/Beirut 225–315° those two fields only — never
    apply 270±45 to Incirlik), **or** Nevada desert-default land on curated
    ids `{4, 2, 1, 18, 15, 8, 6, 13}` (near AF 3 km → land; else land — do
-   not promote Echo Bay id 7). Other
+   not promote Echo Bay id 7), **or** Falklands Syria-style seaward windows
+   on classifier AFs `{1,2,3,24,29}` (near AF 3 km → land; else if nearest
+   in that set and heading seaward → sea; else land; do not include
+   mainland 5/6/7/9/11; MPA 2: 120–180°; Stanley 1: 45–135°; San Carlos 3:
+   240–330°; Goose Green 24: 250–290°; Gull Point 29: 180–240° — do not
+   promote Goose Green or Gull Point as Spec keys). Other
    theatres fail `domain_unsupported_theatre`. Hints MUST list every
-   `DOMAIN_THEATRES` key (including Nevada) — do not freeze
-   Channel/Normandy/Caucasus/Syria; do not add Falklands until a domain
-   recipe ships. `airfield_relative_map_point`
+   `DOMAIN_THEATRES` key (including Nevada and Falklands) — do not freeze
+   Channel/Normandy/Caucasus/Syria/Nevada. `airfield_relative_map_point`
    MUST pass `theatre=spec.theatre`. Normandy inland strike from NeedsOarPoint
    is **180° / 133 km** (Maupertus is 180.22° / 125.29 km; 120 km is still sea).
    Caucasus inland strike from Batumi is **43° / 110 km** (Kutaisi is 43.14° /
@@ -63,10 +67,16 @@ description: >-
    Incirlik is **121° / 200 km** (Aleppo is 121.13° / 185.00 km; 121/185 is
    near-field; CAP 180/40 is sea). Nevada inland strike/recon from Nellis is
    **303° / 85 km** (Creech is 302.86° / 69.47 km; 303/70 is near-field; CAP
-   350/40 is a different land station). Do not copy Manston
+   350/40 is a different land station). Falklands inland strike from Mount
+   Pleasant is **269° / 21 km** (Goose Green is 268.80° / 36.01 km; 269/36 is
+   0.13 km from GG — REJECT; 269/51 is Sound sea — REJECT as a station even
+   if the seaward-window classifier still labels it land; CAP 150/40 is a
+   different sea station). Known gap: 180/40 from MPA may classify land via
+   Gull Point. Do not copy Manston
    125/76 or CAP 180/63 (sea) onto Cotentin land, do not copy CAP 270/40
-   onto Caucasus GA, do not copy CAP 180/40 onto Syria GA or recon, and do
-   not copy CAP 350/40 onto Nevada GA or recon.
+   onto Caucasus GA, do not copy CAP 180/40 onto Syria GA or recon, do
+   not copy CAP 350/40 onto Nevada GA or recon, and do not copy CAP 150/40
+   onto Falklands GA.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
    Germany is a hint, not a known id in **any** era.
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
@@ -138,15 +148,19 @@ description: >-
     Extra-AF smoke: country **`Argentina`** modern-only (PyDCS id 83; red —
     `examples/rio_gallegos_cold_freeflight.yaml`). Channel+Argentina is
     unknown. Chile is deferred. Spitfire is dual-era (same 124.0 in wwii +
-    modern). Channel+UK still ok (wwii); Channel+Su-25T is unknown. Invent
-    home stays MountPleasant UK blue, **free_flight, CAP, intercept, or escort**
+    modern). Channel+UK still ok (wwii); Channel+Su-25T is unknown.     Invent
+    home stays MountPleasant UK blue, **free_flight, CAP, intercept, escort, or
+    ground_attack**
     (station **150° / 40 km / 4000 m** SSE over the South Atlantic — not
     Nellis 350/40, not Incirlik 180/40, not Batumi 270/40, not Cherbourg
-    180/63, not Manston 135/25, not Hawkinge, not Channel escort 120/55).
+    180/63, not Manston 135/25, not Hawkinge, not Channel escort 120/55;
+    GA strike **269° / 21 km / 2000 m** inland short of Goose Green — not
+    CAP 150/40, not 269/36, not 269/51, not Nevada 303/85).
     CAP/intercept/escort enemies:
     Argentina + Su-25T (set `enemies[].country: Argentina`; default is
     ThirdReich). Escort package country **UK** (default UK — still set
-    explicitly). Port Stanley is not a CAP home.
+    explicitly). GA trucks country **Argentina** red (default ThirdReich).
+    Port Stanley is not a CAP home. Recon still refuses.
 
 ## Code touchpoints
 
