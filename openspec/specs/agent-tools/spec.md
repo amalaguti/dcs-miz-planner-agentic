@@ -1016,8 +1016,10 @@ concatenate Channel/prior-map template bundles. When mission type is `cap`,
 the derived example MUST follow the Mount Pleasant South Atlantic CAP envelope
 (150° / 40 km / 4000 m; not Manston 135/25, not Cherbourg 180/63, not
 Incirlik 180/40, not Batumi 270/40, not Nellis 350/40). When mission type is
-`intercept`, `ground_attack`, `escort`, or `recon`, the tool MUST NOT return
-a prior-map combat skeleton.
+`intercept`, the derived example MUST follow the Mount Pleasant dawn intercept
+envelope (not Hawkinge/Dover, not Nellis, not Incirlik, not Batumi, not
+Cherbourg). When mission type is `ground_attack`, `escort`, or `recon`, the
+tool MUST NOT return a prior-map combat skeleton.
 
 #### Scenario: Falklands free_flight schema uses MountPleasant
 - **WHEN** a caller requests the free_flight Spec schema with theatre
@@ -1036,7 +1038,9 @@ a prior-map combat skeleton.
   Su-25T, UK, Argentina opposition, and CAP 150° / 40 km (not Nellis 350° /
   40 km)
 
-#### Scenario: Falklands intercept schema has no Manston skeleton
-- **WHEN** a caller requests an intercept schema with theatre `Falklands`
-- **THEN** the result MUST NOT present a Manston, NeedsOarPoint, Batumi,
-  Incirlik, or Nellis example as the template to copy
+#### Scenario: Falklands intercept schema uses MountPleasant
+- **WHEN** a caller requests the intercept Spec schema with theatre
+  `Falklands`
+- **THEN** the example MUST use `MountPleasant`, theatre `Falklands`,
+  Su-25T, UK, and country-Argentina opposition (MUST NOT present a Manston,
+  NeedsOarPoint, Batumi, Incirlik, or Nellis example as the template to copy)
