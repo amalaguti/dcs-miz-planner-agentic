@@ -47,9 +47,9 @@ description: >-
    CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
    not Batumi 270/40, not Cherbourg 180/63, not Channel escort 120/55, not Creech 303/40;
    GA/recon AOI 303°/85 km inland past Creech — not CAP 350/40).
-   Falklands is **free_flight, CAP, or intercept** (MountPleasant UK blue;
-   CAP/intercept station 150°/40 km South Atlantic sea — not Nellis 350/40,
-   not Hawkinge; Argentina enemies; Chile deferred; Port Stanley not CAP
+   Falklands is **free_flight, CAP, intercept, or escort** (MountPleasant UK blue;
+   CAP/intercept/escort station 150°/40 km South Atlantic sea — not Nellis 350/40,
+   not Channel escort 120/55, not Hawkinge; Argentina enemies; Chile deferred; Port Stanley not CAP
    home). Extra Falklands AFs (`PortStanley`, `SanCarlosFOB`, `RioGallegos`,
    `RioGrande`, `Ushuaia`, `PuntaArenas`, `SanJulian`) are catalog/lookup;
    they MUST NOT replace the invent/schema home. Port Stanley is heli
@@ -61,7 +61,7 @@ description: >-
    `build_spec_schema` — do not hardcode `theatre="Normandy"`,
    `theatre="Caucasus"`, `theatre="Syria"`, or `theatre="Nevada"` on
    domain/intercept errors (Falklands must repair to Mount Pleasant FF, CAP,
-   or intercept 150/40 — not “switch to TheChannel for intercept”, not
+   intercept, or escort 150/40 — not “switch to TheChannel for intercept”, not
    Nellis, Incirlik, Batumi, or NeedsOarPoint).
    Default Manston CAP 135/25 must
    not repair a Normandy CAP.    Domain-mismatch repair
@@ -82,7 +82,7 @@ description: >-
    `_NEVADA_FF_NOTES` / `_NEVADA_CAP_NOTES` / `_NEVADA_INTERCEPT_NOTES` /
    `_NEVADA_ESCORT_NOTES` /    `_NEVADA_GA_NOTES` / `_NEVADA_RECON_NOTES` /
    `_FALKLANDS_FF_NOTES` / `_FALKLANDS_CAP_NOTES` /
-   `_FALKLANDS_INTERCEPT_NOTES`).
+   `_FALKLANDS_INTERCEPT_NOTES` / `_FALKLANDS_ESCORT_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent is **TheChannel-only** (Manston

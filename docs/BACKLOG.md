@@ -409,8 +409,8 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** Falklands escort (`falklands-escort`).
-After `falklands-intercept`.
+**Next promote / in proposal:** Falklands GA (`falklands-ground-attack`).
+After `falklands-escort`.
 Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
@@ -462,9 +462,10 @@ Stage C combat on a new map before Slice 0b is on master.
 | F5b | `falklands-airfields` | Falklands Stage B: eight curated AFs; `Argentina` in modern; Rio Gallegos FF smoke (Argentina red, id 5 ≠ Manston); invent still FF-only at MountPleasant | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 | F5c | `falklands-places` | Falklands Stage C: Mount Pleasant places + South Atlantic CAP (150°/40 km); invent FF+CAP; intercept/GA/escort/recon still refuse | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 | F5d | `falklands-intercept` | Falklands intercept: Mount Pleasant dawn intercept on the South Atlantic corridor (150°/40 km); invent allow intercept; GA/escort/recon still refuse | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
+| F5e | `falklands-escort` | Falklands escort: Mount Pleasant UK Su-25T package on the South Atlantic corridor (150°/40 km); invent allow escort; GA/recon still refuse | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
-promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Falklands escort (`falklands-escort`). Refresh
+promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Falklands GA (`falklands-ground-attack`). Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `MarianaIslandsWWII` / `Kola` / `Iraq` until PyDCS terrain exists (R8).
 

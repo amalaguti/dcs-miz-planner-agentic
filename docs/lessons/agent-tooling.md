@@ -5,6 +5,26 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands invent allows escort; dedicated notes (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands invent/chat may emit **free_flight, CAP, intercept, or
+  escort** at Mount Pleasant (Su-25T, UK blue). Escort package destination is
+  **150° / 40 km / 4000 m** SSE of Mount Pleasant over the South Atlantic —
+  same station as `mount_pleasant_south_atlantic_cap`; not Channel escort
+  120/55, not Nellis 350/40, not Incirlik 180/40, not Batumi 270/40, not
+  Cherbourg 180/63. Schema `theatre=Falklands` + `escort` loads
+  `mount_pleasant_south_atlantic_escort.yaml` with dedicated
+  `_FALKLANDS_ESCORT_NOTES` — do **not** concatenate Channel `_COMMON_NOTES` /
+  `_TYPE_NOTES`. Package country **UK** (defaults UK — still set explicitly);
+  bounce country **Argentina** (defaults ThirdReich). Do not put UK on red.
+  GA/recon still refuse every turn. Domain classifier stays fail-closed on
+  Falklands. Path clamp and soft immersion floor stay TheChannel-only. Stub LLM
+  stays Manston. FF/CAP/intercept schema example files stay unchanged.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`
+  (`_FALKLANDS_ESCORT_NOTES`), `agent/prompts.py`,
+  `examples/mount_pleasant_south_atlantic_escort.yaml`.
+
 ## Domain unsupported hint lists DOMAIN_THEATRES including Nevada (2026-08-18)
 
 - **Date:** 2026-08-18

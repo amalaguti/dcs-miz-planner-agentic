@@ -37,7 +37,9 @@ description: >-
    even when that type is not a unit. Assert player `["type"]="…"` instead
    (PyDCS dumps no spaces around `=`).
 8. Escort: package first, then EscortTaskAction + ROE; GA: verify land vs water
-   strike placement.
+   strike placement. Falklands escort reuses CAP/intercept 150°/40 km (dest
+   38677.30416062245 / 67168.748047) — never copy Channel escort 120/55 or
+   Nevada 350/40 onto Mount Pleasant.
 9. Target motion: `target_motion.py` + `target_motion.yaml` speed bands; `add_waypoint`
    speed is km/h; loop with `SwitchWaypoint` (1-based); domain-check path/patrol;
    omit `speed_kmh` for seeded cruise. Moving land: `OptDisparseUnderFire` (default 180s).

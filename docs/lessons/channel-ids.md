@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands escort 150/40 South Atlantic; package UK, bounce Argentina (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands escort reuses the packaged CAP/intercept station: Mount
+  Pleasant (id 2, x=73318.320312, y=47168.748047) + 150° / 40 km / 4000 m
+  (station x=38677.30416062245 y=67168.748047). Compiler escort is already
+  airfield-relative — do not store raw map x/y in the Spec. **Do not copy**
+  Channel escort 120/55, Nellis 350/40, Incirlik 180/40, Batumi 270/40, or
+  Cherbourg 180/63. Player + package: UK + Su-25T blue at 251.0 MHz
+  (`PackageFlight` defaults to UK — still set `package[].country: UK`). Bounce:
+  country **Argentina** + Su-25T red (`EnemyFlight` defaults to ThirdReich).
+  Do not put UK on red. Chile is deferred. Domain stays fail-closed
+  (`channel_domain.py` untouched). Places: `mount_pleasant_home` and
+  `mount_pleasant_south_atlantic_cap` now include `escort`. Do not dump all 27
+  Falklands fields or invent ids 4 or 28. Do not start Falklands GA this slice.
+- **Code:** `examples/mount_pleasant_south_atlantic_escort.yaml`,
+  `planning_options.yaml` (`mount_pleasant_home`,
+  `mount_pleasant_south_atlantic_cap`).
+
 ## Falklands intercept 150/40 South Atlantic; store Mount Pleasant offset literals (2026-08-18)
 
 - **Date:** 2026-08-18

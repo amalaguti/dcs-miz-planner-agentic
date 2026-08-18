@@ -56,11 +56,13 @@ freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
 251.0 MHz) plus South Atlantic CAP (`examples/mount_pleasant_south_atlantic_cap.yaml`;
 150°/40 km sea; Argentina red opposition) plus dawn intercept
-(`examples/mount_pleasant_dawn_intercept.yaml`; same 150/40 spawn) plus curated extra airfields and a Rio
+(`examples/mount_pleasant_dawn_intercept.yaml`; same 150/40 spawn) plus escort
+(`examples/mount_pleasant_south_atlantic_escort.yaml`; same 150/40, UK package)
+plus curated extra airfields and a Rio
 Gallegos smoke (`examples/rio_gallegos_cold_freeflight.yaml`; Argentina red;
 airdromeId 5 is not Channel Manston). Port Stanley is lookup-only (heli). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
 at Nellis; Falklands invent is **free_flight,
-CAP, or intercept** at Mount Pleasant (150°/40 km sea) — GA/escort/recon still
+CAP, intercept, or escort** at Mount Pleasant (150°/40 km sea) — GA/recon still
 refuse. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, Caucasus
 Batumi/Black Sea, Syria Incirlik/Iskenderun, Nevada Nellis/north-range, **or**
@@ -159,8 +161,8 @@ all six types at Batumi; Syria invent is all six types at Incirlik;
 Nevada invent is all six types at Nellis
 (CAP 350°/40 km desert north-range; GA/recon 303°/85 km inland past Creech);
 Falklands invent is free_flight,
-CAP, or intercept at Mount Pleasant (150°/40 km sea);
-GA/escort/recon still refuse
+CAP, intercept, or escort at Mount Pleasant (150°/40 km sea);
+GA/recon still refuse
 on Falklands).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for

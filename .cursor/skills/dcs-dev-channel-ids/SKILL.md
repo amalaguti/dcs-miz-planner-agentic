@@ -139,12 +139,14 @@ description: >-
     `examples/rio_gallegos_cold_freeflight.yaml`). Channel+Argentina is
     unknown. Chile is deferred. Spitfire is dual-era (same 124.0 in wwii +
     modern). Channel+UK still ok (wwii); Channel+Su-25T is unknown. Invent
-    home stays MountPleasant UK blue, **free_flight, CAP, or intercept**
+    home stays MountPleasant UK blue, **free_flight, CAP, intercept, or escort**
     (station **150° / 40 km / 4000 m** SSE over the South Atlantic — not
     Nellis 350/40, not Incirlik 180/40, not Batumi 270/40, not Cherbourg
-    180/63, not Manston 135/25, not Hawkinge). CAP/intercept enemies:
+    180/63, not Manston 135/25, not Hawkinge, not Channel escort 120/55).
+    CAP/intercept/escort enemies:
     Argentina + Su-25T (set `enemies[].country: Argentina`; default is
-    ThirdReich). Port Stanley is not a CAP home.
+    ThirdReich). Escort package country **UK** (default UK — still set
+    explicitly). Port Stanley is not a CAP home.
 
 ## Code touchpoints
 

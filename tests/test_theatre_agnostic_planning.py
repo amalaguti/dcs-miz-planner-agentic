@@ -78,6 +78,7 @@ NEVADA_RECON = REPO / "examples" / "nellis_creech_recon.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
 FALKLANDS_CAP = REPO / "examples" / "mount_pleasant_south_atlantic_cap.yaml"
 FALKLANDS_INTERCEPT = REPO / "examples" / "mount_pleasant_dawn_intercept.yaml"
+FALKLANDS_ESCORT = REPO / "examples" / "mount_pleasant_south_atlantic_escort.yaml"
 
 
 def _inv():
@@ -396,6 +397,27 @@ def test_escort_succeeds_on_nevada(tmp_path: Path) -> None:
         assert "181207.773438" not in mission
 
 
+def test_escort_succeeds_on_falklands(tmp_path: Path) -> None:
+    spec = load_mission_spec(FALKLANDS_ESCORT)
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert result.ok, result.errors
+    out = tmp_path / "falklands_escort.miz"
+    PyDCSCompiler(inventory=_inv()).compile(spec, out)
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8")
+        assert '["type"]="Su-25T"' in mission
+        assert '["task"]="Escort"' in mission
+        assert "UK" in mission
+        assert "Argentina" in mission
+        assert "MosquitoFBMkVI" not in mission
+        assert "Bf-109K-4" not in mission
+        assert "ThirdReich" not in mission
+        assert "30989.935547" not in mission
+        assert "-358803.06487951166" not in mission
+        assert "181207.773438" not in mission
+
+
 def test_recon_succeeds_on_normandy(tmp_path: Path) -> None:
     spec = load_mission_spec(NORMANDY_RECON)
     result = validate_mission_spec(spec, inventory=_inv())
@@ -536,7 +558,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "cap" in mp_home.meta.get("mission_types", [])
     assert "free_flight" in mp_home.meta.get("mission_types", [])
     assert "intercept" in mp_home.meta.get("mission_types", [])
-    assert "escort" not in mp_home.meta.get("mission_types", [])
+    assert "escort" in mp_home.meta.get("mission_types", [])
     assert "ground_attack" not in mp_home.meta.get("mission_types", [])
     assert "recon" not in mp_home.meta.get("mission_types", [])
     mp_cap = next(o for o in places if o.id == "mount_pleasant_south_atlantic_cap")
@@ -552,7 +574,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert mp_cap.meta.get("cap_distance_km") != 63
     assert "cap" in mp_cap.meta.get("mission_types", [])
     assert "intercept" in mp_cap.meta.get("mission_types", [])
-    assert "escort" not in mp_cap.meta.get("mission_types", [])
+    assert "escort" in mp_cap.meta.get("mission_types", [])
     assert "ground_attack" not in mp_cap.meta.get("mission_types", [])
     assert "recon" not in mp_cap.meta.get("mission_types", [])
     assert inland.meta.get("strike_bearing_deg") == 180
@@ -935,8 +957,6 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Falklands"):
         build_spec_schema("ground_attack", theatre="Falklands")
     with pytest.raises(ValueError, match="not supported for theatre Falklands"):
-        build_spec_schema("escort", theatre="Falklands")
-    with pytest.raises(ValueError, match="not supported for theatre Falklands"):
         build_spec_schema("recon", theatre="Falklands")
     cap = build_spec_schema("cap", theatre="Falklands")
     assert cap.example["theatre"] == "Falklands"
@@ -980,11 +1000,36 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     assert "Batumi" not in blob
     assert "Incirlik" not in blob
     assert "Nellis" not in blob
+    escort = build_spec_schema("escort", theatre="Falklands")
+    assert escort.example["theatre"] == "Falklands"
+    assert escort.example["player"]["airfield"] == "MountPleasant"
+    assert escort.example["player"]["aircraft"] == "Su-25T"
+    assert escort.example["player"]["country"] == "UK"
+    assert escort.example["package"][0]["aircraft"] == "Su-25T"
+    assert escort.example["package"][0]["country"] == "UK"
+    assert escort.example["enemies"][0]["country"] == "Argentina"
+    assert escort.example["escort"]["bearing_deg"] == 150
+    assert escort.example["escort"]["distance_km"] == 40
+    assert escort.example["escort"]["altitude_m"] == 4000
+    assert escort.example["escort"]["bearing_deg"] != 120
+    assert escort.example["escort"]["bearing_deg"] != 350
+    assert escort.example["escort"]["distance_km"] != 55
+    assert escort.example["player"]["airfield"] != "Manston"
+    assert escort.example["player"]["airfield"] != "Nellis"
+    escort_blob = " ".join(escort.notes)
+    assert "mount_pleasant_south_atlantic_escort.yaml" in escort_blob
+    assert "manston_" not in escort_blob.lower()
+    assert "NeedsOarPoint" not in escort_blob
+    assert "french_coast" not in escort_blob
+    escort_tool = get_mission_spec_schema("escort", theatre="Falklands")
+    assert escort_tool["ok"] is True
+    assert escort_tool["example"]["player"]["airfield"] == "MountPleasant"
+    assert escort_tool["example"]["package"][0]["country"] == "UK"
+    assert escort_tool["example"]["enemies"][0]["country"] == "Argentina"
+    assert escort_tool["example"]["escort"]["bearing_deg"] == 150
     ga = get_mission_spec_schema("ground_attack", theatre="Falklands")
     assert ga["ok"] is False
     assert ga["code"] == "combat_unsupported_theatre"
-    escort = get_mission_spec_schema("escort", theatre="Falklands")
-    assert escort["ok"] is False
     recon = get_mission_spec_schema("recon", theatre="Falklands")
     assert recon["ok"] is False
 
@@ -1243,6 +1288,8 @@ def test_falklands_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(ff) is None
     intercept = load_mission_spec(FALKLANDS_INTERCEPT)
     assert host_normandy_combat_nudge(intercept) is None
+    escort = load_mission_spec(FALKLANDS_ESCORT)
+    assert host_normandy_combat_nudge(escort) is None
     ga = load_mission_spec(NEVADA_GA).model_copy(
         update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
     )
@@ -1253,10 +1300,6 @@ def test_falklands_cap_invent_nudge() -> None:
     assert "free_flight at Batumi" not in nudge
     assert "free_flight at Incirlik" not in nudge
     assert "free_flight at Nellis" not in nudge
-    escort = load_mission_spec(NEVADA_ESCORT).model_copy(
-        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
-    )
-    assert host_normandy_combat_nudge(escort) is not None
     recon = load_mission_spec(NEVADA_RECON).model_copy(
         update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
     )
@@ -2251,6 +2294,61 @@ def test_planner_falklands_intercept_is_written(tmp_path: Path) -> None:
     assert result.spec.theatre == "Falklands"
     assert result.spec.mission_type.value == "intercept"
     assert result.spec.player.airfield == "MountPleasant"
+    assert result.spec.enemies[0].country == "Argentina"
+
+
+def test_chat_falklands_escort_is_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    escort_json = load_mission_spec(FALKLANDS_ESCORT).model_dump_json()
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=escort_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    session.handle_line("Falklands escort south of Mount Pleasant")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "escort"
+    assert session.proposed_spec.player.airfield == "MountPleasant"
+    assert session.proposed_spec.theatre == "Falklands"
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "escort"
+    assert written.player.airfield == "MountPleasant"
+    assert written.escort is not None
+    assert written.escort.bearing_deg == 150
+    assert written.escort.distance_km == 40
+    assert written.package[0].country == "UK"
+    assert written.enemies[0].country == "Argentina"
+
+
+def test_planner_falklands_escort_is_written(tmp_path: Path) -> None:
+    escort_json = load_mission_spec(FALKLANDS_ESCORT).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Falklands escort south of Mount Pleasant",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=escort_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Falklands"
+    assert result.spec.mission_type.value == "escort"
+    assert result.spec.player.airfield == "MountPleasant"
+    assert result.spec.escort is not None
+    assert result.spec.escort.bearing_deg == 150
+    assert result.spec.escort.distance_km == 40
+    assert result.spec.package[0].country == "UK"
     assert result.spec.enemies[0].country == "Argentina"
 
 

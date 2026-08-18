@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-18 | [Falklands invent allows escort; dedicated notes](lessons/agent-tooling.md#falklands-invent-allows-escort-dedicated-notes-2026-08-18) | `agent-tooling` |
+| 2026-08-18 | [Falklands escort 150/40 South Atlantic; package UK, bounce Argentina](lessons/channel-ids.md#falklands-escort-15040-south-atlantic-package-uk-bounce-argentina-2026-08-18) | `channel-ids` |
 | 2026-08-18 | [Domain unsupported hint lists DOMAIN_THEATRES including Nevada](lessons/agent-tooling.md#domain-unsupported-hint-lists-domain_theatres-including-nevada-2026-08-18) | `agent-tooling` |
 | 2026-08-18 | [Falklands invent allows intercept; dedicated notes](lessons/agent-tooling.md#falklands-invent-allows-intercept-dedicated-notes-2026-08-18) | `agent-tooling` |
 | 2026-08-18 | [Falklands intercept 150/40 South Atlantic; store Mount Pleasant offset literals](lessons/channel-ids.md#falklands-intercept-15040-south-atlantic-store-mount-pleasant-offset-literals-2026-08-18) | `channel-ids` |

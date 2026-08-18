@@ -1,0 +1,47 @@
+schema_version: "1"
+mission_type: escort
+theatre: Falklands
+name: Mount Pleasant South Atlantic Escort
+description: >
+  Cold start at Mount Pleasant. Escort a Su-25T package SSE across the South
+  Atlantic (bearing 150°, 40 km — same station as the packaged CAP /
+  intercept place; not Channel escort 120/55, not Nellis 350/40, not
+  Incirlik 180/40, not Batumi 270/40, not Cherbourg 180/63) at 4000 m,
+  weapons free. Light Su-25T bounce near the package destination.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: MountPleasant
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+escort:
+  # Airfield-relative from Mount Pleasant (id 2) 150° / 40 km / 4000 m into
+  # the South Atlantic. Same station as CAP/intercept. PyDCS Mount Pleasant
+  # x=73318.320312 y=47168.748047; point_from_heading →
+  # x=38677.30416062245 y=67168.748047. Do not copy Channel escort 120/55,
+  # Nellis 350/40, Incirlik 180/40, Batumi 270/40, or Cherbourg 180/63.
+  bearing_deg: 150
+  distance_km: 40
+  altitude_m: 4000
+  engagement: weapons_free
+package:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: UK
+    coalition: blue
+enemies:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Argentina
+    coalition: red
+objectives:
+  - type: escort_package

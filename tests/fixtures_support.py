@@ -902,6 +902,29 @@ def compile_mount_pleasant_intercept(output_path: Path) -> Path:
     )
 
 
+FALKLANDS_ESCORT_EXAMPLE_SPEC = REPO_ROOT / "examples" / "mount_pleasant_south_atlantic_escort.yaml"
+FALKLANDS_ESCORT_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=2',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    '["task"]="Escort"',
+    "UK",
+    "Argentina",
+    "38677.30416062245",
+    "67168.748047",
+)
+
+
+def compile_mount_pleasant_escort(output_path: Path) -> Path:
+    spec = load_mission_spec(FALKLANDS_ESCORT_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 RIO_GALLEGOS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "rio_gallegos_cold_freeflight.yaml"
 RIO_GALLEGOS_MISSION_CONTRACTS = (
     "Su-25T",
