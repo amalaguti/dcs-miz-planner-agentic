@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada GA 303/85 Creech; desert-default land (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nellis → Creech PyDCS heading is **302.86° / 69.47 km**. Integer
+  303° / 70 km is ~0.56 km from Creech (near-airport land — reject). Packaged
+  strike is **303° / 85 km / 2000 m** (~15.53 km past Creech, nearest Creech,
+  land). Station **x=-351901.05702 y=-88520.23509**. Do not copy CAP 350/40
+  (x=-358803.06487951166 y=-24179.163922677217) onto trucks. Domain is
+  desert-default land on curated ids `{4, 2, 1, 18, 15, 8, 6, 13}` only —
+  near AF 3 km → land; else land. Do not promote Echo Bay id 7. Do not run
+  Channel/Normandy/Caucasus/Syria chords on Nevada x,y. Player USA + Su-25T
+  blue; targets country **Russia** red (`GroundTarget` defaults to ThirdReich).
+  Not USA-on-red. Not country Syria. Payload `su25t_2x_fab250`. Place
+  `creech_range_strike` (GA only). Extend `nellis_home` with `ground_attack`.
+  Do not add GA to `nellis_north_range_cap`.
+- **Code:** `channel_domain.py` (`classify_nevada_domain`),
+  `examples/nellis_creech_ground_attack.yaml`,
+  `planning_options.yaml` (`creech_range_strike`).
+
 ## Nevada escort 350/40 north-range; package USA, bounce Russia (2026-08-17)
 
 - **Date:** 2026-08-17

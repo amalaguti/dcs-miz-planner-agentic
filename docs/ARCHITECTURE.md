@@ -103,7 +103,7 @@ tools.*       -> catalog + memory + research + validation + PyDCSCompiler (agent
 | `narrative.py` | Opt-in CAP/intercept/escort/GA pack → materialise zones/triggers (squadron-voice message text); runs before validate/compile | `models`, `agent.voice` |
 | `dynamics.py` | Opt-in play-time Layer B pack (`fixed`/`live`/`choose`/`hybrid` + pools) → typed triggers; XOR with narrative; runs after narrative expand | `models` |
 | `validation.py` | Shared Spec checks (registry DCS-exists + install theatre availability + type rules + sound `asset_id` + group life indices/percent); multi-error result | `models`, `registry`, `sounds`, `install` |
-| `channel_domain.py` | Land/sea probe: TheChannel UK–FR chord or Normandy UK–Cotentin chord; fail-closed `domain_unsupported_theatre` otherwise; `airfield_relative_map_point` passes `theatre=` | `models`, `registry`, `theatre_terrain` |
+| `channel_domain.py` | Land/sea probe: TheChannel UK–FR chord, Normandy UK–Cotentin chord, Caucasus west-of-coast, Syria per-coastal windows, or Nevada desert-default land; fail-closed `domain_unsupported_theatre` otherwise; `airfield_relative_map_point` passes `theatre=` | `models`, `registry`, `theatre_terrain` |
 | `intercept_spawn.py` | Theatre-keyed intercept enemy spawn recipes (TheChannel Hawkinge/Dover, Normandy Cherbourg, Caucasus Black Sea) | none |
 | `allowlists.py` | Known skills + country hint; countries from era YAML via registry | `registry` |
 | `data/era/`, `data/shared/`, `data/theatres/<SpecId>/` | Packaged YAML SoT (era WWII units/countries, shared weather/planning, per-theatre airfields) | shipped in wheel via hatch force-include |

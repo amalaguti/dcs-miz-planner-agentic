@@ -4,7 +4,8 @@ Uses PyDCS airport geometry — not DCS runtime land.getSurfaceType.
 Heuristic: near a curated airport ⇒ land; TheChannel/Normandy use a
 UK–opposite-coast chord ⇒ sea; Caucasus uses a west-of-coast seaward sector;
 Syria uses per-coastal seaward windows (Incirlik 165–195°, Bassel/Beirut
-225–315° only). Other theatres fail closed before a recipe runs.
+225–315° only); Nevada is desert-default land on eight curated AFs.
+Falklands and other theatres fail closed before a recipe runs.
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ CHANNEL_THEATRE = "TheChannel"
 NORMANDY_THEATRE = "Normandy"
 CAUCASUS_THEATRE = "Caucasus"
 SYRIA_THEATRE = "Syria"
+NEVADA_THEATRE = "Nevada"
 
 # Channel WWII coastal clusters (PyDCS TheChannel airport ids).
 _UK_AIRPORT_IDS: frozenset[int] = frozenset({5, 6, 7, 8, 10, 12, 13, 14})
@@ -53,8 +55,15 @@ _SYRIA_MED_COASTAL_IDS: frozenset[int] = frozenset({21, 6})  # Bassel / Beirut O
 _SYRIA_MED_SEAWARD_MIN_DEG = 225.0
 _SYRIA_MED_SEAWARD_MAX_DEG = 315.0
 
+# Nevada curated AFs only (PyDCS Nevada airport ids; not Channel/Syria).
+# Do not promote Echo Bay / Lake Mead id 7.
+_NEVADA_CURATED_IDS: frozenset[int] = frozenset(
+    {4, 2, 1, 18, 15, 8, 6, 13}
+)  # Nellis, GroomLake, Creech, TonopahTestRange, NorthLasVegas,
+# HendersonExecutive, BoulderCity, Mesquite
+
 _DOMAIN_THEATRES: frozenset[str] = frozenset(
-    {CHANNEL_THEATRE, NORMANDY_THEATRE, CAUCASUS_THEATRE, SYRIA_THEATRE}
+    {CHANNEL_THEATRE, NORMANDY_THEATRE, CAUCASUS_THEATRE, SYRIA_THEATRE, NEVADA_THEATRE}
 )
 
 
@@ -194,8 +203,31 @@ def classify_syria_domain(x: float, y: float) -> Domain:
     return "land"
 
 
+def classify_nevada_domain(x: float, y: float) -> Domain:
+    """Return ``land`` or ``sea`` for a Nevada terrain map point (x, y).
+
+    Desert-default land — not a Nellis–Creech chord and not Channel /
+    Normandy / Caucasus / Syria recipes. Near a curated airfield ⇒ land.
+    Else land. Do not promote Echo Bay id 7. Never run other-theatre
+    airport ids on Nevada x,y.
+    """
+    from dcs.mapping import Point
+
+    from .theatre_terrain import terrain_for_theatre
+
+    terrain = terrain_for_theatre(NEVADA_THEATRE)
+    point = Point(x, y, terrain)
+    airports = [a for a in terrain.airport_list() if a.id in _NEVADA_CURATED_IDS]
+    if not airports:
+        return "land"
+    nearest = min(airports, key=lambda a: point.distance_to_point(a.position))
+    if point.distance_to_point(nearest.position) <= _NEAR_AIRPORT_M:
+        return "land"
+    return "land"
+
+
 def classify_domain_for_theatre(theatre: str, x: float, y: float) -> Domain:
-    """Classify land/sea for ``theatre``; fail closed unless Channel, Normandy, Caucasus, or Syria."""
+    """Classify land/sea for ``theatre``; fail closed unless Channel, Normandy, Caucasus, Syria, or Nevada."""
     require_channel_domain(theatre)
     if theatre == NORMANDY_THEATRE:
         return classify_normandy_domain(x, y)
@@ -203,6 +235,8 @@ def classify_domain_for_theatre(theatre: str, x: float, y: float) -> Domain:
         return classify_caucasus_domain(x, y)
     if theatre == SYRIA_THEATRE:
         return classify_syria_domain(x, y)
+    if theatre == NEVADA_THEATRE:
+        return classify_nevada_domain(x, y)
     return classify_channel_domain(x, y)
 
 

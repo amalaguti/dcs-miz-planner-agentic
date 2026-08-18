@@ -27,13 +27,13 @@ def _strike_theatre_match(row: dict[str, Any], theatre_f: str) -> bool:
     WWII rows stay tagged ``TheChannel`` and land units are also offered on
     Normandy; sea_craft stay Channel-only. Modern trucks are tagged
     ``Caucasus`` and match that theatre by stored ``theatre_id``. Theatre
-    ``Syria`` dual-offers those modern **land** rows at query time without
-    retagging stored ``theatre_id``.
+    ``Syria`` and ``Nevada`` dual-offer those modern **land** rows at query
+    time without retagging stored ``theatre_id``.
     """
     row_theatre = str(row["theatre_id"])
     if row_theatre == theatre_f:
         return True
-    if theatre_f == "Syria":
+    if theatre_f in {"Syria", "Nevada"}:
         return (
             row_theatre == "Caucasus"
             and str(row.get("era_id") or "") == "modern"
@@ -121,7 +121,8 @@ def list_strike_targets(
     id), case-insensitive substring ``q`` on unit_id/label, and ``theatre``.
     Does not read registry YAML or PyDCS at call time. Strike rows stay tagged
     TheChannel; WWII land units are also offered when ``theatre`` is Normandy.
-    Sea-domain units stay Channel-only.
+    Sea-domain units stay Channel-only. Modern land trucks tagged Caucasus are
+    also offered when ``theatre`` is Syria or Nevada.
     """
     domain_f = (domain or "").strip().casefold() or None
     if domain_f is not None and domain_f not in {"land", "sea"}:

@@ -707,10 +707,11 @@ options:
     label: Modern soft vehicles / trucks
     description: >
       Modern land soft targets (Ural / GAZ / ZIL trucks) on Caucasus Colchis
-      inland or Syria Levant inland past Aleppo — not Black Sea / Iskenderun
-      water, not Channel WWII trucks. Country Russia red on Caucasus; country
-      Syria red on Syria. Su-25T FAB-250 payload. Examples:
-      batumi_kutaisi_ground_attack, incirlik_aleppo_ground_attack.
+      inland, Syria Levant inland past Aleppo, or Nevada desert inland past
+      Creech — not Black Sea / Iskenderun water, not Channel WWII trucks.
+      Country Russia red on Caucasus and Nevada; country Syria red on Syria.
+      Su-25T FAB-250 payload. Examples: batumi_kutaisi_ground_attack,
+      incirlik_aleppo_ground_attack, nellis_creech_ground_attack.
     support: supported
     meta:
       domain: land
@@ -719,7 +720,7 @@ options:
       mission_types: [ground_attack]
       preferred_motion: static
       preferred_ai_preset: convoy_transit
-      cues: [ural, gaz, zil, truck, convoy, kutaisi, colchis, aleppo, syria]
+      cues: [ural, gaz, zil, truck, convoy, kutaisi, colchis, aleppo, syria, nevada, creech, nellis]
 
   - family: strike_target_class
     id: halftracks_apc
@@ -1280,15 +1281,15 @@ options:
     label: Nellis (home field)
     description: >
       Nellis — default Nevada Su-25T start for free_flight, desert
-      north-range CAP, intercept, and escort. Do not copy Manston, Needs Oar
-      Point, Batumi, or Incirlik geometry onto Nevada. Ground_attack / recon
-      are not inventable on Nevada yet.
+      north-range CAP, intercept, escort, and inland ground_attack past
+      Creech. Do not copy Manston, Needs Oar Point, Batumi, or Incirlik
+      geometry onto Nevada. Recon is not inventable on Nevada yet.
     support: advisory
     meta:
       theatre: Nevada
       airfield: Nellis
       role: home_base
-      mission_types: [free_flight, cap, intercept, escort]
+      mission_types: [free_flight, cap, intercept, escort, ground_attack]
 
   - family: channel_place
     id: nellis_north_range_cap
@@ -1308,6 +1309,35 @@ options:
       cap_distance_km: 40
       cap_altitude_m: 4000
       example: examples/nellis_north_range_cap.yaml
+
+  - family: channel_place
+    id: creech_range_strike
+    label: Creech range strike
+    description: >
+      Desert land inland of Creech for Nevada GA — place modern soft trucks
+      on Russia-country soil, not on Nellis field or the north-range CAP
+      station. Copy strike_bearing_deg / strike_distance_km. Do not copy
+      CAP 350/40, Creech 303/70 (near-field), Aleppo 121/200, or Kutaisi
+      43/110.
+    support: advisory
+    meta:
+      theatre: Nevada
+      domain: land
+      geometry_hint: inland_of_creech
+      related_classes: [modern_soft_vehicles]
+      mission_types: [ground_attack]
+      cues: [creech, nellis, inland, convoy, trucks, ural, nevada]
+      preferred_ai_preset_soft: convoy_transit
+      # PyDCS Nellis (4) → Creech (1) ≈ 302.86° / 69.47 km;
+      # 303/70 is ~0.56 km from Creech (reject); 303/85 is ~15.53 km inland
+      # (land). See examples/nellis_creech_ground_attack.yaml.
+      strike_bearing_deg: 303
+      strike_distance_km: 85
+      strike_altitude_m: 2000
+      example: examples/nellis_creech_ground_attack.yaml
+      note: >
+        Land only. Stopping at ~70 km is near Creech field.
+        Do not copy CAP 350/40 onto Nellis ground_attack.
 
   # --- Aircraft failures (ME Set Failure; curated Spitfire ids only) ---
   - family: aircraft_failure

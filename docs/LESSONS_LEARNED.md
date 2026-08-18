@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-17 | [Nevada invent allows ground_attack; Creech 303/85](lessons/agent-tooling.md#nevada-invent-allows-ground_attack-creech-30385-2026-08-17) | `agent-tooling` |
+| 2026-08-17 | [Nevada GA 303/85 Creech; desert-default land](lessons/channel-ids.md#nevada-ga-30385-creech-desert-default-land-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Nevada invent allows escort; dedicated notes](lessons/agent-tooling.md#nevada-invent-allows-escort-dedicated-notes-2026-08-17) | `agent-tooling` |
 | 2026-08-17 | [Nevada escort 350/40 north-range; package USA, bounce Russia](lessons/channel-ids.md#nevada-escort-35040-north-range-package-usa-bounce-russia-2026-08-17) | `channel-ids` |
 | 2026-08-17 | [Nevada invent allows intercept; dedicated notes](lessons/agent-tooling.md#nevada-invent-allows-intercept-dedicated-notes-2026-08-17) | `agent-tooling` |

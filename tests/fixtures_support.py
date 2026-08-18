@@ -769,6 +769,31 @@ def compile_nellis_escort(output_path: Path) -> Path:
     )
 
 
+NEVADA_GA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "nellis_creech_ground_attack.yaml"
+NEVADA_GA_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=4',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Ground Attack",
+    "{3C612111-C7AD-476E-8A8E-2485812F4E5C}",
+    '["type"]="Ural-375"',
+    '["type"]="GAZ-66"',
+    "Russia",
+    "USA",
+    "Bombing",
+)
+
+
+def compile_nellis_ground_attack(output_path: Path) -> Path:
+    spec = load_mission_spec(NEVADA_GA_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 GROOM_LAKE_EXAMPLE_SPEC = REPO_ROOT / "examples" / "groom_lake_cold_freeflight.yaml"
 GROOM_LAKE_MISSION_CONTRACTS = (
     "Su-25T",

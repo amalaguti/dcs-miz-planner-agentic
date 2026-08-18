@@ -30,15 +30,15 @@ Rules:
   CAP, intercept, and escort station 180°/40 km south over the Gulf of Iskenderun — not
   Cherbourg 180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA and recon AOI 121°/200 km
   inland past Aleppo — not CAP 180/40, not Kutaisi 43/110, not Maupertus 180/133). Nevada invent is
-  free_flight, CAP, intercept, or escort (Nellis, Su-25T, sunny_clear, USA blue;
+  free_flight, CAP, intercept, escort, or ground_attack (Nellis, Su-25T, sunny_clear, USA blue;
   CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
   not Batumi 270/40, not Cherbourg 180/63, not Creech 303/40, not Channel escort
-  120/55). Falklands invent is
+  120/55; GA strike 303°/85 km inland past Creech — not CAP 350/40). Falklands invent is
   free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  ground_attack/recon on Nevada and
+  recon on Nevada and
   intercept/cap/ground_attack/escort/recon on
   Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
-  Batumi all six, Incirlik all six, Nellis FF+CAP+intercept+escort, or Mount Pleasant FF)
+  Batumi all six, Incirlik all six, Nellis FF+CAP+intercept+escort+GA, or Mount Pleasant FF)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -96,9 +96,12 @@ Rules:
   (Ural-375); country Syria red; payload su25t_2x_fab250 (GA only).
 - Nevada geometry: copy nellis_north_range_cap meta cap_bearing_deg /
   cap_distance_km (350° / 40 km desert north-range land) for CAP, intercept, and
-  escort. Do not copy Incirlik 180/40, Batumi 270/40, Cherbourg 180/63, Manston
-  135/25, Channel escort 120/55, or Creech 303/40 onto Nellis. Ground_attack /
-  recon still refuse on Nevada.
+  escort. Copy creech_range_strike meta strike_bearing_deg / strike_distance_km
+  (303° / 85 km inland past Creech) for GA. Do not copy Incirlik 180/40, Batumi
+  270/40, Cherbourg 180/63, Manston 135/25, Channel escort 120/55, Creech 303/40,
+  or CAP 350/40 onto Nellis GA. Call list_strike_targets(theatre=Nevada) for
+  modern trucks (Ural-375); country Russia red; payload su25t_2x_fab250 (GA only).
+  Recon still refuses on Nevada.
 - Act as a mission designer co-author: when discussing play-time variation, ground
   attack / strike composition, or where on the Channel to fight, call
   list_mission_options for families dynamics_mode, strike_target_class, and
@@ -156,8 +159,9 @@ Rules:
   Pass theatre=Normandy for NeedsOarPoint (all six types);
   theatre=Caucasus for Batumi (all six types); theatre=Syria for Incirlik
   (all six types);
-  theatre=Nevada for Nellis free_flight, CAP, intercept, or escort (350°/40 km
-  desert north-range); theatre=Falklands for Mount Pleasant
+  theatre=Nevada for Nellis free_flight, CAP, intercept, escort (350°/40 km
+  desert north-range), or ground_attack (303°/85 km inland past Creech);
+  theatre=Falklands for Mount Pleasant
   free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
   combat skeleton onto Falklands.
 - Call research_guidance when you need tactics, procedures, historical context, or
@@ -317,14 +321,17 @@ def host_spec_repair_nudge(
                 "\n\nTheatre repair: for Nevada CAP, intercept, or escort, use "
                 "nellis_north_range_cap 350° / 40 km (desert north-range land — not "
                 "Incirlik 180/40, not Batumi 270/40, not Cherbourg 180/63, not "
-                "Creech 303/40, not Channel escort 120/55). Land/sea domain stays "
-                "fail-closed. "
-                "GA/recon still refuse — emit free_flight, CAP, intercept, or escort "
-                "at Nellis or switch theatre to TheChannel. "
+                "Creech 303/40, not Channel escort 120/55). "
+                "For land strike, use creech_range_strike 303° / 85 km (inland past Creech — "
+                "not CAP 350/40, not Aleppo 121/200, not french_coast 125/76). "
+                "Call list_strike_targets(theatre=Nevada) for modern trucks "
+                "(Ural-375; country Russia). "
+                "Recon still refuses — emit free_flight, CAP, intercept, escort, or "
+                "ground_attack at Nellis or switch theatre to TheChannel. "
                 "Do not copy french_coast / Hawkinge / NeedsOarPoint / Batumi / Incirlik "
                 "geometry onto Nevada.\n"
             )
-            allowed = {"free_flight", "cap", "intercept", "escort"}
+            allowed = {"free_flight", "cap", "intercept", "escort", "ground_attack"}
             schema_mt = mt if mt in allowed else "free_flight"
         elif theatre == "Syria":
             geometry_hint = (
@@ -437,10 +444,22 @@ def host_spec_repair_nudge(
                 "Channel french-coast 125/76 or Cherbourg-channel water onto a "
                 "land observe/strike.\n"
             )
-        elif theatre in {"Nevada", "Falklands"}:
+        elif theatre == "Nevada":
+            geometry_hint = (
+                "\n\nNevada geometry repair (domain mismatch):\n"
+                "- Land strike: use channel_place creech_range_strike — "
+                "bearing 303° / distance 85 km from Nellis (inland past Creech, "
+                "not CAP/escort 350/40, not french_coast 125/76, not Aleppo 121/200).\n"
+                "- Rewrite strike to 303/85; keep land trucks "
+                "(Ural-375; country Russia) on desert soil.\n"
+                "- Call list_strike_targets(theatre=Nevada). Do not copy "
+                "Channel french-coast 125/76, north-range CAP 350/40, or Aleppo 121/200 "
+                "onto a land strike.\n"
+            )
+        elif theatre == "Falklands":
             geometry_hint = (
                 "\n\nTheatre repair (domain mismatch): land/sea domain is not "
-                f"classified on {theatre}. Do not copy Channel french-coast "
+                "classified on Falklands. Do not copy Channel french-coast "
                 "125/76 onto this theatre. Emit an allowed type on this theatre "
                 "or switch theatre to TheChannel for Channel land/sea geometry.\n"
             )

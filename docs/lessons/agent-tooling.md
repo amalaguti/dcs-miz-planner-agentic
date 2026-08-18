@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada invent allows ground_attack; Creech 303/85 (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nevada invent/chat may emit **free_flight, CAP, intercept, escort, or
+  ground_attack** at Nellis (Su-25T, USA blue). GA strike is **303° / 85 km /
+  2000 m** inland past Creech — not CAP 350/40, not Creech 303/70 (near-field),
+  not Aleppo 121/200, not Kutaisi 43/110. Schema `theatre=Nevada` + `ground_attack`
+  loads `nellis_creech_ground_attack.yaml` with dedicated `_NEVADA_GA_NOTES` — do
+  **not** concatenate Channel `_TYPE_NOTES` / `_COMMON_NOTES`. Targets: modern
+  trucks from `list_strike_targets(theatre=Nevada)` (`Ural-375`; country **Russia**
+  red). Dual-offer is query-time: stored `theatre_id` stays `Caucasus` /
+  `era_id=modern` / `domain=land`. Recon still refuses every turn. Path clamp
+  stays TheChannel-only. Stub LLM stays Manston. Domain-mismatch repair MUST
+  nudge `creech_range_strike` 303/85, not CAP 350/40.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py` (`_NEVADA_GA_NOTES`),
+  `agent/prompts.py`, `tools/surface.py` (`_strike_theatre_match`),
+  `planning_options.yaml` (`creech_range_strike`, `nellis_home`),
+  `examples/nellis_creech_ground_attack.yaml`.
+
 ## Nevada invent allows escort; dedicated notes (2026-08-17)
 
 - **Date:** 2026-08-17

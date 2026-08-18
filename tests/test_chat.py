@@ -205,6 +205,29 @@ def test_host_spec_repair_nudge_syria_domain_uses_incirlik() -> None:
     assert "escort" in nudge.lower()
 
 
+def test_host_spec_repair_nudge_nevada_mismatch_uses_creech() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    payload = (
+        'Validation failed:\n[{"code": "strike_domain_mismatch", '
+        '"message": "strike is sea but targets are land"}]'
+    )
+    nudge = host_spec_repair_nudge(
+        payload,
+        mission_type="ground_attack",
+        rejected_text='{"mission_type": "ground_attack", "theatre": "Nevada", '
+        '"player": {"airfield": "Nellis"}}',
+    )
+    assert "303" in nudge
+    assert "85" in nudge
+    assert "Creech" in nudge or "creech_range_strike" in nudge
+    assert "french_coast_strike_belt" not in nudge
+    assert "bearing_deg: 125" not in nudge
+    assert "kutaisi_inland_strike" not in nudge
+    assert "aleppo_inland_strike" not in nudge
+    assert "350" not in nudge or "not CAP" in nudge or "not CAP/escort 350" in nudge
+
+
 def test_host_spec_repair_nudge_nevada_domain_uses_nellis() -> None:
     from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
 

@@ -409,8 +409,8 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** Nevada intercept or Falklands B.
-After `nevada-places`.
+**Next promote / in proposal:** Nevada recon (same Creech inland AOI) or Falklands B.
+After `nevada-ground-attack`.
 Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
@@ -456,11 +456,12 @@ Stage C combat on a new map before Slice 0b is on master.
 | F4c | `nevada-places` | Nevada Stage C: Nellis places + desert north-range CAP (350°/40 km); invent FF+CAP; intercept/GA/escort/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F4d | `nevada-intercept` | Nevada intercept: Nellis dawn intercept on the desert north-range corridor (350°/40 km); invent allow intercept; GA/escort/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F4e | `nevada-escort` | Nevada escort: Nellis USA Su-25T package on the desert north-range corridor (350°/40 km); invent allow escort; GA/recon still refuse | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
+| F4f | `nevada-ground-attack` | Nevada GA: Nellis inland strike past Creech (303°/85 km); desert-default land domain; modern Ural/GAZ/ZIL country Russia red; invent FF+CAP+intercept+escort+GA; recon still refuses | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
 promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Nevada
-GA (needs domain) or Falklands B. Refresh
+recon (same inland AOI) or Falklands B. Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `MarianaIslandsWWII` / `Kola` / `Iraq` until PyDCS terrain exists (R8).
 

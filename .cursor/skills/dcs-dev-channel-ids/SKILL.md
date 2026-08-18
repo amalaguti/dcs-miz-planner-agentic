@@ -43,16 +43,21 @@ description: >-
    23/25/29/31/28; heading 270°±45° from nearest coastal → sea), **or**
    Syria per-coastal seaward windows (coastal 16/21/6 vs inland 27/28/7/30/19;
    Incirlik 165–195°; Bassel/Beirut 225–315° those two fields only — never
-   apply 270±45 to Incirlik). Other
+   apply 270±45 to Incirlik), **or** Nevada desert-default land on curated
+   ids `{4, 2, 1, 18, 15, 8, 6, 13}` (near AF 3 km → land; else land — do
+   not promote Echo Bay id 7). Other
    theatres fail `domain_unsupported_theatre`. `airfield_relative_map_point`
    MUST pass `theatre=spec.theatre`. Normandy inland strike from NeedsOarPoint
    is **180° / 133 km** (Maupertus is 180.22° / 125.29 km; 120 km is still sea).
    Caucasus inland strike from Batumi is **43° / 110 km** (Kutaisi is 43.14° /
    97.20 km; 100 km is near-field; CAP 270/40 is sea). Syria inland strike/recon from
    Incirlik is **121° / 200 km** (Aleppo is 121.13° / 185.00 km; 121/185 is
-   near-field; CAP 180/40 is sea). Do not copy Manston
+   near-field; CAP 180/40 is sea). Nevada inland strike from Nellis is
+   **303° / 85 km** (Creech is 302.86° / 69.47 km; 303/70 is near-field; CAP
+   350/40 is a different land station). Do not copy Manston
    125/76 or CAP 180/63 (sea) onto Cotentin land, do not copy CAP 270/40
-   onto Caucasus GA, and do not copy CAP 180/40 onto Syria GA or recon.
+   onto Caucasus GA, do not copy CAP 180/40 onto Syria GA or recon, and do
+   not copy CAP 350/40 onto Nevada GA.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
    Germany is a hint, not a known id in **any** era.
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
@@ -93,13 +98,17 @@ description: >-
     `Mesquite` = 13. Do not invent id 12 or dump all 17 fields. Nellis 4 is
     not Maupertus and not Dunkirk. Modern smoke: country `USA` (not `usaaf`,
     not Georgia, not Turkey), aircraft `Su-25T` at **251.0 MHz**.     Invent home
-    stays Nellis (**free_flight, CAP, intercept, or escort**; station **350° / 40 km / 4000 m**
+    stays Nellis (**free_flight, CAP, intercept, escort, or ground_attack**;
+    CAP/intercept/escort station **350° / 40 km / 4000 m**
     desert north-range land — not Incirlik 180/40, not Batumi 270/40, not
     Cherbourg 180/63, not Channel escort 120/55, not Manston 135/25, not Creech
-    303/40, not 180/40 Henderson, not 270/40 NLV, not 79/40 Echo Bay water).
+    303/40, not 180/40 Henderson, not 270/40 NLV, not 79/40 Echo Bay water;
+    GA strike **303° / 85 km / 2000 m** inland past Creech — not CAP 350/40,
+    not 303/70 near-field).
     CAP/intercept/escort enemies: Russia + Su-25T (set `enemies[].country:
     Russia`; default is ThirdReich). Escort package country **USA** (default UK).
-    Do not put USA on red. GA/recon still refuse. Add USA only
+    GA trucks country **Russia** red (default ThirdReich). Do not put USA on red.
+    Recon still refuses. Add USA only
     to `era/modern` next to
     Georgia and Turkey — never `era/wwii`. `usaaf` is voice only, not a
     country. Channel+USA/Su-25T is unknown. Spitfire is dual-era. UK is
