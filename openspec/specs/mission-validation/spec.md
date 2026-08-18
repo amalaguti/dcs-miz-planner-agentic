@@ -1075,8 +1075,7 @@ available and planner-supported.
 Shared validation SHALL accept a well-formed Falklands free-flight Spec whose
 player airfield is a curated extra Falklands key (e.g. `RioGallegos`) when
 inventory agrees. Channel/Normandy MUST still reject country `Argentina` as
-unknown-country. Recon invent on Falklands MUST still be
-rejected.
+unknown-country.
 
 #### Scenario: Rio Gallegos freeflight validates
 - **WHEN** `examples/rio_gallegos_cold_freeflight.yaml` is validated against
@@ -1112,7 +1111,7 @@ South Atlantic corridor as sea.
 ### Requirement: Falklands escort Specs validate
 Shared validation SHALL accept a well-formed Falklands escort Spec
 (theatre `Falklands`, airfield `MountPleasant`, nested escort) when inventory
-agrees. Recon invent MUST still be rejected. Domain checks MUST classify
+agrees. Domain checks MUST classify
 the packaged escort station as sea.
 
 #### Scenario: Mount Pleasant escort validates
@@ -1160,9 +1159,19 @@ Goose Green 24 or Gull Point 29 as Spec keys.
 ### Requirement: Falklands ground_attack Specs validate
 Shared validation SHALL accept a well-formed Falklands ground_attack Spec
 (theatre `Falklands`, airfield `MountPleasant`, nested strike) when inventory
-agrees. Recon invent MUST still be rejected.
+agrees.
 
 #### Scenario: Mount Pleasant ground_attack validates
 - **WHEN** `examples/mount_pleasant_east_falkland_ground_attack.yaml` is
   validated against an inventory that includes offerable Falklands
+- **THEN** validation MUST succeed
+
+### Requirement: Falklands recon Specs validate
+Shared validation SHALL accept a well-formed Falklands recon Spec
+(theatre `Falklands`, airfield `MountPleasant`, nested recon + land observe
+targets) when inventory agrees.
+
+#### Scenario: Mount Pleasant East Falkland recon validates
+- **WHEN** `examples/mount_pleasant_east_falkland_recon.yaml` is validated
+  against an inventory that includes offerable Falklands
 - **THEN** validation MUST succeed

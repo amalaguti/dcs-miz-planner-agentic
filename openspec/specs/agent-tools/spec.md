@@ -1029,7 +1029,9 @@ escort 120/55, not Nellis 350/40). When mission type is `ground_attack`,
 the derived example MUST follow the East Falkland inland strike envelope
 (269° / 21 km / 2000 m; `su25t_2x_fab250`; Argentina trucks; not CAP 150/40,
 not 303/85, not 121/200, not 43/110, not 125/76). When mission type is
-`recon`, the tool MUST NOT return a prior-map combat skeleton.
+`recon`, the derived example MUST follow the East Falkland inland envelope
+(269° / 21 km / 2000 m; Argentina trucks; no payload; not CAP 150/40,
+not 303/85, not 121/200, not 43/110, not 125/76).
 
 #### Scenario: Falklands free_flight schema uses MountPleasant
 - **WHEN** a caller requests the free_flight Spec schema with theatre
@@ -1066,6 +1068,20 @@ not 303/85, not 121/200, not 43/110, not 125/76). When mission type is
 - **THEN** the example MUST use `MountPleasant`, theatre `Falklands`, Su-25T,
   UK, payload `su25t_2x_fab250`, Argentina-country trucks, and strike 269° /
   21 km (MUST NOT present Manston 125/76 or CAP 150/40 as the template)
+
+### Requirement: Spec schema tool accepts Falklands recon
+`get_mission_spec_schema` SHALL accept theatre `Falklands` with mission type
+`recon`. The derived example MUST follow the East Falkland inland envelope
+(not Manston, not Batumi, not Aleppo 121/200, not Creech 303/85, not South
+Atlantic CAP 150/40) and notes MUST NOT concatenate Channel template bundles
+that cite french-coast 125/76.
+
+#### Scenario: Falklands recon schema uses MountPleasant
+- **WHEN** a caller requests the recon Spec schema with theatre `Falklands`
+- **THEN** the example MUST use `MountPleasant`, theatre `Falklands`, Su-25T,
+  UK, Argentina-country trucks, no payload, and recon AOI 269° / 21 km
+  (not CAP 150/40, not Nevada 303/85, not Aleppo 121/200, not Kutaisi 43/110,
+  not Manston 125/76)
 
 ### Requirement: list_strike_targets offers modern land trucks on Falklands
 `list_strike_targets(theatre="Falklands")` SHALL return `Ural-375`, `GAZ-66`,

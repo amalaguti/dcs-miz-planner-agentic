@@ -622,10 +622,11 @@ name MUST remain `channel_place`.
 Packaged `channel_place` options SHALL include `mount_pleasant_home`,
 `mount_pleasant_south_atlantic_cap`, and `east_falkland_inland_strike` with
 `meta.theatre: Falklands`. The CAP place MUST publish station geometry 150° /
-40 km / 4000 m (South Atlantic sea) and MUST NOT list `ground_attack`. The GA
-place MUST publish strike geometry 269° / 21 km / 2000 m (inland short of
-Goose Green) and MUST list `ground_attack`. `mount_pleasant_home` MUST include
-`ground_attack`. The family name MUST remain `channel_place`.
+40 km / 4000 m (South Atlantic sea) and MUST NOT list `ground_attack` or
+`recon`. The GA/recon place MUST publish strike geometry 269° / 21 km /
+2000 m (inland short of Goose Green) and MUST list `ground_attack` and
+`recon`. `mount_pleasant_home` MUST include `ground_attack` and `recon`.
+The family name MUST remain `channel_place`.
 
 #### Scenario: mount_pleasant_south_atlantic_cap tagged Falklands
 - **WHEN** catalog/registry loads `channel_place` options
@@ -649,3 +650,7 @@ Goose Green) and MUST list `ground_attack`. `mount_pleasant_home` MUST include
 #### Scenario: mount_pleasant_south_atlantic_cap excludes ground_attack
 - **WHEN** catalog/registry loads `mount_pleasant_south_atlantic_cap`
 - **THEN** meta mission_types MUST NOT include `ground_attack`
+
+#### Scenario: east_falkland_inland_strike includes recon
+- **WHEN** catalog/registry loads `east_falkland_inland_strike`
+- **THEN** meta mission_types MUST include `recon` as well as `ground_attack`
