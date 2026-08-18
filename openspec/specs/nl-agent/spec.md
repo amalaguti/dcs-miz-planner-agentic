@@ -789,14 +789,14 @@ for land observe). Repair MUST NOT copy Channel, Normandy, Caucasus, or Syria
   Aleppo 121/200, or Kutaisi 43/110)
 
 ### Requirement: Falklands invent is free_flight only
-Invent/chat SHALL allow `free_flight`, `cap`, and `intercept` when the bound
-theatre is `Falklands` (home `MountPleasant`; intercept spawn on the South
-Atlantic corridor 150° / 40 km — not Hawkinge, not Nellis 350/40, not Incirlik
-180/40, not Batumi 270/40, not Cherbourg 180/63). It SHALL refuse
-`ground_attack`, `escort`, and `recon` on Falklands every turn (never capture
-or write a refused Spec). Repair MUST nudge toward Mount Pleasant free_flight,
-CAP, or intercept, or switching theatre to TheChannel — not Nellis, Incirlik,
-Batumi, NeedsOarPoint, or Manston.
+Invent/chat SHALL allow `free_flight`, `cap`, `intercept`, and `escort` when
+the bound theatre is `Falklands` (home `MountPleasant`; escort destination on
+the South Atlantic corridor 150° / 40 km — not Channel escort 120/55, not
+Nellis 350/40, not Incirlik 180/40, not Batumi 270/40, not Cherbourg 180/63).
+It SHALL refuse `ground_attack` and `recon` on Falklands every turn (never
+capture or write a refused Spec). Repair MUST nudge toward Mount Pleasant
+free_flight, CAP, intercept, or escort, or switching theatre to TheChannel —
+not Nellis, Incirlik, Batumi, NeedsOarPoint, or Manston.
 
 #### Scenario: Falklands free_flight invent allowed
 - **WHEN** invent is asked for a Falklands free-flight
@@ -815,3 +815,9 @@ Batumi, NeedsOarPoint, or Manston.
 - **THEN** the planner MUST be allowed to emit `theatre: Falklands` with
   `airfield: MountPleasant` (MUST NOT be required to emit TheChannel,
   Hawkinge, Nellis, Incirlik, Cherbourg, or Batumi spawn)
+
+#### Scenario: Falklands escort invent allowed
+- **WHEN** invent is asked for an escort on Falklands
+- **THEN** the planner MUST be allowed to emit `theatre: Falklands` with
+  `airfield: MountPleasant` (MUST NOT be required to emit TheChannel or
+  Manston 120/55)
