@@ -587,9 +587,9 @@ Packaged `channel_place` options SHALL include `nellis_home`,
 `meta.theatre: Nevada`. The CAP/intercept/escort place MUST publish station
 geometry 350° / 40 km / 4000 m (Nellis north over desert north-range land)
 and MUST NOT list `ground_attack`. The GA place MUST publish strike geometry
-303° / 85 km / 2000 m (inland past Creech) and MUST list `ground_attack`.
-`nellis_home` MUST include `ground_attack`. The family name MUST remain
-`channel_place`.
+303° / 85 km / 2000 m (inland past Creech) and MUST list `ground_attack` and
+`recon`. `nellis_home` MUST include `ground_attack` and `recon`. The family
+name MUST remain `channel_place`.
 
 #### Scenario: nellis_north_range_cap tagged Nevada
 - **WHEN** catalog/registry loads `channel_place` options
@@ -613,3 +613,7 @@ and MUST NOT list `ground_attack`. The GA place MUST publish strike geometry
 #### Scenario: nellis_north_range_cap excludes ground_attack
 - **WHEN** catalog/registry loads `nellis_north_range_cap`
 - **THEN** meta mission_types MUST NOT include `ground_attack`
+
+#### Scenario: creech_range_strike includes recon
+- **WHEN** catalog/registry loads `creech_range_strike`
+- **THEN** meta mission_types MUST include `recon` as well as `ground_attack`

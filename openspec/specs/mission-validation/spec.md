@@ -976,7 +976,7 @@ planner-supported.
 ### Requirement: Extra Nevada airfields validate
 Shared validation SHALL accept a well-formed Nevada free-flight Spec whose
 player airfield is a curated extra Nevada key (e.g. `GroomLake`) when
-inventory agrees. Recon invent on Nevada MUST still be rejected.
+inventory agrees.
 
 #### Scenario: Groom Lake freeflight validates
 - **WHEN** `examples/groom_lake_cold_freeflight.yaml` is validated against an
@@ -986,7 +986,6 @@ inventory agrees. Recon invent on Nevada MUST still be rejected.
 ### Requirement: Nevada CAP Specs validate
 Shared validation SHALL accept a well-formed Nevada CAP Spec
 (theatre `Nevada`, airfield `Nellis`, nested cap) when inventory agrees.
-It MUST still reject Nevada recon invent.
 
 #### Scenario: Nellis CAP validates
 - **WHEN** `examples/nellis_north_range_cap.yaml` is validated against an
@@ -1007,7 +1006,7 @@ Nevada intercept Specs MUST NOT fail solely with
 ### Requirement: Nevada escort Specs validate
 Shared validation SHALL accept a well-formed Nevada escort Spec
 (theatre `Nevada`, airfield `Nellis`, nested escort + package) when
-inventory agrees. It MUST still reject Nevada recon invent.
+inventory agrees.
 
 #### Scenario: Nellis escort validates
 - **WHEN** `examples/nellis_north_range_escort.yaml` is validated against an
@@ -1035,11 +1034,21 @@ It MUST NOT promote Echo Bay id 7. Falklands MUST still fail closed.
 ### Requirement: Nevada ground_attack Specs validate
 Shared validation SHALL accept a well-formed Nevada ground_attack Spec
 (theatre `Nevada`, airfield `Nellis`, nested strike + land targets) when
-inventory agrees. It MUST still reject Nevada recon invent.
+inventory agrees.
 
 #### Scenario: Nellis Creech ground_attack validates
 - **WHEN** `examples/nellis_creech_ground_attack.yaml` is validated against
   an inventory that includes offerable Nevada
+- **THEN** validation MUST succeed
+
+### Requirement: Nevada recon Specs validate
+Shared validation SHALL accept a well-formed Nevada recon Spec
+(theatre `Nevada`, airfield `Nellis`, nested recon + land observe targets)
+when inventory agrees.
+
+#### Scenario: Nellis Creech recon validates
+- **WHEN** `examples/nellis_creech_recon.yaml` is validated against an
+  inventory that includes offerable Nevada
 - **THEN** validation MUST succeed
 
 ### Requirement: Falklands freeflight validates when inventory agrees
