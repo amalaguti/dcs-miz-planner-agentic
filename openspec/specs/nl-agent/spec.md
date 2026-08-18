@@ -789,14 +789,14 @@ for land observe). Repair MUST NOT copy Channel, Normandy, Caucasus, or Syria
   Aleppo 121/200, or Kutaisi 43/110)
 
 ### Requirement: Falklands invent is free_flight only
-Invent/chat SHALL allow `free_flight`, `cap`, `intercept`, and `escort` when
-the bound theatre is `Falklands` (home `MountPleasant`; escort destination on
-the South Atlantic corridor 150° / 40 km — not Channel escort 120/55, not
-Nellis 350/40, not Incirlik 180/40, not Batumi 270/40, not Cherbourg 180/63).
-It SHALL refuse `ground_attack` and `recon` on Falklands every turn (never
-capture or write a refused Spec). Repair MUST nudge toward Mount Pleasant
-free_flight, CAP, intercept, or escort, or switching theatre to TheChannel —
-not Nellis, Incirlik, Batumi, NeedsOarPoint, or Manston.
+Invent/chat SHALL allow `free_flight`, `cap`, `intercept`, `escort`, and
+`ground_attack` when the bound theatre is `Falklands` (home `MountPleasant`;
+CAP/intercept/escort 150° / 40 km South Atlantic sea; GA strike 269° / 21 km
+inland short of Goose Green — not CAP 150/40, not 269/36, not 269/51, not
+Nevada 303/85, not Aleppo 121/200, not Kutaisi 43/110, not Channel 125/76).
+It SHALL refuse `recon` on Falklands every turn (never capture or write a
+refused Spec). Repair MUST nudge toward Mount Pleasant free_flight, CAP,
+intercept, escort, or ground_attack, or switching theatre to TheChannel.
 
 #### Scenario: Falklands free_flight invent allowed
 - **WHEN** invent is asked for a Falklands free-flight
@@ -821,3 +821,16 @@ not Nellis, Incirlik, Batumi, NeedsOarPoint, or Manston.
 - **THEN** the planner MUST be allowed to emit `theatre: Falklands` with
   `airfield: MountPleasant` (MUST NOT be required to emit TheChannel or
   Manston 120/55)
+
+#### Scenario: Falklands ground_attack invent allowed
+- **WHEN** invent is asked for a ground attack on Falklands
+- **THEN** the planner MUST be allowed to emit `theatre: Falklands` with
+  `airfield: MountPleasant` and strike geometry from the East Falkland inland
+  place/schema (MUST NOT be required to emit TheChannel, Manston 125/76,
+  CAP 150/40, Nevada 303/85, Aleppo 121/200, or Kutaisi 43/110)
+
+#### Scenario: Falklands recon invent refused every turn
+- **WHEN** invent is asked for recon on Falklands
+- **THEN** it MUST NOT emit a combat Mission Spec and MUST surface a repair
+  toward Mount Pleasant free_flight, CAP, intercept, escort, or ground_attack
+  (or TheChannel combat)

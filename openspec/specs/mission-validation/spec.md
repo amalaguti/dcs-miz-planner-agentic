@@ -1075,7 +1075,7 @@ available and planner-supported.
 Shared validation SHALL accept a well-formed Falklands free-flight Spec whose
 player airfield is a curated extra Falklands key (e.g. `RioGallegos`) when
 inventory agrees. Channel/Normandy MUST still reject country `Argentina` as
-unknown-country. Ground_attack and recon invent on Falklands MUST still be
+unknown-country. Recon invent on Falklands MUST still be
 rejected.
 
 #### Scenario: Rio Gallegos freeflight validates
@@ -1090,7 +1090,7 @@ rejected.
 ### Requirement: Falklands CAP Specs validate
 Shared validation SHALL accept a well-formed Falklands CAP Spec
 (theatre `Falklands`, airfield `MountPleasant`, nested cap) when inventory
-agrees. Domain checks MUST remain fail-closed on Falklands.
+agrees. Domain checks MUST classify the packaged CAP station as sea.
 
 #### Scenario: Mount Pleasant CAP validates
 - **WHEN** `examples/mount_pleasant_south_atlantic_cap.yaml` is validated
@@ -1101,7 +1101,8 @@ agrees. Domain checks MUST remain fail-closed on Falklands.
 Shared validation SHALL accept a well-formed Falklands intercept Spec
 (theatre `Falklands`, airfield `MountPleasant`) when inventory agrees.
 Well-formed Falklands intercept Specs MUST NOT fail solely with
-`intercept_unsupported_theatre`. Domain checks MUST remain fail-closed.
+`intercept_unsupported_theatre`. Domain checks MUST classify the packaged
+South Atlantic corridor as sea.
 
 #### Scenario: Mount Pleasant intercept validates
 - **WHEN** `examples/mount_pleasant_dawn_intercept.yaml` is validated against
@@ -1111,8 +1112,8 @@ Well-formed Falklands intercept Specs MUST NOT fail solely with
 ### Requirement: Falklands escort Specs validate
 Shared validation SHALL accept a well-formed Falklands escort Spec
 (theatre `Falklands`, airfield `MountPleasant`, nested escort) when inventory
-agrees. Ground_attack invent MUST still be rejected. Domain checks MUST remain
-fail-closed on Falklands.
+agrees. Recon invent MUST still be rejected. Domain checks MUST classify
+the packaged escort station as sea.
 
 #### Scenario: Mount Pleasant escort validates
 - **WHEN** `examples/mount_pleasant_south_atlantic_escort.yaml` is validated
@@ -1133,11 +1134,35 @@ string).
 ### Requirement: Domain unsupported hint lists domain theatres
 When land/sea domain checks are not packaged for a theatre, the
 `domain_unsupported_theatre` hint SHALL list every entry in `DOMAIN_THEATRES`
-(not a hardcoded Channel/Normandy/Caucasus/Syria-only string that omits
-Nevada). Falklands MUST remain absent from `DOMAIN_THEATRES` until a domain
-recipe ships.
+(including Falklands after this change). Unbound theatres such as `Kola` MUST
+still fail closed.
 
 #### Scenario: Falklands domain hint lists current domain theatres
-- **WHEN** a Falklands strike Spec is validated
+- **WHEN** a Kola (or other unbound) strike Spec is validated
 - **THEN** validation MUST fail with `domain_unsupported_theatre` and the hint
-  MUST include every current `DOMAIN_THEATRES` key including Nevada
+  MUST include every current `DOMAIN_THEATRES` key including Falklands
+
+### Requirement: Falklands land/sea domain
+Shared validation SHALL classify Falklands strike/recon map points using
+Syria-style seaward windows on classifier AFs `{1,2,3,24,29}`. Near a
+classifier AF MUST be land. CAP 150/40 MUST be sea. GA 269/21 MUST be land.
+MUST NOT run other-theatre chords or Nevada desert-default. MUST NOT promote
+Goose Green 24 or Gull Point 29 as Spec keys.
+
+#### Scenario: Falklands CAP station is sea
+- **WHEN** domain is classified at the Mount Pleasant 150° / 40 km CAP station
+- **THEN** the result MUST be sea
+
+#### Scenario: Falklands GA station is land
+- **WHEN** domain is classified at the Mount Pleasant 269° / 21 km strike
+- **THEN** the result MUST be land
+
+### Requirement: Falklands ground_attack Specs validate
+Shared validation SHALL accept a well-formed Falklands ground_attack Spec
+(theatre `Falklands`, airfield `MountPleasant`, nested strike) when inventory
+agrees. Recon invent MUST still be rejected.
+
+#### Scenario: Mount Pleasant ground_attack validates
+- **WHEN** `examples/mount_pleasant_east_falkland_ground_attack.yaml` is
+  validated against an inventory that includes offerable Falklands
+- **THEN** validation MUST succeed

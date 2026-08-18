@@ -732,7 +732,9 @@ an empty list). Sea-domain units MUST remain omitted for Normandy. For theatre
 `Syria`, the result MUST include those same modern land trucks (query-time
 dual-offer; stored `theatre_id` MAY remain `Caucasus`). For theatre `Nevada`,
 the result MUST include those same modern land trucks (query-time dual-offer;
-stored `theatre_id` MAY remain `Caucasus`). Falklands lists MUST remain empty.
+stored `theatre_id` MAY remain `Caucasus`). For theatre `Falklands`, the
+result MUST include those same modern land trucks (query-time dual-offer;
+stored `theatre_id` MAY remain `Caucasus`).
 
 #### Scenario: Normandy strike list includes land units
 - **WHEN** `list_strike_targets` is called with theatre `Normandy` after sync
@@ -751,6 +753,11 @@ stored `theatre_id` MAY remain `Caucasus`). Falklands lists MUST remain empty.
 
 #### Scenario: Nevada strike list includes modern trucks
 - **WHEN** a caller lists strike targets with theatre `Nevada`
+- **THEN** the result MUST include `Ural-375` and MUST NOT include Channel
+  WWII `Blitz`
+
+#### Scenario: Falklands strike list includes modern trucks
+- **WHEN** a caller lists strike targets with theatre `Falklands`
 - **THEN** the result MUST include `Ural-375` and MUST NOT include Channel
   WWII `Blitz`
 
@@ -1018,7 +1025,10 @@ the derived example MUST follow the Mount Pleasant South Atlantic CAP envelope
 MUST follow the Mount Pleasant dawn intercept envelope. When mission type is
 `escort`, the derived example MUST follow the Mount Pleasant South Atlantic
 escort envelope (150° / 40 km; UK package; Argentina bounce; not Channel
-escort 120/55, not Nellis 350/40). When mission type is `ground_attack` or
+escort 120/55, not Nellis 350/40). When mission type is `ground_attack`,
+the derived example MUST follow the East Falkland inland strike envelope
+(269° / 21 km / 2000 m; `su25t_2x_fab250`; Argentina trucks; not CAP 150/40,
+not 303/85, not 121/200, not 43/110, not 125/76). When mission type is
 `recon`, the tool MUST NOT return a prior-map combat skeleton.
 
 #### Scenario: Falklands free_flight schema uses MountPleasant
@@ -1049,3 +1059,20 @@ escort 120/55, not Nellis 350/40). When mission type is `ground_attack` or
 - **THEN** the example MUST use `MountPleasant`, theatre `Falklands`,
   Su-25T, UK package, Argentina bounce, and escort 150° / 40 km (MUST NOT
   present Manston 120/55 as the template to copy)
+
+#### Scenario: Falklands ground_attack schema uses MountPleasant
+- **WHEN** a caller requests the ground_attack Spec schema with theatre
+  `Falklands`
+- **THEN** the example MUST use `MountPleasant`, theatre `Falklands`, Su-25T,
+  UK, payload `su25t_2x_fab250`, Argentina-country trucks, and strike 269° /
+  21 km (MUST NOT present Manston 125/76 or CAP 150/40 as the template)
+
+### Requirement: list_strike_targets offers modern land trucks on Falklands
+`list_strike_targets(theatre="Falklands")` SHALL return `Ural-375`, `GAZ-66`,
+and `ZIL-135`. Stored `theatre_id` MAY remain `Caucasus`. Channel lists MUST
+still exclude those ids. Syria/Nevada dual-offer MUST stay.
+
+#### Scenario: Falklands strike list dual-offers Caucasus modern trucks
+- **WHEN** a caller lists strike units with theatre `Falklands`
+- **THEN** the result MUST include `Ural-375` and MUST NOT include Channel
+  WWII `Blitz_36-6700A`
