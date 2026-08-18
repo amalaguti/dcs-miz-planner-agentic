@@ -80,6 +80,7 @@ FALKLANDS_CAP = REPO / "examples" / "mount_pleasant_south_atlantic_cap.yaml"
 FALKLANDS_INTERCEPT = REPO / "examples" / "mount_pleasant_dawn_intercept.yaml"
 FALKLANDS_ESCORT = REPO / "examples" / "mount_pleasant_south_atlantic_escort.yaml"
 FALKLANDS_GA = REPO / "examples" / "mount_pleasant_east_falkland_ground_attack.yaml"
+FALKLANDS_RECON = REPO / "examples" / "mount_pleasant_east_falkland_recon.yaml"
 
 
 def _inv():
@@ -571,7 +572,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "intercept" in mp_home.meta.get("mission_types", [])
     assert "escort" in mp_home.meta.get("mission_types", [])
     assert "ground_attack" in mp_home.meta.get("mission_types", [])
-    assert "recon" not in mp_home.meta.get("mission_types", [])
+    assert "recon" in mp_home.meta.get("mission_types", [])
     mp_cap = next(o for o in places if o.id == "mount_pleasant_south_atlantic_cap")
     assert mp_cap.meta.get("theatre") == "Falklands"
     assert mp_cap.meta.get("domain") == "sea"
@@ -594,7 +595,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert east_fk.meta.get("strike_bearing_deg") == 269
     assert east_fk.meta.get("strike_distance_km") == 21
     assert "ground_attack" in east_fk.meta.get("mission_types", [])
-    assert "recon" not in east_fk.meta.get("mission_types", [])
+    assert "recon" in east_fk.meta.get("mission_types", [])
     assert "cap" not in east_fk.meta.get("mission_types", [])
     assert inland.meta.get("strike_bearing_deg") == 180
     assert inland.meta.get("strike_distance_km") == 133
@@ -977,8 +978,34 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
 
 
 def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
-    with pytest.raises(ValueError, match="not supported for theatre Falklands"):
-        build_spec_schema("recon", theatre="Falklands")
+    recon = build_spec_schema("recon", theatre="Falklands")
+    assert recon.example["theatre"] == "Falklands"
+    assert recon.example["player"]["airfield"] == "MountPleasant"
+    assert recon.example["player"]["aircraft"] == "Su-25T"
+    assert recon.example["player"]["country"] == "UK"
+    assert recon.example["recon"]["bearing_deg"] == 269
+    assert recon.example["recon"]["distance_km"] == 21
+    assert recon.example["recon"]["altitude_m"] == 2000
+    assert recon.example["recon"]["distance_km"] != 40
+    assert recon.example["recon"]["bearing_deg"] != 150
+    assert recon.example["targets"][0]["unit"] == "Ural-375"
+    assert recon.example["targets"][0]["country"] == "Argentina"
+    assert recon.example["player"]["airfield"] != "Manston"
+    assert recon.example["player"]["airfield"] != "Nellis"
+    assert recon.example["player"]["airfield"] != "Incirlik"
+    assert recon.example["player"]["airfield"] != "Batumi"
+    assert not recon.example["player"].get("payload")
+    recon_blob = " ".join(recon.notes)
+    assert "east_falkland_inland_strike" in recon_blob or "Goose Green" in recon_blob
+    assert "mount_pleasant_east_falkland_recon.yaml" in recon_blob
+    assert "french_coast" not in recon_blob
+    assert "manston_" not in recon_blob.lower()
+    recon_tool = get_mission_spec_schema("recon", theatre="Falklands")
+    assert recon_tool["ok"] is True
+    assert recon_tool["example"]["player"]["airfield"] == "MountPleasant"
+    assert recon_tool["example"]["recon"]["bearing_deg"] == 269
+    assert recon_tool["example"]["targets"][0]["country"] == "Argentina"
+    assert not recon_tool["example"]["player"].get("payload")
     ga = build_spec_schema("ground_attack", theatre="Falklands")
     assert ga.example["theatre"] == "Falklands"
     assert ga.example["player"]["airfield"] == "MountPleasant"
@@ -1075,9 +1102,17 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     assert escort_tool["example"]["package"][0]["country"] == "UK"
     assert escort_tool["example"]["enemies"][0]["country"] == "Argentina"
     assert escort_tool["example"]["escort"]["bearing_deg"] == 150
-    recon = get_mission_spec_schema("recon", theatre="Falklands")
-    assert recon["ok"] is False
-    assert recon["code"] == "combat_unsupported_theatre"
+    recon_tool_again = get_mission_spec_schema("recon", theatre="Falklands")
+    assert recon_tool_again["ok"] is True
+    blob = json.dumps({k: v for k, v in recon_tool_again["example"].items() if k != "description"})
+    assert "Manston" not in blob
+    assert "NeedsOarPoint" not in blob
+    assert "Batumi" not in blob
+    assert "Incirlik" not in blob
+    assert "Nellis" not in blob
+    assert "Hawkinge" not in blob
+    assert recon_tool_again["example"]["recon"]["bearing_deg"] != 150
+    assert recon_tool_again["example"]["recon"]["distance_km"] != 40
 
 
 def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
@@ -1338,10 +1373,8 @@ def test_falklands_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(escort) is None
     ga = load_mission_spec(FALKLANDS_GA)
     assert host_normandy_combat_nudge(ga) is None
-    recon = load_mission_spec(NEVADA_RECON).model_copy(
-        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
-    )
-    assert host_normandy_combat_nudge(recon) is not None
+    recon = load_mission_spec(FALKLANDS_RECON)
+    assert host_normandy_combat_nudge(recon) is None
 
 
 def test_schema_theatre_normandy_free_flight() -> None:
@@ -2441,6 +2474,61 @@ def test_planner_falklands_ground_attack_is_written(tmp_path: Path) -> None:
     assert result.spec.strike is not None
     assert result.spec.strike.bearing_deg == 269
     assert result.spec.strike.distance_km == 21
+    assert result.spec.targets[0].unit == "Ural-375"
+    assert result.spec.targets[0].country == "Argentina"
+
+
+def test_chat_falklands_recon_is_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    recon_json = load_mission_spec(FALKLANDS_RECON).model_dump_json()
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=recon_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    session.handle_line("Falklands recon inland short of Goose Green")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "recon"
+    assert session.proposed_spec.player.airfield == "MountPleasant"
+    assert session.proposed_spec.theatre == "Falklands"
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "recon"
+    assert written.player.airfield == "MountPleasant"
+    assert written.recon is not None
+    assert written.recon.bearing_deg == 269
+    assert written.recon.distance_km == 21
+    assert written.targets[0].unit == "Ural-375"
+    assert written.targets[0].country == "Argentina"
+
+
+def test_planner_falklands_recon_is_written(tmp_path: Path) -> None:
+    recon_json = load_mission_spec(FALKLANDS_RECON).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Falklands recon inland short of Goose Green",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=recon_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Falklands"
+    assert result.spec.mission_type.value == "recon"
+    assert result.spec.player.airfield == "MountPleasant"
+    assert result.spec.recon is not None
+    assert result.spec.recon.bearing_deg == 269
+    assert result.spec.recon.distance_km == 21
     assert result.spec.targets[0].unit == "Ural-375"
     assert result.spec.targets[0].country == "Argentina"
 

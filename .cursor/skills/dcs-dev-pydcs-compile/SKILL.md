@@ -39,9 +39,9 @@ description: >-
 8. Escort: package first, then EscortTaskAction + ROE; GA: verify land vs water
    strike placement. Falklands escort reuses CAP/intercept 150°/40 km (   dest
   38677.30416062245 / 67168.748047) — never copy Channel escort 120/55 or
-  Nevada 350/40 onto Mount Pleasant. Falklands GA dest is 269°/21 km
+  Nevada 350/40 onto Mount Pleasant. Falklands GA/recon dest is 269°/21 km
   (72951.81977681704 / 26171.946448715786) — never copy CAP 150/40 onto
-  East Falkland trucks.
+  East Falkland trucks or recon AOI.
 9. Target motion: `target_motion.py` + `target_motion.yaml` speed bands; `add_waypoint`
    speed is km/h; loop with `SwitchWaypoint` (1-based); domain-check path/patrol;
    omit `speed_kmh` for seeded cruise. Moving land: `OptDisparseUnderFire` (default 180s).

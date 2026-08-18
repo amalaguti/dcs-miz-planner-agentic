@@ -409,9 +409,9 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** Falklands recon (`falklands-recon`).
-After `falklands-ground-attack`.
-Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
+**Next promote / in proposal:** unbound maps stay discovered-only
+(`Kola`, `Iraq`, `MarianaIslandsWWII` — no PyDCS terrain). Bound-map invent is
+complete through Falklands recon. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
 
@@ -464,9 +464,10 @@ Stage C combat on a new map before Slice 0b is on master.
 | F5d | `falklands-intercept` | Falklands intercept: Mount Pleasant dawn intercept on the South Atlantic corridor (150°/40 km); invent allow intercept; GA/escort/recon still refuse | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 | F5e | `falklands-escort` | Falklands escort: Mount Pleasant UK Su-25T package on the South Atlantic corridor (150°/40 km); invent allow escort; GA/recon still refuse | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 | F5f | `falklands-ground-attack` | Falklands GA: Mount Pleasant inland strike short of Goose Green (269°/21 km); Syria-style seaward-window domain; modern Ural/GAZ/ZIL country Argentina red; invent FF+CAP+intercept+escort+GA; recon still refuses | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
+| F5g | `falklands-recon` | Falklands recon: Mount Pleasant observe inland short of Goose Green (269°/21 km); invent allow all six types | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
-promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Falklands recon (`falklands-recon`). Refresh
+promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: unbound stay discovered-only (`Kola` / `Iraq` / `MarianaIslandsWWII`). Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `MarianaIslandsWWII` / `Kola` / `Iraq` until PyDCS terrain exists (R8).
 

@@ -60,13 +60,12 @@ Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
 (`examples/mount_pleasant_south_atlantic_escort.yaml`; same 150/40, UK package)
 plus inland ground attack (`examples/mount_pleasant_east_falkland_ground_attack.yaml`;
 269°/21 km short of Goose Green — not CAP 150/40)
-plus curated extra airfields and a Rio
-Gallegos smoke (`examples/rio_gallegos_cold_freeflight.yaml`; Argentina red;
-airdromeId 5 is not Channel Manston). Port Stanley is lookup-only (heli). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
-at Nellis; Falklands invent is **free_flight,
-CAP, intercept, escort, or ground_attack** at Mount Pleasant (CAP 150°/40 km sea;
-GA 269°/21 km inland) — recon still
-refuses. Intercept spawn is TheChannel
+plus inland recon (`examples/mount_pleasant_east_falkland_recon.yaml`; same
+269°/21 km inland AOI). Invent is **all six types** at Mount Pleasant.
+Port Stanley is lookup-only (heli). Extra Falklands smoke:
+`examples/rio_gallegos_cold_freeflight.yaml` (Argentina red; airdromeId 5 is
+not Channel Manston). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
+at Nellis. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, Caucasus
 Batumi/Black Sea, Syria Incirlik/Iskenderun, Nevada Nellis/north-range, **or**
 Falklands Mount Pleasant/South Atlantic. Land/sea domain
@@ -74,7 +73,7 @@ classifies TheChannel, Normandy (UK–Cotentin chord), Caucasus (west-of-coast
 seaward sector), Syria (Incirlik seaward 165–195°; Bassel/Beirut 225–315° only),
 and Nevada (desert-default land on eight curated AFs),
 and Falklands (Syria-style seaward windows on island AFs `{1,2,3,24,29}`;
-CAP 150/40 sea, GA 269/21 land);
+CAP 150/40 sea, GA/recon 269/21 land);
 other maps fail closed.
 Channel path clamp stays TheChannel-only. Extra curated Normandy airfields
 (Chailey, Funtington, Tangmere, FordAF, Maupertus,
@@ -165,11 +164,8 @@ Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 all six types at Batumi; Syria invent is all six types at Incirlik;
 Nevada invent is all six types at Nellis
 (CAP 350°/40 km desert north-range; GA/recon 303°/85 km inland past Creech);
-Falklands invent is free_flight,
-CAP, intercept, escort, or ground_attack at Mount Pleasant (150°/40 km sea;
-GA 269°/21 km inland);
-recon still refuses
-on Falklands).
+Falklands invent is all six types at Mount Pleasant (150°/40 km sea;
+GA/recon 269°/21 km inland)).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for
 inspiration, not imported as Spec; stub LLM + offline research fixtures keep tests

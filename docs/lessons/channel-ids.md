@@ -5,6 +5,28 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands recon AOI 269/21; Ural-375 observe Argentina (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands recon AOI is **269° / 21 km / 2000 m** from Mount
+  Pleasant (airdromeId 2, x=73318.320312 y=47168.748047) — same East Falkland
+  land station as GA, not CAP/escort 150/40 (x=38677.30416062245
+  y=67168.748047), not Nevada 303/85, not Aleppo 121/200, not Manston 125/76.
+  Live PyDCS: MPA → Goose Green 24 is 268.80° / 36.01 km. **269/36 REJECT**
+  (~0.13 km from GG). **269/51 REJECT** (Falkland Sound). **269/21 ACCEPT**
+  (~15.02 km short of GG). Station **x=72951.81977681704
+  y=26171.946448715786**. Observe-only contacts are modern trucks (`Ural-375`
+  count 3) with country **Argentina** red (not UK-on-red, not country Russia,
+  not ThirdReich). Player Su-25T, UK blue, 251.0 MHz. Date 2024-06-06, 09:00
+  (`start_time` 32400), `sunny_clear`. Weapons hold; no payload. Reuse place
+  `east_falkland_inland_strike`; extend `mount_pleasant_home` with `recon`. Do
+  not put recon on `mount_pleasant_south_atlantic_cap`. Do not promote Goose
+  Green 24 or Gull Point 29 as Spec keys. Compiler recon is already
+  airfield-relative.
+- **Code:** `examples/mount_pleasant_east_falkland_recon.yaml`,
+  `planning_options.yaml` (`east_falkland_inland_strike` `mission_types`
+  includes `recon`).
+
 ## Falklands GA 269/21 short of Goose Green; Syria-style seaward windows (2026-08-18)
 
 - **Date:** 2026-08-18

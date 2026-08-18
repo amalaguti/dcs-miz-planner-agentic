@@ -954,6 +954,31 @@ def compile_mount_pleasant_ground_attack(output_path: Path) -> Path:
     )
 
 
+FALKLANDS_RECON_EXAMPLE_SPEC = REPO_ROOT / "examples" / "mount_pleasant_east_falkland_recon.yaml"
+FALKLANDS_RECON_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=2',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "Reconnaissance",
+    "recon_aoi",
+    "Ural-375",
+    "UK",
+    "Argentina",
+    "72951.81977681704",
+    "26171.946448715786",
+)
+
+
+def compile_mount_pleasant_recon(output_path: Path) -> Path:
+    spec = load_mission_spec(FALKLANDS_RECON_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 RIO_GALLEGOS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "rio_gallegos_cold_freeflight.yaml"
 RIO_GALLEGOS_MISSION_CONTRACTS = (
     "Su-25T",

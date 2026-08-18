@@ -5,6 +5,27 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands invent allows recon; all six types (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands invent/chat may emit **all six types** at Mount Pleasant
+  (Su-25T, UK blue). Recon AOI is **269° / 21 km / 2000 m** inland short of
+  Goose Green — same land station as `east_falkland_inland_strike` / GA, not
+  CAP 150/40, not Nevada 303/85, not Aleppo 121/200, not Kutaisi 43/110, not
+  Manston 125/76, not 269/36, not 269/51. Schema `theatre=Falklands` + `recon`
+  loads `mount_pleasant_east_falkland_recon.yaml` with dedicated
+  `_FALKLANDS_RECON_NOTES` — do **not** concatenate Channel `_TYPE_NOTES` /
+  `_COMMON_NOTES`. Observe modern trucks from
+  `list_strike_targets(theatre=Falklands)` (`Ural-375`; country **Argentina**
+  red). Weapons hold; omit payload. Path clamp and soft immersion floor stay
+  TheChannel-only. Stub LLM stays Manston. Domain-mismatch repair MUST nudge
+  `east_falkland_inland_strike` 269/21 for land strike **or recon**, not CAP
+  150/40. Fail-closed invent coverage stays unbound theatres (`Kola`).
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`
+  (`_FALKLANDS_RECON_NOTES`), `agent/prompts.py`, `planning_options.yaml`
+  (`east_falkland_inland_strike`, `mount_pleasant_home`),
+  `examples/mount_pleasant_east_falkland_recon.yaml`.
+
 ## Falklands invent allows ground_attack; dedicated GA notes (2026-08-18)
 
 - **Date:** 2026-08-18

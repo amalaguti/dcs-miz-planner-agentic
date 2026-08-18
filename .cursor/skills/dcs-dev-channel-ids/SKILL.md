@@ -67,7 +67,7 @@ description: >-
    Incirlik is **121° / 200 km** (Aleppo is 121.13° / 185.00 km; 121/185 is
    near-field; CAP 180/40 is sea). Nevada inland strike/recon from Nellis is
    **303° / 85 km** (Creech is 302.86° / 69.47 km; 303/70 is near-field; CAP
-   350/40 is a different land station). Falklands inland strike from Mount
+   350/40 is a different land station). Falklands inland strike/recon from Mount
    Pleasant is **269° / 21 km** (Goose Green is 268.80° / 36.01 km; 269/36 is
    0.13 km from GG — REJECT; 269/51 is Sound sea — REJECT as a station even
    if the seaward-window classifier still labels it land; CAP 150/40 is a
@@ -76,7 +76,7 @@ description: >-
    125/76 or CAP 180/63 (sea) onto Cotentin land, do not copy CAP 270/40
    onto Caucasus GA, do not copy CAP 180/40 onto Syria GA or recon, do
    not copy CAP 350/40 onto Nevada GA or recon, and do not copy CAP 150/40
-   onto Falklands GA.
+   onto Falklands GA or recon.
 8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
    Germany is a hint, not a known id in **any** era.
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
@@ -149,18 +149,17 @@ description: >-
     `examples/rio_gallegos_cold_freeflight.yaml`). Channel+Argentina is
     unknown. Chile is deferred. Spitfire is dual-era (same 124.0 in wwii +
     modern). Channel+UK still ok (wwii); Channel+Su-25T is unknown.     Invent
-    home stays MountPleasant UK blue, **free_flight, CAP, intercept, escort, or
-    ground_attack**
+    home stays MountPleasant UK blue, **all six types**
     (station **150° / 40 km / 4000 m** SSE over the South Atlantic — not
     Nellis 350/40, not Incirlik 180/40, not Batumi 270/40, not Cherbourg
     180/63, not Manston 135/25, not Hawkinge, not Channel escort 120/55;
-    GA strike **269° / 21 km / 2000 m** inland short of Goose Green — not
+    GA/recon AOI **269° / 21 km / 2000 m** inland short of Goose Green — not
     CAP 150/40, not 269/36, not 269/51, not Nevada 303/85).
     CAP/intercept/escort enemies:
     Argentina + Su-25T (set `enemies[].country: Argentina`; default is
     ThirdReich). Escort package country **UK** (default UK — still set
-    explicitly). GA trucks country **Argentina** red (default ThirdReich).
-    Port Stanley is not a CAP home. Recon still refuses.
+    explicitly). GA/recon trucks country **Argentina** red (default ThirdReich).
+    Port Stanley is not a CAP home.
 
 ## Code touchpoints
 

@@ -1,0 +1,49 @@
+schema_version: "1"
+mission_type: recon
+theatre: Falklands
+name: Mount Pleasant East Falkland Recon
+description: >
+  Cold start at Mount Pleasant. Cross inland to an AOI short of Goose Green on
+  East Falkland camp land (bearing 269°, 21 km — same land station as the
+  packaged GA place; not Channel french-coast 125/76, not CAP 150/40 South
+  Atlantic). Locate and observe soft enemy truck contacts. Weapons hold —
+  report the area and RTB. No bomb loadout.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: MountPleasant
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+recon:
+  # Airfield-relative from Mount Pleasant onto East Falkland camp land SHORT of
+  # Goose Green. Live PyDCS 0.15.0: MountPleasant (id 2) x=73318.320312
+  # y=47168.748047 → Goose Green 24 heading 268.80144358316187 /
+  # dist 36014.717032853056 m (268.80° / 36.01 km). Integer 269° / 36 km is
+  # ~0.13 km from GG (near-airport — REJECT). 269° / 51 km is Falkland Sound
+  # sea (x=72428.24758369854 y=-3823.484405975956 — REJECT). 269° / 21 km /
+  # 2000 m is 15.02 km SHORT of GG (land, nearest GG). Station
+  # x=72951.81977681704 y=26171.946448715786. CAP 150° / 40 km is
+  # x=38677.30416062245 y=67168.748047 (MUST NOT equal this recon AOI dest).
+  # Do not copy Nevada 303/85, Syria 121/200, Caucasus 43/110, Channel 125/76,
+  # or CAP 150/40.
+  bearing_deg: 269
+  distance_km: 21
+  altitude_m: 2000
+  radius_m: 3000
+  mark: true
+enemies: []
+targets:
+  - unit: Ural-375
+    count: 3
+    skill: Average
+    country: Argentina
+    coalition: red
+objectives:
+  - type: recon_area

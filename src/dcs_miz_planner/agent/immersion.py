@@ -204,15 +204,7 @@ _THEATRE_ALLOWED_TYPES: dict[str, frozenset[MissionType]] = {
     "Caucasus": frozenset(MissionType),
     "Syria": frozenset(MissionType),
     "Nevada": frozenset(MissionType),
-    "Falklands": frozenset(
-        {
-            MissionType.FREE_FLIGHT,
-            MissionType.CAP,
-            MissionType.INTERCEPT,
-            MissionType.ESCORT,
-            MissionType.GROUND_ATTACK,
-        }
-    ),
+    "Falklands": frozenset(MissionType),
 }
 
 
@@ -220,7 +212,7 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
     """Refuse mission types not allowed on this theatre. Every turn.
 
     TheChannel: all six. Normandy: all six. Caucasus: all six.
-    Syria: all six. Nevada: all six. Falklands: free_flight, CAP, intercept, escort, or ground_attack.
+    Syria: all six. Nevada: all six. Falklands: all six.
     Else (Stage A): free_flight only. Callers MUST treat a non-None result
     as a hard refuse: never capture a draft and never write YAML. A one-shot
     ``_used`` flag is not.
@@ -273,10 +265,10 @@ def host_theatre_mission_refuse_nudge(spec: MissionSpec) -> str | None:
         )
     if spec.theatre == "Falklands":
         return (
-            "[Host] Falklands invent is free_flight, CAP, intercept, escort, or ground_attack at Mount Pleasant. "
-            "Refuse recon — emit free_flight, CAP, intercept, escort "
+            "[Host] Falklands invent is all six types at Mount Pleasant. "
+            "Emit free_flight, CAP, intercept, or escort "
             "(Su-25T, UK blue, sunny_clear; CAP/intercept/escort station 150°/40 km South Atlantic) "
-            "or ground_attack (269°/21 km inland short of Goose Green, not CAP 150/40) "
+            "or ground_attack or recon (269°/21 km inland short of Goose Green, not CAP 150/40) "
             "or switch theatre to TheChannel. "
             "Do not copy channel_place or NeedsOarPoint geometry onto Falklands. "
             "Reply with a corrected Mission Spec JSON object ONLY (no markdown fences)."
@@ -326,10 +318,10 @@ def theatre_mission_refuse_chat_line(spec: MissionSpec) -> str:
         )
     if spec.theatre == "Falklands":
         return (
-            "[Host] Falklands recon is not inventable — "
-            "commander nudged toward Mount Pleasant free_flight, CAP, intercept, escort, or ground_attack, or TheChannel. "
-            "Draft NOT captured. Emit free_flight, CAP, intercept, escort, or ground_attack at Mount Pleasant or switch "
-            "theatre to TheChannel, then /accept."
+            "[Host] Falklands unexpected mission type is not inventable — "
+            "commander nudged toward Mount Pleasant (all six types) or TheChannel. "
+            "Draft NOT captured. Emit a Falklands-supported type at Mount Pleasant "
+            "or switch theatre to TheChannel, then /accept."
         )
     return (
         f"[Host] {spec.theatre} combat is not inventable — "
@@ -366,8 +358,9 @@ def theatre_mission_refuse_accept_line(spec: MissionSpec) -> str:
         )
     if spec.theatre == "Falklands":
         return (
-            "Falklands recon is not inventable. Draft NOT written. "
-            "Emit free_flight, CAP, intercept, escort, or ground_attack at Mount Pleasant or switch theatre to TheChannel."
+            "Falklands unexpected mission type is not inventable. Draft NOT written. "
+            "Emit a Falklands-supported type at Mount Pleasant "
+            "or switch theatre to TheChannel."
         )
     return (
         f"{spec.theatre} combat is not inventable. Draft NOT written. "
@@ -386,7 +379,7 @@ def theatre_mission_refuse_planner_error(spec: MissionSpec) -> str:
     if spec.theatre == "Nevada":
         return "Nevada invent is all six types at Nellis"
     if spec.theatre == "Falklands":
-        return "Falklands invent is free_flight, CAP, intercept, escort, or ground_attack; recon is refused"
+        return "Falklands invent is all six types at Mount Pleasant"
     return f"{spec.theatre} invent is free_flight only; combat types are refused"
 
 

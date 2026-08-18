@@ -48,10 +48,10 @@ description: >-
    CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
    not Batumi 270/40, not Cherbourg 180/63, not Channel escort 120/55, not Creech 303/40;
    GA/recon AOI 303°/85 km inland past Creech — not CAP 350/40).
-   Falklands is **free_flight, CAP, intercept, escort, or ground_attack**
+   Falklands is **all six types**
    (MountPleasant UK blue;
    CAP/intercept/escort station 150°/40 km South Atlantic sea — not Nellis 350/40,
-   not Channel escort 120/55, not Hawkinge; GA strike 269°/21 km inland short of
+   not Channel escort 120/55, not Hawkinge; GA/recon AOI 269°/21 km inland short of
    Goose Green — not CAP 150/40, not 269/36, not 269/51; Argentina enemies/trucks;
    Chile deferred; Port Stanley not CAP
    home). Extra Falklands AFs (`PortStanley`, `SanCarlosFOB`, `RioGallegos`,
@@ -64,8 +64,8 @@ description: >-
    nudges MUST infer theatre from rejected JSON and pass it to
    `build_spec_schema` — do not hardcode `theatre="Normandy"`,
    `theatre="Caucasus"`, `theatre="Syria"`, or `theatre="Nevada"` on
-   domain/intercept errors (Falklands must repair to Mount Pleasant FF, CAP,
-   intercept, escort, or ground_attack 269/21 — not “switch to TheChannel for intercept”, not
+   domain/intercept errors (Falklands must repair to Mount Pleasant all six
+   types 269/21 for land strike or recon — not “switch to TheChannel for intercept”, not
    Nellis, Incirlik, Batumi, or NeedsOarPoint).
    Default Manston CAP 135/25 must
    not repair a Normandy CAP.    Domain-mismatch repair
@@ -75,7 +75,7 @@ description: >-
    Falkland 269/21 — never inject french_coast onto Batumi recon
    or Incirlik GA/recon, never copy CAP 180/40 onto Syria land strike or
    recon AOI, never copy CAP 350/40 onto Nevada land strike or recon
-   AOI, and never copy CAP 150/40 onto Falklands land strike.
+   AOI, and never copy CAP 150/40 onto Falklands land strike or recon.
    Caucasus/Syria/Nevada/Falklands `build_spec_schema` notes MUST NOT
    concatenate `_COMMON_NOTES` / `_TYPE_NOTES` (those cite Manston YAML,
    Spitfire failures, `channel_place`). Use a dedicated notes tuple
@@ -88,7 +88,7 @@ description: >-
    `_NEVADA_ESCORT_NOTES` /    `_NEVADA_GA_NOTES` / `_NEVADA_RECON_NOTES` /
    `_FALKLANDS_FF_NOTES` / `_FALKLANDS_CAP_NOTES` /
    `_FALKLANDS_INTERCEPT_NOTES` / `_FALKLANDS_ESCORT_NOTES` /
-   `_FALKLANDS_GA_NOTES`).
+   `_FALKLANDS_GA_NOTES` / `_FALKLANDS_RECON_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent is **TheChannel-only** (Manston
