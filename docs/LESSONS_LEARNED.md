@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-18 | [Falklands invent allows CAP; 150/40 South Atlantic](lessons/agent-tooling.md#falklands-invent-allows-cap-15040-south-atlantic-2026-08-18) | `agent-tooling` |
+| 2026-08-18 | [Falklands CAP 150/40 South Atlantic; Argentina opposition](lessons/channel-ids.md#falklands-cap-15040-south-atlantic-argentina-opposition-2026-08-18) | `channel-ids` |
 | 2026-08-18 | [Falklands eight airfields; Argentina modern; RioGallegos 5](lessons/channel-ids.md#falklands-eight-airfields-argentina-modern-riogallegos-5-2026-08-18) | `channel-ids` |
 | 2026-08-17 | [Nevada invent allows recon; all six types](lessons/agent-tooling.md#nevada-invent-allows-recon-all-six-types-2026-08-17) | `agent-tooling` |
 | 2026-08-17 | [Nevada recon AOI 303/85; Ural-375 observe](lessons/channel-ids.md#nevada-recon-aoi-30385-ural-375-observe-2026-08-17) | `channel-ids` |

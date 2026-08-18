@@ -34,10 +34,12 @@ Rules:
   CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
   not Batumi 270/40, not Cherbourg 180/63, not Creech 303/40, not Channel escort
   120/55; GA and recon AOI 303°/85 km inland past Creech — not CAP 350/40). Falklands invent is
-  free_flight only (MountPleasant, Su-25T, sunny_clear, UK blue). Refuse
-  intercept/cap/ground_attack/escort/recon on
+  free_flight or CAP (MountPleasant, Su-25T, sunny_clear, UK blue; CAP station 150°/40 km
+  SSE over the South Atlantic — not Nellis 350/40, not Incirlik 180/40, not Batumi 270/40,
+  not Cherbourg 180/63, not Manston 135/25). Refuse
+  intercept/ground_attack/escort/recon on
   Falklands — repair toward the theatre's allowed home (NeedsOarPoint all six,
-  Batumi all six, Incirlik all six, Nellis all six, or Mount Pleasant FF)
+  Batumi all six, Incirlik all six, Nellis all six, or Mount Pleasant FF or CAP)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
   coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
   Falklands.
@@ -161,8 +163,9 @@ Rules:
   theatre=Nevada for Nellis free_flight, CAP, intercept, escort (350°/40 km
   desert north-range), or ground_attack (303°/85 km inland past Creech);
   theatre=Falklands for Mount Pleasant
-  free_flight. Do not copy a Manston, NeedsOarPoint, Batumi, Incirlik, or Nellis
-  combat skeleton onto Falklands.
+  free_flight or CAP (150°/40 km South Atlantic). Do not copy a Manston,
+  NeedsOarPoint, Batumi, Incirlik, or Nellis intercept/GA/escort/recon
+  skeleton onto Falklands.
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
   never treat research as Spec or DCS-id authority (including QAG fixture labels).
@@ -309,12 +312,14 @@ def host_spec_repair_nudge(
         if theatre == "Falklands":
             geometry_hint = (
                 "\n\nTheatre repair: land/sea domain and intercept spawn are TheChannel-only. "
-                "For Falklands, emit free_flight at Mount Pleasant (Su-25T, sunny_clear, UK "
-                "blue) or switch theatre to TheChannel for intercept/GA/escort/recon/CAP. "
+                "For Falklands, emit free_flight or CAP at Mount Pleasant (Su-25T, sunny_clear, "
+                "UK blue; CAP station 150°/40 km South Atlantic — not Nellis 350/40) "
+                "or switch theatre to TheChannel for intercept/GA/escort/recon. "
                 "Do not copy french_coast / Hawkinge / NeedsOarPoint / Batumi / Incirlik / "
                 "Nellis geometry onto Falklands.\n"
             )
-            schema_mt = "free_flight"
+            allowed = {"free_flight", "cap"}
+            schema_mt = mt if mt in allowed else "free_flight"
         elif theatre == "Nevada":
             geometry_hint = (
                 "\n\nTheatre repair: for Nevada CAP, intercept, or escort, use "
@@ -464,7 +469,7 @@ def host_spec_repair_nudge(
             geometry_hint = (
                 "\n\nTheatre repair (domain mismatch): land/sea domain is not "
                 "classified on Falklands. Do not copy Channel french-coast "
-                "125/76 onto this theatre. Emit an allowed type on this theatre "
+                "125/76 onto this theatre. Emit free_flight or CAP at Mount Pleasant "
                 "or switch theatre to TheChannel for Channel land/sea geometry.\n"
             )
         else:

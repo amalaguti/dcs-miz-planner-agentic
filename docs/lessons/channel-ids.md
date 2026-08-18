@@ -5,6 +5,27 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands CAP 150/40 South Atlantic; Argentina opposition (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Mount Pleasant CAP station is **150° / 40 km / 4000 m** from
+  Mount Pleasant (id 2, x=73318.320312, y=47168.748047) SSE into the South
+  Atlantic. Live PyDCS `point_from_heading` → x=38677.3 y=67168.7, nearest
+  Mount Pleasant 40.00 km (Gull Point 47.12, Port Stanley 56.99). **Do not
+  copy** Nellis 350/40, Incirlik 180/40, Batumi 270/40, Cherbourg 180/63,
+  Manston 135/25. 090/40 is nearer Port Stanley; 180/40 is nearer Gull
+  Point; 270/40 is nearer Goose Green; 350/40 is nearer San Carlos. Player
+  UK + Su-25T blue at 251.0 MHz; enemies country **Argentina** + Su-25T red
+  (MUST set `enemies[].country: Argentina`; default is ThirdReich). Do not
+  put UK on red. Chile is deferred. Port Stanley is not a CAP home. Domain
+  and intercept spawn stay fail-closed this slice. Places:
+  `mount_pleasant_home` (FF+CAP) and `mount_pleasant_south_atlantic_cap`
+  (CAP only, advisory `domain: sea`). Family stays `channel_place`. Do not
+  dump all 27 Falklands fields or invent ids 4 or 28.
+- **Code:** `examples/mount_pleasant_south_atlantic_cap.yaml`,
+  `planning_options.yaml` (`mount_pleasant_home`,
+  `mount_pleasant_south_atlantic_cap`).
+
 ## Falklands eight airfields; Argentina modern; RioGallegos 5 (2026-08-18)
 
 - **Date:** 2026-08-18

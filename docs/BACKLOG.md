@@ -409,8 +409,8 @@ Still useful to revisit R5 after user-file audits.
 
 ## M7 — Full catalog (multi-theatre)
 
-**Next promote / in proposal:** Falklands C (`falklands-places`).
-After `falklands-airfields`.
+**Next promote / in proposal:** Falklands intercept (`falklands-intercept`).
+After `falklands-places`.
 Unbound `Kola` / `Iraq` / `MarianaIslandsWWII` stay discovered-only. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
@@ -460,9 +460,10 @@ Stage C combat on a new map before Slice 0b is on master.
 | F4g | `nevada-recon` | Nevada recon: Nellis observe inland past Creech (303°/85 km); invent allow all six types | `done` (CLI/API 2026-08-17; ME Instant Action do-soon) |
 | F5 | `falklands-cold-freeflight` | South Atlantic (`Falklands`) Stage A bind + smoke | `done` (CLI/API 2026-08-15; ME Instant Action do-soon) |
 | F5b | `falklands-airfields` | Falklands Stage B: eight curated AFs; `Argentina` in modern; Rio Gallegos FF smoke (Argentina red, id 5 ≠ Manston); invent still FF-only at MountPleasant | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
+| F5c | `falklands-places` | Falklands Stage C: Mount Pleasant places + South Atlantic CAP (150°/40 km); invent FF+CAP; intercept/GA/escort/recon still refuse | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
-promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Falklands C (`falklands-places`). Refresh
+promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: Falklands intercept (`falklands-intercept`). Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `MarianaIslandsWWII` / `Kola` / `Iraq` until PyDCS terrain exists (R8).
 

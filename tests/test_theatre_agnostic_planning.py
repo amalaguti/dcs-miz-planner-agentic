@@ -74,6 +74,7 @@ NEVADA_ESCORT = REPO / "examples" / "nellis_north_range_escort.yaml"
 NEVADA_GA = REPO / "examples" / "nellis_creech_ground_attack.yaml"
 NEVADA_RECON = REPO / "examples" / "nellis_creech_recon.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
+FALKLANDS_CAP = REPO / "examples" / "mount_pleasant_south_atlantic_cap.yaml"
 
 
 def _inv():
@@ -477,6 +478,30 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "ground_attack" in creech.meta.get("mission_types", [])
     assert "recon" in creech.meta.get("mission_types", [])
     assert "escort" not in creech.meta.get("mission_types", [])
+    mp_home = next(o for o in places if o.id == "mount_pleasant_home")
+    assert mp_home.meta.get("theatre") == "Falklands"
+    assert "cap" in mp_home.meta.get("mission_types", [])
+    assert "free_flight" in mp_home.meta.get("mission_types", [])
+    assert "intercept" not in mp_home.meta.get("mission_types", [])
+    assert "escort" not in mp_home.meta.get("mission_types", [])
+    assert "ground_attack" not in mp_home.meta.get("mission_types", [])
+    assert "recon" not in mp_home.meta.get("mission_types", [])
+    mp_cap = next(o for o in places if o.id == "mount_pleasant_south_atlantic_cap")
+    assert mp_cap.meta.get("theatre") == "Falklands"
+    assert mp_cap.meta.get("domain") == "sea"
+    assert mp_cap.meta.get("cap_bearing_deg") == 150
+    assert mp_cap.meta.get("cap_distance_km") == 40
+    assert mp_cap.meta.get("cap_altitude_m") == 4000
+    assert mp_cap.meta.get("cap_bearing_deg") != 350
+    assert mp_cap.meta.get("cap_bearing_deg") != 180
+    assert mp_cap.meta.get("cap_bearing_deg") != 270
+    assert mp_cap.meta.get("cap_distance_km") != 25
+    assert mp_cap.meta.get("cap_distance_km") != 63
+    assert "cap" in mp_cap.meta.get("mission_types", [])
+    assert "intercept" not in mp_cap.meta.get("mission_types", [])
+    assert "escort" not in mp_cap.meta.get("mission_types", [])
+    assert "ground_attack" not in mp_cap.meta.get("mission_types", [])
+    assert "recon" not in mp_cap.meta.get("mission_types", [])
     assert inland.meta.get("strike_bearing_deg") == 180
     assert inland.meta.get("strike_distance_km") == 133
     assert "recon" in inland.meta.get("mission_types", [])
@@ -493,6 +518,8 @@ def test_channel_place_tagged_thechannel() -> None:
             assert opt.meta.get("theatre") == "Syria"
         elif opt.id in {"nellis_home", "nellis_north_range_cap", "creech_range_strike"}:
             assert opt.meta.get("theatre") == "Nevada"
+        elif opt.id in {"mount_pleasant_home", "mount_pleasant_south_atlantic_cap"}:
+            assert opt.meta.get("theatre") == "Falklands"
         else:
             assert opt.meta.get("theatre") == "TheChannel"
 
@@ -855,11 +882,37 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Falklands"):
         build_spec_schema("intercept", theatre="Falklands")
     with pytest.raises(ValueError, match="not supported for theatre Falklands"):
-        build_spec_schema("cap", theatre="Falklands")
+        build_spec_schema("ground_attack", theatre="Falklands")
+    with pytest.raises(ValueError, match="not supported for theatre Falklands"):
+        build_spec_schema("escort", theatre="Falklands")
+    with pytest.raises(ValueError, match="not supported for theatre Falklands"):
+        build_spec_schema("recon", theatre="Falklands")
+    cap = build_spec_schema("cap", theatre="Falklands")
+    assert cap.example["theatre"] == "Falklands"
+    assert cap.example["player"]["airfield"] == "MountPleasant"
+    assert cap.example["player"]["aircraft"] == "Su-25T"
+    assert cap.example["player"]["country"] == "UK"
+    assert cap.example["cap"]["bearing_deg"] == 150
+    assert cap.example["cap"]["distance_km"] == 40
+    assert cap.example["cap"]["altitude_m"] == 4000
+    assert cap.example["cap"]["bearing_deg"] != 350
+    assert cap.example["cap"]["bearing_deg"] != 180
+    assert cap.example["cap"]["bearing_deg"] != 270
+    assert cap.example["cap"]["distance_km"] != 25
+    assert cap.example["cap"]["distance_km"] != 63
+    assert cap.example["enemies"][0]["country"] == "Argentina"
+    cap_blob = " ".join(cap.notes)
+    assert "mount_pleasant_south_atlantic_cap.yaml" in cap_blob
+    assert "manston_" not in cap_blob.lower()
+    assert "examples are Channel templates" not in cap_blob
     tool = get_mission_spec_schema("cap", theatre="Falklands")
-    assert tool["ok"] is False
-    assert tool["code"] == "combat_unsupported_theatre"
-    blob = json.dumps(tool)
+    assert tool["ok"] is True
+    assert tool["example"]["player"]["airfield"] == "MountPleasant"
+    assert tool["example"]["cap"]["bearing_deg"] == 150
+    intercept = get_mission_spec_schema("intercept", theatre="Falklands")
+    assert intercept["ok"] is False
+    assert intercept["code"] == "combat_unsupported_theatre"
+    blob = json.dumps(intercept)
     assert "Manston" not in blob
     assert "NeedsOarPoint" not in blob
     assert "Batumi" not in blob
@@ -1115,19 +1168,33 @@ def test_nevada_cap_invent_nudge() -> None:
 
 
 def test_falklands_cap_invent_nudge() -> None:
-    spec = load_mission_spec(NORMANDY_CAP).model_copy(
+    spec = load_mission_spec(FALKLANDS_CAP)
+    assert host_normandy_combat_nudge(spec) is None
+    ff = load_mission_spec(FALKLANDS_FF)
+    assert host_normandy_combat_nudge(ff) is None
+    intercept = load_mission_spec(NEVADA_INTERCEPT).model_copy(
         update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
     )
-    nudge = host_normandy_combat_nudge(spec)
+    nudge = host_normandy_combat_nudge(intercept)
     assert nudge is not None
     assert "Mount Pleasant" in nudge
-    assert "free_flight" in nudge
+    assert "free_flight" in nudge or "CAP" in nudge
     assert "CAP at NeedsOarPoint" not in nudge
     assert "free_flight at Batumi" not in nudge
     assert "free_flight at Incirlik" not in nudge
     assert "free_flight at Nellis" not in nudge
-    ff = load_mission_spec(FALKLANDS_FF)
-    assert host_normandy_combat_nudge(ff) is None
+    ga = load_mission_spec(NEVADA_GA).model_copy(
+        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
+    )
+    assert host_normandy_combat_nudge(ga) is not None
+    escort = load_mission_spec(NEVADA_ESCORT).model_copy(
+        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
+    )
+    assert host_normandy_combat_nudge(escort) is not None
+    recon = load_mission_spec(NEVADA_RECON).model_copy(
+        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
+    )
+    assert host_normandy_combat_nudge(recon) is not None
 
 
 def test_schema_theatre_normandy_free_flight() -> None:
@@ -2021,17 +2088,11 @@ def test_planner_nevada_recon_is_written(tmp_path: Path) -> None:
     assert result.spec.targets[0].country == "Russia"
 
 
-def test_chat_falklands_cap_not_captured(tmp_path: Path) -> None:
+def test_chat_falklands_cap_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    cap_json = (
-        load_mission_spec(NORMANDY_CAP)
-        .model_copy(
-            update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
-        )
-        .model_dump_json()
-    )
+    cap_json = load_mission_spec(FALKLANDS_CAP).model_dump_json()
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=cap_json)]),
         output_path=out,
@@ -2039,7 +2100,71 @@ def test_chat_falklands_cap_not_captured(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    first = session.handle_line("Falklands CAP")
+    session.handle_line("Falklands CAP south of Mount Pleasant")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "cap"
+    assert session.proposed_spec.player.airfield == "MountPleasant"
+    assert session.proposed_spec.theatre == "Falklands"
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "cap"
+    assert written.player.airfield == "MountPleasant"
+    assert written.cap is not None
+    assert written.cap.bearing_deg == 150
+    assert written.cap.distance_km == 40
+    assert written.enemies[0].country == "Argentina"
+
+
+def test_planner_falklands_cap_is_written(tmp_path: Path) -> None:
+    cap_json = load_mission_spec(FALKLANDS_CAP).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Falklands CAP south of Mount Pleasant",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=cap_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Falklands"
+    assert result.spec.mission_type.value == "cap"
+    assert result.spec.player.airfield == "MountPleasant"
+    assert result.spec.cap is not None
+    assert result.spec.cap.bearing_deg == 150
+    assert result.spec.cap.distance_km == 40
+    assert result.spec.enemies[0].country == "Argentina"
+
+
+def test_chat_falklands_intercept_not_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    intercept_json = (
+        load_mission_spec(NEVADA_INTERCEPT)
+        .model_copy(
+            update={
+                "theatre": "Falklands",
+                "player": load_mission_spec(FALKLANDS_FF).player,
+                "name": "Falklands intercept",
+                "description": "Intercept from Mount Pleasant.",
+            }
+        )
+        .model_dump_json()
+    )
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    first = session.handle_line("Falklands intercept")
     assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
     assert "Mount Pleasant" in first.output
     assert "NeedsOarPoint" not in first.output
@@ -2115,6 +2240,8 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "incirlik_iskenderun_cap" not in channel_ids
     assert "nellis_home" not in channel_ids
     assert "nellis_north_range_cap" not in channel_ids
+    assert "mount_pleasant_home" not in channel_ids
+    assert "mount_pleasant_south_atlantic_cap" not in channel_ids
     assert "manston_home" in channel_ids
     assert "french_coast_strike_belt" in channel_ids
     assert any(o["family"] == "weather" for o in channel["options"])
@@ -2126,6 +2253,7 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "batumi_black_sea_cap" not in normandy_ids
     assert "incirlik_iskenderun_cap" not in normandy_ids
     assert "nellis_north_range_cap" not in normandy_ids
+    assert "mount_pleasant_south_atlantic_cap" not in normandy_ids
     assert "needs_oar_point_home" in normandy_ids
     assert "cherbourg_channel_cap" in normandy_ids
     assert "maupertus_inland_strike" in normandy_ids
@@ -2157,6 +2285,18 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "manston_home" not in nevada_ids
     assert "incirlik_iskenderun_cap" not in nevada_ids
     assert "batumi_black_sea_cap" not in nevada_ids
+    assert "mount_pleasant_home" not in nevada_ids
+    assert "mount_pleasant_south_atlantic_cap" not in nevada_ids
+    falklands = list_mission_options(theatre="Falklands", db_path=db)
+    assert falklands["ok"] is True
+    falklands_ids = {o["id"] for o in falklands["options"] if o["family"] == "channel_place"}
+    assert "mount_pleasant_home" in falklands_ids
+    assert "mount_pleasant_south_atlantic_cap" in falklands_ids
+    assert "manston_home" not in falklands_ids
+    assert "nellis_home" not in falklands_ids
+    assert "nellis_north_range_cap" not in falklands_ids
+    assert "incirlik_iskenderun_cap" not in falklands_ids
+    assert "batumi_black_sea_cap" not in falklands_ids
     all_rows = list_mission_options(db_path=db)
     all_ids = {o["id"] for o in all_rows["options"] if o["family"] == "channel_place"}
     assert "manston_home" in all_ids
@@ -2169,6 +2309,8 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "nellis_home" in all_ids
     assert "nellis_north_range_cap" in all_ids
     assert "creech_range_strike" in all_ids
+    assert "mount_pleasant_home" in all_ids
+    assert "mount_pleasant_south_atlantic_cap" in all_ids
 
 
 def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:

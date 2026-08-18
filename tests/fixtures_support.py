@@ -857,6 +857,29 @@ def compile_mount_pleasant(output_path: Path) -> Path:
     )
 
 
+FALKLANDS_CAP_EXAMPLE_SPEC = REPO_ROOT / "examples" / "mount_pleasant_south_atlantic_cap.yaml"
+FALKLANDS_CAP_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=2',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    '["task"]="CAP"',
+    "Orbit",
+    '["pattern"]="Circle"',
+    "UK",
+    "Argentina",
+)
+
+
+def compile_mount_pleasant_cap(output_path: Path) -> Path:
+    spec = load_mission_spec(FALKLANDS_CAP_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 RIO_GALLEGOS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "rio_gallegos_cold_freeflight.yaml"
 RIO_GALLEGOS_MISSION_CONTRACTS = (
     "Su-25T",

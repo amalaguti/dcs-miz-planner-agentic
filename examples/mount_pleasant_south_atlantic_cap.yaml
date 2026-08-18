@@ -1,0 +1,44 @@
+schema_version: "1"
+mission_type: cap
+theatre: Falklands
+name: Mount Pleasant South Atlantic CAP
+description: >
+  Cold start at Mount Pleasant. Climb to a CAP station SSE over the South
+  Atlantic (bearing 150°, 40 km — not Nellis 350/40, not Incirlik 180/40,
+  not Batumi 270/40, not Cherbourg 180/63, not Manston 135/25), circle at
+  4000 m, weapons free. Light Su-25T opposition near the station.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: MountPleasant
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+cap:
+  # Airfield-relative from Mount Pleasant (id 2) 150° / 40 km / 4000 m into
+  # the South Atlantic. PyDCS Mount Pleasant x=73318.320312 y=47168.748047;
+  # point_from_heading → x=38677.3 y=67168.7, nearest Mount Pleasant 40.00 km
+  # (Gull Point 47.12, Port Stanley 56.99). 090/40 is nearer Stanley;
+  # 180/40 is nearer Gull Point; 270/40 is nearer Goose Green; 350/40 is
+  # nearer San Carlos. Do not copy Nellis 350/40, Incirlik 180/40, Batumi
+  # 270/40, Cherbourg 180/63, or Manston 135/25.
+  bearing_deg: 150
+  distance_km: 40
+  altitude_m: 4000
+  pattern: circle
+  engagement: weapons_free
+  duration_min: 20
+enemies:
+  - aircraft: Su-25T
+    count: 2
+    skill: Average
+    country: Argentina
+    coalition: red
+objectives:
+  - type: patrol

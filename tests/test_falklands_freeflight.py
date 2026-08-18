@@ -1,4 +1,4 @@
-"""Falklands Mount Pleasant cold freeflight smoke (no CAP)."""
+"""Falklands Mount Pleasant cold freeflight and South Atlantic CAP smoke."""
 
 from __future__ import annotations
 
@@ -6,6 +6,8 @@ import zipfile
 from pathlib import Path
 
 from fixtures_support import (
+    FALKLANDS_CAP_EXAMPLE_SPEC,
+    FALKLANDS_CAP_MISSION_CONTRACTS,
     FALKLANDS_EXAMPLE_SPEC,
     FALKLANDS_MISSION_CONTRACTS,
     REQUIRED_MEMBERS,
@@ -13,6 +15,7 @@ from fixtures_support import (
     RIO_GALLEGOS_MISSION_CONTRACTS,
     channel_available_inventory,
     compile_mount_pleasant,
+    compile_mount_pleasant_cap,
     compile_rio_gallegos,
 )
 
@@ -45,6 +48,33 @@ def test_compile_mount_pleasant_contracts(tmp_path: Path) -> None:
         mission = zf.read("mission").decode("utf-8")
         for token in FALKLANDS_MISSION_CONTRACTS:
             assert token in mission, f"missing mission contract {token}"
+
+
+def test_validate_mount_pleasant_cap() -> None:
+    spec = load_mission_spec(FALKLANDS_CAP_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_mount_pleasant_cap_contracts(tmp_path: Path) -> None:
+    out = compile_mount_pleasant_cap(tmp_path / "mount_pleasant_cap.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Falklands" in theatre
+        assert "Nevada" not in theatre
+        assert "Syria" not in theatre
+        assert "Caucasus" not in theatre
+        assert "Normandy" not in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in FALKLANDS_CAP_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+        assert '["type"]="Su-25T"' in mission
+        assert "ThirdReich" not in mission
+        assert "Chile" not in mission
 
 
 def test_validate_rio_gallegos() -> None:

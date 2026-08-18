@@ -47,19 +47,20 @@ description: >-
    CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
    not Batumi 270/40, not Cherbourg 180/63, not Channel escort 120/55, not Creech 303/40;
    GA/recon AOI 303°/85 km inland past Creech — not CAP 350/40).
-   Falklands is **free_flight only** (MountPleasant UK blue; CAP refused).
-   Extra Falklands AFs (`PortStanley`, `SanCarlosFOB`, `RioGallegos`,
+   Falklands is **free_flight or CAP** (MountPleasant UK blue; CAP station
+   150°/40 km South Atlantic sea — not Nellis 350/40; Argentina enemies;
+   Chile deferred; Port Stanley not CAP home). Extra Falklands AFs (`PortStanley`, `SanCarlosFOB`, `RioGallegos`,
    `RioGrande`, `Ushuaia`, `PuntaArenas`, `SanJulian`) are catalog/lookup;
    they MUST NOT replace the invent/schema home. Port Stanley is heli
    lookup-only. Country `Argentina` is modern-only; Channel+Argentina is
    unknown. Chile is deferred.
    Refused types refuse every turn
-   (never a one-shot nudge that then captures/writes the Spec). Host repair
+   (never a one-shot nudge that then captures/writes the Spec).    Host repair
    nudges MUST infer theatre from rejected JSON and pass it to
    `build_spec_schema` — do not hardcode `theatre="Normandy"`,
    `theatre="Caucasus"`, `theatre="Syria"`, or `theatre="Nevada"` on
-   domain/intercept errors (Falklands must repair to Mount Pleasant FF, not
-   Nellis, Incirlik, Batumi, or NeedsOarPoint).
+   domain/intercept errors (Falklands must repair to Mount Pleasant FF or
+   CAP, not Nellis, Incirlik, Batumi, or NeedsOarPoint).
    Default Manston CAP 135/25 must
    not repair a Normandy CAP.    Domain-mismatch repair
    (`motion_domain_mismatch` / `strike_domain_mismatch`) MUST use inferred
@@ -77,8 +78,8 @@ description: >-
    `_SYRIA_FF_NOTES` / `_SYRIA_CAP_NOTES` / `_SYRIA_INTERCEPT_NOTES` /
    `_SYRIA_ESCORT_NOTES` /    `_SYRIA_GA_NOTES` / `_SYRIA_RECON_NOTES` /
    `_NEVADA_FF_NOTES` / `_NEVADA_CAP_NOTES` / `_NEVADA_INTERCEPT_NOTES` /
-   `_NEVADA_ESCORT_NOTES` / `_NEVADA_GA_NOTES` / `_NEVADA_RECON_NOTES` /
-   `_FALKLANDS_FF_NOTES`).
+   `_NEVADA_ESCORT_NOTES` /    `_NEVADA_GA_NOTES` / `_NEVADA_RECON_NOTES` /
+   `_FALKLANDS_FF_NOTES` / `_FALKLANDS_CAP_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
 6. Soft immersion floor for vague invent is **TheChannel-only** (Manston

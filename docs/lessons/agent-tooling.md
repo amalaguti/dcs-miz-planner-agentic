@@ -5,6 +5,29 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands invent allows CAP; 150/40 South Atlantic (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands invent/chat may emit **free_flight or CAP** at
+  Mount Pleasant (Su-25T, UK blue). CAP station is **150° / 40 km / 4000 m**
+  SSE of Mount Pleasant over the South Atlantic — not Nellis 350/40, not
+  Incirlik 180/40, not Batumi 270/40, not Cherbourg 180/63, not Manston
+  135/25. 090/40 is nearer Port Stanley; 180/40 is nearer Gull Point;
+  270/40 is nearer Goose Green; 350/40 is nearer San Carlos. Schema
+  `theatre=Falklands` + `cap` loads `mount_pleasant_south_atlantic_cap.yaml`
+  with dedicated `_FALKLANDS_CAP_NOTES` — do not concatenate Channel
+  `_COMMON_NOTES` / `_TYPE_NOTES`. Enemies: Su-25T, country **Argentina**
+  red (`EnemyFlight` defaults to ThirdReich). Do not put UK on red. Chile
+  is deferred. Port Stanley is not a CAP home. Intercept/GA/escort/recon
+  still refuse every turn. Domain classifier and intercept spawn stay
+  fail-closed on Falklands. Path clamp and soft immersion floor stay
+  TheChannel-only. Stub LLM stays Manston. FF schema example stays
+  `mount_pleasant_cold_freeflight.yaml`.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`
+  (`_FALKLANDS_CAP_NOTES`), `agent/prompts.py`, `planning_options.yaml`
+  (`mount_pleasant_home`, `mount_pleasant_south_atlantic_cap`),
+  `examples/mount_pleasant_south_atlantic_cap.yaml`.
+
 ## Nevada invent allows recon; all six types (2026-08-17)
 
 - **Date:** 2026-08-17
