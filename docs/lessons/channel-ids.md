@@ -5,6 +5,26 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Falklands intercept 150/40 South Atlantic; store Mount Pleasant offset literals (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands intercept reuses the packaged CAP station: Mount
+  Pleasant (id 2, x=73318.320312, y=47168.748047) + live PyDCS
+  `point_from_heading(150, 40000)` offset **−34641.016151377546,
+  +20000.0** (station x=38677.30416062245 y=67168.748047). **150° is not
+  axis-aligned** — do not store ±40000,0 (that is Incirlik 180/40 or Batumi
+  270/40). Do not copy Nellis 350/40, Incirlik 180/40, Batumi 270/40,
+  Cherbourg 180/63, or Hawkinge onto Mount Pleasant. Do not recompute
+  Channel Hawkinge from `airport_list()` (golden `x=30989.935547` stays
+  bit-identical). Player UK + Su-25T blue at 251.0 MHz; enemies country
+  **Argentina** + Su-25T red. Do not put UK on red. Chile is deferred.
+  Domain stays fail-closed (`channel_domain.py` untouched). Places:
+  `mount_pleasant_home` and `mount_pleasant_south_atlantic_cap` now include
+  `intercept` (keep advisory `domain: sea`). Do not dump all 27 Falklands
+  fields or invent ids 4 or 28.
+- **Code:** `intercept_spawn.py` (`FALKLANDS_THEATRE` literals),
+  `examples/mount_pleasant_dawn_intercept.yaml`.
+
 ## Falklands CAP 150/40 South Atlantic; Argentina opposition (2026-08-18)
 
 - **Date:** 2026-08-18

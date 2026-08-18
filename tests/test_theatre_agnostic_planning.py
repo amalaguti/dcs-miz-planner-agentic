@@ -23,6 +23,7 @@ from dcs_miz_planner.agent.spec_schema import build_spec_schema
 from dcs_miz_planner.allowlists import known_countries
 from dcs_miz_planner.catalog import CatalogService
 from dcs_miz_planner.channel_domain import (
+    DOMAIN_THEATRES,
     DomainUnsupportedTheatre,
     airfield_relative_map_point,
     classify_domain_for_theatre,
@@ -31,6 +32,7 @@ from dcs_miz_planner.channel_domain import (
 )
 from dcs_miz_planner.compiler import PyDCSCompiler
 from dcs_miz_planner.intercept_spawn import (
+    INTERCEPT_SPAWN_RECIPES,
     intercept_spawn_for_theatre,
     intercept_supported,
 )
@@ -75,6 +77,7 @@ NEVADA_GA = REPO / "examples" / "nellis_creech_ground_attack.yaml"
 NEVADA_RECON = REPO / "examples" / "nellis_creech_recon.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
 FALKLANDS_CAP = REPO / "examples" / "mount_pleasant_south_atlantic_cap.yaml"
+FALKLANDS_INTERCEPT = REPO / "examples" / "mount_pleasant_dawn_intercept.yaml"
 
 
 def _inv():
@@ -274,6 +277,56 @@ def test_intercept_succeeds_on_nevada(tmp_path: Path) -> None:
         assert "-358803.06487951166" in mission
         assert "30989.935547" not in mission
         assert "181207.773438" not in mission
+
+
+def test_intercept_succeeds_on_falklands(tmp_path: Path) -> None:
+    spec = load_mission_spec(FALKLANDS_INTERCEPT)
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert result.ok, result.errors
+    assert intercept_supported("Falklands")
+    recipe = intercept_spawn_for_theatre("Falklands")
+    assert recipe.anchor_x == 73318.320312
+    assert recipe.anchor_y == 47168.748047
+    assert recipe.offset_x == -34641.016151377546
+    assert recipe.offset_y == 20000.0
+    assert recipe.enemy_x == 38677.30416062245
+    assert recipe.enemy_y == 67168.748047
+    out = tmp_path / "falklands_intercept.miz"
+    PyDCSCompiler(inventory=_inv()).compile(spec, out)
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        mission = zf.read("mission").decode("utf-8")
+        assert "38677.30416062245" in mission
+        assert "67168.748047" in mission
+        assert "30989.935547" not in mission
+        assert "-358803.06487951166" not in mission
+        assert "181207.773438" not in mission
+
+
+def test_intercept_unsupported_hint_lists_recipe_keys() -> None:
+    spec = load_mission_spec(FALKLANDS_INTERCEPT).model_copy(update={"theatre": "Kola"})
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert not result.ok
+    err = next(e for e in result.errors if e.code == "intercept_unsupported_theatre")
+    hint = err.hint or ""
+    for key in INTERCEPT_SPAWN_RECIPES:
+        assert key in hint
+    assert "TheChannel, Normandy, or Caucasus" not in hint
+
+
+def test_domain_unsupported_hint_lists_supported_theatres() -> None:
+    spec = load_mission_spec(GA).model_copy(
+        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
+    )
+    result = validate_mission_spec(spec, inventory=_inv())
+    assert not result.ok
+    err = next(e for e in result.errors if e.code == "domain_unsupported_theatre")
+    hint = err.hint or ""
+    for key in DOMAIN_THEATRES:
+        assert key in hint
+    assert "Nevada" in hint
+    assert "Falklands" not in hint
+    assert "TheChannel, Normandy, Caucasus, or Syria" not in hint
 
 
 def test_escort_succeeds_on_normandy(tmp_path: Path) -> None:
@@ -482,7 +535,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert mp_home.meta.get("theatre") == "Falklands"
     assert "cap" in mp_home.meta.get("mission_types", [])
     assert "free_flight" in mp_home.meta.get("mission_types", [])
-    assert "intercept" not in mp_home.meta.get("mission_types", [])
+    assert "intercept" in mp_home.meta.get("mission_types", [])
     assert "escort" not in mp_home.meta.get("mission_types", [])
     assert "ground_attack" not in mp_home.meta.get("mission_types", [])
     assert "recon" not in mp_home.meta.get("mission_types", [])
@@ -498,7 +551,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert mp_cap.meta.get("cap_distance_km") != 25
     assert mp_cap.meta.get("cap_distance_km") != 63
     assert "cap" in mp_cap.meta.get("mission_types", [])
-    assert "intercept" not in mp_cap.meta.get("mission_types", [])
+    assert "intercept" in mp_cap.meta.get("mission_types", [])
     assert "escort" not in mp_cap.meta.get("mission_types", [])
     assert "ground_attack" not in mp_cap.meta.get("mission_types", [])
     assert "recon" not in mp_cap.meta.get("mission_types", [])
@@ -880,8 +933,6 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
 
 def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     with pytest.raises(ValueError, match="not supported for theatre Falklands"):
-        build_spec_schema("intercept", theatre="Falklands")
-    with pytest.raises(ValueError, match="not supported for theatre Falklands"):
         build_spec_schema("ground_attack", theatre="Falklands")
     with pytest.raises(ValueError, match="not supported for theatre Falklands"):
         build_spec_schema("escort", theatre="Falklands")
@@ -909,15 +960,33 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     assert tool["ok"] is True
     assert tool["example"]["player"]["airfield"] == "MountPleasant"
     assert tool["example"]["cap"]["bearing_deg"] == 150
-    intercept = get_mission_spec_schema("intercept", theatre="Falklands")
-    assert intercept["ok"] is False
-    assert intercept["code"] == "combat_unsupported_theatre"
-    blob = json.dumps(intercept)
+    intercept = build_spec_schema("intercept", theatre="Falklands")
+    assert intercept.example["theatre"] == "Falklands"
+    assert intercept.example["player"]["airfield"] == "MountPleasant"
+    assert intercept.example["player"]["aircraft"] == "Su-25T"
+    assert intercept.example["player"]["country"] == "UK"
+    assert intercept.example["enemies"][0]["country"] == "Argentina"
+    intercept_blob = " ".join(intercept.notes)
+    assert "mount_pleasant_dawn_intercept.yaml" in intercept_blob
+    assert "manston_" not in intercept_blob.lower()
+    assert "NeedsOarPoint" not in intercept_blob
+    assert "Batumi" not in intercept_blob
+    intercept_tool = get_mission_spec_schema("intercept", theatre="Falklands")
+    assert intercept_tool["ok"] is True
+    assert intercept_tool["example"]["player"]["airfield"] == "MountPleasant"
+    blob = json.dumps({k: v for k, v in intercept_tool["example"].items() if k != "description"})
     assert "Manston" not in blob
     assert "NeedsOarPoint" not in blob
     assert "Batumi" not in blob
     assert "Incirlik" not in blob
     assert "Nellis" not in blob
+    ga = get_mission_spec_schema("ground_attack", theatre="Falklands")
+    assert ga["ok"] is False
+    assert ga["code"] == "combat_unsupported_theatre"
+    escort = get_mission_spec_schema("escort", theatre="Falklands")
+    assert escort["ok"] is False
+    recon = get_mission_spec_schema("recon", theatre="Falklands")
+    assert recon["ok"] is False
 
 
 def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
@@ -1172,21 +1241,18 @@ def test_falklands_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(spec) is None
     ff = load_mission_spec(FALKLANDS_FF)
     assert host_normandy_combat_nudge(ff) is None
-    intercept = load_mission_spec(NEVADA_INTERCEPT).model_copy(
+    intercept = load_mission_spec(FALKLANDS_INTERCEPT)
+    assert host_normandy_combat_nudge(intercept) is None
+    ga = load_mission_spec(NEVADA_GA).model_copy(
         update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
     )
-    nudge = host_normandy_combat_nudge(intercept)
+    nudge = host_normandy_combat_nudge(ga)
     assert nudge is not None
     assert "Mount Pleasant" in nudge
-    assert "free_flight" in nudge or "CAP" in nudge
     assert "CAP at NeedsOarPoint" not in nudge
     assert "free_flight at Batumi" not in nudge
     assert "free_flight at Incirlik" not in nudge
     assert "free_flight at Nellis" not in nudge
-    ga = load_mission_spec(NEVADA_GA).model_copy(
-        update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
-    )
-    assert host_normandy_combat_nudge(ga) is not None
     escort = load_mission_spec(NEVADA_ESCORT).model_copy(
         update={"theatre": "Falklands", "player": load_mission_spec(FALKLANDS_FF).player}
     )
@@ -2141,22 +2207,11 @@ def test_planner_falklands_cap_is_written(tmp_path: Path) -> None:
     assert result.spec.enemies[0].country == "Argentina"
 
 
-def test_chat_falklands_intercept_not_captured(tmp_path: Path) -> None:
+def test_chat_falklands_intercept_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    intercept_json = (
-        load_mission_spec(NEVADA_INTERCEPT)
-        .model_copy(
-            update={
-                "theatre": "Falklands",
-                "player": load_mission_spec(FALKLANDS_FF).player,
-                "name": "Falklands intercept",
-                "description": "Intercept from Mount Pleasant.",
-            }
-        )
-        .model_dump_json()
-    )
+    intercept_json = load_mission_spec(FALKLANDS_INTERCEPT).model_dump_json()
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
         output_path=out,
@@ -2164,17 +2219,39 @@ def test_chat_falklands_intercept_not_captured(tmp_path: Path) -> None:
         inventory=_inv(),
     )
     session.start()
-    first = session.handle_line("Falklands intercept")
-    assert "Draft NOT captured" in first.output or "not inventable" in first.output.lower()
-    assert "Mount Pleasant" in first.output
-    assert "NeedsOarPoint" not in first.output
-    assert "Batumi" not in first.output
-    assert "Incirlik" not in first.output
-    assert "Nellis" not in first.output
-    assert session.proposed_spec is None
+    session.handle_line("Falklands intercept south of Mount Pleasant")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "intercept"
+    assert session.proposed_spec.player.airfield == "MountPleasant"
+    assert session.proposed_spec.theatre == "Falklands"
     accepted = session.handle_line("/accept")
-    assert not out.exists()
-    assert "Wrote Spec" not in accepted.output
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "intercept"
+    assert written.player.airfield == "MountPleasant"
+    assert written.enemies[0].country == "Argentina"
+
+
+def test_planner_falklands_intercept_is_written(tmp_path: Path) -> None:
+    intercept_json = load_mission_spec(FALKLANDS_INTERCEPT).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Falklands intercept south of Mount Pleasant",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Falklands"
+    assert result.spec.mission_type.value == "intercept"
+    assert result.spec.player.airfield == "MountPleasant"
+    assert result.spec.enemies[0].country == "Argentina"
 
 
 def test_chat_normandy_cap_is_captured(tmp_path: Path) -> None:

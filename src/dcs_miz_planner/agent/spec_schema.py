@@ -64,9 +64,9 @@ _NEVADA_RECON_EXAMPLE = "nellis_creech_recon.yaml"
 _NEVADA_UNSUPPORTED_COMBAT: frozenset[str] = frozenset()
 _FALKLANDS_FREE_FLIGHT_EXAMPLE = "mount_pleasant_cold_freeflight.yaml"
 _FALKLANDS_CAP_EXAMPLE = "mount_pleasant_south_atlantic_cap.yaml"
+_FALKLANDS_INTERCEPT_EXAMPLE = "mount_pleasant_dawn_intercept.yaml"
 _FALKLANDS_UNSUPPORTED_COMBAT = frozenset(
     {
-        MissionType.INTERCEPT.value,
         MissionType.GROUND_ATTACK.value,
         MissionType.ESCORT.value,
         MissionType.RECON.value,
@@ -233,7 +233,7 @@ _COMMON_NOTES: tuple[str, ...] = (
         "(TheChannel for combat; Normandy all six types at NeedsOarPoint; "
         "Caucasus all six types at Batumi; Syria all six types at Incirlik; "
         "Nevada free_flight, CAP, intercept, escort, or ground_attack at Nellis; "
-        "Falklands free_flight or CAP at "
+        "Falklands free_flight, CAP, or intercept at "
         "Mount Pleasant)."
     ),
     (
@@ -831,12 +831,15 @@ _NEVADA_RECON_NOTES: tuple[str, ...] = (
 # Manston YAML, Spitfire failures, and channel_place as templates to copy).
 _FALKLANDS_FF_NOTES: tuple[str, ...] = (
     (
-        "Falklands invent is free_flight or CAP: airfield MountPleasant, Su-25T, "
-        "sunny_clear, UK blue. CAP station 150° / 40 km / 4000 m SSE over the "
-        "South Atlantic. Refuse intercept/ground_attack/escort/recon. Do not copy "
-        "Channel, Normandy, Caucasus, Syria, or Nevada geometry onto Falklands."
+        "Falklands invent is free_flight, CAP, or intercept: airfield "
+        "MountPleasant, Su-25T, sunny_clear, UK blue. CAP/intercept station "
+        "150° / 40 km / 4000 m SSE over the South Atlantic. Refuse "
+        "ground_attack/escort/recon. Do not copy Channel, Normandy, Caucasus, "
+        "Syria, or Nevada geometry onto Falklands."
     ),
-    ('schema_version must be "1"; theatre is Falklands (free_flight or CAP at Mount Pleasant).'),
+    (
+        'schema_version must be "1"; theatre is Falklands (free_flight, CAP, or intercept at Mount Pleasant).'
+    ),
     (
         "Required envelope: schema_version, mission_type, theatre, date, start_time, "
         "weather, player; enemies/objectives/triggers/zones default to empty lists."
@@ -866,13 +869,13 @@ _FALKLANDS_FF_NOTES: tuple[str, ...] = (
 
 _FALKLANDS_CAP_NOTES: tuple[str, ...] = (
     (
-        "Falklands invent is free_flight or CAP: airfield MountPleasant, Su-25T, "
-        "sunny_clear, UK blue. CAP station 150° / 40 km / 4000 m SSE over the "
-        "South Atlantic (not Nellis 350/40, not Incirlik 180/40, not Batumi "
-        "270/40, not Cherbourg 180/63, not Manston 135/25). Enemies: Su-25T, "
-        "country Argentina, coalition red (do not default ThirdReich; do not "
-        "put UK on red). Refuse intercept/ground_attack/escort/recon. Chile is "
-        "deferred. Port Stanley is not a CAP home."
+        "Falklands invent is free_flight, CAP, or intercept: airfield "
+        "MountPleasant, Su-25T, sunny_clear, UK blue. CAP station 150° / 40 km "
+        "/ 4000 m SSE over the South Atlantic (not Nellis 350/40, not Incirlik "
+        "180/40, not Batumi 270/40, not Cherbourg 180/63, not Manston 135/25). "
+        "Enemies: Su-25T, country Argentina, coalition red (do not default "
+        "ThirdReich; do not put UK on red). Refuse ground_attack/escort/recon. "
+        "Chile is deferred. Port Stanley is not a CAP home."
     ),
     ('schema_version must be "1"; theatre is Falklands (CAP at Mount Pleasant).'),
     (
@@ -883,6 +886,30 @@ _FALKLANDS_CAP_NOTES: tuple[str, ...] = (
         "Fill DCS ids from tools/prefs using examples/mount_pleasant_south_atlantic_cap.yaml. "
         "Channel, Normandy, Caucasus, Syria, and Nevada example YAML paths do not apply."
     ),
+    "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
+)
+
+# Falklands intercept: do not concatenate _COMMON_NOTES / _TYPE_NOTES (those cite
+# Manston YAML, Spitfire failures, and channel_place as templates to copy).
+_FALKLANDS_INTERCEPT_NOTES: tuple[str, ...] = (
+    (
+        "Falklands invent is free_flight, CAP, or intercept: airfield "
+        "MountPleasant, Su-25T, sunny_clear, UK blue. Enemies spawn on the "
+        "South Atlantic corridor (150° / 40 km from Mount Pleasant — same "
+        "station as mount_pleasant_south_atlantic_cap; not Hawkinge / Dover / "
+        "Nellis 350/40 / Incirlik 180/40 / Caucasus 270/40 / Cherbourg 180/63). "
+        "Enemies: Su-25T, country Argentina, coalition red (do not default "
+        "ThirdReich; do not put UK on red). Refuse ground_attack/escort/recon. "
+        "Chile is deferred. Port Stanley is not a CAP home."
+    ),
+    ('schema_version must be "1"; theatre is Falklands (intercept at Mount Pleasant).'),
+    (
+        "Required envelope: schema_version, mission_type, theatre, date, start_time, "
+        "weather, player; enemies/objectives/triggers/zones default to empty lists."
+    ),
+    'enemies must be non-empty; objectives must include {"type":"intercept_enemy"}.',
+    "omit the cap and strike blocks; omit player.payload.",
+    "Fill DCS ids from examples/mount_pleasant_dawn_intercept.yaml.",
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )
 
@@ -918,8 +945,8 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
     all six mission types. ``theatre=Nevada`` uses Nellis for all six
     mission types (CAP/intercept/escort 350° / 40 km desert north-range;
     GA/recon 303° / 85 km inland past Creech). ``theatre=Falklands`` uses
-    Mount Pleasant for free_flight or CAP (150° / 40 km South Atlantic).
-    Falklands intercept / ground_attack / escort / recon
+    Mount Pleasant for free_flight, CAP, or intercept (150° / 40 km South Atlantic).
+    Falklands ground_attack / escort / recon
     raise (no Manston / NeedsOarPoint / Batumi / Incirlik / Nellis combat skeleton).
     """
     key = (mission_type or "").strip()
@@ -931,10 +958,12 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
         if key in _FALKLANDS_UNSUPPORTED_COMBAT:
             raise ValueError(
                 f"Combat mission_type {key!r} is not supported for theatre Falklands; "
-                "use free_flight or cap at Mount Pleasant or theatre TheChannel"
+                "use free_flight, cap, or intercept at Mount Pleasant or theatre TheChannel"
             )
         if key == MissionType.CAP.value:
             filename = _FALKLANDS_CAP_EXAMPLE
+        elif key == MissionType.INTERCEPT.value:
+            filename = _FALKLANDS_INTERCEPT_EXAMPLE
         else:
             filename = _FALKLANDS_FREE_FLIGHT_EXAMPLE
         path = examples_dir() / filename
@@ -1213,6 +1242,8 @@ def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
     if theatre == "Falklands":
         if mission_type == MissionType.CAP.value:
             return _FALKLANDS_CAP_NOTES
+        if mission_type == MissionType.INTERCEPT.value:
+            return _FALKLANDS_INTERCEPT_NOTES
         return _FALKLANDS_FF_NOTES
     if theatre == "Nevada":
         if mission_type == MissionType.CAP.value:
@@ -1364,8 +1395,8 @@ Copy that example's structure. Default stub is Manston / TheChannel; Normandy
 all six types use NeedsOarPoint; Caucasus all six types
 use Batumi; Syria all six types use Incirlik; Nevada all six types use Nellis
 (CAP/intercept/escort 350° / 40 km desert north-range; GA/recon 303° / 85 km
-inland past Creech); Falklands free_flight or CAP uses
-Mount Pleasant (CAP 150° / 40 km South Atlantic). Falklands intercept /
+inland past Creech); Falklands free_flight, CAP, or intercept uses
+Mount Pleasant (CAP/intercept 150° / 40 km South Atlantic). Falklands
 ground_attack / escort / recon are unsupported.
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user

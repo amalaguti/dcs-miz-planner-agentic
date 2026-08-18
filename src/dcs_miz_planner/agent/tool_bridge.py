@@ -162,8 +162,8 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "use Incirlik; Nevada all six types "
                 "use Nellis (CAP/intercept/escort 350° / 40 km desert north-range; "
                 "GA/recon 303° / 85 km inland past Creech); Falklands "
-                "free_flight or CAP uses Mount Pleasant (150° / 40 km South Atlantic). "
-                "Falklands intercept / ground_attack / escort / recon "
+                "free_flight, CAP, or intercept uses Mount Pleasant (150° / 40 km South Atlantic). "
+                "Falklands ground_attack / escort / recon "
                 "are unsupported. Call before "
                 "emitting Spec JSON."
             ),

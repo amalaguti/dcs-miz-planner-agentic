@@ -880,6 +880,28 @@ def compile_mount_pleasant_cap(output_path: Path) -> Path:
     )
 
 
+FALKLANDS_INTERCEPT_EXAMPLE_SPEC = REPO_ROOT / "examples" / "mount_pleasant_dawn_intercept.yaml"
+FALKLANDS_INTERCEPT_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=2',
+    '["start_time"]=21600',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+    "UK",
+    "Argentina",
+    "38677.30416062245",
+    "67168.748047",
+)
+
+
+def compile_mount_pleasant_intercept(output_path: Path) -> Path:
+    spec = load_mission_spec(FALKLANDS_INTERCEPT_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
 RIO_GALLEGOS_EXAMPLE_SPEC = REPO_ROOT / "examples" / "rio_gallegos_cold_freeflight.yaml"
 RIO_GALLEGOS_MISSION_CONTRACTS = (
     "Su-25T",

@@ -25,10 +25,16 @@ description: >-
    Caucasus: Batumi + Black Sea corridor `(0, -40000)` — same station as
    `batumi_black_sea_cap` (270°/40 km). Syria: Incirlik + Iskenderun
    corridor `(-40000, 0)` — same station as `incirlik_iskenderun_cap`
-   (180°/40 km). Nevada: Nellis + north-range offset
+   (180°/40 km).    Nevada: Nellis + north-range offset
    `(+39392.31012048834, −6945.927106677216)` — same station as
    `nellis_north_range_cap` (350°/40 km; **not** axis-aligned ±40000,0).
-   Other theatres fail `intercept_unsupported_theatre`.
+   Falklands: Mount Pleasant + South Atlantic offset
+   `(−34641.016151377546, +20000.0)` — same station as
+   `mount_pleasant_south_atlantic_cap` (150°/40 km; **not** axis-aligned
+   ±40000,0). Other theatres fail `intercept_unsupported_theatre`.
+   Derive the unsupported hint from `INTERCEPT_SPAWN_RECIPES` keys.
+   Derive `domain_unsupported_theatre` hints from `DOMAIN_THEATRES` (include
+   Nevada; do not add Falklands until a domain recipe ships).
 5. Failure ids: exact stock strings (e.g. `ENG0_MAGNETO0`) from
    `data/era/wwii/aircraft_failures.yaml`.
 6. **Normandy 2.0** Spec/inventory id is **`Normandy`**. Airfield lookup is
@@ -46,7 +52,10 @@ description: >-
    apply 270±45 to Incirlik), **or** Nevada desert-default land on curated
    ids `{4, 2, 1, 18, 15, 8, 6, 13}` (near AF 3 km → land; else land — do
    not promote Echo Bay id 7). Other
-   theatres fail `domain_unsupported_theatre`. `airfield_relative_map_point`
+   theatres fail `domain_unsupported_theatre`. Hints MUST list every
+   `DOMAIN_THEATRES` key (including Nevada) — do not freeze
+   Channel/Normandy/Caucasus/Syria; do not add Falklands until a domain
+   recipe ships. `airfield_relative_map_point`
    MUST pass `theatre=spec.theatre`. Normandy inland strike from NeedsOarPoint
    is **180° / 133 km** (Maupertus is 180.22° / 125.29 km; 120 km is still sea).
    Caucasus inland strike from Batumi is **43° / 110 km** (Kutaisi is 43.14° /
@@ -130,11 +139,12 @@ description: >-
     `examples/rio_gallegos_cold_freeflight.yaml`). Channel+Argentina is
     unknown. Chile is deferred. Spitfire is dual-era (same 124.0 in wwii +
     modern). Channel+UK still ok (wwii); Channel+Su-25T is unknown. Invent
-    home stays MountPleasant UK blue, **free_flight or CAP** (station
-    **150° / 40 km / 4000 m** SSE over the South Atlantic — not Nellis 350/40,
-    not Incirlik 180/40, not Batumi 270/40, not Cherbourg 180/63, not Manston
-    135/25). CAP enemies: Argentina + Su-25T (set `enemies[].country:
-    Argentina`; default is ThirdReich). Port Stanley is not a CAP home.
+    home stays MountPleasant UK blue, **free_flight, CAP, or intercept**
+    (station **150° / 40 km / 4000 m** SSE over the South Atlantic — not
+    Nellis 350/40, not Incirlik 180/40, not Batumi 270/40, not Cherbourg
+    180/63, not Manston 135/25, not Hawkinge). CAP/intercept enemies:
+    Argentina + Su-25T (set `enemies[].country: Argentina`; default is
+    ThirdReich). Port Stanley is not a CAP home.
 
 ## Code touchpoints
 

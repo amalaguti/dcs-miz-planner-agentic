@@ -55,14 +55,16 @@ Creech — not CAP 350/40) and inland recon
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
 251.0 MHz) plus South Atlantic CAP (`examples/mount_pleasant_south_atlantic_cap.yaml`;
-150°/40 km sea; Argentina red opposition) plus curated extra airfields and a Rio
+150°/40 km sea; Argentina red opposition) plus dawn intercept
+(`examples/mount_pleasant_dawn_intercept.yaml`; same 150/40 spawn) plus curated extra airfields and a Rio
 Gallegos smoke (`examples/rio_gallegos_cold_freeflight.yaml`; Argentina red;
 airdromeId 5 is not Channel Manston). Port Stanley is lookup-only (heli). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
-at Nellis; Falklands invent is **free_flight
-or CAP** at Mount Pleasant (150°/40 km sea) — intercept/GA/escort/recon still
+at Nellis; Falklands invent is **free_flight,
+CAP, or intercept** at Mount Pleasant (150°/40 km sea) — GA/escort/recon still
 refuse. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, Caucasus
-Batumi/Black Sea, Syria Incirlik/Iskenderun, **or** Nevada Nellis/north-range. Land/sea domain
+Batumi/Black Sea, Syria Incirlik/Iskenderun, Nevada Nellis/north-range, **or**
+Falklands Mount Pleasant/South Atlantic. Land/sea domain
 classifies TheChannel, Normandy (UK–Cotentin chord), Caucasus (west-of-coast
 seaward sector), Syria (Incirlik seaward 165–195°; Bassel/Beirut 225–315° only),
 and Nevada (desert-default land on eight curated AFs);
@@ -156,9 +158,9 @@ Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 all six types at Batumi; Syria invent is all six types at Incirlik;
 Nevada invent is all six types at Nellis
 (CAP 350°/40 km desert north-range; GA/recon 303°/85 km inland past Creech);
-Falklands invent is free_flight
-or CAP at Mount Pleasant (150°/40 km sea);
-intercept/GA/escort/recon still refuse
+Falklands invent is free_flight,
+CAP, or intercept at Mount Pleasant (150°/40 km sea);
+GA/escort/recon still refuse
 on Falklands).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for

@@ -5,6 +5,42 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Domain unsupported hint lists DOMAIN_THEATRES including Nevada (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** `domain_unsupported_theatre` hints MUST list every key in
+  `DOMAIN_THEATRES` (TheChannel, Normandy, Caucasus, Syria, **Nevada**).
+  Do not freeze “TheChannel, Normandy, Caucasus, or Syria”. Same class as
+  intercept hints derived from `INTERCEPT_SPAWN_RECIPES`. Do **not** add
+  Falklands to `_DOMAIN_THEATRES` until a land/sea recipe ships — domain
+  stays fail-closed there. Prefer one helper (`_domain_unsupported_theatre_hint`)
+  over four copied strings.
+- **Code:** `channel_domain.py` (`DOMAIN_THEATRES`), `validation.py`.
+
+## Falklands invent allows intercept; dedicated notes (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Falklands invent/chat may emit **free_flight, CAP, or intercept**
+  at Mount Pleasant (Su-25T, UK blue). Intercept spawn is **150° / 40 km**
+  SSE of Mount Pleasant over the South Atlantic — same station as
+  `mount_pleasant_south_atlantic_cap`; not Nellis 350/40, not Incirlik
+  180/40, not Batumi 270/40, not Cherbourg 180/63, not Hawkinge. Schema
+  `theatre=Falklands` + `intercept` loads `mount_pleasant_dawn_intercept.yaml`
+  with dedicated `_FALKLANDS_INTERCEPT_NOTES` — do **not** concatenate
+  Channel `_COMMON_NOTES` / `_TYPE_NOTES`. Enemies: Su-25T, country
+  **Argentina** red. Do not put UK on red. GA/escort/recon still refuse
+  every turn. Domain classifier stays fail-closed on Falklands. Path clamp
+  and soft immersion floor stay TheChannel-only. Stub LLM stays Manston.
+  FF schema example stays `mount_pleasant_cold_freeflight.yaml`; CAP schema
+  stays `mount_pleasant_south_atlantic_cap.yaml`. Host repair for
+  `intercept_unsupported_theatre` on Falklands MUST point at Mount Pleasant
+  150/40 — not “switch to TheChannel for intercept.” Derive the validation
+  hint from `INTERCEPT_SPAWN_RECIPES` keys (do not freeze a Caucasus-only
+  string).
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py`
+  (`_FALKLANDS_INTERCEPT_NOTES`), `agent/prompts.py`, `validation.py`,
+  `examples/mount_pleasant_dawn_intercept.yaml`.
+
 ## Falklands invent allows CAP; 150/40 South Atlantic (2026-08-18)
 
 - **Date:** 2026-08-18

@@ -62,9 +62,15 @@ _NEVADA_CURATED_IDS: frozenset[int] = frozenset(
 )  # Nellis, GroomLake, Creech, TonopahTestRange, NorthLasVegas,
 # HendersonExecutive, BoulderCity, Mesquite
 
-_DOMAIN_THEATRES: frozenset[str] = frozenset(
-    {CHANNEL_THEATRE, NORMANDY_THEATRE, CAUCASUS_THEATRE, SYRIA_THEATRE, NEVADA_THEATRE}
+# Ordered for validation hints. Do not add Falklands until a domain recipe ships.
+DOMAIN_THEATRES: tuple[str, ...] = (
+    CHANNEL_THEATRE,
+    NORMANDY_THEATRE,
+    CAUCASUS_THEATRE,
+    SYRIA_THEATRE,
+    NEVADA_THEATRE,
 )
+_DOMAIN_THEATRES: frozenset[str] = frozenset(DOMAIN_THEATRES)
 
 
 class DomainUnsupportedTheatre(ValueError):

@@ -54,6 +54,17 @@ from .sounds import get_sound_asset, list_sound_assets
 from .theatre_terrain import bound_theatre_ids
 
 
+def _domain_unsupported_theatre_hint() -> str:
+    """List every theatre ``domain_supported`` accepts — do not freeze a subset."""
+    from .channel_domain import DOMAIN_THEATRES
+
+    listed = ", ".join(DOMAIN_THEATRES)
+    return (
+        f"Use theatre {listed} for strike/recon/path geometry, or omit "
+        "land/sea combat until that theatre has a domain recipe"
+    )
+
+
 def _era_for_spec(registry: ChannelRegistry, spec: MissionSpec) -> str | None:
     try:
         return registry.era_for_theatre(spec.theatre)
@@ -460,10 +471,7 @@ def _validate_strike_domain(
                 code="domain_unsupported_theatre",
                 path="strike",
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
-                hint=(
-                    "Use theatre TheChannel, Normandy, Caucasus, or Syria for strike/recon/path geometry, or omit "
-                    "land/sea combat until that theatre has a domain recipe"
-                ),
+                hint=_domain_unsupported_theatre_hint(),
             )
         )
         return
@@ -768,10 +776,7 @@ def _validate_target_motion(
                 code="domain_unsupported_theatre",
                 path=area,
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
-                hint=(
-                    "Use theatre TheChannel, Normandy, Caucasus, or Syria for strike/recon/path geometry, or omit "
-                    "land/sea combat until that theatre has a domain recipe"
-                ),
+                hint=_domain_unsupported_theatre_hint(),
             )
         )
         return
@@ -834,10 +839,7 @@ def _validate_target_motion(
                         message=(
                             f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"
                         ),
-                        hint=(
-                            "Use theatre TheChannel, Normandy, Caucasus, or Syria for strike/recon/path geometry, or omit "
-                            "land/sea combat until that theatre has a domain recipe"
-                        ),
+                        hint=_domain_unsupported_theatre_hint(),
                     )
                 )
                 return
@@ -941,10 +943,7 @@ def _validate_recon_domain(
                 code="domain_unsupported_theatre",
                 path="recon",
                 message=(f"Land/sea domain checks are not supported for theatre {spec.theatre!r}"),
-                hint=(
-                    "Use theatre TheChannel, Normandy, Caucasus, or Syria for strike/recon/path geometry, or omit "
-                    "land/sea combat until that theatre has a domain recipe"
-                ),
+                hint=_domain_unsupported_theatre_hint(),
             )
         )
         return
@@ -1429,15 +1428,16 @@ def validate_mission_spec(
                     )
                 )
     elif spec.mission_type is MissionType.INTERCEPT:
-        from .intercept_spawn import intercept_supported
+        from .intercept_spawn import INTERCEPT_SPAWN_RECIPES, intercept_supported
 
         if not intercept_supported(spec.theatre):
+            listed = ", ".join(INTERCEPT_SPAWN_RECIPES)
             errors.append(
                 ValidationError(
                     code="intercept_unsupported_theatre",
                     path="theatre",
                     message=f"Intercept spawn is not supported for theatre {spec.theatre!r}",
-                    hint=("Use theatre TheChannel, Normandy, or Caucasus for intercept"),
+                    hint=f"Use theatre {listed} for intercept",
                 )
             )
         if spec.cap is not None:

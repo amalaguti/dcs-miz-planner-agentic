@@ -296,6 +296,25 @@ def test_host_spec_repair_nudge_falklands_domain_uses_mount_pleasant() -> None:
     assert '"airfield":"Manston"' not in nudge
 
 
+def test_host_spec_repair_nudge_falklands_intercept_unsupported_uses_mount_pleasant() -> None:
+    from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
+
+    nudge = host_spec_repair_nudge(
+        'Validation failed:\n[{"code": "intercept_unsupported_theatre"}]',
+        rejected_text='{"mission_type": "intercept", "theatre": "Falklands"}',
+    )
+    assert "Mount Pleasant" in nudge
+    assert "150" in nudge
+    assert "40" in nudge
+    assert "switch theatre to TheChannel for intercept" not in nudge
+    assert "switch to TheChannel for intercept" not in nudge
+    assert '"airfield": "MountPleasant"' in nudge or '"airfield":"MountPleasant"' in nudge
+    assert '"airfield": "Nellis"' not in nudge
+    assert '"airfield":"Nellis"' not in nudge
+    assert '"airfield": "Manston"' not in nudge
+    assert '"airfield":"Manston"' not in nudge
+
+
 def test_host_spec_repair_nudge_caucasus_domain_uses_batumi() -> None:
     from dcs_miz_planner.agent.prompts import host_spec_repair_nudge
 

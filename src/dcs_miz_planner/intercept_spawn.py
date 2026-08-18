@@ -20,6 +20,12 @@ Nevada: Nellis map position plus heading 350° / 40 km (desert north-range
 corridor; same station as ``nellis_north_range_cap``). Literals from live
 PyDCS ``point_from_heading(350, 40000)`` — not axis-aligned ±40000,0; do not
 recompute Channel Hawkinge from ``airport_list()``.
+
+Falklands: Mount Pleasant map position plus heading 150° / 40 km (South
+Atlantic corridor; same station as ``mount_pleasant_south_atlantic_cap``).
+Literals from live PyDCS ``point_from_heading(150, 40000)`` — not
+axis-aligned ±40000,0; do not recompute Channel Hawkinge from
+``airport_list()``.
 """
 
 from __future__ import annotations
@@ -31,6 +37,7 @@ NORMANDY_THEATRE = "Normandy"
 CAUCASUS_THEATRE = "Caucasus"
 SYRIA_THEATRE = "Syria"
 NEVADA_THEATRE = "Nevada"
+FALKLANDS_THEATRE = "Falklands"
 
 # Source: PyDCS TheChannel airport Hawkinge (airdromeId 6) map position, offset
 # south-east toward the Strait as a Dover-approach corridor (Channel geography
@@ -66,6 +73,15 @@ _NELLIS_X = -398195.375
 _NELLIS_Y = -17233.236816
 _NORTH_RANGE_CORRIDOR_OFFSET_X = 39392.31012048834
 _NORTH_RANGE_CORRIDOR_OFFSET_Y = -6945.927106677216
+
+# Source: live PyDCS Falklands Mount Pleasant (airdromeId 2, name "Mount Pleasant")
+# x=73318.320312 y=47168.748047 + heading 150° / 40 km.
+# point_from_heading(150, 40000) station x=38677.30416062245
+# y=67168.748047; offset is NOT axis-aligned (±40000, 0).
+_MOUNT_PLEASANT_X = 73318.320312
+_MOUNT_PLEASANT_Y = 47168.748047
+_SOUTH_ATLANTIC_CORRIDOR_OFFSET_X = -34641.016151377546
+_SOUTH_ATLANTIC_CORRIDOR_OFFSET_Y = 20000.0
 
 
 class InterceptUnsupportedTheatre(ValueError):
@@ -140,6 +156,12 @@ INTERCEPT_SPAWN_RECIPES: dict[str, InterceptSpawnRecipe] = {
         anchor_y=_NELLIS_Y,
         offset_x=_NORTH_RANGE_CORRIDOR_OFFSET_X,
         offset_y=_NORTH_RANGE_CORRIDOR_OFFSET_Y,
+    ),
+    FALKLANDS_THEATRE: InterceptSpawnRecipe(
+        anchor_x=_MOUNT_PLEASANT_X,
+        anchor_y=_MOUNT_PLEASANT_Y,
+        offset_x=_SOUTH_ATLANTIC_CORRIDOR_OFFSET_X,
+        offset_y=_SOUTH_ATLANTIC_CORRIDOR_OFFSET_Y,
     ),
 }
 

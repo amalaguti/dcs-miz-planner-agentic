@@ -22,6 +22,8 @@ description: >-
    Normandy NeedsOarPoint/Cherbourg 180/63, Caucasus Batumi/Black Sea 270/40,
    Syria Incirlik/Iskenderun 180/40, Nevada Nellis/north-range 350/40
    offset `+39392.31012048834, −6945.927106677216` — not ±40000,0;
+   Falklands Mount Pleasant/South Atlantic 150/40 offset
+   `−34641.016151377546, +20000.0` — not ±40000,0;
    do not recompute from `airport_list()`).
 3. Keep **`_disable_payload_scan`** until a released pydcs wheel includes the
    payload KeyError fix; use registry CLSID loadouts for GA.
