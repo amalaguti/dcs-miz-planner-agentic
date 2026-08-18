@@ -727,16 +727,16 @@ the key is `GroomLake`).
 - **THEN** `infer_theatre` MUST return `Nevada`
 
 ### Requirement: Nevada invent is free_flight only
-Invent/chat SHALL allow `free_flight`, `cap`, `intercept`, and `escort` when
-the bound theatre is `Nevada` (home `Nellis`, `Su-25T`, `sunny_clear`, USA
-blue; CAP/intercept/escort station 350° / 40 km north over desert north-range
-land — not Cherbourg 180/63, not Batumi 270/40, not Incirlik 180/40, not
-Manston escort 120/55). It SHALL refuse `ground_attack` and `recon` on Nevada
-every turn (never capture or write a refused Spec). Repair MUST nudge toward
-Nellis free_flight, CAP, intercept, or escort, or switching theatre to
-TheChannel — not Incirlik, Batumi, NeedsOarPoint, or Manston. Invent MUST NOT
-copy Channel, Normandy, Caucasus, or Syria `channel_place` geometry onto
-Nevada.
+Invent/chat SHALL allow `free_flight`, `cap`, `intercept`, `escort`, and
+`ground_attack` when the bound theatre is `Nevada` (home `Nellis`, `Su-25T`,
+`sunny_clear`, USA blue; CAP/intercept/escort station 350° / 40 km north over
+desert north-range land — not Cherbourg 180/63, not Batumi 270/40, not Incirlik
+180/40, not Manston escort 120/55; GA strike 303° / 85 km inland past Creech —
+not CAP 350/40). It SHALL refuse `recon` on Nevada every turn (never capture
+or write a refused Spec). Repair MUST nudge toward Nellis free_flight, CAP,
+intercept, escort, or ground_attack, or switching theatre to TheChannel — not
+Incirlik, Batumi, NeedsOarPoint, or Manston. Invent MUST NOT copy Channel,
+Normandy, Caucasus, or Syria `channel_place` geometry onto Nevada.
 
 #### Scenario: Nevada free_flight invent allowed
 - **WHEN** invent is asked for a Nevada free-flight
@@ -761,6 +761,19 @@ Nevada.
 - **THEN** the planner MUST be allowed to emit `theatre: Nevada` with
   `airfield: Nellis` (MUST NOT be required to emit TheChannel or Manston
   120/55)
+
+#### Scenario: Nevada ground_attack invent allowed
+- **WHEN** invent is asked for a ground attack on Nevada
+- **THEN** the planner MUST be allowed to emit `theatre: Nevada` with
+  `airfield: Nellis` and strike geometry from the Nevada inland place/schema
+  (MUST NOT be required to emit TheChannel, Manston 125/76, CAP 350/40,
+  Aleppo 121/200, or Kutaisi 43/110)
+
+#### Scenario: Nevada recon invent still refused every turn
+- **WHEN** invent is asked for recon on Nevada
+- **THEN** it MUST NOT emit a combat Mission Spec and MUST surface a repair
+  toward Nellis free_flight, CAP, intercept, escort, or ground_attack (or
+  TheChannel combat)
 
 ### Requirement: Falklands invent is free_flight only
 Invent/chat SHALL allow `free_flight` when the bound theatre is `Falklands`

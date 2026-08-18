@@ -730,8 +730,9 @@ an empty list). Sea-domain units MUST remain omitted for Normandy. For theatre
 `Caucasus`, the result MUST include packaged modern **land** trucks (e.g.
 `Ural-375`) and MUST NOT include WWII Channel trucks or sea_craft. For theatre
 `Syria`, the result MUST include those same modern land trucks (query-time
-dual-offer; stored `theatre_id` MAY remain `Caucasus`). Nevada and Falklands
-lists MUST remain empty.
+dual-offer; stored `theatre_id` MAY remain `Caucasus`). For theatre `Nevada`,
+the result MUST include those same modern land trucks (query-time dual-offer;
+stored `theatre_id` MAY remain `Caucasus`). Falklands lists MUST remain empty.
 
 #### Scenario: Normandy strike list includes land units
 - **WHEN** `list_strike_targets` is called with theatre `Normandy` after sync
@@ -745,6 +746,11 @@ lists MUST remain empty.
 
 #### Scenario: Syria strike list includes modern trucks
 - **WHEN** a caller lists strike targets with theatre `Syria`
+- **THEN** the result MUST include `Ural-375` and MUST NOT include Channel
+  WWII `Blitz`
+
+#### Scenario: Nevada strike list includes modern trucks
+- **WHEN** a caller lists strike targets with theatre `Nevada`
 - **THEN** the result MUST include `Ural-375` and MUST NOT include Channel
   WWII `Blitz`
 
@@ -965,14 +971,34 @@ envelope (not Hawkinge/Dover, not Incirlik, not Batumi, not Cherbourg).
 `escort`. The derived example MUST follow the Nellis north-range escort
 envelope (not Manston, not Incirlik, not Batumi, not Needs Oar Point) and
 notes MUST NOT concatenate Channel template bundles that cite Manston 120/55.
-When mission type is `ground_attack` or `recon` on Nevada, the tool MUST NOT
-return a Channel combat skeleton.
+When mission type is `recon` on Nevada, the tool MUST NOT return a Channel
+combat skeleton. Ground_attack on Nevada MUST use the inland Creech example,
+not the escort envelope.
 
 #### Scenario: Nevada escort schema uses Nellis
 - **WHEN** a caller requests the escort Spec schema with theatre `Nevada`
 - **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, USA
   package, Russia bounce, and escort geometry 350° / 40 km (not Manston 120° /
   55 km, not Incirlik 180/40, not Batumi 270/40)
+
+### Requirement: Spec schema tool accepts Nevada ground_attack
+`get_mission_spec_schema` SHALL accept theatre `Nevada` with mission type
+`ground_attack`. The derived example MUST follow the Nellis Creech inland
+envelope (not Manston, not Batumi, not Aleppo 121/200, not north-range CAP
+350/40) and notes MUST NOT concatenate Channel template bundles that cite
+french-coast 125/76. When mission type is `recon` on Nevada, the tool MUST NOT
+return a Channel combat skeleton.
+
+#### Scenario: Nevada ground_attack schema uses Nellis
+- **WHEN** a caller requests the ground_attack Spec schema with theatre `Nevada`
+- **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, payload
+  `su25t_2x_fab250`, Russia-country trucks, and strike geometry 303° / 85 km
+  (not CAP 350/40, not Aleppo 121/200, not Kutaisi 43/110, not Manston 125/76)
+
+#### Scenario: Nevada recon schema still has no Manston skeleton
+- **WHEN** a caller requests a recon schema with theatre `Nevada`
+- **THEN** the result MUST NOT present a Manston combat example as the
+  template to copy
 
 ### Requirement: Spec schema tool accepts Falklands
 `get_mission_spec_schema` SHALL accept theatre `Falklands`. When mission type
