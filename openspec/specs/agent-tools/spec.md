@@ -1020,6 +1020,12 @@ including `cap`, the tool MUST NOT return a prior-map combat skeleton.
   `Falklands`
 - **THEN** the example MUST use `MountPleasant`, `Su-25T`, and `UK`
 
+#### Scenario: Extra Falklands airfields do not replace MountPleasant schema
+- **WHEN** a caller requests the free_flight Spec schema with theatre
+  `Falklands`
+- **THEN** the example MUST still use `MountPleasant` (not `RioGallegos` or
+  `PortStanley`); extra curated keys MUST remain findable via catalog lookup
+
 #### Scenario: Falklands combat schema has no Manston skeleton
 - **WHEN** a caller requests a cap or intercept schema with theatre
   `Falklands`
