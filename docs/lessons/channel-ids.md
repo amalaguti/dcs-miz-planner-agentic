@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada recon AOI 303/85; Ural-375 observe (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nevada recon AOI is **303° / 85 km / 2000 m** from Nellis
+  (airdromeId 4) — same desert land station as GA, not CAP/escort 350/40
+  (x=-358803.06487951166 y=-24179.163922677217), not Aleppo 121/200, not
+  Manston 125/76. PyDCS Nellis (4) → Creech (1) is 302.86° / 69.47 km;
+  integer 303/70 is near-field reject. 303/85 ACCEPT station
+  **x=-351901.05702 y=-88520.23509**. Observe-only contacts are modern trucks
+  (`Ural-375` count 3) with country **Russia** red (not USA-on-red, not
+  country Syria, not ThirdReich). Player Su-25T, USA blue, 251.0 MHz. Date
+  2024-06-06, 09:00 (`start_time` 32400), `sunny_clear`. Weapons hold; no
+  payload. Reuse place `creech_range_strike`; extend `nellis_home` with
+  `recon`. Do not put recon on `nellis_north_range_cap`. Compiler recon is
+  already airfield-relative.
+- **Code:** `examples/nellis_creech_recon.yaml`,
+  `planning_options.yaml` (`creech_range_strike` `mission_types` includes
+  `recon`).
+
 ## Nevada GA 303/85 Creech; desert-default land (2026-08-17)
 
 - **Date:** 2026-08-17

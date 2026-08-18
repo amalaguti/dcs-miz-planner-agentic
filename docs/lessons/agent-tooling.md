@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Nevada invent allows recon; all six types (2026-08-17)
+
+- **Date:** 2026-08-17
+- **Lesson:** Nevada invent/chat may emit **all six types** at Nellis
+  (Su-25T, USA blue). Recon AOI is **303° / 85 km / 2000 m** inland past
+  Creech — same land station as `creech_range_strike` / GA, not CAP 350/40,
+  not Aleppo 121/200, not Kutaisi 43/110, not Manston 125/76. Schema
+  `theatre=Nevada` + `recon` loads `nellis_creech_recon.yaml` with dedicated
+  `_NEVADA_RECON_NOTES` — do **not** concatenate Channel `_TYPE_NOTES` /
+  `_COMMON_NOTES`. Observe modern trucks from
+  `list_strike_targets(theatre=Nevada)` (`Ural-375`; country **Russia** red).
+  Weapons hold; omit payload. Path clamp and soft immersion floor stay
+  TheChannel-only. Stub LLM stays Manston. Domain-mismatch repair MUST nudge
+  `creech_range_strike` 303/85 for land strike **or recon**, not CAP 350/40.
+  Fail-closed invent coverage stays Falklands.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py` (`_NEVADA_RECON_NOTES`),
+  `agent/prompts.py`, `planning_options.yaml` (`creech_range_strike`,
+  `nellis_home`), `examples/nellis_creech_recon.yaml`.
+
 ## Nevada invent allows ground_attack; Creech 303/85 (2026-08-17)
 
 - **Date:** 2026-08-17

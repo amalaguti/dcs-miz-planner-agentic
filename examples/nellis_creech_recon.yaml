@@ -1,0 +1,46 @@
+schema_version: "1"
+mission_type: recon
+theatre: Nevada
+name: Nellis Creech Recon
+description: >
+  Cold start at Nellis. Cross inland to an AOI past Creech on desert land
+  (bearing 303°, 85 km — same land station as the packaged GA place; not
+  Channel french-coast 125/76, not CAP 350/40 north-range). Locate and observe
+  soft enemy truck contacts. Weapons hold — report the area and RTB. No bomb
+  loadout.
+date:
+  year: 2024
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: Su-25T
+  airfield: Nellis
+  coalition: blue
+  country: USA
+  skill: Player
+  start: cold_parking
+recon:
+  # Airfield-relative from Nellis onto desert land inland of Creech.
+  # PyDCS heading_between_point Nellis (id 4) → Creech (id 1) is
+  # 302.86° / 69.47 km. Integer 303° / 70 km is ~0.56 km from Creech
+  # (near-airport land — REJECT). 303° / 85 km / 2000 m ≈ 15.53 km past
+  # Creech (land, nearest Creech). Station x=-351901.05702 y=-88520.23509.
+  # Do not copy CAP 350° / 40 km (north-range x=-358803.06487951166
+  # y=-24179.163922677217), Aleppo 121° / 200 km, Kutaisi 43° / 110 km,
+  # or Manston 125° / 76 km.
+  bearing_deg: 303
+  distance_km: 85
+  altitude_m: 2000
+  radius_m: 3000
+  mark: true
+enemies: []
+targets:
+  - unit: Ural-375
+    count: 3
+    skill: Average
+    country: Russia
+    coalition: red
+objectives:
+  - type: recon_area

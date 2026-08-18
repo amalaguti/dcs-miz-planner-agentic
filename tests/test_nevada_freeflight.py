@@ -1,4 +1,4 @@
-"""Nevada Nellis / Groom Lake cold freeflight, north-range CAP, intercept, escort, and GA smoke."""
+"""Nevada Nellis / Groom Lake cold freeflight, north-range CAP, intercept, escort, GA, and recon smoke."""
 
 from __future__ import annotations
 
@@ -18,6 +18,8 @@ from fixtures_support import (
     NEVADA_INTERCEPT_EXAMPLE_SPEC,
     NEVADA_INTERCEPT_MISSION_CONTRACTS,
     NEVADA_MISSION_CONTRACTS,
+    NEVADA_RECON_EXAMPLE_SPEC,
+    NEVADA_RECON_MISSION_CONTRACTS,
     REQUIRED_MEMBERS,
     channel_available_inventory,
     compile_groom_lake,
@@ -26,6 +28,7 @@ from fixtures_support import (
     compile_nellis_escort,
     compile_nellis_ground_attack,
     compile_nellis_intercept,
+    compile_nellis_recon,
 )
 
 from dcs_miz_planner.loader import load_mission_spec
@@ -180,6 +183,41 @@ def test_compile_nellis_ground_attack_contracts(tmp_path: Path) -> None:
         assert "-358803.06487951166" not in mission
         assert "-24179.16392267721" not in mission
         assert "Hawkinge" not in mission
+        assert "30989.935547" not in mission
+        assert "-35402.577148" not in mission
+
+
+def test_validate_nellis_recon() -> None:
+    spec = load_mission_spec(NEVADA_RECON_EXAMPLE_SPEC)
+    result = validate_mission_spec(spec, inventory=channel_available_inventory())
+    assert result.ok, result.errors
+
+
+def test_compile_nellis_recon_contracts(tmp_path: Path) -> None:
+    out = compile_nellis_recon(tmp_path / "nellis_recon.miz")
+    assert out.is_file()
+    with zipfile.ZipFile(out) as zf:
+        names = set(zf.namelist())
+        for member in REQUIRED_MEMBERS:
+            assert member in names, f"missing zip member {member}"
+        theatre = zf.read("theatre").decode("utf-8")
+        assert "Nevada" in theatre
+        assert "Syria" not in theatre
+        assert "Caucasus" not in theatre
+        assert "Normandy" not in theatre
+        mission = zf.read("mission").decode("utf-8")
+        for token in NEVADA_RECON_MISSION_CONTRACTS:
+            assert token in mission, f"missing mission contract {token}"
+        assert '["type"]="Su-25T"' in mission
+        assert "USA" in mission
+        assert "Russia" in mission
+        assert "ThirdReich" not in mission
+        assert "Blitz_36-6700A" not in mission
+        assert "-358803.06487951166" not in mission
+        assert "-24179.16392267721" not in mission
+        assert "Hawkinge" not in mission
+        assert "FAB-250" not in mission
+        assert "{3C612111-C7AD-476E-8A8E-2485812F4E5C}" not in mission
         assert "30989.935547" not in mission
         assert "-35402.577148" not in mission
 

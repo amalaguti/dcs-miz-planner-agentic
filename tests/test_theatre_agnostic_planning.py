@@ -72,6 +72,7 @@ NEVADA_CAP = REPO / "examples" / "nellis_north_range_cap.yaml"
 NEVADA_INTERCEPT = REPO / "examples" / "nellis_dawn_intercept.yaml"
 NEVADA_ESCORT = REPO / "examples" / "nellis_north_range_escort.yaml"
 NEVADA_GA = REPO / "examples" / "nellis_creech_ground_attack.yaml"
+NEVADA_RECON = REPO / "examples" / "nellis_creech_recon.yaml"
 FALKLANDS_FF = REPO / "examples" / "mount_pleasant_cold_freeflight.yaml"
 
 
@@ -451,7 +452,7 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "intercept" in nellis_home.meta.get("mission_types", [])
     assert "escort" in nellis_home.meta.get("mission_types", [])
     assert "ground_attack" in nellis_home.meta.get("mission_types", [])
-    assert "recon" not in nellis_home.meta.get("mission_types", [])
+    assert "recon" in nellis_home.meta.get("mission_types", [])
     nellis_cap = next(o for o in places if o.id == "nellis_north_range_cap")
     assert nellis_cap.meta.get("theatre") == "Nevada"
     assert nellis_cap.meta.get("domain") == "land"
@@ -464,13 +465,14 @@ def test_channel_place_tagged_thechannel() -> None:
     assert "intercept" in nellis_cap.meta.get("mission_types", [])
     assert "escort" in nellis_cap.meta.get("mission_types", [])
     assert "ground_attack" not in nellis_cap.meta.get("mission_types", [])
+    assert "recon" not in nellis_cap.meta.get("mission_types", [])
     creech = next(o for o in places if o.id == "creech_range_strike")
     assert creech.meta.get("theatre") == "Nevada"
     assert creech.meta.get("domain") == "land"
     assert creech.meta.get("strike_bearing_deg") == 303
     assert creech.meta.get("strike_distance_km") == 85
     assert "ground_attack" in creech.meta.get("mission_types", [])
-    assert "recon" not in creech.meta.get("mission_types", [])
+    assert "recon" in creech.meta.get("mission_types", [])
     assert "escort" not in creech.meta.get("mission_types", [])
     assert inland.meta.get("strike_bearing_deg") == 180
     assert inland.meta.get("strike_distance_km") == 133
@@ -730,8 +732,33 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
     assert ga_tool["example"]["player"]["airfield"] == "Nellis"
     assert ga_tool["example"]["strike"]["bearing_deg"] == 303
     assert ga_tool["example"]["targets"][0]["country"] == "Russia"
-    with pytest.raises(ValueError, match="not supported for theatre Nevada"):
-        build_spec_schema("recon", theatre="Nevada")
+    recon = build_spec_schema("recon", theatre="Nevada")
+    assert recon.example["theatre"] == "Nevada"
+    assert recon.example["player"]["airfield"] == "Nellis"
+    assert recon.example["player"]["aircraft"] == "Su-25T"
+    assert recon.example["player"]["country"] == "USA"
+    assert recon.example["recon"]["bearing_deg"] == 303
+    assert recon.example["recon"]["distance_km"] == 85
+    assert recon.example["recon"]["altitude_m"] == 2000
+    assert recon.example["recon"]["distance_km"] != 40
+    assert recon.example["recon"]["bearing_deg"] != 350
+    assert recon.example["targets"][0]["unit"] == "Ural-375"
+    assert recon.example["targets"][0]["country"] == "Russia"
+    assert recon.example["player"]["airfield"] != "Manston"
+    assert recon.example["player"]["airfield"] != "Incirlik"
+    assert recon.example["player"]["airfield"] != "Batumi"
+    assert not recon.example["player"].get("payload")
+    recon_blob = " ".join(recon.notes)
+    assert "creech_range_strike" in recon_blob or "Creech" in recon_blob
+    assert "nellis_creech_recon.yaml" in recon_blob
+    assert "french_coast" not in recon_blob
+    assert "manston_" not in recon_blob.lower()
+    recon_tool = get_mission_spec_schema("recon", theatre="Nevada")
+    assert recon_tool["ok"] is True
+    assert recon_tool["example"]["player"]["airfield"] == "Nellis"
+    assert recon_tool["example"]["recon"]["bearing_deg"] == 303
+    assert recon_tool["example"]["targets"][0]["country"] == "Russia"
+    assert not recon_tool["example"]["player"].get("payload")
     escort = build_spec_schema("escort", theatre="Nevada")
     assert escort.example["theatre"] == "Nevada"
     assert escort.example["player"]["airfield"] == "Nellis"
@@ -806,14 +833,16 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
     assert cap_tool["ok"] is True
     assert cap_tool["example"]["player"]["airfield"] == "Nellis"
     assert cap_tool["example"]["cap"]["bearing_deg"] == 350
-    recon_tool = get_mission_spec_schema("recon", theatre="Nevada")
-    assert recon_tool["ok"] is False
-    assert recon_tool["code"] == "combat_unsupported_theatre"
-    blob = json.dumps(recon_tool)
+    recon_tool_again = get_mission_spec_schema("recon", theatre="Nevada")
+    assert recon_tool_again["ok"] is True
+    blob = json.dumps({k: v for k, v in recon_tool_again["example"].items() if k != "description"})
     assert "Manston" not in blob
     assert "NeedsOarPoint" not in blob
     assert "Batumi" not in blob
     assert "Incirlik" not in blob
+    assert "Hawkinge" not in blob
+    assert recon_tool_again["example"]["recon"]["bearing_deg"] != 350
+    assert recon_tool_again["example"]["recon"]["distance_km"] != 40
 
 
 def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
@@ -1063,17 +1092,8 @@ def test_nevada_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(escort) is None
     ga = load_mission_spec(NEVADA_GA)
     assert host_normandy_combat_nudge(ga) is None
-    recon = load_mission_spec(SYRIA_RECON).model_copy(
-        update={"theatre": "Nevada", "player": load_mission_spec(NEVADA_FF).player}
-    )
-    nudge = host_normandy_combat_nudge(recon)
-    assert nudge is not None
-    assert "Nellis" in nudge
-    assert "free_flight" in nudge or "CAP" in nudge or "intercept" in nudge
-    assert "ground_attack" in nudge
-    assert "CAP at NeedsOarPoint" not in nudge
-    assert "free_flight at Batumi" not in nudge
-    assert "free_flight at Incirlik" not in nudge
+    recon = load_mission_spec(NEVADA_RECON)
+    assert host_normandy_combat_nudge(recon) is None
     ff = load_mission_spec(NEVADA_FF)
     assert host_normandy_combat_nudge(ff) is None
 
@@ -1926,6 +1946,61 @@ def test_planner_nevada_ground_attack_is_written(tmp_path: Path) -> None:
     assert result.spec.strike is not None
     assert result.spec.strike.bearing_deg == 303
     assert result.spec.strike.distance_km == 85
+    assert result.spec.targets[0].unit == "Ural-375"
+    assert result.spec.targets[0].country == "Russia"
+
+
+def test_chat_nevada_recon_is_captured(tmp_path: Path) -> None:
+    db = tmp_path / "inv.sqlite"
+    CatalogService(db_path=db).ensure_synced()
+    out = tmp_path / "planned.yaml"
+    recon_json = load_mission_spec(NEVADA_RECON).model_dump_json()
+    session = PlanSession(
+        llm=StubLLM(script=[LLMResponse(content=recon_json)]),
+        output_path=out,
+        db_path=db,
+        inventory=_inv(),
+    )
+    session.start()
+    session.handle_line("Nevada recon inland past Creech")
+    assert session.proposed_spec is not None
+    assert session.proposed_spec.mission_type.value == "recon"
+    assert session.proposed_spec.player.airfield == "Nellis"
+    assert session.proposed_spec.theatre == "Nevada"
+    accepted = session.handle_line("/accept")
+    assert out.exists()
+    assert "Wrote Spec" in accepted.output
+    written = load_mission_spec(out)
+    assert written.mission_type.value == "recon"
+    assert written.player.airfield == "Nellis"
+    assert written.recon is not None
+    assert written.recon.bearing_deg == 303
+    assert written.recon.distance_km == 85
+    assert written.targets[0].unit == "Ural-375"
+    assert written.targets[0].country == "Russia"
+
+
+def test_planner_nevada_recon_is_written(tmp_path: Path) -> None:
+    recon_json = load_mission_spec(NEVADA_RECON).model_dump_json()
+    out = tmp_path / "planned.yaml"
+    result = plan_mission(
+        "Nevada recon inland past Creech",
+        out,
+        llm=StubLLM(script=[LLMResponse(content=recon_json)]),
+        inventory=_inv(),
+        db_path=tmp_path / "inventory.sqlite",
+        max_turns=2,
+    )
+    assert result.ok is True
+    assert out.exists()
+    assert result.spec is not None
+    assert host_normandy_combat_nudge(result.spec) is None
+    assert result.spec.theatre == "Nevada"
+    assert result.spec.mission_type.value == "recon"
+    assert result.spec.player.airfield == "Nellis"
+    assert result.spec.recon is not None
+    assert result.spec.recon.bearing_deg == 303
+    assert result.spec.recon.distance_km == 85
     assert result.spec.targets[0].unit == "Ural-375"
     assert result.spec.targets[0].country == "Russia"
 

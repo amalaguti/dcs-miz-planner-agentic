@@ -49,11 +49,12 @@ land — not Incirlik 180/40, not Batumi 270/40, not Creech 303/40) and dawn int
 (`examples/nellis_dawn_intercept.yaml`; same 350/40 spawn) and escort
 (`examples/nellis_north_range_escort.yaml`; same 350/40, USA package) and inland
 ground attack (`examples/nellis_creech_ground_attack.yaml`; 303°/85 km past
-Creech — not CAP 350/40). Invent is
-**free_flight, CAP, intercept, escort, or ground_attack** at Nellis. **Falklands** (South Atlantic) is planner-bound for cold
+Creech — not CAP 350/40) and inland recon
+(`examples/nellis_creech_recon.yaml`; same 303°/85 km inland AOI). Invent is
+**all six types** at Nellis. **Falklands** (South Atlantic) is planner-bound for cold
 freeflight at Mount Pleasant (`examples/mount_pleasant_cold_freeflight.yaml`;
 Spec theatre id `Falklands`; Spec airfield key `MountPleasant`; Su-25T / UK /
-251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **free_flight, CAP, intercept, escort, or ground_attack**
+251.0 MHz). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
 at Nellis; Falklands invent is **free_flight
 only** — other combat types refuse. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, Caucasus
@@ -147,12 +148,11 @@ Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 **Intentional limits:** Channel theatre is the complete combat surface today
 (Normandy invent is all six types at Needs Oar Point; Caucasus invent is
 all six types at Batumi; Syria invent is all six types at Incirlik;
-Nevada invent is free_flight, CAP, intercept, escort, or ground_attack at Nellis
-(CAP 350°/40 km desert north-range; GA 303°/85 km inland past Creech);
+Nevada invent is all six types at Nellis
+(CAP 350°/40 km desert north-range; GA/recon 303°/85 km inland past Creech);
 Falklands invent is free_flight
 only at Mount Pleasant;
-recon still refuses
-on Nevada; intercept/CAP/GA still refuse
+intercept/CAP/GA still refuse
 on Falklands).
 Multi-theatre catalog expand is queued as
 backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for

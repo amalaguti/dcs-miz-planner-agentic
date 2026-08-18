@@ -43,10 +43,10 @@ description: >-
    Syria is **all six types**
    (Incirlik; CAP/intercept/escort 180°/40 km south over the Gulf of Iskenderun — not Cherbourg
    180/63, not Batumi 270/40, not Hawkinge, not escort 120/55; GA/recon AOI 121°/200 km inland past Aleppo —
-   not CAP 180/40).    Nevada is **free_flight, CAP, intercept, escort, or ground_attack** (Nellis;
+   not CAP 180/40).    Nevada is **all six types** (Nellis;
    CAP/intercept/escort station 350°/40 km desert north-range — not Incirlik 180/40,
    not Batumi 270/40, not Cherbourg 180/63, not Channel escort 120/55, not Creech 303/40;
-   GA strike 303°/85 km inland past Creech — not CAP 350/40; recon refused).
+   GA/recon AOI 303°/85 km inland past Creech — not CAP 350/40).
    Falklands is **free_flight only** (MountPleasant; CAP refused).
    Refused types refuse every turn
    (never a one-shot nudge that then captures/writes the Spec). Host repair
@@ -61,7 +61,8 @@ description: >-
    theatre: Channel 125/76; Caucasus Kutaisi 43/110; Normandy Maupertus
    180/133; Syria Aleppo 121/200; Nevada Creech 303/85 — never inject french_coast onto Batumi recon
    or Incirlik GA/recon, never copy CAP 180/40 onto Syria land strike or
-   recon AOI, and never copy CAP 350/40 onto Nevada land strike.
+   recon AOI, and never copy CAP 350/40 onto Nevada land strike or recon
+   AOI.
    Caucasus/Syria/Nevada/Falklands `build_spec_schema` notes MUST NOT
    concatenate `_COMMON_NOTES` / `_TYPE_NOTES` (those cite Manston YAML,
    Spitfire failures, `channel_place`). Use a dedicated notes tuple
@@ -71,7 +72,7 @@ description: >-
    `_SYRIA_FF_NOTES` / `_SYRIA_CAP_NOTES` / `_SYRIA_INTERCEPT_NOTES` /
    `_SYRIA_ESCORT_NOTES` /    `_SYRIA_GA_NOTES` / `_SYRIA_RECON_NOTES` /
    `_NEVADA_FF_NOTES` / `_NEVADA_CAP_NOTES` / `_NEVADA_INTERCEPT_NOTES` /
-   `_NEVADA_ESCORT_NOTES` / `_NEVADA_GA_NOTES` /
+   `_NEVADA_ESCORT_NOTES` / `_NEVADA_GA_NOTES` / `_NEVADA_RECON_NOTES` /
    `_FALKLANDS_FF_NOTES`).
 4. User memory tables ≠ `catalog_*`.
 5. Live research: Instant Answer alone is insufficient; cascade + fixture fallback.
