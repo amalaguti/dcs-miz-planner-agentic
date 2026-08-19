@@ -244,6 +244,18 @@ force narrative packs when zones/triggers are already non-empty, and MUST NOT us
 - **THEN** it MUST state that randomize is for rerolling an accepted Spec, not for inventing
   immersion on a vague first ask
 
+### Requirement: Historical pattern names map to inspiration cards
+Planning/chat guidance SHALL map vague Fighter Command pattern names to packaged
+inspiration cards: Circus/Ramrod → `circus_escort`; Rodeo → `rodeo_sweep`;
+Channel Stop / shipping strike → `channel_stop_shipping`; Noball / V-1 / ski →
+`noball_ski`. Default player aircraft remains Spitfire unless the user names
+Mustang/P-51.
+
+#### Scenario: Prompt mentions Circus and Noball
+- **WHEN** the planning or chat system prompt is built
+- **THEN** it MUST mention those historical pattern names and the corresponding
+  inspiration ids
+
 ### Requirement: QAG research fixtures are colour only
 Planning and interactive chat system guidance MUST treat `research_guidance`
 notes sourced from local QAG HTML research files as mission-design and historical
