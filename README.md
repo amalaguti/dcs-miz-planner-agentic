@@ -159,15 +159,10 @@ Creative decisions persist in generation
 `detail.creative`; feedback + history bias later invents.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-**Intentional limits:** Channel theatre is the complete combat surface today
-(Normandy invent is all six types at Needs Oar Point; Caucasus invent is
-all six types at Batumi; Syria invent is all six types at Incirlik;
-Nevada invent is all six types at Nellis
-(CAP 350°/40 km desert north-range; GA/recon 303°/85 km inland past Creech);
-Falklands invent is all six types at Mount Pleasant (150°/40 km sea;
-GA/recon 269°/21 km inland)).
-Multi-theatre catalog expand is queued as
-backlog **M7** (`/full-catalog-orchestrate`); campaign `.miz` files are listed for
+**Intentional limits:** six bound maps (Channel, Normandy, Caucasus, Syria,
+Nevada, Falklands) each invent all six packaged types at their home airfield.
+Kola exists in pydcs (git pin) but is **not** planner-bound. Iraq and
+`MarianaIslandsWWII` have no pydcs terrain. Campaign `.miz` files are listed for
 inspiration, not imported as Spec; stub LLM + offline research fixtures keep tests
 hermetic.
 
@@ -182,7 +177,8 @@ See [`docs/BACKLOG.md`](docs/BACKLOG.md).
 ## Stack
 
 - Python 3.12 + uv
-- Mission Spec (Pydantic) → shared validation → compiler via PyDCS (behind `CompilerInterface`)
+- Mission Spec (Pydantic) → shared validation → compiler via PyDCS (git pin
+  `e20f328`, not the 2023 PyPI wheel; behind `CompilerInterface`)
 - OpenSpec (`npx openspec`; npm `@fission-ai/openspec` — not `uv openspec`) for SDD
 - GitHub Actions CI (Ubuntu): ruff + hermetic pytest on PR/push — no DCS install or Windows
   runner required (`tests/conftest.py` fake inventory; liveries stripped from goldens)

@@ -168,10 +168,13 @@ SOUND_FLAGS_MISSION_CONTRACTS = (
 _ONBOARD_NUM_RE = re.compile(r'\["onboard_num"\]="\d+"')
 # Liveries come from a local DCS install scan; absent on CI → omit the field.
 _LIVERY_LINE_RE = re.compile(r'\n\t+\["livery_id"\]="[^"]*",')
+# Internal fuel defaults churn when pydcs re-exports DCS aircraft tables.
+_FUEL_RE = re.compile(r'\["fuel"\]=-?[0-9.]+')
 
 
 def normalize_mission(mission: str) -> str:
     mission = _ONBOARD_NUM_RE.sub('["onboard_num"]="<num>"', mission)
+    mission = _FUEL_RE.sub('["fuel"]="<fuel>"', mission)
     return _LIVERY_LINE_RE.sub("", mission)
 
 
@@ -890,7 +893,7 @@ FALKLANDS_INTERCEPT_MISSION_CONTRACTS = (
     '["frequency"]=251.0',
     "UK",
     "Argentina",
-    "38677.30416062245",
+    "38677.30416162246",
     "67168.748047",
 )
 
@@ -913,7 +916,7 @@ FALKLANDS_ESCORT_MISSION_CONTRACTS = (
     '["task"]="Escort"',
     "UK",
     "Argentina",
-    "38677.30416062245",
+    "38677.30416162246",
     "67168.748047",
 )
 
@@ -942,7 +945,7 @@ FALKLANDS_GA_MISSION_CONTRACTS = (
     "Argentina",
     "UK",
     "Bombing",
-    "72951.81977681704",
+    "72951.81977781704",
     "26171.946448715786",
 )
 
@@ -967,7 +970,7 @@ FALKLANDS_RECON_MISSION_CONTRACTS = (
     "Ural-375",
     "UK",
     "Argentina",
-    "72951.81977681704",
+    "72951.81977781704",
     "26171.946448715786",
 )
 
@@ -1085,7 +1088,7 @@ def write_golden(
         "required_members": list(REQUIRED_MEMBERS),
         "mission_must_contain": list(mission_contracts),
         "source_spec": source_spec,
-        "normalized_fields": ["onboard_num", "livery_id"],
+        "normalized_fields": ["onboard_num", "livery_id", "fuel"],
         "briefing_voice": "raf",
     }
     (fixture_dir / "meta.json").write_text(

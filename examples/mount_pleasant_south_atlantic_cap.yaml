@@ -22,7 +22,7 @@ player:
   start: cold_parking
 cap:
   # Airfield-relative from Mount Pleasant (id 2) 150° / 40 km / 4000 m into
-  # the South Atlantic. PyDCS Mount Pleasant x=73318.320312 y=47168.748047;
+  # the South Atlantic. PyDCS Mount Pleasant x=73318.320313 y=47168.748047;
   # point_from_heading → x=38677.3 y=67168.7, nearest Mount Pleasant 40.00 km
   # (Gull Point 47.12, Port Stanley 56.99). 090/40 is nearer Stanley;
   # 180/40 is nearer Gull Point; 270/40 is nearer Goose Green; 350/40 is

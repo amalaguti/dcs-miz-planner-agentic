@@ -19,7 +19,8 @@
   "source_spec": "examples/manston_dawn_intercept.yaml",
   "normalized_fields": [
     "onboard_num",
-    "livery_id"
+    "livery_id",
+    "fuel"
   ],
   "briefing_voice": "raf"
 }

@@ -75,12 +75,13 @@ _NORTH_RANGE_CORRIDOR_OFFSET_X = 39392.31012048834
 _NORTH_RANGE_CORRIDOR_OFFSET_Y = -6945.927106677216
 
 # Source: live PyDCS Falklands Mount Pleasant (airdromeId 2, name "Mount Pleasant")
-# x=73318.320312 y=47168.748047 + heading 150° / 40 km.
-# point_from_heading(150, 40000) station x=38677.30416062245
+# x=73318.320313 y=47168.748047 + heading 150° / 40 km (pydcs git e20f328;
+# 0.15.0 wheel was x=73318.320312 → dest 38677.30416062245).
+# point_from_heading(150, 40000) station x=38677.30416162246
 # y=67168.748047; offset is NOT axis-aligned (±40000, 0).
-_MOUNT_PLEASANT_X = 73318.320312
+_MOUNT_PLEASANT_X = 73318.320313
 _MOUNT_PLEASANT_Y = 47168.748047
-_SOUTH_ATLANTIC_CORRIDOR_OFFSET_X = -34641.016151377546
+_SOUTH_ATLANTIC_CORRIDOR_OFFSET_X = -34641.01615137754
 _SOUTH_ATLANTIC_CORRIDOR_OFFSET_Y = 20000.0
 
 
@@ -96,6 +97,10 @@ class InterceptSpawnRecipe:
     anchor_y: float
     offset_x: float
     offset_y: float
+    # When set, enemy spawn uses these map coords (bit-identical dump) instead
+    # of anchor+offset, which can ULP-drift after pydcs airport re-exports.
+    dest_x: float | None = None
+    dest_y: float | None = None
 
     @property
     def hawkinge_x(self) -> float:
@@ -119,10 +124,14 @@ class InterceptSpawnRecipe:
 
     @property
     def enemy_x(self) -> float:
+        if self.dest_x is not None:
+            return self.dest_x
         return self.anchor_x + self.offset_x
 
     @property
     def enemy_y(self) -> float:
+        if self.dest_y is not None:
+            return self.dest_y
         return self.anchor_y + self.offset_y
 
 
@@ -162,6 +171,8 @@ INTERCEPT_SPAWN_RECIPES: dict[str, InterceptSpawnRecipe] = {
         anchor_y=_MOUNT_PLEASANT_Y,
         offset_x=_SOUTH_ATLANTIC_CORRIDOR_OFFSET_X,
         offset_y=_SOUTH_ATLANTIC_CORRIDOR_OFFSET_Y,
+        dest_x=38677.30416162246,
+        dest_y=67168.748047,
     ),
 }
 

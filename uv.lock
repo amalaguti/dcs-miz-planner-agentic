@@ -65,7 +65,7 @@ dev = [
 requires-dist = [
     { name = "openai", specifier = ">=2.52.0" },
     { name = "pydantic", specifier = ">=2.7" },
-    { name = "pydcs", specifier = ">=0.15.0" },
+    { name = "pydcs", git = "https://github.com/pydcs/dcs.git?rev=e20f328390aecaac2a7f82444b4f5a96ac6bb2c3" },
     { name = "pypdf", specifier = ">=6.14.2" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "pyyaml", specifier = ">=6.0" },
@@ -281,13 +281,9 @@ wheels = [
 [[package]]
 name = "pydcs"
 version = "0.15.0"
-source = { registry = "https://pypi.org/simple" }
+source = { git = "https://github.com/pydcs/dcs.git?rev=e20f328390aecaac2a7f82444b4f5a96ac6bb2c3#e20f328390aecaac2a7f82444b4f5a96ac6bb2c3" }
 dependencies = [
     { name = "pyproj" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0e/02/60c26a1a9146b091d910dcb66dc5fa264e318704e20752cc05b2ddc847d6/pydcs-0.15.0.tar.gz", hash = "sha256:359e6de45b58e5e6089c51aec7a7c39d876463272cf4a4cf4e092738dbc5e129", size = 505745, upload-time = "2023-04-15T17:58:28.79Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/e8/5c093d3a627e0e30f656645b2a5a87bd9201e8dc7864f869ba1b4f2c2aff/pydcs-0.15.0-py3-none-any.whl", hash = "sha256:648771a017d1da966c790c3e1129f1e3a4fba9adc193fe25d752c08669c63388", size = 521683, upload-time = "2023-04-15T17:58:25.12Z" },
 ]
 
 [[package]]

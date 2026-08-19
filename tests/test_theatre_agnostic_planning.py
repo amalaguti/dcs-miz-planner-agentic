@@ -300,18 +300,18 @@ def test_intercept_succeeds_on_falklands(tmp_path: Path) -> None:
     assert result.ok, result.errors
     assert intercept_supported("Falklands")
     recipe = intercept_spawn_for_theatre("Falklands")
-    assert recipe.anchor_x == 73318.320312
+    assert recipe.anchor_x == 73318.320313
     assert recipe.anchor_y == 47168.748047
-    assert recipe.offset_x == -34641.016151377546
+    assert recipe.offset_x == -34641.01615137754
     assert recipe.offset_y == 20000.0
-    assert recipe.enemy_x == 38677.30416062245
+    assert recipe.enemy_x == 38677.30416162246
     assert recipe.enemy_y == 67168.748047
     out = tmp_path / "falklands_intercept.miz"
     PyDCSCompiler(inventory=_inv()).compile(spec, out)
     assert out.is_file()
     with zipfile.ZipFile(out) as zf:
         mission = zf.read("mission").decode("utf-8")
-        assert "38677.30416062245" in mission
+        assert "38677.30416162246" in mission
         assert "67168.748047" in mission
         assert "30989.935547" not in mission
         assert "-358803.06487951166" not in mission

@@ -296,7 +296,7 @@ mission=
 																["directionEnabled"]=false,
 																["expend"]="Auto",
 																["groupAttack"]=false,
-																["weaponType"]=1073741822,
+																["weaponType"]=9663676414,
 																["x"]=8673.030681320495,
 																["y"]=46439.63788596337
 															}
@@ -340,7 +340,7 @@ mission=
 										{
 											["chaff"]=0,
 											["flare"]=0,
-											["fuel"]=247,
+											["fuel"]="<fuel>",
 											["gun"]=100,
 											["pylons"]=
 											{
@@ -578,7 +578,7 @@ mission=
 			[18]=40,
 			[19]=45
 		},
-		["neutral"]=
+		["neutrals"]=
 		{
 			[1]=32,
 			[2]=33,
@@ -724,6 +724,9 @@ mission=
 	["groundControl"]=
 	{
 		["isPilotControlVehicles"]=false,
+		["passwords"]=
+		{
+		},
 		["roles"]=
 		{
 			["artillery_commander"]=
@@ -762,7 +765,13 @@ mission=
 	["pictureFileNameB"]=
 	{
 	},
+	["pictureFileNameN"]=
+	{
+	},
 	["pictureFileNameR"]=
+	{
+	},
+	["requiredModules"]=
 	{
 	},
 	["result"]=

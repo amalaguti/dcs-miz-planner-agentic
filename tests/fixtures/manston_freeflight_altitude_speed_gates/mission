@@ -201,7 +201,7 @@ mission=
 										{
 											["chaff"]=0,
 											["flare"]=0,
-											["fuel"]=247,
+											["fuel"]="<fuel>",
 											["gun"]=100,
 											["pylons"]=
 											{
@@ -328,7 +328,7 @@ mission=
 			[18]=40,
 			[19]=45
 		},
-		["neutral"]=
+		["neutrals"]=
 		{
 			[1]=32,
 			[2]=33,
@@ -473,6 +473,9 @@ mission=
 	["groundControl"]=
 	{
 		["isPilotControlVehicles"]=false,
+		["passwords"]=
+		{
+		},
 		["roles"]=
 		{
 			["artillery_commander"]=
@@ -511,7 +514,13 @@ mission=
 	["pictureFileNameB"]=
 	{
 	},
+	["pictureFileNameN"]=
+	{
+	},
 	["pictureFileNameR"]=
+	{
+	},
+	["requiredModules"]=
 	{
 	},
 	["result"]=

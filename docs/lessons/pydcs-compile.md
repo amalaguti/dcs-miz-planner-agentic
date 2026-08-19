@@ -5,6 +5,28 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Git-pin pydcs e20f328; keep payload-scan disable (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Product pydcs is **git SHA**
+  `e20f328390aecaac2a7f82444b4f5a96ac6bb2c3` (upstream still labels
+  `0.15.0`). Hatch needs `tool.hatch.metadata.allow-direct-references = true`
+  for the PEP 508 git URL. `Kola` exists in the venv; **do not** add a
+  factory — compile stays fail-closed. Keep `_disable_payload_scan`: local
+  compile with DCS present stayed green with the disable; pydcs still logs
+  livery zip parse errors; Jun 29 weapon-settings load can change pylons.
+  Channel goldens refreshed for DCS 2.28 dump noise: coalition key
+  `neutral`→`neutrals`, Bombing `weaponType` 1073741822→9663676414. Normalize
+  `["fuel"]` in `normalize_mission` (Spitfire default 247→277.59853044).
+  Falklands Mount Pleasant x ticked 73318.320312→73318.320313; live
+  `point_from_heading` dests are CAP/escort/intercept
+  **38677.30416162246 / 67168.748047** and GA/recon
+  **72951.81977781704 / 26171.946448715786**. Intercept spawn stores those
+  dest literals (`dest_x`/`dest_y`) so ULP sum does not diverge from live
+  heading.
+- **Code:** `pyproject.toml`, `uv.lock`, `intercept_spawn.py`,
+  `tests/fixtures_support.py`, `tests/fixtures/manston_*`.
+
 ## requiredModules lists ED aircraft even when unused (2026-08-16)
 
 - **Date:** 2026-08-16

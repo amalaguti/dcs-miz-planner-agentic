@@ -24,8 +24,8 @@ player:
 escort:
   # Airfield-relative from Mount Pleasant (id 2) 150° / 40 km / 4000 m into
   # the South Atlantic. Same station as CAP/intercept. PyDCS Mount Pleasant
-  # x=73318.320312 y=47168.748047; point_from_heading →
-  # x=38677.30416062245 y=67168.748047. Do not copy Channel escort 120/55,
+  # x=73318.320313 y=47168.748047; point_from_heading →
+  # x=38677.30416162246 y=67168.748047. Do not copy Channel escort 120/55,
   # Nellis 350/40, Incirlik 180/40, Batumi 270/40, or Cherbourg 180/63.
   bearing_deg: 150
   distance_km: 40

@@ -366,7 +366,7 @@ recorded under R11 (2026-08-09). Normandy freeflight bind shipped
 
 ## M6 — Mission enrichment: triggers & Lua
 
-**Next promote / in proposal:** (see M4 — squadron `#15e` done); `#22` only if native insufficient; R8 when bumping pydcs
+**Next promote / in proposal:** (see M4 — squadron `#15e` done); `#22` only if native insufficient; next pydcs bump after R8 git pin `e20f328`
 
 Goal: missions get *behaviour*, not just placement — events, radio calls, objectives that
 succeed or fail. This is where Lua legitimately enters the product, as **compiler output and
@@ -469,7 +469,9 @@ Stage C combat on a new map before Slice 0b is on master.
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
 promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: unbound stay discovered-only (`Kola` / `Iraq` / `MarianaIslandsWWII`). Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
-`MarianaIslandsWWII` / `Kola` / `Iraq` until PyDCS terrain exists (R8).
+`Iraq` / `MarianaIslandsWWII` until those terrains exist in pydcs (no
+upstream track). **Kola** has a pydcs class on the git pin (R8) but stays
+discovered-only until a Stage A bind (`kola-cold-freeflight`).
 
 ---
 
@@ -522,7 +524,7 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 | R5 | `research-lua-usage-patterns` | Stock Channel Spitfire IA + Training + Beware campaign audited; findings in `research/lua-usage-patterns.md` | `done` (2026-07-26; R1 singles + **R2 campaigns 2026-08-05** — ED campaigns stay trigger-empty) |
 | R6 | `research-lua-ide-tooling` | Recipe in `research/lua-ide-tooling.md`: pin dcs-world-schema EmmyLua + LuaLS lab; VEAF MCP only at first `#22` snippet work | `done` (notes only; lab vendor not installed) |
 | R7 | `research-pydcs-issues` | Review open issues on [pydcs/dcs](https://github.com/pydcs/dcs/issues); assess impact on our compiler / Channel Specs; promote durable notes into `LESSONS_LEARNED.md` or specs when they affect us | `done` (2026-08-04; notes in `research/pydcs-issues.md`; LESSONS updated — stay on 0.15.0 + keep payload/theatre workarounds) |
-| R8 | `deps-upgrade-review` | Periodically check latest PyDCS and other project-related libraries; decide whether an upgrade is recommended (pin notes in LESSONS / pyproject when we bump) | `idea` |
+| R8 | `deps-upgrade-review` | Periodically check latest PyDCS and other project-related libraries; decide whether an upgrade is recommended (pin notes in LESSONS / pyproject when we bump) | `done` (2026-08-18; pydcs git SHA `e20f328`; Kola class present, **not** planner-bound; payload-scan disable kept) |
 | R9 | `research-dcs-user-manual-me` | Inventory ME features we could map into Spec/compiler/agent; notes under `research/`; promote durable gaps into backlog / LESSONS. **Sources (use together):** (1) local `docs/DCS_User_Manual_EN_2020.pdf` (gitignored; [official EN download](https://www.digitalcombatsimulator.com/en/downloads/documentation/dcs-user_manual_en/) — still the 2020 file for DCS **2.5**; ME chapter ToC ~p.83 / Set Rules for Triggers — *baseline only*); (2) community [TEMPEST.114 Mission Editor Manual](https://forum.dcs.world/topic/347082-mission-editor-manual-most-of-all-me-how-do-i-do-this-are-solvable-with-this-little-pdf-it-has-lots-of-info-not-clear-in-the-ui-hope-it-helps/) (ED Forums, 2024 — clearer ME how-tos than the UI/ED PDF); (3) [Hoggit ME wiki](https://wiki.hoggitworld.com/view/DCS_editor_triggerBasics) ([conditions](https://wiki.hoggitworld.com/view/DCS_editor_conditions), actions, [AI tasking](https://wiki.hoggitworld.com/view/DCS_editor_AITasking)); (4) [Hoggit Scripting Engine docs](https://wiki.hoggitworld.com/view/Simulator_Scripting_Engine_Documentation) (for M6 `#22` Lua, not day-to-day Spec compile); (5) [ED changelogs](https://www.digitalcombatsimulator.com/en/news/changelog/) + newsletters for post-2020 ME features; (6) in-game ME + stock Channel IA/Training (cross-check with R5) | `done` (2026-08-04; ranked candidates in `research/me-enrichment-candidates.md` — next product: `#26` sound + richer flags) |
 | R10 | `research-me-mission-content` | **ME content-depth pass** (in-editor + PyDCS + campaign corpus + optional meteo): (1) **Weather** — mine installed Spitfire campaign `.miz` weather tables (Beware/FoD/Epsom/Big Show; 60 scanned 2026-08-06) + research samples; ME weather templates optional; PyDCS `CloudPreset` (30 ids); defer dynamic cyclones. (2) Optional Channel climatology to refine briefs. (3) **Static objects**. Notes in `research/weather.md`; promote `#17a` / `#17b` | `idea` (2026-08-06; campaign weather scan done — enough to seed `#17a` recipes) |
 | R11 | `research-theatre-content-expand` | **Per-map content audit** for multi-theatre expand: install vs PyDCS vs planner bind; Normandy/Syria/MarianasWWII notes; promote order. Notes: gitignored `research/theatres/` + harness `research/audit_theatres_r11.py`. **Do not** auto-promote. | `done` (2026-08-08; see notes below) |
@@ -541,7 +543,7 @@ Desk probe + notes under `research/theatres/`. **Definitive owned map fleet**
 | Nevada | `Nevada` | available | yes | planner smoke |
 | South Atlantic | `Falklands` | available | yes | planner smoke |
 | Caucasus | `Caucasus` | available | yes | planner smoke |
-| Kola | `Kola` | available | **no module** | no |
+| Kola | `Kola` | available | **yes** (git `e20f328`) | no |
 | Iraq | `Iraq` | available | **no module** | no |
 
 Also on disk but **disabled**: modern `MarianaIslands` (not in definitive list).
@@ -613,8 +615,8 @@ Spit.” Do when expanding registry classes or theatres — not before `#15h` pr
 - **Normandy / multi-theatre** — **M7** full-catalog campaign (Stage A bind
   complete through Falklands; unbound maps stay discovered-only). R11 audit done; campaigns remain inspiration, not Spec import.
 - **Historical validation engine** — date → plausible aircraft/opposition (productized form of R3).
-- **PyDCS issue watch** — research **R7**: **done** 2026-08-04 (`research/pydcs-issues.md` + LESSONS); re-run on R8 bumps / before `#22`.
-- **Dependency upgrade cadence** — research **R8**: check PyDCS + related libs; bump only when recommended.
+- **PyDCS issue watch** — research **R7**: **done** 2026-08-04 (`research/pydcs-issues.md` + LESSONS); re-run on later pydcs pins / before `#22`.
+- **Dependency upgrade cadence** — research **R8**: **done** 2026-08-18 (pydcs git `e20f328`; keep payload-scan disable). Next bump only when recommended.
 - **ED / ME docs pass** — research **R9**: **done** 2026-08-04 (`research/me-enrichment-candidates.md` + LESSONS); promoted `#25` radio + late activation.
 - **ME mission-content depth** — research **R10**: Spitfire campaign `.miz`
   weather mined (60 missions; gallery presets ranked); ME templates optional;

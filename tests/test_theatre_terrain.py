@@ -52,9 +52,25 @@ def test_falklands_in_bound_set() -> None:
     assert terrain_for_theatre("Falklands").__class__.__name__ == "Falklands"
 
 
-def test_unbound_theatre_raises() -> None:
+def test_kola_exists_in_pydcs_but_stays_unbound() -> None:
+    from dcs.terrain import Kola
+
+    assert Kola().name == "Kola"
+    assert "Kola" not in bound_theatre_ids()
     with pytest.raises(TheatreTerrainError, match="No PyDCS terrain binding"):
-        terrain_for_theatre("NotARealTheatre")
+        terrain_for_theatre("Kola")
+
+
+def test_compile_kola_spec_fails_without_binding(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    spec = load_mission_spec(MANSTON).model_copy(update={"theatre": "Kola"})
+    compiler = PyDCSCompiler(inventory=channel_available_inventory())
+    monkeypatch.setattr(compiler, "_validate", lambda _spec: None)
+    out = tmp_path / "kola.miz"
+    with pytest.raises(ValueError, match="No PyDCS terrain binding"):
+        compiler.compile(spec, out)
+    assert not out.is_file()
 
 
 def test_registry_theatres_are_bound() -> None:

@@ -186,7 +186,7 @@ def test_compile_mount_pleasant_ground_attack_contracts(tmp_path: Path) -> None:
         assert "ThirdReich" not in mission
         assert "Blitz_36-6700A" not in mission
         assert "FAB-250" in mission or "{3C612111-C7AD-476E-8A8E-2485812F4E5C}" in mission
-        assert "38677.30416062245" not in mission
+        assert "38677.30416162246" not in mission
         assert "67168.748047" not in mission
         assert "Nellis" not in mission
         assert "Incirlik" not in mission
@@ -225,7 +225,7 @@ def test_compile_mount_pleasant_recon_contracts(tmp_path: Path) -> None:
         assert "Blitz_36-6700A" not in mission
         assert "FAB-250" not in mission
         assert "{3C612111-C7AD-476E-8A8E-2485812F4E5C}" not in mission
-        assert "38677.30416062245" not in mission
+        assert "38677.30416162246" not in mission
         assert "67168.748047" not in mission
         assert "Nellis" not in mission
         assert "Incirlik" not in mission

@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-18 | [Git-pin pydcs e20f328; keep payload-scan disable](lessons/pydcs-compile.md#git-pin-pydcs-e20f328-keep-payload-scan-disable-2026-08-18) | `pydcs-compile` |
 | 2026-08-18 | [Falklands invent allows recon; all six types](lessons/agent-tooling.md#falklands-invent-allows-recon-all-six-types-2026-08-18) | `agent-tooling` |
 | 2026-08-18 | [Falklands recon AOI 269/21; Ural-375 observe Argentina](lessons/channel-ids.md#falklands-recon-aoi-26921-ural-375-observe-argentina-2026-08-18) | `channel-ids` |
 | 2026-08-18 | [Falklands invent allows ground_attack; dedicated GA notes](lessons/agent-tooling.md#falklands-invent-allows-ground_attack-dedicated-ga-notes-2026-08-18) | `agent-tooling` |
