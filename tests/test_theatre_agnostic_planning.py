@@ -81,6 +81,7 @@ FALKLANDS_INTERCEPT = REPO / "examples" / "mount_pleasant_dawn_intercept.yaml"
 FALKLANDS_ESCORT = REPO / "examples" / "mount_pleasant_south_atlantic_escort.yaml"
 FALKLANDS_GA = REPO / "examples" / "mount_pleasant_east_falkland_ground_attack.yaml"
 FALKLANDS_RECON = REPO / "examples" / "mount_pleasant_east_falkland_recon.yaml"
+KOLA_FF = REPO / "examples" / "bodo_cold_freeflight.yaml"
 
 
 def _inv():
@@ -111,6 +112,7 @@ def test_countries_uk_and_thirdreich_only() -> None:
         "Russia",
         "Syria",
         "Argentina",
+        "Norway",
     }
     assert "Chile" not in registry.list_countries(era="modern")
     assert "Chile" not in registry.list_countries()
@@ -124,6 +126,7 @@ def test_era_for_theatre_wwii() -> None:
     assert registry.era_for_theatre("Syria") == "modern"
     assert registry.era_for_theatre("Nevada") == "modern"
     assert registry.era_for_theatre("Falklands") == "modern"
+    assert registry.era_for_theatre("Kola") == "modern"
 
 
 def test_airfield_relative_map_point_passes_theatre() -> None:
@@ -147,13 +150,13 @@ def test_falklands_strike_domain_classified() -> None:
     require_channel_domain("Falklands")
 
 
-def test_domain_fail_closed_on_kola_strike() -> None:
-    spec = load_mission_spec(GA).model_copy(update={"theatre": "Kola"})
+def test_domain_fail_closed_on_iraq_strike() -> None:
+    spec = load_mission_spec(GA).model_copy(update={"theatre": "Iraq"})
     result = validate_mission_spec(spec, inventory=_inv())
     assert not result.ok
     assert any(e.code == "domain_unsupported_theatre" for e in result.errors)
     with pytest.raises(DomainUnsupportedTheatre):
-        require_channel_domain("Kola")
+        require_channel_domain("Iraq")
     with pytest.raises(DomainUnsupportedTheatre):
         strike_domain_for_spec(spec)
 
@@ -319,7 +322,7 @@ def test_intercept_succeeds_on_falklands(tmp_path: Path) -> None:
 
 
 def test_intercept_unsupported_hint_lists_recipe_keys() -> None:
-    spec = load_mission_spec(FALKLANDS_INTERCEPT).model_copy(update={"theatre": "Kola"})
+    spec = load_mission_spec(FALKLANDS_INTERCEPT).model_copy(update={"theatre": "Iraq"})
     result = validate_mission_spec(spec, inventory=_inv())
     assert not result.ok
     err = next(e for e in result.errors if e.code == "intercept_unsupported_theatre")
@@ -330,7 +333,7 @@ def test_intercept_unsupported_hint_lists_recipe_keys() -> None:
 
 
 def test_domain_unsupported_hint_lists_supported_theatres() -> None:
-    spec = load_mission_spec(GA).model_copy(update={"theatre": "Kola"})
+    spec = load_mission_spec(GA).model_copy(update={"theatre": "Iraq"})
     result = validate_mission_spec(spec, inventory=_inv())
     assert not result.ok
     err = next(e for e in result.errors if e.code == "domain_unsupported_theatre")
@@ -738,6 +741,50 @@ def test_schema_theatre_falklands_free_flight() -> None:
     assert "Incirlik" not in blob
     assert "Nellis" not in blob
     assert "french_coast" not in blob
+
+
+def test_schema_theatre_kola_free_flight() -> None:
+    view = build_spec_schema("free_flight", theatre="Kola")
+    assert view.example["theatre"] == "Kola"
+    assert view.example["player"]["airfield"] == "Bodo"
+    assert view.example["player"]["aircraft"] == "Su-25T"
+    assert view.example["player"]["country"] == "Norway"
+    assert view.example["player"]["airfield"] != "Manston"
+    assert view.example["player"]["airfield"] != "NeedsOarPoint"
+    assert view.example["player"]["airfield"] != "Batumi"
+    assert view.example["player"]["airfield"] != "Incirlik"
+    assert view.example["player"]["airfield"] != "Nellis"
+    assert view.example["player"]["airfield"] != "MountPleasant"
+    tool = get_mission_spec_schema("free_flight", theatre="Kola")
+    assert tool["ok"] is True
+    assert tool["example"]["player"]["airfield"] == "Bodo"
+    blob = " ".join(view.notes)
+    assert "Bodo" in blob
+    assert "Su-25T" in blob
+    assert "Norway" in blob
+    assert "bodo_cold_freeflight.yaml" in blob
+    assert "manston_" not in blob.lower()
+    assert "examples are Channel templates" not in blob
+    assert "SpitfireLFMkIX" not in blob
+    assert "ENG0_MAGNETO0" not in blob
+    assert "channel_place" not in blob
+    assert "NeedsOarPoint" not in blob
+    assert "Batumi" not in blob
+    assert "Incirlik" not in blob
+    assert "Nellis" not in blob
+    assert "MountPleasant" not in blob
+    assert "french_coast" not in blob
+
+
+def test_schema_theatre_kola_combat_raises() -> None:
+    with pytest.raises(ValueError, match="not supported for theatre Kola"):
+        build_spec_schema("cap", theatre="Kola")
+    tool = get_mission_spec_schema("cap", theatre="Kola")
+    assert tool["ok"] is False
+    assert tool["code"] == "combat_unsupported_theatre"
+    intercept = get_mission_spec_schema("intercept", theatre="Kola")
+    assert intercept["ok"] is False
+    assert intercept["code"] == "combat_unsupported_theatre"
 
 
 def test_schema_theatre_syria_combat_no_manston_skeleton() -> None:
@@ -1231,6 +1278,14 @@ def test_era_filter_channel_rejects_georgia_turkey_and_su25t() -> None:
     result_ar = validate_mission_spec(spec_ar, inventory=_inv())
     assert not result_ar.ok
     assert any(e.code == "unknown_country" for e in result_ar.errors)
+    spec_no = load_mission_spec(MANSTON_FF).model_copy(
+        update={
+            "player": load_mission_spec(MANSTON_FF).player.model_copy(update={"country": "Norway"})
+        }
+    )
+    result_no = validate_mission_spec(spec_no, inventory=_inv())
+    assert not result_no.ok
+    assert any(e.code == "unknown_country" for e in result_no.errors)
     spec_ac = load_mission_spec(MANSTON_FF).model_copy(
         update={
             "player": load_mission_spec(MANSTON_FF).player.model_copy(update={"aircraft": "Su-25T"})
@@ -1317,6 +1372,8 @@ def test_era_filter_caucasus_georgia_and_syria_turkey_ok() -> None:
     assert validate_mission_spec(nevada, inventory=_inv()).ok
     falklands = load_mission_spec(FALKLANDS_FF)
     assert validate_mission_spec(falklands, inventory=_inv()).ok
+    kola = load_mission_spec(KOLA_FF)
+    assert validate_mission_spec(kola, inventory=_inv()).ok
 
 
 def test_caucasus_cap_invent_nudge() -> None:
@@ -1375,6 +1432,15 @@ def test_falklands_cap_invent_nudge() -> None:
     assert host_normandy_combat_nudge(ga) is None
     recon = load_mission_spec(FALKLANDS_RECON)
     assert host_normandy_combat_nudge(recon) is None
+
+
+def test_kola_combat_invent_refused() -> None:
+    spec = load_mission_spec(FALKLANDS_CAP).model_copy(update={"theatre": "Kola"})
+    nudge = host_normandy_combat_nudge(spec)
+    assert nudge is not None
+    assert "free_flight only" in nudge
+    ff = load_mission_spec(KOLA_FF)
+    assert host_normandy_combat_nudge(ff) is None
 
 
 def test_schema_theatre_normandy_free_flight() -> None:
@@ -2723,6 +2789,11 @@ def test_strike_units_era_and_channel_tag(tmp_path: Path) -> None:
     assert "ZIL-135" in falklands_ids
     assert "Blitz_36-6700A" not in falklands_ids
     assert all(u["domain"] == "land" for u in falklands["units"])
+    kola = list_strike_targets(theatre="Kola", db_path=db)
+    assert kola["ok"] is True
+    kola_ids = {u["unit_id"] for u in kola["units"]}
+    assert "Ural-375" not in kola_ids
+    assert "Blitz_36-6700A" not in kola_ids
 
 
 def test_metar_egmh_channel_only() -> None:

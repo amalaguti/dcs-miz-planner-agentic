@@ -160,6 +160,12 @@ description: >-
     ThirdReich). Escort package country **UK** (default UK — still set
     explicitly). GA/recon trucks country **Argentina** red (default ThirdReich).
     Port Stanley is not a CAP home.
+13. **Kola** Spec id is **`Kola`** (era `modern`). Curated AF (1 of 37):
+    `Bodo` = 7 (PyDCS name `Bodo`). Do not dump all 37 fields. Modern smoke:
+    country `Norway` (modern-only; PyDCS id 12), aircraft `Su-25T` at
+    **251.0 MHz**. Invent is **free_flight only**. Channel+Norway is unknown.
+    Unbound stand-in after this bind: Iraq (no pydcs) / GermanyCW (pydcs
+    class `Germany`, name `GermanyCW`). Do not bind Iraq or GermanyCW.
 
 ## Code touchpoints
 

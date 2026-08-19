@@ -17,7 +17,8 @@ description: >-
 
 1. **Only** `compiler/pydcs_compiler.py` (and emit helpers) import `dcs.*`.
 2. Bind terrain via `theatre_terrain.terrain_for_theatre(spec.theatre)` — never
-   hard-code `TheChannel()` while ignoring Spec. Intercept enemy spawn uses
+   hard-code `TheChannel()` while ignoring Spec. Bound: TheChannel, Normandy,
+   Caucasus, Syria, Nevada, Falklands, **Kola**. Intercept enemy spawn uses
    `intercept_spawn.intercept_spawn_for_theatre` (TheChannel Hawkinge/Dover,
    Normandy NeedsOarPoint/Cherbourg 180/63, Caucasus Batumi/Black Sea 270/40,
    Syria Incirlik/Iskenderun 180/40, Nevada Nellis/north-range 350/40

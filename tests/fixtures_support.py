@@ -179,7 +179,7 @@ def normalize_mission(mission: str) -> str:
 
 
 def channel_available_inventory() -> TheatreInventory:
-    """Hermetic inventory: Channel + Normandy + Caucasus + Syria + Nevada + Falklands when planner-bound."""
+    """Hermetic inventory: Channel + Normandy + Caucasus + Syria + Nevada + Falklands + Kola when planner-bound."""
     return TheatreInventory(
         scanned_at=datetime.now(UTC),
         dcs_roots=("S:/DCS World",),
@@ -223,6 +223,13 @@ def channel_available_inventory() -> TheatreInventory:
             TheatreRecord(
                 theatre_id="Falklands",
                 update_id="FALKLANDS_terrain",
+                dcs_root="S:/DCS World",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
+            TheatreRecord(
+                theatre_id="Kola",
+                update_id="KOLA_terrain",
                 dcs_root="S:/DCS World",
                 state=AvailabilityState.AVAILABLE,
                 planner_supported=True,
@@ -996,6 +1003,24 @@ RIO_GALLEGOS_MISSION_CONTRACTS = (
 
 def compile_rio_gallegos(output_path: Path) -> Path:
     spec = load_mission_spec(RIO_GALLEGOS_EXAMPLE_SPEC)
+    return PyDCSCompiler(inventory=channel_available_inventory()).compile(
+        spec, output_path, voice="raf"
+    )
+
+
+KOLA_EXAMPLE_SPEC = REPO_ROOT / "examples" / "bodo_cold_freeflight.yaml"
+KOLA_MISSION_CONTRACTS = (
+    "Su-25T",
+    '["airdromeId"]=7',
+    '["start_time"]=32400',
+    "TakeOffParking",
+    '"Player"',
+    '["frequency"]=251.0',
+)
+
+
+def compile_bodo(output_path: Path) -> Path:
+    spec = load_mission_spec(KOLA_EXAMPLE_SPEC)
     return PyDCSCompiler(inventory=channel_available_inventory()).compile(
         spec, output_path, voice="raf"
     )

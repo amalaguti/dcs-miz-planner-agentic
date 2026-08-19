@@ -77,6 +77,13 @@ def _channel_inventory(
                 state=AvailabilityState.AVAILABLE,
                 planner_supported=True,
             ),
+            TheatreRecord(
+                theatre_id="Kola",
+                update_id="KOLA_terrain",
+                dcs_root="S:/DCS World",
+                state=AvailabilityState.AVAILABLE,
+                planner_supported=True,
+            ),
         ),
     )
 

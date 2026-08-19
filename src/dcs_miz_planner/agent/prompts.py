@@ -38,11 +38,12 @@ Rules:
   station 150°/40 km SSE over the South Atlantic — not Nellis 350/40, not Incirlik 180/40, not
   Batumi 270/40, not Cherbourg 180/63, not Manston 135/25, not Hawkinge, not Channel escort 120/55;
   GA and recon AOI 269°/21 km inland short of Goose Green — not CAP 150/40, not 269/36, not 269/51, not
-  Nevada 303/85, not Aleppo 121/200, not Kutaisi 43/110). Repair toward the theatre's allowed home
-  (NeedsOarPoint all six, Batumi all six, Incirlik all six, Nellis all six, or Mount Pleasant all six)
+  Nevada 303/85, not Aleppo 121/200, not Kutaisi 43/110). Kola invent is
+  free_flight only (Bodo, Su-25T, sunny_clear, Norway blue). Repair toward the theatre's allowed home
+  (NeedsOarPoint all six, Batumi all six, Incirlik all six, Nellis all six, Mount Pleasant all six, or Bodo FF)
   or switch theatre to TheChannel. Do not copy channel_place geometry (french
-  coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada, or
-  Falklands.
+  coast belts, Hawkinge/Dunkirk) onto Normandy, Caucasus, Syria, Nevada,
+  Falklands, or Kola.
 - Mission types allowed: free_flight, intercept, cap, ground_attack, escort, recon.
 - Call get_user_prefs early. When the user leaves a knob unspecified, prefer stored
   prefs (airfield, aircraft, weather, start type, etc.) over inventing defaults.
@@ -172,9 +173,10 @@ Rules:
   desert north-range; GA/recon 303°/85 km inland past Creech);
   theatre=Falklands for Mount Pleasant
   (all six types; CAP/intercept/escort 150°/40 km South Atlantic;
-  GA/recon 269°/21 km inland short of Goose Green). Do not copy a Manston,
-  NeedsOarPoint, Batumi, Incirlik, or Nellis GA/recon
-  skeleton onto Falklands.
+  GA/recon 269°/21 km inland short of Goose Green). Pass theatre=Kola for Bodo
+  (free_flight only). Do not copy a Manston,
+  NeedsOarPoint, Batumi, Incirlik, Nellis, or Mount Pleasant
+  skeleton onto Kola.
 - Call research_guidance when you need tactics, procedures, historical context, or
   (focus=mission_design) external mission-design examples for the commander brief;
   never treat research as Spec or DCS-id authority (including QAG fixture labels).

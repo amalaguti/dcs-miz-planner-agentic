@@ -1,0 +1,5 @@
+# Curated Spec airfield key -> DCS airdromeId for theatre Kola.
+# Verified from PyDCS Kola.airport_list(); do not dump all 37 fields.
+# PyDCS name: Bodo (class Bodo). Live parking: 94 slots.
+airfields:
+  Bodo: 7 # Bodo (invent home)

@@ -180,6 +180,7 @@ def test_catalog_cli_sync_and_list(tmp_path: Path) -> None:
         "Syria",
         "Nevada",
         "Falklands",
+        "Kola",
     }
 
 
@@ -192,6 +193,7 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert "Syria" in {t.theatre_id for t in snap.theatres}
     assert "Nevada" in {t.theatre_id for t in snap.theatres}
     assert "Falklands" in {t.theatre_id for t in snap.theatres}
+    assert "Kola" in {t.theatre_id for t in snap.theatres}
     assert "Manston" in {a.name for a in snap.airfields}
     assert "NeedsOarPoint" in {a.name for a in snap.airfields}
     assert "Batumi" in {a.name for a in snap.airfields}
@@ -223,6 +225,9 @@ def test_packaged_sync_matches_channel_registry(tmp_path: Path) -> None:
     assert by_af["MountPleasant"].airdrome_id == 2
     assert by_af["RioGallegos"].theatre_id == "Falklands"
     assert by_af["RioGallegos"].airdrome_id == 5
+    assert by_af["Bodo"].theatre_id == "Kola"
+    assert by_af["Bodo"].airdrome_id == 7
+    assert "Norway" in {c.value for c in snap.countries}
     assert "Argentina" in {c.value for c in snap.countries}
     assert by_af["FordAF"].theatre_id == "Normandy"
     assert by_af["FordAF"].airdrome_id == 31

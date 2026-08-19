@@ -52,22 +52,27 @@ def test_falklands_in_bound_set() -> None:
     assert terrain_for_theatre("Falklands").__class__.__name__ == "Falklands"
 
 
-def test_kola_exists_in_pydcs_but_stays_unbound() -> None:
-    from dcs.terrain import Kola
+def test_kola_in_bound_set() -> None:
+    assert "Kola" in bound_theatre_ids()
+    assert terrain_for_theatre("Kola").__class__.__name__ == "Kola"
 
-    assert Kola().name == "Kola"
-    assert "Kola" not in bound_theatre_ids()
+
+def test_germanycw_exists_in_pydcs_but_stays_unbound() -> None:
+    from dcs.terrain import Germany
+
+    assert Germany().name == "GermanyCW"
+    assert "GermanyCW" not in bound_theatre_ids()
     with pytest.raises(TheatreTerrainError, match="No PyDCS terrain binding"):
-        terrain_for_theatre("Kola")
+        terrain_for_theatre("GermanyCW")
 
 
-def test_compile_kola_spec_fails_without_binding(
+def test_compile_iraq_spec_fails_without_binding(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    spec = load_mission_spec(MANSTON).model_copy(update={"theatre": "Kola"})
+    spec = load_mission_spec(MANSTON).model_copy(update={"theatre": "Iraq"})
     compiler = PyDCSCompiler(inventory=channel_available_inventory())
     monkeypatch.setattr(compiler, "_validate", lambda _spec: None)
-    out = tmp_path / "kola.miz"
+    out = tmp_path / "iraq.miz"
     with pytest.raises(ValueError, match="No PyDCS terrain binding"):
         compiler.compile(spec, out)
     assert not out.is_file()

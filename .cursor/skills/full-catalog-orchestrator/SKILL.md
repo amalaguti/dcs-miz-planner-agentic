@@ -13,7 +13,7 @@ description: >-
 Parent agent in Agents Window (or chat) coordinates specialists. **You** do not
 spawn a seventh “orchestrator” subagent.
 
-Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + GA + intercept + escort + recon smoke (all six types). Caucasus Stage C is complete: Batumi places + Black Sea CAP/intercept/escort (270°/40 km); inland GA/recon past Kutaisi (43°/110 km); invent all six types. Syria Stage C is complete: Incirlik places + Iskenderun CAP/intercept/escort (180°/40 km) + Aleppo inland GA/recon (121°/200 km, not CAP 180/40); invent all six types. Palmyra FF smoke (country Syria red, id 28 ≠ Mozdok). Nevada Stage C CAP + intercept + escort + GA + recon shipped: Nellis places + desert north-range CAP/intercept/escort (350°/40 km land) + inland GA/recon past Creech (303°/85 km, not CAP 350/40); invent all six types at Nellis. Groom Lake FF smoke (USA blue, id 2 ≠ MountPleasant). Falklands Stage C CAP + intercept + escort + GA + recon shipped: eight curated AFs; Rio Gallegos FF smoke (Argentina red, id 5 ≠ Manston); Mount Pleasant places + South Atlantic CAP/intercept/escort (150°/40 km sea) + inland GA/recon short of Goose Green (269°/21 km, not CAP 150/40); invent all six types at MountPleasant. Next promote: unbound stay discovered-only (`Kola`/`Iraq`/`MarianaIslandsWWII`).
+Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + GA + intercept + escort + recon smoke (all six types). Caucasus Stage C is complete: Batumi places + Black Sea CAP/intercept/escort (270°/40 km); inland GA/recon past Kutaisi (43°/110 km); invent all six types. Syria Stage C is complete: Incirlik places + Iskenderun CAP/intercept/escort (180°/40 km) + Aleppo inland GA/recon (121°/200 km, not CAP 180/40); invent all six types. Palmyra FF smoke (country Syria red, id 28 ≠ Mozdok). Nevada Stage C CAP + intercept + escort + GA + recon shipped: Nellis places + desert north-range CAP/intercept/escort (350°/40 km land) + inland GA/recon past Creech (303°/85 km, not CAP 350/40); invent all six types at Nellis. Groom Lake FF smoke (USA blue, id 2 ≠ MountPleasant). Falklands Stage C CAP + intercept + escort + GA + recon shipped: eight curated AFs; Rio Gallegos FF smoke (Argentina red, id 5 ≠ Manston); Mount Pleasant places + South Atlantic CAP/intercept/escort (150°/40 km sea) + inland GA/recon short of Goose Green (269°/21 km, not CAP 150/40); invent all six types at MountPleasant. Kola Stage A shipped: Bodo FF (Norway blue, id 7); invent FF-only. Next promote: unbound stay discovered-only (`Iraq`/`MarianaIslandsWWII`; GermanyCW in pydcs but not R11 fleet).
 
 ## Read
 
@@ -30,7 +30,7 @@ Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + G
    ME Instant Action is human **do-soon after merge**.
 4. **Slice 0b gate:** no Stage C combat (places + intercept/GA/etc.) on a new
    map until `theatre-agnostic-planning` is on master.
-5. No PyDCS terrain → no Spec bind (today: `MarianaIslandsWWII`, `Kola`, `Iraq`).
+5. No PyDCS terrain → no Spec bind (today: `MarianaIslandsWWII`, `Iraq`).
 6. Do not `/in-cloud` two theatres. Optional `/babysit` on the current PR only.
 7. OpenSpec CLI: `npx openspec` (not `uv openspec`).
 
@@ -42,8 +42,8 @@ Baseline: tag `v0.4_the_channel`. Channel is complete; Normandy has FF + CAP + G
    intercept spawn, path clamp, strike-unit tags, reweather/METAR.
 3. Refresh `dcs-miz theatres --refresh`. Then sequential maps:
    - Normandy deepen (WWII, already bound)
-   - Caucasus → Syria → Nevada → Falklands (`Falklands`)
-   - Unbound terrains stay discovered-only
+   - Caucasus → Syria → Nevada → Falklands (`Falklands`) → Kola Stage A
+   - Unbound terrains stay discovered-only (`Iraq`, `MarianaIslandsWWII`)
 
 Per-map stages (separate OpenSpecs):
 

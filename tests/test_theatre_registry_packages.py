@@ -68,6 +68,10 @@ _FALKLANDS_AIRFIELDS = {
     "SanJulian": 11,
 }
 
+_KOLA_AIRFIELDS = {
+    "Bodo": 7,
+}
+
 _NORMANDY_AIRFIELDS = {
     "NeedsOarPoint": 28,
     "Chailey": 27,
@@ -198,6 +202,21 @@ def test_falklands_airfields_exactly_curated_eight(registry):
         registry.airdrome_id("Rio_Gallegos", theatre="Falklands")
     with pytest.raises(RegistryError, match="Unknown airfield"):
         registry.airdrome_id("Port_Stanley", theatre="Falklands")
+
+
+def test_kola_airfields_exactly_bodo(registry):
+    names = registry.list_airfields(theatre="Kola")
+    assert {n: registry.airdrome_id(n, theatre="Kola") for n in names} == _KOLA_AIRFIELDS
+    assert registry.airdrome_id("Bodo", theatre="Kola") == 7
+    assert registry.airdrome_id("Ushuaia", theatre="Falklands") == 7
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Bodo", theatre="TheChannel")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Bodo", theatre="Falklands")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Manston", theatre="Kola")
+    with pytest.raises(RegistryError, match="Unknown airfield"):
+        registry.airdrome_id("Ushuaia", theatre="Kola")
 
 
 def test_normandy_airfields_exactly_curated_eight(registry):

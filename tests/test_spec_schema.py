@@ -96,6 +96,8 @@ def test_infer_theatre_from_rejected_json() -> None:
     )
     assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Rio_Gallegos"}}') is None
     assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Port_Stanley"}}') is None
+    assert infer_theatre('{"mission_type": "free_flight", "theatre": "Kola"}') == "Kola"
+    assert infer_theatre('{"mission_type": "cap", "player": {"airfield": "Bodo"}}') == "Kola"
 
 
 def test_get_mission_spec_schema_tool() -> None:

@@ -28,6 +28,9 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-18 | [Kola Stage A Bodo=7; Norway modern-only](lessons/channel-ids.md#kola-stage-a-bodo7-norway-modern-only-2026-08-18) | `channel-ids` |
+| 2026-08-18 | [Kola invent is free_flight only at Bodo](lessons/agent-tooling.md#kola-invent-is-free_flight-only-at-bodo-2026-08-18) | `agent-tooling` |
+| 2026-08-18 | [Kola factory bound at Bodo](lessons/pydcs-compile.md#kola-factory-bound-at-bodo-2026-08-18) | `pydcs-compile` |
 | 2026-08-18 | [Git-pin pydcs e20f328; keep payload-scan disable](lessons/pydcs-compile.md#git-pin-pydcs-e20f328-keep-payload-scan-disable-2026-08-18) | `pydcs-compile` |
 | 2026-08-18 | [Falklands invent allows recon; all six types](lessons/agent-tooling.md#falklands-invent-allows-recon-all-six-types-2026-08-18) | `agent-tooling` |
 | 2026-08-18 | [Falklands recon AOI 269/21; Ural-375 observe Argentina](lessons/channel-ids.md#falklands-recon-aoi-26921-ural-375-observe-argentina-2026-08-18) | `channel-ids` |

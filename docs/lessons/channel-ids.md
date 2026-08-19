@@ -5,6 +5,21 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Kola Stage A Bodo=7; Norway modern-only (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Kola Spec id is **`Kola`** (era `modern`). Curated AF (1 of 37):
+  `Bodo` = 7 (PyDCS name `Bodo`, class `Bodo`; 94 parking slots from live
+  `Kola().airport_list()`). Do not dump all 37 fields. Do not invent Banak=1
+  as the invent home (26 slots; deferred). Country **`Norway`** is
+  modern-only (PyDCS `countries.Norway` id 12). Channel+Norway is unknown.
+  Smoke: Su-25T / Norway blue / **251.0 MHz** at Bodo. Invent is **free_flight
+  only**. Unbound stand-in after this bind: **Iraq** (no pydcs class);
+  **GermanyCW** exists in pydcs (`dcs.terrain.Germany`, name `GermanyCW`) and
+  stays unbound. Do not bind Iraq / Marianas WWII / GermanyCW in this slice.
+- **Code:** `data/theatres/Kola/`, `data/era/modern/countries.yaml`,
+  `examples/bodo_cold_freeflight.yaml`, `theatre_terrain.py`.
+
 ## Falklands recon AOI 269/21; Ural-375 observe Argentina (2026-08-18)
 
 - **Date:** 2026-08-18

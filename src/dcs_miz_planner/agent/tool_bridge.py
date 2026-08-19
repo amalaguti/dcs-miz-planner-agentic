@@ -163,7 +163,8 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "use Nellis (CAP/intercept/escort 350° / 40 km desert north-range; "
                 "GA/recon 303° / 85 km inland past Creech); Falklands "
                 "all six types use Mount Pleasant "
-                "(150° / 40 km South Atlantic; GA/recon 269° / 21 km inland short of Goose Green). "
+                "(150° / 40 km South Atlantic; GA/recon 269° / 21 km inland short of Goose Green); "
+                "Kola free_flight only uses Bodo. "
                 "Call before "
                 "emitting Spec JSON."
             ),
@@ -176,7 +177,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                     },
                     "theatre": {
                         "type": "string",
-                        "description": "Optional theatre id (TheChannel, Normandy, Caucasus, Syria, Nevada, Falklands)",
+                        "description": "Optional theatre id (TheChannel, Normandy, Caucasus, Syria, Nevada, Falklands, Kola)",
                     },
                 },
                 "required": ["mission_type"],

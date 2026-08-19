@@ -50,6 +50,12 @@ def _falklands_terrain() -> Any:
     return Falklands()
 
 
+def _kola_terrain() -> Any:
+    from dcs.terrain import Kola
+
+    return Kola()
+
+
 # Spec theatre id → zero-arg factory returning a PyDCS terrain instance.
 _TERRAIN_FACTORIES: dict[str, Callable[[], Any]] = {
     "TheChannel": _the_channel_terrain,
@@ -58,6 +64,7 @@ _TERRAIN_FACTORIES: dict[str, Callable[[], Any]] = {
     "Syria": _syria_terrain,
     "Nevada": _nevada_terrain,
     "Falklands": _falklands_terrain,
+    "Kola": _kola_terrain,
 }
 
 

@@ -66,7 +66,8 @@ Spec geometry is already airfield-relative. These helpers are Channel-hardcoded:
 
 ## Hard ceiling
 
-- No PyDCS terrain → cannot compile (`MarianaIslandsWWII`, `Kola`, `Iraq` as of R11).
+- No PyDCS terrain → cannot compile (`MarianaIslandsWWII`, `Iraq` as of R11).
+  Kola is bound (Stage A). GermanyCW exists in pydcs but is not in the R11 fleet.
 - Player spawn is airfield-only (no FARP/carrier/helipad in Spec).
 - No first-class modern mission types (AAR, SEAD, FAC, helo CAS, carrier recovery).
 

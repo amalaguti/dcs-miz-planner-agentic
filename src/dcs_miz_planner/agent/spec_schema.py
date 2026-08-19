@@ -69,6 +69,16 @@ _FALKLANDS_ESCORT_EXAMPLE = "mount_pleasant_south_atlantic_escort.yaml"
 _FALKLANDS_GROUND_ATTACK_EXAMPLE = "mount_pleasant_east_falkland_ground_attack.yaml"
 _FALKLANDS_RECON_EXAMPLE = "mount_pleasant_east_falkland_recon.yaml"
 _FALKLANDS_UNSUPPORTED_COMBAT: frozenset[str] = frozenset()
+_KOLA_FREE_FLIGHT_EXAMPLE = "bodo_cold_freeflight.yaml"
+_KOLA_UNSUPPORTED_COMBAT: frozenset[str] = frozenset(
+    {
+        MissionType.INTERCEPT.value,
+        MissionType.CAP.value,
+        MissionType.GROUND_ATTACK.value,
+        MissionType.ESCORT.value,
+        MissionType.RECON.value,
+    }
+)
 
 ANTI_PATTERNS: tuple[str, ...] = (
     'top-level "airfield" / "aircraft" (use nested player.aircraft / player.airfield)',
@@ -823,6 +833,43 @@ _NEVADA_RECON_NOTES: tuple[str, ...] = (
     "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
 )
 
+# Kola Stage A: do not concatenate _COMMON_NOTES / _TYPE_NOTES (those cite
+# Manston YAML, Spitfire failures, and channel_place as templates to copy).
+_KOLA_FF_NOTES: tuple[str, ...] = (
+    (
+        "Kola invent is free_flight only: airfield Bodo, Su-25T, sunny_clear, "
+        "Norway blue. Refuse intercept/cap/ground_attack/escort/recon. Do not copy "
+        "Channel, Normandy, Caucasus, Syria, Nevada, or Falklands geometry onto Kola."
+    ),
+    ('schema_version must be "1"; theatre is Kola (free_flight at Bodo).'),
+    (
+        "Required envelope: schema_version, mission_type, theatre, date, start_time, "
+        "weather, player; enemies/objectives/triggers/zones default to empty lists."
+    ),
+    (
+        "enemies, objectives, and targets must be empty lists; omit cap and strike; "
+        "omit player.payload. Omit failures — modern Kola has no curated "
+        "aircraft_failure shelf."
+    ),
+    (
+        "optional player.flight: size 2–4, role lead|wingman (default lead), "
+        "ai_skill for mates (default Average), join_up (default true — wingman "
+        "Follows AI lead + shared route). Omit for solo. Wingman emits a "
+        "separate AI lead group plus your Player ship. Do not copy other-theatre "
+        "flight YAML onto Kola."
+    ),
+    (
+        "Fill DCS ids from tools/prefs using examples/bodo_cold_freeflight.yaml. "
+        "Channel, Normandy, Caucasus, Syria, Nevada, and Falklands example YAML "
+        "paths do not apply."
+    ),
+    (
+        "Optional typed zones/triggers (no Lua) use the same condition/action "
+        "vocabulary; do not copy other-theatre immersion YAML."
+    ),
+    "Call get_mission_spec_schema for the mission_type before emitting Spec JSON.",
+)
+
 # Falklands Stage C: do not concatenate _COMMON_NOTES / _TYPE_NOTES (those cite
 # Manston YAML, Spitfire failures, and channel_place as templates to copy).
 _FALKLANDS_FF_NOTES: tuple[str, ...] = (
@@ -1012,7 +1059,9 @@ _FALKLANDS_RECON_NOTES: tuple[str, ...] = (
 _MT_IN_JSON = re.compile(r'"mission_type"\s*:\s*"([a-z_]+)"')
 _THEATRE_IN_JSON = re.compile(r'"theatre"\s*:\s*"([A-Za-z0-9_]+)"')
 _AIRFIELD_IN_JSON = re.compile(r'"airfield"\s*:\s*"([A-Za-z0-9_]+)"')
-_SCHEMA_THEATRES = frozenset({"TheChannel", "Normandy", "Caucasus", "Syria", "Nevada", "Falklands"})
+_SCHEMA_THEATRES = frozenset(
+    {"TheChannel", "Normandy", "Caucasus", "Syria", "Nevada", "Falklands", "Kola"}
+)
 
 
 @dataclass(frozen=True)
@@ -1045,12 +1094,34 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
     (CAP/intercept/escort 150° / 40 km South Atlantic; GA/recon 269° / 21 km inland
     short of Goose Green). Falklands recon uses the East Falkland inland example
     (no Manston / NeedsOarPoint / Batumi / Incirlik / Nellis combat skeleton).
+    ``theatre=Kola`` uses Bodo for free_flight only (combat types raise).
     """
     key = (mission_type or "").strip()
     if key not in _EXAMPLE_FILES:
         allowed = ", ".join(supported_mission_types())
         raise ValueError(f"Unsupported mission_type {mission_type!r}; expected one of: {allowed}")
     theatre_id = (theatre or "").strip() or None
+    if theatre_id == "Kola":
+        if key in _KOLA_UNSUPPORTED_COMBAT:
+            raise ValueError(
+                f"Combat mission_type {key!r} is not supported for theatre Kola; "
+                "use free_flight at Bodo or theatre TheChannel"
+            )
+        filename = _KOLA_FREE_FLIGHT_EXAMPLE
+        path = examples_dir() / filename
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing Spec example for {key}: {path}")
+        spec = load_mission_spec(path)
+        if spec.mission_type.value != key:
+            raise ValueError(
+                f"Example {path.name} has mission_type {spec.mission_type.value!r}, "
+                f"expected {key!r}"
+            )
+        example = json.loads(spec.model_dump_json())
+        MissionSpec.model_validate(example)
+        notes = _notes_for(key, theatre_id)
+        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+
     if theatre_id == "Falklands":
         if key in _FALKLANDS_UNSUPPORTED_COMBAT:
             raise ValueError(
@@ -1342,6 +1413,8 @@ _NORMANDY_RECON_NOTES: tuple[str, ...] = (
 
 
 def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
+    if theatre == "Kola":
+        return _KOLA_FF_NOTES
     if theatre == "Falklands":
         if mission_type == MissionType.CAP.value:
             return _FALKLANDS_CAP_NOTES
@@ -1478,6 +1551,8 @@ def infer_theatre(text: str | None) -> str | None:
         "SanJulian",
     }:
         return "Falklands"
+    if af and af.group(1) == "Bodo":
+        return "Kola"
     return None
 
 
@@ -1507,7 +1582,8 @@ use Batumi; Syria all six types use Incirlik; Nevada all six types use Nellis
 inland past Creech); Falklands all six types use
 Mount Pleasant (CAP/intercept/escort 150° / 40 km South Atlantic; GA/recon 269° / 21 km
 inland short of Goose Green). Falklands
-recon uses the East Falkland inland envelope.
+recon uses the East Falkland inland envelope. Kola free_flight only uses Bodo
+(combat types raise).
 Immersion: after matching the envelope, apply 1–2 mission_behaviour recipes (zones/
 triggers, narrative.enabled, late_activation+activate_group, gates, etc.) when the user
 left challenge unspecified — see schema notes for example YAML paths.

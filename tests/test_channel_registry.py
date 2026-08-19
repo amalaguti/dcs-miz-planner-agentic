@@ -124,6 +124,16 @@ def test_falklands_supported_and_mount_pleasant(registry):
         registry.airdrome_id("Port_Stanley")
 
 
+def test_kola_supported_and_bodo(registry):
+    assert registry.has_theatre("Kola")
+    assert "Kola" in registry.list_theatres()
+    assert registry.era_for_theatre("Kola") == "modern"
+    assert registry.airdrome_id("Bodo", theatre="Kola") == 7
+    assert registry.airfield_theatre("Bodo") == "Kola"
+    assert "Norway" in registry.list_countries(era="modern")
+    assert "Norway" not in registry.list_countries(era="wwii")
+
+
 def test_known_wwii_aircraft(registry):
     known = registry.known_aircraft()
     for aircraft_id in ("SpitfireLFMkIX", "Bf-109K-4", "FW-190A8", "FW-190D9"):

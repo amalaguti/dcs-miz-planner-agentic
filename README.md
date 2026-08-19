@@ -64,7 +64,10 @@ plus inland recon (`examples/mount_pleasant_east_falkland_recon.yaml`; same
 269°/21 km inland AOI). Invent is **all six types** at Mount Pleasant.
 Port Stanley is lookup-only (heli). Extra Falklands smoke:
 `examples/rio_gallegos_cold_freeflight.yaml` (Argentina red; airdromeId 5 is
-not Channel Manston). Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
+not Channel Manston). **Kola** is planner-bound for cold freeflight at Bodo
+(`examples/bodo_cold_freeflight.yaml`; Spec theatre id `Kola`; Spec airfield
+key `Bodo`; Su-25T / Norway / 251.0 MHz). Kola invent is **free_flight only**.
+Caucasus invent is **all six types** at Batumi; Syria invent is **all six types** at Incirlik; Nevada invent is **all six types**
 at Nellis. Intercept spawn is TheChannel
 Hawkinge/Dover, Normandy NeedsOarPoint/Cherbourg, Caucasus
 Batumi/Black Sea, Syria Incirlik/Iskenderun, Nevada Nellis/north-range, **or**
@@ -159,10 +162,10 @@ Creative decisions persist in generation
 `detail.creative`; feedback + history bias later invents.
 Module map: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-**Intentional limits:** six bound maps (Channel, Normandy, Caucasus, Syria,
-Nevada, Falklands) each invent all six packaged types at their home airfield.
-Kola exists in pydcs (git pin) but is **not** planner-bound. Iraq and
-`MarianaIslandsWWII` have no pydcs terrain. Campaign `.miz` files are listed for
+**Intentional limits:** seven bound maps. Channel, Normandy, Caucasus, Syria,
+Nevada, and Falklands each invent all six packaged types at their home airfield.
+Kola invent is free_flight only at Bodo. Iraq and `MarianaIslandsWWII` have no
+pydcs terrain. GermanyCW exists in pydcs but is not planner-bound. Campaign `.miz` files are listed for
 inspiration, not imported as Spec; stub LLM + offline research fixtures keep tests
 hermetic.
 

@@ -59,6 +59,9 @@ description: >-
    they MUST NOT replace the invent/schema home. Port Stanley is heli
    lookup-only. Country `Argentina` is modern-only; Channel+Argentina is
    unknown. Chile is deferred.
+   **Kola** is **free_flight only** (Bodo, Su-25T, Norway blue, 251.0 MHz).
+   Combat types refuse every turn (no MountPleasant/Nellis/Incirlik skeleton).
+   Extra-AF homes and dual-offer trucks are out of Stage A.
    Refused types refuse every turn
    (never a one-shot nudge that then captures/writes the Spec).    Host repair
    nudges MUST infer theatre from rejected JSON and pass it to

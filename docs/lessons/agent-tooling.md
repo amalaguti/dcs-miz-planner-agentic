@@ -5,6 +5,23 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Kola invent is free_flight only at Bodo (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** Kola invent/chat may emit **free_flight only** at Bodo (Su-25T,
+  Norway blue). Schema `theatre=Kola` + `free_flight` loads
+  `bodo_cold_freeflight.yaml` with dedicated `_KOLA_FF_NOTES` — do **not**
+  concatenate Channel `_TYPE_NOTES` / `_COMMON_NOTES`. Combat types raise
+  `combat_unsupported_theatre` (no prior-map skeleton). Infer theatre from
+  JSON `Kola` or airfield `Bodo`. Repair MUST nudge Bodo FF or TheChannel —
+  not MountPleasant, Nellis, Incirlik, Batumi, NeedsOarPoint, or Manston.
+  Soft immersion floor and path clamp stay TheChannel-only. Stub LLM stays
+  Manston. `list_strike_targets(theatre="Kola")` does **not** dual-offer
+  Caucasus trucks. Fail-closed invent/domain/intercept copies use **Iraq**;
+  pydcs-exists-unbound uses **GermanyCW**.
+- **Code:** `agent/immersion.py`, `agent/spec_schema.py` (`_KOLA_FF_NOTES`),
+  `agent/prompts.py`, `examples/bodo_cold_freeflight.yaml`.
+
 ## Falklands invent allows recon; all six types (2026-08-18)
 
 - **Date:** 2026-08-18

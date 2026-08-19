@@ -290,9 +290,10 @@ smoke checklist in that file.
 ## M4 — Mission types
 
 **Next promote / in proposal:** Full-catalog campaign **M7** Stage A bind is
-complete for every PyDCS-bound installed map. Unbound terrains
-(`Kola` / `Iraq` / `MarianaIslandsWWII`) stay discovered-only until PyDCS
-exists. Further work is per-map stages B–D, not a new Stage A bind.
+complete for Channel, Normandy, Caucasus, Syria, Nevada, Falklands, and
+**Kola**. Unbound terrains (`Iraq` / `MarianaIslandsWWII`; GermanyCW in
+pydcs but not in the R11 fleet) stay discovered-only. Further Kola work is
+stages B–D (`kola-airfields`, …), not another Stage A bind.
 (`/full-catalog-orchestrate`). ME Instant Action smokes below stay do-soon and
 do not block that campaign. Follow
 [`THEATRE_TARGET_PROMOTE.md`](THEATRE_TARGET_PROMOTE.md). Definitive map fleet
@@ -410,8 +411,8 @@ Still useful to revisit R5 after user-file audits.
 ## M7 — Full catalog (multi-theatre)
 
 **Next promote / in proposal:** unbound maps stay discovered-only
-(`Kola`, `Iraq`, `MarianaIslandsWWII` — no PyDCS terrain). Bound-map invent is
-complete through Falklands recon. Trigger from
+(`Iraq`, `MarianaIslandsWWII` — no PyDCS terrain). Kola Stage A (Bodo FF) is
+bound; invent FF-only. Bound-map invent is complete through Falklands recon. Trigger from
 Agents Window with `/full-catalog-orchestrate`. Cursor agents + skill live under
 `.cursor/agents/` and `.cursor/skills/full-catalog-orchestrator/`.
 
@@ -465,13 +466,14 @@ Stage C combat on a new map before Slice 0b is on master.
 | F5e | `falklands-escort` | Falklands escort: Mount Pleasant UK Su-25T package on the South Atlantic corridor (150°/40 km); invent allow escort; GA/recon still refuse | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 | F5f | `falklands-ground-attack` | Falklands GA: Mount Pleasant inland strike short of Goose Green (269°/21 km); Syria-style seaward-window domain; modern Ural/GAZ/ZIL country Argentina red; invent FF+CAP+intercept+escort+GA; recon still refuses | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 | F5g | `falklands-recon` | Falklands recon: Mount Pleasant observe inland short of Goose Green (269°/21 km); invent allow all six types | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
+| F6 | `kola-cold-freeflight` | Kola Stage A bind + smoke (Bodo / Norway / Su-25T; invent FF-only) | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
-promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: unbound stay discovered-only (`Kola` / `Iraq` / `MarianaIslandsWWII`). Refresh
+promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: unbound stay discovered-only (`Iraq` / `MarianaIslandsWWII`). Refresh
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `Iraq` / `MarianaIslandsWWII` until those terrains exist in pydcs (no
-upstream track). **Kola** has a pydcs class on the git pin (R8) but stays
-discovered-only until a Stage A bind (`kola-cold-freeflight`).
+upstream track). **GermanyCW** exists in pydcs (`dcs.terrain.Germany`) but is
+not in the R11 owned fleet. Kola Stage A (`kola-cold-freeflight`) is bound.
 
 ---
 
@@ -543,14 +545,15 @@ Desk probe + notes under `research/theatres/`. **Definitive owned map fleet**
 | Nevada | `Nevada` | available | yes | planner smoke |
 | South Atlantic | `Falklands` | available | yes | planner smoke |
 | Caucasus | `Caucasus` | available | yes | planner smoke |
-| Kola | `Kola` | available | **yes** (git `e20f328`) | no |
+| Kola | `Kola` | available | **yes** (git `e20f328`) | **yes** (Stage A Bodo FF) |
 | Iraq | `Iraq` | available | **no module** | no |
 
 Also on disk but **disabled**: modern `MarianaIslands` (not in definitive list).
 
 - **Assets:** WWII Units + M3 PTO present. Campaigns: Channel Spitfire only.
 - **Promote order:** (1) **Normandy 2.0** freeflight smoke (`normandy-cold-freeflight`),
-  (2) Syria later, (3) Marianas WWII / Kola / Iraq after PyDCS/R8.
+  (2) Syria later, (3) Kola Stage A after R8 (done), (4) Marianas WWII / Iraq
+  after pydcs terrain exists.
 
 **`R12` `research-ai-options-by-domain` — done (ME 2026-08-08):**
 | R12b | `research-ai-options-unit-matrix` | Expand R12 beyond Channel smoke samples: ME WP Options matrix for **representative units** across airplanes, helicopters (same Air enum — verify ME), ships (E-boat / cargo / warship), and ground classes (armor, infantry, radar/SAM, soft, AAA). Record ME list vs meaningful capability (Spit ECM lesson). Append to `research/ai-options-domain.md`. **Not blocking `#15h`.** Promote when helo / armor / multi-theatre shelves need allowlists. | `idea` (draft 2026-08-08) |

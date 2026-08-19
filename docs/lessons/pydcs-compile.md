@@ -5,6 +5,16 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Kola factory bound at Bodo (2026-08-18)
+
+- **Date:** 2026-08-18
+- **Lesson:** After R8, Stage A `kola-cold-freeflight` **does** bind
+  `Kola()` in `theatre_terrain.py`. Compile smoke is Bodo airdromeId **7**,
+  Su-25T, Norway, 251.0 MHz. Keep `_disable_payload_scan`. Iraq still has no
+  pydcs class. GermanyCW (`dcs.terrain.Germany`, name `GermanyCW`) stays
+  unbound. Do not dump 37 Kola airports.
+- **Code:** `theatre_terrain.py`, `examples/bodo_cold_freeflight.yaml`.
+
 ## Git-pin pydcs e20f328; keep payload-scan disable (2026-08-18)
 
 - **Date:** 2026-08-18
