@@ -59,5 +59,21 @@ targets:
       - bearing_deg: 128
         distance_km: 80.5
     ai_preset: convoy_transit
+  - unit: Coach a tank yellow
+    count: 1
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    motion: path
+    path:
+      - bearing_deg: 125
+        distance_km: 76
+      - bearing_deg: 126
+        distance_km: 77.5
+      - bearing_deg: 127
+        distance_km: 79
+      - bearing_deg: 128
+        distance_km: 80.5
+    ai_preset: convoy_transit
 objectives:
   - type: attack_ground

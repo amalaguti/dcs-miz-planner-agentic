@@ -1,0 +1,36 @@
+schema_version: "1"
+mission_type: ground_attack
+theatre: TheChannel
+name: Manston V-1 Ski Strike
+description: >
+  Cold start at Manston with 2x250 lb bombs and a slipper tank. Strike a V-1 ski
+  launcher (Noball) inland on the Dunkirk–Calais belt. Emplaced, static, soft AI.
+  R13 leftover campaign unit. Jettison the tank before the attack.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+  payload: spitfire_2x250_slipper
+strike:
+  bearing_deg: 125
+  distance_km: 76
+  altitude_m: 2000
+enemies: []
+targets:
+  - unit: v1_launcher
+    count: 2
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    ai_preset: convoy_transit
+objectives:
+  - type: attack_ground

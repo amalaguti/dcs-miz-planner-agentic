@@ -90,7 +90,9 @@ description: >-
    CAP 228/130 inland 212/184; Tangmere CAP 215/89 inland 200/152 (max
    flight size 3); FordAF CAP 220/92 inland 203/152 — do not copy
    NeedsOarPoint 180/63 or 180/133. Artillery: `LeFH_18-40-105`, `Wespe124`,
-   `M2A1-105`. Scenery: `Hangar A`, `Revetment_x4`, `Tent01`, `Belgian gate`,
+   `M2A1-105`, `v1_launcher`, `SK_C_28_naval_gun`. R13 leftovers: only promote
+   campaign types that exist in PyDCS `vehicle_map` — skip `m1_vla` / `Cow`.
+   Scenery: `Hangar A`, `Revetment_x4`, `Tent01`, `Belgian gate`,
    `Shelter` (exact `fortification_map` keys).
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
    `Batumi` = 22, `Kobuleti` = 24, `SenakiKolkhi` = 23 (PyDCS `Senaki-Kolkhi`),

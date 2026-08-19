@@ -5,6 +5,18 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## R13 leftover campaign ids vs PyDCS maps (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** Rescanning 60 Channel Spitfire campaign `.miz` files still finds
+  types that are **not** on the first R13 shelf. Promote only ids that exist in
+  PyDCS `vehicle_map`: `v1_launcher`, `SK_C_28_naval_gun`, `Coach a tank yellow`,
+  `Coach a tank blue`, `Coach a platform`. High-count `m1_vla` and `Cow` are
+  **missing** from vehicle/ship/fort maps — do not invent YAML for them.
+  `M978 HEMTT Tanker` is modern — skip. SK C/28 and V-1 ski are artillery
+  (static, soft AI), not AAA.
+- **Code:** `data/era/wwii/ground_units.yaml`, `channel-shelf-r13-leftovers`.
+
 ## Spitfire Channel A–E radio bank (2026-08-19)
 
 - **Date:** 2026-08-19

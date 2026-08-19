@@ -75,6 +75,9 @@ units:
   DR_50Ton_Flat_Wagon: train
   Coach cargo: train
   Coach cargo open: train
+  Coach a tank yellow: train
+  Coach a tank blue: train
+  Coach a platform: train
   Uboat_VIIC: sea_u_boat
   Schnellboot_type_S130: sea_e_boat
   Higgins_boat: sea_e_boat

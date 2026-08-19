@@ -138,3 +138,18 @@ ground_units:
   M2A1-105:
     label: M2A1 105 mm howitzer (Allied — practice / UK-side)
     domain: land
+  v1_launcher:
+    label: V-1 ski launcher (Noball / Pas-de-Calais)
+    domain: land
+  SK_C_28_naval_gun:
+    label: SK C/28 15 cm coastal gun
+    domain: land
+  Coach a tank yellow:
+    label: Tank wagon (yellow coach)
+    domain: land
+  Coach a tank blue:
+    label: Tank wagon (blue coach)
+    domain: land
+  Coach a platform:
+    label: Platform coach wagon
+    domain: land

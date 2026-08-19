@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-19 | [R13 leftover campaign ids vs PyDCS maps](lessons/channel-ids.md#r13-leftover-campaign-ids-vs-pydcs-maps-2026-08-19) | `channel-ids` |
 | 2026-08-19 | [Spitfire Channel A–E radio bank](lessons/channel-ids.md#spitfire-channel-ae-radio-bank-2026-08-19) | `channel-ids` |
 | 2026-08-19 | [Spitfire Radio presets: never set_frequency()](lessons/pydcs-compile.md#spitfire-radio-presets-never-set_frequency-2026-08-19) | `pydcs-compile` |
 | 2026-08-19 | [Extra-home schema and station clamp](lessons/agent-tooling.md#extra-home-schema-and-station-clamp-2026-08-19) | `agent-tooling` |

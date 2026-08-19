@@ -109,9 +109,9 @@ has the SoT (`get_strike_unit` / `list_strike_units`); compile must keep using r
 | `armor` | land | path / patrol (static if dug-in) | Pz_IV_H, Stug_III, Cromwell, Sherman (`#8j`) | heavies later |
 | `troops` | land | path / patrol (static if dug-in) | soldier_mauser98, wwii_br/us (`#8k`) | more infantry via R13 |
 | `aaa_guns` | land | **static** | flak18/30/36/37/38, Pak40, searchlight, KDO, bofors (`#8h`) | more AAA as needed |
-| `artillery` | land | static (or rare relocate path) | LeFH_18-40-105, Wespe124, M2A1-105 (`channel-shelf-artillery`) | leftover R13 guns later |
+| `artillery` | land | static (or rare relocate path) | LeFH_18-40-105, Wespe124, M2A1-105, v1_launcher, SK_C_28_naval_gun | — |
 | `radar_c3` | land | **static** | FuMG-401, FuSe-65 (`#8l`) | more C3 via R13 |
-| `trains` | land | **path** on curated rail corridor | Locomotive + German wagons (`#8m` + `french_coast_rail_corridor`) | mesh snap still non-goal |
+| `trains` | land | **path** on curated rail corridor | Locomotive + German wagons + Coach cargo* + tank/platform coaches (`french_coast_rail_corridor`) | mesh snap still non-goal |
 | `sea_craft` | sea | patrol / path; harbour → static | S-130, Uboat, Dry-cargo×2, HarborTug, Higgins (`#8h`) | LST/Castle later (era-filter) |
 | `hard_infrastructure` | land | **static** | empty (`future`) | static objects / `#17b` |
 
@@ -524,8 +524,8 @@ Live eval after implement. ME Instant Action is not a merge gate.
 | 9a | `agent-use-m8` | Schema-by-airfield + extra-home geometry clamp + M8 knob nudges + eval catalog | `done` |
 
 Parked: more player aircraft (owner install is SpitfireLFMkIX only — keep
-`P-51D` in the registry, do not expand player types), R13 leftovers, Kola
-Stage B–C, historical templates (R3), `#19` radio bank, `#22` Lua library.
+`P-51D` in the registry, do not expand player types), Kola Stage B–C,
+historical templates (R3), `#22` Lua library.
 
 ---
 
@@ -629,7 +629,10 @@ failed on `zones`). Headlines:
 
 Follow-on shelf expand: **done** as OpenSpec `channel-shelf-r13-promote`
 (`flak41`, Quadmount/QF/Allies_Director, Tiger/Panther/Jagd*, Coach cargo*,
-LST_Mk2, USS_Samuel_Chase). Modern leftovers still skipped.
+LST_Mk2, USS_Samuel_Chase). Leftover campaign vehicles: **done** as
+`channel-shelf-r13-leftovers` (`v1_launcher`, `SK_C_28_naval_gun`,
+`Coach a tank yellow`/`blue`, `Coach a platform`). Skip `m1_vla` / `Cow`
+(not in PyDCS maps) and modern HEMTT.
 
 Desk + ME WP Options smoke (truck convoy, Flak 18, Uboat_VIIC, Spitfire). Notes in
 `research/ai-options-domain.md`. Headlines:

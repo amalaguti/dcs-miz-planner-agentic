@@ -876,6 +876,9 @@ options:
           DR_50Ton_Flat_Wagon,
           Coach cargo,
           Coach cargo open,
+          Coach a tank yellow,
+          Coach a tank blue,
+          Coach a platform,
         ]
       payload_families: [spitfire_2x250_slipper, spitfire_1x500, spitfire_2x250]
       mission_types: [ground_attack]
@@ -943,12 +946,12 @@ options:
     support: supported
     meta:
       domain: land
-      unit_ids: [LeFH_18-40-105, Wespe124, M2A1-105]
+      unit_ids: [LeFH_18-40-105, Wespe124, M2A1-105, v1_launcher, SK_C_28_naval_gun]
       payload_families: [spitfire_2x250_slipper, spitfire_1x500, p51d_2x_anm64]
       mission_types: [ground_attack]
       preferred_motion: static
       preferred_ai_preset: convoy_transit
-      cues: [artillery, howitzer, lefh, wespe, 105, gun line, battery]
+      cues: [artillery, howitzer, lefh, wespe, 105, gun line, battery, v-1, v1, noball, ski, doodlebug, buzz bomb, coastal gun, naval gun, sk c/28]
 
   - family: ground_ai_preset
     id: convoy_transit
@@ -1154,7 +1157,7 @@ options:
       geometry_hint: inland_near_dunkirk
       related_classes: [soft_vehicles, halftracks_apc, armor, troops, aaa_guns, radar_c3, artillery]
       mission_types: [ground_attack]
-      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, tank, troops, flak, radar]
+      cues: [dunkirk, calais, french coast, inland, convoy, halftrack, tank, troops, flak, radar, v-1, noball, ski, coastal gun]
       preferred_ai_preset_soft: convoy_transit
       preferred_ai_preset_aaa: aaa_alert
       # From examples/manston_ground_attack.yaml / convoy / flak_alert
