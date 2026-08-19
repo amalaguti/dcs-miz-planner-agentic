@@ -16,6 +16,8 @@ description: >-
 ## Hard rules
 
 1. **Only** `compiler/pydcs_compiler.py` (and emit helpers) import `dcs.*`.
+   Spitfire Channel A–E: `set_radio_preset` + `set_radio_channel_preset`; never
+   `FlyingGroup.set_frequency()` (flips `radioSet`). Plain `group.frequency = 124.0`.
 2. Bind terrain via `theatre_terrain.terrain_for_theatre(spec.theatre)` — never
    hard-code `TheChannel()` while ignoring Spec. Bound: TheChannel, Normandy,
    Caucasus, Syria, Nevada, Falklands, **Kola**. Intercept enemy spawn uses

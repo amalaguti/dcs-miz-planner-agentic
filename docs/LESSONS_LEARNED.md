@@ -28,6 +28,8 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-19 | [Spitfire Channel A–E radio bank](lessons/channel-ids.md#spitfire-channel-ae-radio-bank-2026-08-19) | `channel-ids` |
+| 2026-08-19 | [Spitfire Radio presets: never set_frequency()](lessons/pydcs-compile.md#spitfire-radio-presets-never-set_frequency-2026-08-19) | `pydcs-compile` |
 | 2026-08-19 | [Extra-home schema and station clamp](lessons/agent-tooling.md#extra-home-schema-and-station-clamp-2026-08-19) | `agent-tooling` |
 | 2026-08-19 | [WWII USA, P-51D, extra homes, artillery, scenery](lessons/channel-ids.md#wwii-usa-p-51d-extra-homes-artillery-scenery-2026-08-19) | `channel-ids` |
 | 2026-08-19 | [Channel extra homes, P-51D, sortie size, recon narrative](lessons/agent-tooling.md#channel-extra-homes-p-51d-sortie-size-recon-narrative-2026-08-19) | `agent-tooling` |

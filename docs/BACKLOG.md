@@ -356,7 +356,7 @@ recorded under R11 (2026-08-09). Normandy freeflight bind shipped
 | 17 | `weather-time-presets` | Named presets verified in-game (sunny/dawn/marginal VFR) | `done` (accepted in-game 2026-08-02; meteo brief phrasing) |
 | 17a | `weather-presets-expand` | Expand Channel Spec weather beyond the trio: curated **named patterns** seeded from Spitfire campaign `.miz` weather (cloud gallery + wind/fog/turb), pilot-facing brief text, SoT parity (`weather_sot`). Prefer recipes over raw ME knobs / live METAR. Invent jitter deferred to `#17e`. Research: R10 campaign scan (2026-08-06) | `done` (accepted ME smoke 2026-08-06; broken + rain examples) |
 | 18 | `mission-randomization` | Seeded Spec→Spec variation for replayability (CLI + tool; compiler stays deterministic) | `done` (accepted 2026-08-02; seed42 vs seed99 CAP) |
-| 19 | `spitfire-radio-channel-presets` | Match ED Channel Spitfire unit Radio bank (A=124, B=40, C=41, D=42, E=108.9) for cockpit channel clicks; group frequency 124 already correct | `idea` (parked 2026-08-02 — immersion only; not required to fly; revisit if cockpit radio parity matters or M6 radio menus need it) |
+| 19 | `spitfire-radio-channel-presets` | Match ED Channel Spitfire unit Radio bank (A=124, B=40, C=41, D=42, E=108.9) for cockpit channel clicks; group frequency 124 already correct | `done` (CLI/API 2026-08-19; ME Instant Action do-soon) |
 | 17b | `static-objects-placement` | Place ME static objects / scenery (hangars, vehicles-as-static, props) from Spec for Channel immersion — promote only after **R10** ranks PyDCS + Channel type ids | `done` (M8 Channel smoke: Hangar A / Revetment_x4 / Tent01 / Belgian gate / Shelter; `examples/manston_freeflight_scenery.yaml`) |
 | 17c | `weather-in-flight-fog` | Optional mid-sortie **fog** evolution (foggy→clear / clear→fog) via curated `world.weather.setFogAnimation` snippets — **not** sunny→rainy cloud swaps (no DCS API). Fog-only DoScriptFile slice (full `#22` later) | `done` (accepted ME smoke 2026-08-06; sea_fog burn-off at Manston) |
 | 17d | `weather-reweather-miz` | Agent + CLI: change weather on an **existing** `.miz` (named pattern / NL → recipe) and **overwrite** the same path — same sortie (groups/triggers), new static weather. Write Spec YAML alongside `.miz`; agent finds sibling or takes an explicit path. Prefer Spec recompile when YAML exists; else PyDCS `load_file` → apply invent snapshot → `save`. Not mid-flight. After `#17a`/`#17e` | `done` (accepted ME smoke 2026-08-06; rain_overcast → Overcast and Rain 2) |
@@ -658,8 +658,8 @@ Spit.” Do when expanding registry classes or theatres — not before `#15h` pr
   for read-only install status + optional refresh; keep out of default LLM invent
   tool list so the agent does not treat discovered-only modules as Spec ids.
 - **Spitfire Channel radio A–E bank** — M5 `#19` `spitfire-radio-channel-presets`:
-  parked 2026-08-02; group frequency 124 already flyable; unit Radio bank is cockpit
-  immersion only (ED Channel A=124/B=40/C=41/D=42/E=108.9).
+  **done** 2026-08-19; group frequency 124; unit Radio A–E matches ED Channel Instant
+  Action (124/40/41/42/108.9, `radioSet` false). ME cockpit click-through is do-soon.
 - **Agent verbose default off** — M3 `#10b` `agent-verbose-default-off`: **done**
   2026-08-05; default quiet, `--verbose` / `/verbose on` for traces. Reinforced by
   adversarial review **C3** (screenshot/log leakage).

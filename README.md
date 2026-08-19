@@ -15,7 +15,9 @@ airfield `scenery[]`, recon narrative, and agent sortie-size (solo vs 2–4 ship
 **M9** makes invent *use* those homes: `get_mission_spec_schema` accepts
 `airfield` (Hawkinge CAP 76/32, not Manston 135/25); invent/chat host-clamps
 cloned default stations; cue-gated nudges for pair size, Mustang, artillery,
-scenery, failures, F10 orders, and wingman discipline.
+scenery, failures, F10 orders, and wingman discipline. Compiled Channel
+Spitfires emit the ED Instant Action radio bank (A=124 B=40 C=41 D=42 E=108.9)
+with `radioSet` left false.
 Modern-map depth stays parked. **Normandy 2.0** is
 planner-bound for all six mission types at Needs Oar Point
 (`examples/needs_oar_point_cold_freeflight.yaml`,

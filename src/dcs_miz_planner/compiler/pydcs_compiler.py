@@ -101,6 +101,23 @@ def _opt_roe_value(engagement: Engagement):
     }[engagement]
 
 
+def _apply_group_radio(group, aircraft_id: str, registry) -> None:
+    """Set group frequency and optional Channel A–E presets.
+
+    Do not call ``FlyingGroup.set_frequency()`` — it sets ``radioSet`` true
+    and clobbers presets. Stock Channel missions leave ``radioSet`` false.
+    """
+    group.frequency = registry.radio_mhz(aircraft_id)
+    channels = registry.radio_channels_mhz(aircraft_id)
+    if not channels:
+        return
+    for unit in group.units:
+        if getattr(unit, "radio", None) is None:
+            unit.set_radio_preset()
+        for index, channel_mhz in enumerate(channels, start=1):
+            unit.set_radio_channel_preset(1, index, channel_mhz)
+
+
 class PyDCSCompiler(CompilerInterface):
     """Compile a Mission Spec into a .miz via PyDCS."""
 
@@ -185,7 +202,7 @@ class PyDCSCompiler(CompilerInterface):
         registry = get_channel_registry()
         try:
             airport_id = registry.airdrome_id(spec.player.airfield, theatre=spec.theatre)
-            radio_mhz = registry.radio_mhz(spec.player.aircraft)
+            registry.radio_mhz(spec.player.aircraft)
         except RegistryError as exc:
             raise ValueError(str(exc)) from exc
 
@@ -216,7 +233,7 @@ class PyDCSCompiler(CompilerInterface):
             )
             for unit in lead_group.units:
                 unit.skill = mate_skill
-            lead_group.frequency = radio_mhz
+            _apply_group_radio(lead_group, spec.player.aircraft, registry)
 
             group = mission.flight_group_from_airport(
                 country=country,
@@ -227,7 +244,7 @@ class PyDCSCompiler(CompilerInterface):
                 group_size=1,
             )
             group.units[0].skill = human_skill
-            group.frequency = radio_mhz
+            _apply_group_radio(group, spec.player.aircraft, registry)
         else:
             group_size = player_group_size(flight)
             group = mission.flight_group_from_airport(
@@ -240,7 +257,7 @@ class PyDCSCompiler(CompilerInterface):
             )
             for i, unit in enumerate(group.units):
                 unit.skill = human_skill if i == 0 else mate_skill
-            group.frequency = radio_mhz
+            _apply_group_radio(group, spec.player.aircraft, registry)
 
         join_up = player_flight_join_up_enabled(flight)
         task_group = lead_group if join_up else group
@@ -798,7 +815,7 @@ class PyDCSCompiler(CompilerInterface):
                 mission, countries_mod, flight.country, flight.coalition.value
             )
             try:
-                radio_mhz = registry.radio_mhz(flight.aircraft)
+                registry.radio_mhz(flight.aircraft)
             except RegistryError as exc:
                 raise ValueError(str(exc)) from exc
 
@@ -815,7 +832,7 @@ class PyDCSCompiler(CompilerInterface):
             skill = _skill_from_name(flight.skill)
             for unit in pkg.units:
                 unit.skill = skill
-            pkg.frequency = radio_mhz
+            _apply_group_radio(pkg, flight.aircraft, registry)
             # Mosquito / fighter-bomber package transit — CAS main task is ME-standard.
             pkg.task = CAS.name
             pkg.add_waypoint(
@@ -881,7 +898,7 @@ class PyDCSCompiler(CompilerInterface):
                 mission, countries_mod, enemy.country, enemy.coalition.value
             )
             try:
-                radio_mhz = registry.radio_mhz(enemy.aircraft)
+                registry.radio_mhz(enemy.aircraft)
             except RegistryError as exc:
                 raise ValueError(str(exc)) from exc
 
@@ -897,7 +914,7 @@ class PyDCSCompiler(CompilerInterface):
             skill = _skill_from_name(enemy.skill)
             for unit in eg.units:
                 unit.skill = skill
-            eg.frequency = radio_mhz
+            _apply_group_radio(eg, enemy.aircraft, registry)
             if enemy.late_activation:
                 eg.late_activation = True
             group_ids.append(eg.id)
@@ -914,7 +931,7 @@ class PyDCSCompiler(CompilerInterface):
                 mission, countries_mod, enemy.country, enemy.coalition.value
             )
             try:
-                radio_mhz = registry.radio_mhz(enemy.aircraft)
+                registry.radio_mhz(enemy.aircraft)
             except RegistryError as exc:
                 raise ValueError(str(exc)) from exc
 
@@ -936,7 +953,7 @@ class PyDCSCompiler(CompilerInterface):
             skill = _skill_from_name(enemy.skill)
             for unit in eg.units:
                 unit.skill = skill
-            eg.frequency = radio_mhz
+            _apply_group_radio(eg, enemy.aircraft, registry)
             if enemy.late_activation:
                 eg.late_activation = True
             group_ids.append(eg.id)
@@ -973,7 +990,7 @@ class PyDCSCompiler(CompilerInterface):
                 mission, countries_mod, enemy.country, enemy.coalition.value
             )
             try:
-                radio_mhz = registry.radio_mhz(enemy.aircraft)
+                registry.radio_mhz(enemy.aircraft)
             except RegistryError as exc:
                 raise ValueError(str(exc)) from exc
 
@@ -989,7 +1006,7 @@ class PyDCSCompiler(CompilerInterface):
             skill = _skill_from_name(enemy.skill)
             for unit in eg.units:
                 unit.skill = skill
-            eg.frequency = radio_mhz
+            _apply_group_radio(eg, enemy.aircraft, registry)
             if enemy.late_activation:
                 eg.late_activation = True
             group_ids.append(eg.id)

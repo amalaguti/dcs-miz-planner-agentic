@@ -18,6 +18,9 @@ description: >-
    Source = packaged YAML / registry / stock `.miz` research.
 2. **WWII Axis country:** `ThirdReich`, not `Germany`.
 3. **Spitfire group frequency** must be in **VHF** band (e.g. 124.0) — not HF defaults.
+   Channel cockpit A–E bank (stock Instant Action) is **124 / 40 / 41 / 42 / 108.9**.
+   Do not use PyDCS `panel_radio` defaults (105/124/131/139). Dual-era YAML must
+   keep identical `radio_channels_mhz` on wwii and modern Spitfire rows.
 4. Intercept spawn geometry: packaged recipes in `intercept_spawn.py`.
    TheChannel: Hawkinge + Dover-approach offset. Do not recompute from
    `airport_list()`. Normandy: NeedsOarPoint + Cherbourg corridor

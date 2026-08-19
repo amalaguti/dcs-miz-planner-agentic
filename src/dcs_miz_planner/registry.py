@@ -28,6 +28,7 @@ class AircraftRef:
 
     id: str
     radio_mhz: float
+    radio_channels_mhz: tuple[float, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -239,9 +240,23 @@ def _parse_aircraft_doc(doc: dict[str, Any], label: str) -> dict[str, AircraftRe
     for aircraft_id, meta in aircraft_raw.items():
         if not isinstance(meta, dict) or "radio_mhz" not in meta:
             raise RegistryError(f"{label}: {aircraft_id!r} must map to {{radio_mhz: ...}}")
+        radio_mhz = float(meta["radio_mhz"])
+        channels_raw = meta.get("radio_channels_mhz")
+        channels: tuple[float, ...] = ()
+        if channels_raw is not None:
+            if not isinstance(channels_raw, list) or not channels_raw:
+                raise RegistryError(
+                    f"{label}: {aircraft_id!r} radio_channels_mhz must be a non-empty list"
+                )
+            channels = tuple(float(x) for x in channels_raw)
+            if abs(channels[0] - radio_mhz) > 0.01:
+                raise RegistryError(
+                    f"{label}: {aircraft_id!r} radio_channels_mhz[0] must equal radio_mhz"
+                )
         aircraft[str(aircraft_id)] = AircraftRef(
             id=str(aircraft_id),
-            radio_mhz=float(meta["radio_mhz"]),
+            radio_mhz=radio_mhz,
+            radio_channels_mhz=channels,
         )
     return aircraft
 
@@ -565,6 +580,9 @@ class ChannelRegistry:
 
     def radio_mhz(self, aircraft_id: str) -> float:
         return self.get_aircraft(aircraft_id).radio_mhz
+
+    def radio_channels_mhz(self, aircraft_id: str) -> tuple[float, ...]:
+        return self.get_aircraft(aircraft_id).radio_channels_mhz
 
     def list_aircraft(self, era: str | None = None) -> list[str]:
         return sorted(self.known_aircraft(era=era))

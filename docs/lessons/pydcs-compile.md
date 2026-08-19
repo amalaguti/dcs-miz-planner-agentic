@@ -5,6 +5,16 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Spitfire Radio presets: never set_frequency() (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** Channel Spitfire A–E must be written with `set_radio_preset()`
+  (if `unit.radio` is None) then `set_radio_channel_preset(1, n, mhz)`.
+  `FlyingGroup.set_frequency()` sets `radioSet=true` and overwrites channel 1.
+  Stock Channel leaves `radioSet=false`. Keep `group.frequency = 124.0` as a
+  plain attribute. Player skill assignment does not init Radio by itself.
+- **Code:** `compiler/pydcs_compiler.py` `_apply_group_radio`.
+
 ## Scenery via fortification_map; recon narrative defers (2026-08-19)
 
 - **Date:** 2026-08-19

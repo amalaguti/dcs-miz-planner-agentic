@@ -5,6 +5,17 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Spitfire Channel A–E radio bank (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** Stock ED Instant Action `SPIT-Channel-Cold Start.miz` unit Radio
+  is A=124, B=40, C=41, D=42, E=108.9 MHz with `radioSet=false` and group
+  frequency 124. PyDCS `panel_radio` defaults (105/124/131/139/108.9) are
+  **not** Channel. Dual-era Spitfire YAML (wwii + modern) must carry the same
+  `radio_channels_mhz` or registry merge raises a collision. Do not invent
+  those five numbers.
+- **Code:** `data/era/wwii/aircraft.yaml`, `data/era/modern/aircraft.yaml`.
+
 ## WWII USA, P-51D, extra homes, artillery, scenery (2026-08-19)
 
 - **Date:** 2026-08-19

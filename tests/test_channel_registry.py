@@ -21,6 +21,16 @@ def test_spitfire_radio_mhz(registry):
     assert registry.get_aircraft("SpitfireLFMkIX").radio_mhz == 124.0
 
 
+_CHANNEL_SPITFIRE_BANK = (124.0, 40.0, 41.0, 42.0, 108.9)
+
+
+def test_spitfire_channel_radio_bank(registry):
+    assert registry.radio_channels_mhz("SpitfireLFMkIX") == _CHANNEL_SPITFIRE_BANK
+    assert registry.radio_channels_mhz("SpitfireLFMkIXCW") == _CHANNEL_SPITFIRE_BANK
+    assert registry.radio_channels_mhz("P-51D") == ()
+    assert registry.radio_channels_mhz("Bf-109K-4") == ()
+
+
 def test_unknown_airfield_lists_known(registry):
     with pytest.raises(RegistryError, match="Unknown airfield") as exc_info:
         registry.airdrome_id("NotARealAirfield")

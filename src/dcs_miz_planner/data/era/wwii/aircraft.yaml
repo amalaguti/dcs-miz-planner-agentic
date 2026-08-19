@@ -1,10 +1,14 @@
 # Exact DCS type ids and default group radio (MHz) from stock Channel missions.
 # WWII VHF: Allied ~100-156, German ~38.4-42.4. Do not invent spellings.
+# Spitfire A–E bank copied from ED Instant Action SPIT-Channel-Cold Start.miz
+# (radioSet false; group frequency 124).
 aircraft:
   SpitfireLFMkIX:
     radio_mhz: 124.0
+    radio_channels_mhz: [124.0, 40.0, 41.0, 42.0, 108.9]
   SpitfireLFMkIXCW:
     radio_mhz: 124.0
+    radio_channels_mhz: [124.0, 40.0, 41.0, 42.0, 108.9]
   MosquitoFBMkVI:
     radio_mhz: 124.0
   Bf-109K-4:

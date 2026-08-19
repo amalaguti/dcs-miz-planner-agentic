@@ -48,6 +48,13 @@ MISSION_CONTRACTS = (
     "TakeOffParking",
     '"Player"',
     '["frequency"]=124.0',
+    '["Radio"]',
+    "[1]=124.0",
+    "[2]=40.0",
+    "[3]=41.0",
+    "[4]=42.0",
+    "[5]=108.9",
+    '["radioSet"]=false',
 )
 INTERCEPT_MISSION_CONTRACTS = (
     "SpitfireLFMkIX",

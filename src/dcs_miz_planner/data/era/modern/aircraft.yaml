@@ -6,5 +6,7 @@ aircraft:
     radio_mhz: 251.0
   SpitfireLFMkIX:
     radio_mhz: 124.0
+    radio_channels_mhz: [124.0, 40.0, 41.0, 42.0, 108.9]
   SpitfireLFMkIXCW:
     radio_mhz: 124.0
+    radio_channels_mhz: [124.0, 40.0, 41.0, 42.0, 108.9]
