@@ -129,3 +129,12 @@ ground_units:
   Coach cargo open:
     label: Coach cargo open wagon
     domain: land
+  LeFH_18-40-105:
+    label: leFH 18 10.5 cm howitzer
+    domain: land
+  Wespe124:
+    label: Wespe 10.5 cm SP howitzer
+    domain: land
+  M2A1-105:
+    label: M2A1 105 mm howitzer (Allied — practice / UK-side)
+    domain: land

@@ -31,7 +31,9 @@ description: >-
 6. **`player.flight.discipline`** (optional, wingman+join_up only): moving zone on
    AI lead; after airborne (AGL gate), soft warn then hard beat. Flags **820+**.
    Soft may set rejoin flag **801** when `orders` includes `rejoin`. Omit = off.
-7. Prefer **Manston** for size-4 parking.
+7. Prefer **Manston** for size-4 parking. Extra homes publish `max_flight_size`
+   (Tangmere **3**; Hawkinge/Detling/BigginHill/Chailey/FordAF **4**). Do not
+   emit a four-ship on Tangmere.
 
 ## Code touchpoints
 

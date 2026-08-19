@@ -49,6 +49,8 @@ description: >-
    omit `speed_kmh` for seeded cruise. Moving land: `OptDisparseUnderFire` (default 180s).
 10. Target AI (#15h): `target_ai.py` — allowlist by class (soft/AAA/sea); land
     `move_formation` → `PointAction`; do not dump ME Options (Spit ECM lesson).
+11. Scenery: `Mission.static_group` + exact `fortification_map` keys from
+    `era/wwii/statics.yaml`. Recon narrative defers to `expand_recon_find_pack`.
 
 
 ## Code touchpoints

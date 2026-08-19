@@ -375,6 +375,23 @@ without inventing free-form skill or aircraft fields.
 - **THEN** the shape MUST include optional `player.flight` with size 2–4 and role
   lead/wingman
 
+### Requirement: Agent chooses sortie size on vague asks
+Invent/chat SHALL emit `player.flight` size 2 role lead when the ask is a pair,
+section, Rhubarb, or vague CAP/escort with mates, and SHALL omit `player.flight`
+when the ask is clearly solo. Four-ship MUST prefer Manston (or extra homes that
+publish `max_flight_size` 4). Tangmere MUST NOT emit size 4 (`max_flight_size` 3).
+Escort `package[]` MUST remain friendly strikers, not the player section.
+
+#### Scenario: Pair ask uses player.flight
+- **WHEN** invent is asked for a Channel pair or Rhubarb
+- **THEN** schema/prompt guidance MUST tell the agent to emit `player.flight` size 2
+  role lead rather than a second escort package
+
+#### Scenario: Solo ask omits player.flight
+- **WHEN** invent is asked for a clearly solo hop
+- **THEN** guidance MUST tell the agent to omit `player.flight`
+
+
 ### Requirement: Schema notes join-up
 Agent Spec schema notes SHALL document optional `player.flight.join_up` (default
 true for wingman Follow/shared route).
@@ -542,6 +559,18 @@ clamp.
 - **THEN** the host MAY rewrite path onto strike-relative recipe points before
   accept
 
+### Requirement: Channel invent extra homes
+Channel invent default SHALL remain Manston. When the ask names Hawkinge,
+Detling, or Biggin Hill, invent MAY emit those airfields and MUST copy
+`hawkinge_home` / `detling_home` / `biggin_hill_home` cap/strike/escort
+geometry rather than Manston 135/25 or 125/76. Player aircraft MAY be
+`SpitfireLFMkIX` (UK) or `P-51D` (country USA).
+
+#### Scenario: Schema mentions Hawkinge extra home
+- **WHEN** Channel free_flight Spec schema notes are loaded
+- **THEN** they MUST mention Hawkinge and MUST warn not to copy Manston stations
+  onto that field
+
 ### Requirement: Harbour invent prefers sea units
 The invent path SHALL instruct harbour/dock asks to call list_strike_targets
 with domain=sea, use coastal_harbour geometry, static motion, and
@@ -567,7 +596,9 @@ Natural-language invent/chat SHALL set Spec theatre from offerable theatres
 Invent/chat SHALL allow all six mission types when the bound theatre is
 `Normandy` (home `NeedsOarPoint`; CAP/intercept/escort station 180° / 63 km;
 GA/recon AOI 180° / 133 km inland of Maupertus — not Manston 125/76, not
-Hawkinge, not escort 120/55). Repair MUST NOT copy Channel `channel_place`
+Hawkinge, not escort 120/55). Extra homes Chailey / Tangmere / FordAF MAY be
+used when the ask names them; copy per-home `cap_*` / `strike_*` and honour
+`max_flight_size` (Tangmere 3). Repair MUST NOT copy Channel `channel_place`
 geometry (french coast belts, Hawkinge/Dunkirk bearings) onto Normandy.
 
 #### Scenario: Normandy CAP invent allowed

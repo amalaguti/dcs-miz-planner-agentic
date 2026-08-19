@@ -181,16 +181,20 @@ def apply_narrative(spec: MissionSpec, *, voice: str | None = None) -> MissionSp
         zones, triggers = _apply_escort_pack(spec, resolved)
     elif spec.mission_type is MissionType.GROUND_ATTACK:
         zones, triggers = _apply_ground_attack_pack(spec, resolved)
+    elif spec.mission_type is MissionType.RECON:
+        # Defer to expand_recon_find_pack so the AOI find beat stays the single zone graph.
+        return spec
     else:
         raise NarrativeError(
             "narrative_unsupported_mission_type",
             "narrative",
             (
                 f"narrative.enabled is only supported for mission_type cap, intercept, "
-                f"escort, or ground_attack (got {spec.mission_type.value!r})"
+                f"escort, ground_attack, or recon (got {spec.mission_type.value!r})"
             ),
             hint=(
-                "Disable narrative, or use mission_type cap, intercept, escort, or ground_attack"
+                "Disable narrative, or use mission_type cap, intercept, escort, "
+                "ground_attack, or recon"
             ),
         )
 

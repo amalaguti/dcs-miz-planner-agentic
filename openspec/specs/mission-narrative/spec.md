@@ -3,7 +3,7 @@
 ## Purpose
 
 Opt-in curated immersion packs that expand into typed Mission Spec `zones`/`triggers`
-(no Lua). CAP, intercept, escort, and ground-attack packs; messages use
+(no Lua). CAP, intercept, escort, ground-attack, and recon packs; messages use
 squadron-commander voice templates.
 
 ## Requirements
@@ -11,10 +11,11 @@ squadron-commander voice templates.
 ### Requirement: Opt-in narrative expands to typed triggers
 The system SHALL support an optional Mission Spec `narrative` object with
 `enabled` (boolean, default false). When `enabled` is true for `mission_type: cap`,
-`intercept`, `escort`, or `ground_attack`, the system MUST expand the matching curated
+`intercept`, `escort`, `ground_attack`, or `recon`, the system MUST expand the matching curated
 narrative pack into typed `zones` and/or `triggers` using only the existing v1
 condition/action vocabulary (no Lua). Expansion MUST run before shared validation and
-compile so the emitted `.miz` contains the resulting rules.
+compile so the emitted `.miz` contains the resulting rules. Recon expansion MUST
+defer the zone graph to the recon find-beat expander so one AOI zone remains.
 
 #### Scenario: CAP narrative expands
 - **WHEN** a valid CAP Spec has `narrative.enabled: true`, empty `zones`/`triggers`, at
@@ -84,18 +85,25 @@ mission as a win. Expansion MUST run before validate/compile. Preconditions: emp
 ### Requirement: Narrative conflicts and unsupported types fail clearly
 When `narrative.enabled` is true, the system MUST reject Specs that already have
 non-empty `zones` or `triggers`. It MUST reject `enabled: true` for mission types other
-than `cap`, `intercept`, `escort`, and `ground_attack` in this capability revision.
+than `cap`, `intercept`, `escort`, `ground_attack`, and `recon` in this capability revision.
 Pack-specific preconditions (CAP: `cap` + enemies; intercept: enemies; escort: `escort` +
 package + enemies; ground_attack: `strike` + targets) MUST fail clearly when missing.
+Recon with `narrative.enabled` MUST keep empty zones/triggers so the find-beat expander
+can prepend a voice push then inject the AOI find rules.
 
 #### Scenario: Hand-written triggers block narrative
 - **WHEN** `narrative.enabled` is true and `triggers` is non-empty
 - **THEN** validation or expansion MUST fail with a clear conflict error
 
 #### Scenario: Unsupported mission type narrative rejected
-- **WHEN** `mission_type` is not `cap`, `intercept`, `escort`, or `ground_attack` and
+- **WHEN** `mission_type` is not `cap`, `intercept`, `escort`, `ground_attack`, or `recon` and
   `narrative.enabled` is true
 - **THEN** validation or expansion MUST fail identifying unsupported mission type
+
+#### Scenario: Recon narrative defers to find beat
+- **WHEN** a valid recon Spec has `narrative.enabled: true` and empty zones/triggers
+- **THEN** recon expand MUST prepend a narrative push message and then inject the AOI
+  find beat, and MUST clear `narrative.enabled` after expand
 
 ### Requirement: Narrative messages use squadron voice
 Expanded message texts MUST follow the selected squadron voice (`raf` | `usaaf` |

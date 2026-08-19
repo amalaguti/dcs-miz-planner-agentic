@@ -1,0 +1,13 @@
+# Exact PyDCS fortification_map keys for Channel scenery. Do not invent ids.
+# Ranked for WWII airfield immersion (hangar / revetment / tent / Belgian gate / shelter).
+statics:
+  Hangar A:
+    label: Hangar A
+  Revetment_x4:
+    label: Four-bay revetment
+  Tent01:
+    label: Canvas tent
+  Belgian gate:
+    label: Belgian gate (C-element)
+  Shelter:
+    label: Aircraft shelter

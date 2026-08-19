@@ -5,6 +5,25 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## WWII USA, P-51D, extra homes, artillery, scenery (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** Packaged WWII countries are `UK`, `ThirdReich`, and **`USA`**
+  (dual-era; Nevada still uses USA). `usaaf` remains voice-only. First extra
+  aircraft is **`P-51D`** (`dcs.planes.P_51D`), radio **124.0**, bombs
+  `{AN-M64}` on pylons **4 and 7** (`p51d_2x_anm64`). **No Typhoon** in
+  PyDCS `plane_map` — do not invent that type. Artillery class:
+  `LeFH_18-40-105`, `Wespe124`, `M2A1-105` (static; soft AI `convoy_transit`,
+  not `aaa_alert`). Scenery types are exact `fortification_map` keys:
+  `Hangar A`, `Revetment_x4`, `Tent01`, `Belgian gate`, `Shelter`. Extra-home
+  geometry (do not copy Manston 135/25 or 125/76): Hawkinge CAP 76/32 strike
+  104/78; Detling CAP 102/71 strike 110/122; BigginHill CAP 100/111 strike
+  106/160. Normandy extras (do not copy NeedsOarPoint 180/63 or 180/133):
+  Chailey CAP 228/130 inland 212/184; Tangmere CAP 215/89 inland 200/152
+  (**max_flight_size 3**); FordAF CAP 220/92 inland 203/152.
+- **Code:** `data/era/wwii/countries.yaml`, `aircraft.yaml`, `payloads.yaml`,
+  `ground_units.yaml`, `statics.yaml`, `planning_options.yaml` extra homes.
+
 ## Kola Stage A Bodo=7; Norway modern-only (2026-08-18)
 
 - **Date:** 2026-08-18

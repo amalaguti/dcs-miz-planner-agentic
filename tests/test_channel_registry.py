@@ -58,7 +58,7 @@ def test_caucasus_supported_and_batumi(registry):
     assert "Turkey" in registry.list_countries(era="modern")
     assert "Turkey" not in registry.list_countries(era="wwii")
     assert "USA" in registry.list_countries(era="modern")
-    assert "USA" not in registry.list_countries(era="wwii")
+    assert "USA" in registry.list_countries(era="wwii")
     assert "UK" in registry.list_countries(era="modern")
     assert "UK" in registry.list_countries(era="wwii")
     assert "Russia" in registry.list_countries(era="modern")

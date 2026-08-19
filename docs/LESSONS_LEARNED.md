@@ -28,6 +28,11 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-19 | [WWII USA, P-51D, extra homes, artillery, scenery](lessons/channel-ids.md#wwii-usa-p-51d-extra-homes-artillery-scenery-2026-08-19) | `channel-ids` |
+| 2026-08-19 | [Channel extra homes, P-51D, sortie size, recon narrative](lessons/agent-tooling.md#channel-extra-homes-p-51d-sortie-size-recon-narrative-2026-08-19) | `agent-tooling` |
+| 2026-08-19 | [Scenery via fortification_map; recon narrative defers](lessons/pydcs-compile.md#scenery-via-fortification_map-recon-narrative-defers-2026-08-19) | `pydcs-compile` |
+| 2026-08-19 | [Extra-home parking honesty](lessons/player-flight.md#extra-home-parking-honesty-2026-08-19) | `player-flight` |
+| 2026-08-19 | [Recon narrative prepends push then find beat](lessons/triggers-me.md#recon-narrative-prepends-push-then-find-beat-2026-08-19) | `triggers-me` |
 | 2026-08-18 | [Kola Stage A Bodo=7; Norway modern-only](lessons/channel-ids.md#kola-stage-a-bodo7-norway-modern-only-2026-08-18) | `channel-ids` |
 | 2026-08-18 | [Kola invent is free_flight only at Bodo](lessons/agent-tooling.md#kola-invent-is-free_flight-only-at-bodo-2026-08-18) | `agent-tooling` |
 | 2026-08-18 | [Kola factory bound at Bodo](lessons/pydcs-compile.md#kola-factory-bound-at-bodo-2026-08-18) | `pydcs-compile` |

@@ -320,6 +320,26 @@ def _validate_aircraft_failures(
             )
 
 
+def _validate_scenery(
+    spec: MissionSpec,
+    registry: ChannelRegistry,
+    errors: list[ValidationError],
+) -> None:
+    if not spec.scenery:
+        return
+    known = registry.known_statics()
+    for i, obj in enumerate(spec.scenery):
+        if obj.type not in known:
+            errors.append(
+                ValidationError(
+                    code="unknown_static",
+                    path=f"scenery[{i}].type",
+                    message=f"Unknown static type {obj.type!r}",
+                    hint=f"Known: {', '.join(sorted(known))}",
+                )
+            )
+
+
 def _validate_ground_attack(
     spec: MissionSpec,
     registry: ChannelRegistry,
@@ -1381,6 +1401,7 @@ def validate_mission_spec(
     _validate_countries_and_skills(spec, errors, registry)
     _validate_player_flight(spec, errors)
     _validate_aircraft_failures(spec, registry, errors)
+    _validate_scenery(spec, registry, errors)
 
     if spec.mission_type is MissionType.FREE_FLIGHT:
         if spec.cap is not None:

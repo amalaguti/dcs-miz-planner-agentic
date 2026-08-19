@@ -1,0 +1,18 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: Normandy
+name: Chailey Free Flight
+description: Cold start at Chailey. Free flight over the Cotentin approaches.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Chailey
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking

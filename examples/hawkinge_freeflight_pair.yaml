@@ -1,0 +1,24 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Hawkinge Pair Lead
+description: >
+  Cold start at Hawkinge in a two-ship Spitfire section. Fly as flight lead with
+  one AI wingman.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Hawkinge
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+  flight:
+    size: 2
+    role: lead
+    ai_skill: Average

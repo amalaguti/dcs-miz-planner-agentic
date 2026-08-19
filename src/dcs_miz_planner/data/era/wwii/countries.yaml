@@ -1,5 +1,7 @@
 # Exact PyDCS country class names for WWII Specs. Do not invent ids.
 # Germany is a hint to ThirdReich (modern blue in PyDCS), not a known country.
+# USA is dual-era (WWII Channel/Normandy P-51D; also modern Nevada). usaaf is voice only.
 countries:
   UK: {}
   ThirdReich: {}
+  USA: {}

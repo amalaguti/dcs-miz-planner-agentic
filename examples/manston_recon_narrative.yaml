@@ -1,0 +1,38 @@
+schema_version: "1"
+mission_type: recon
+theatre: TheChannel
+name: Manston Channel Recon Narrative
+description: >
+  Cold start at Manston. Cross toward the French coast AOI near Dunkirk to
+  locate and observe soft enemy truck contacts. Ops colour on the climb.
+  Weapons hold — report the area and RTB. No bomb loadout.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+recon:
+  bearing_deg: 125
+  distance_km: 76
+  altitude_m: 2000
+  radius_m: 3000
+  mark: true
+enemies: []
+targets:
+  - unit: Blitz_36-6700A
+    count: 3
+    skill: Average
+    country: ThirdReich
+    coalition: red
+objectives:
+  - type: recon_area
+narrative:
+  enabled: true

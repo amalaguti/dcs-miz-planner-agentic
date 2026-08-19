@@ -1,0 +1,35 @@
+schema_version: "1"
+mission_type: cap
+theatre: TheChannel
+name: Hawkinge Channel CAP
+description: >
+  Cold start at Hawkinge. Climb to a CAP station on the same Channel point as
+  Manston 135/25 (from Hawkinge ~76° / 32 km), circle at 4000 m, weapons free.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Hawkinge
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+cap:
+  bearing_deg: 76
+  distance_km: 32
+  altitude_m: 4000
+  pattern: circle
+  engagement: weapons_free
+  duration_min: 20
+enemies:
+  - aircraft: Bf-109K-4
+    count: 2
+    skill: Average
+    country: ThirdReich
+    coalition: red
+objectives:
+  - type: patrol

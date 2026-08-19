@@ -91,16 +91,16 @@ def _inv():
 def test_countries_uk_and_thirdreich_only() -> None:
     registry = get_channel_registry()
     countries = registry.list_countries(era="wwii")
-    assert set(countries) == {"UK", "ThirdReich"}
+    assert set(countries) == {"UK", "ThirdReich", "USA"}
     assert "Germany" not in countries
     assert "Georgia" not in countries
-    assert known_countries(era="wwii") == frozenset({"UK", "ThirdReich"})
+    assert known_countries(era="wwii") == frozenset({"UK", "ThirdReich", "USA"})
     assert "Georgia" in registry.list_countries()
     assert "Georgia" in known_countries()
     assert "Turkey" in registry.list_countries(era="modern")
     assert "Turkey" not in countries
     assert "USA" in registry.list_countries(era="modern")
-    assert "USA" not in countries
+    assert "USA" in countries
     assert "usaaf" not in registry.list_countries()
     assert "Germany" not in registry.list_countries()
     assert "Germany" not in known_countries(era="modern")
@@ -608,6 +608,9 @@ def test_channel_place_tagged_thechannel() -> None:
             "needs_oar_point_home",
             "cherbourg_channel_cap",
             "maupertus_inland_strike",
+            "chailey_home",
+            "tangmere_home",
+            "ford_af_home",
         }:
             assert opt.meta.get("theatre") == "Normandy"
         elif opt.id in {"batumi_home", "batumi_black_sea_cap", "kutaisi_inland_strike"}:
@@ -1250,8 +1253,7 @@ def test_era_filter_channel_rejects_georgia_turkey_and_su25t() -> None:
         }
     )
     result_usa = validate_mission_spec(spec_usa, inventory=_inv())
-    assert not result_usa.ok
-    assert any(e.code == "unknown_country" for e in result_usa.errors)
+    assert result_usa.ok, result_usa.errors
     spec_ru = load_mission_spec(MANSTON_FF).model_copy(
         update={
             "player": load_mission_spec(MANSTON_FF).player.model_copy(update={"country": "Russia"})
@@ -2665,6 +2667,10 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "mount_pleasant_home" not in channel_ids
     assert "mount_pleasant_south_atlantic_cap" not in channel_ids
     assert "manston_home" in channel_ids
+    assert "hawkinge_home" in channel_ids
+    assert "detling_home" in channel_ids
+    assert "biggin_hill_home" in channel_ids
+    assert "chailey_home" not in channel_ids
     assert "french_coast_strike_belt" in channel_ids
     assert any(o["family"] == "weather" for o in channel["options"])
     normandy = list_mission_options(theatre="Normandy", db_path=db)
@@ -2677,6 +2683,10 @@ def test_list_mission_options_theatre_filters_channel_place(tmp_path: Path) -> N
     assert "nellis_north_range_cap" not in normandy_ids
     assert "mount_pleasant_south_atlantic_cap" not in normandy_ids
     assert "needs_oar_point_home" in normandy_ids
+    assert "chailey_home" in normandy_ids
+    assert "tangmere_home" in normandy_ids
+    assert "ford_af_home" in normandy_ids
+    assert "hawkinge_home" not in normandy_ids
     assert "cherbourg_channel_cap" in normandy_ids
     assert "maupertus_inland_strike" in normandy_ids
     caucasus = list_mission_options(theatre="Caucasus", db_path=db)

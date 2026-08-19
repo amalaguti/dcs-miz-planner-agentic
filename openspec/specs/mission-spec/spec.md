@@ -461,15 +461,34 @@ Channel free-flight (or equivalent minimal) sorties usable as validate/compile i
 ### Requirement: Optional narrative on Mission Spec
 The Mission Spec MAY include a `narrative` object with `enabled` (boolean, default
 false). When omitted, behaviour MUST match Specs with no narrative. Enabling narrative
-MUST NOT introduce Lua or script fields on the Spec.
+MUST NOT introduce Lua or script fields on the Spec. Supported types are `cap`,
+`intercept`, `escort`, `ground_attack`, and `recon`.
 
 #### Scenario: Narrative field loads
 - **WHEN** a Spec YAML includes `narrative: { enabled: true }` with an otherwise valid CAP
 - **THEN** structural load MUST succeed (subject to narrative expansion/validation rules)
 
+#### Scenario: Recon narrative field loads
+- **WHEN** a Spec YAML includes `narrative: { enabled: true }` with an otherwise valid recon
+- **THEN** structural load MUST succeed (subject to recon expand rules)
+
 #### Scenario: Unknown narrative fields rejected
 - **WHEN** `narrative` includes an undeclared field
 - **THEN** loading MUST fail (unknown field)
+
+### Requirement: Optional scenery on Mission Spec
+The Mission Spec MAY include a `scenery` list of airfield-relative static objects
+(`type`, `bearing_deg`, `distance_km`, optional `heading_deg`). Types MUST be
+curated PyDCS fortification ids from the WWII statics registry. Omit or `[]`
+MUST match Specs with no scenery. Unknown types MUST fail validation.
+
+#### Scenario: Scenery field loads
+- **WHEN** a Spec YAML includes `scenery` with a known type such as `Hangar A`
+- **THEN** structural load MUST succeed
+
+#### Scenario: Unknown scenery type rejected
+- **WHEN** a scenery entry uses a type absent from the statics registry
+- **THEN** validation MUST fail with an unknown-static error
 
 ### Requirement: Late activation on combat groups
 `EnemyFlight` and `GroundTarget` entries MAY set `late_activation` (boolean, default

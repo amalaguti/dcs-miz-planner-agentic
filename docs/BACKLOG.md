@@ -109,7 +109,7 @@ has the SoT (`get_strike_unit` / `list_strike_units`); compile must keep using r
 | `armor` | land | path / patrol (static if dug-in) | Pz_IV_H, Stug_III, Cromwell, Sherman (`#8j`) | heavies later |
 | `troops` | land | path / patrol (static if dug-in) | soldier_mauser98, wwii_br/us (`#8k`) | more infantry via R13 |
 | `aaa_guns` | land | **static** | flak18/30/36/37/38, Pak40, searchlight, KDO, bofors (`#8h`) | more AAA as needed |
-| `artillery` | land | static (or rare relocate path) | — | verify before shelving |
+| `artillery` | land | static (or rare relocate path) | LeFH_18-40-105, Wespe124, M2A1-105 (`channel-shelf-artillery`) | leftover R13 guns later |
 | `radar_c3` | land | **static** | FuMG-401, FuSe-65 (`#8l`) | more C3 via R13 |
 | `trains` | land | **path** on curated rail corridor | Locomotive + German wagons (`#8m` + `french_coast_rail_corridor`) | mesh snap still non-goal |
 | `sea_craft` | sea | patrol / path; harbour → static | S-130, Uboat, Dry-cargo×2, HarborTug, Higgins (`#8h`) | LST/Castle later (era-filter) |
@@ -357,7 +357,7 @@ recorded under R11 (2026-08-09). Normandy freeflight bind shipped
 | 17a | `weather-presets-expand` | Expand Channel Spec weather beyond the trio: curated **named patterns** seeded from Spitfire campaign `.miz` weather (cloud gallery + wind/fog/turb), pilot-facing brief text, SoT parity (`weather_sot`). Prefer recipes over raw ME knobs / live METAR. Invent jitter deferred to `#17e`. Research: R10 campaign scan (2026-08-06) | `done` (accepted ME smoke 2026-08-06; broken + rain examples) |
 | 18 | `mission-randomization` | Seeded Spec→Spec variation for replayability (CLI + tool; compiler stays deterministic) | `done` (accepted 2026-08-02; seed42 vs seed99 CAP) |
 | 19 | `spitfire-radio-channel-presets` | Match ED Channel Spitfire unit Radio bank (A=124, B=40, C=41, D=42, E=108.9) for cockpit channel clicks; group frequency 124 already correct | `idea` (parked 2026-08-02 — immersion only; not required to fly; revisit if cockpit radio parity matters or M6 radio menus need it) |
-| 17b | `static-objects-placement` | Place ME static objects / scenery (hangars, vehicles-as-static, props) from Spec for Channel immersion — promote only after **R10** ranks PyDCS + Channel type ids | `idea` (blocked on R10) |
+| 17b | `static-objects-placement` | Place ME static objects / scenery (hangars, vehicles-as-static, props) from Spec for Channel immersion — promote only after **R10** ranks PyDCS + Channel type ids | `done` (M8 Channel smoke: Hangar A / Revetment_x4 / Tent01 / Belgian gate / Shelter; `examples/manston_freeflight_scenery.yaml`) |
 | 17c | `weather-in-flight-fog` | Optional mid-sortie **fog** evolution (foggy→clear / clear→fog) via curated `world.weather.setFogAnimation` snippets — **not** sunny→rainy cloud swaps (no DCS API). Fog-only DoScriptFile slice (full `#22` later) | `done` (accepted ME smoke 2026-08-06; sea_fog burn-off at Manston) |
 | 17d | `weather-reweather-miz` | Agent + CLI: change weather on an **existing** `.miz` (named pattern / NL → recipe) and **overwrite** the same path — same sortie (groups/triggers), new static weather. Write Spec YAML alongside `.miz`; agent finds sibling or takes an explicit path. Prefer Spec recompile when YAML exists; else PyDCS `load_file` → apply invent snapshot → `save`. Not mid-flight. After `#17a`/`#17e` | `done` (accepted ME smoke 2026-08-06; rain_overcast → Overcast and Rain 2) |
 | 17e | `weather-invent-jitter` | **Always-on** seeded invent variation around `#17a` patterns. **Hybrid priors:** (1) **within-family gallery preference** weighted by Spec **date/season** (+ start **time** where useful, e.g. morning fog risk) — pick among allowed `PresetN`/`RainyPresetN` for that pattern class, never silent cross-family swaps; (2) **soft nudge** on temp/QNH/wind layers/turb/fog/base after gallery pick; (3) seeded jitter for day-to-day noise. Climatology from `research/weather.md` (Channel seasonal — **no per-place bias**). Distinct from ME Dynamic cyclones and `#17c`. Goldens pin seed. Spec: `weather` enum + `weather_opts.seed` (auto-write if omitted) | `done` (accepted ME smoke 2026-08-06; seed42 vs seed99 broken) |
@@ -473,7 +473,39 @@ promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: unb
 `dcs-miz theatres --refresh` before promoting. **No Spec bind** for
 `Iraq` / `MarianaIslandsWWII` until those terrains exist in pydcs (no
 upstream track). **GermanyCW** exists in pydcs (`dcs.terrain.Germany`) but is
-not in the R11 owned fleet. Kola Stage A (`kola-cold-freeflight`) is bound.
+not in the R11 owned fleet — see **M8** (gated Stage A only if installed).
+Kola Stage A (`kola-cold-freeflight`) is bound.
+
+---
+
+## M8 — Spitfire-era planning capacity
+
+**Goal:** densify Channel/Normandy WWII catalog so the NL agent can author distinct
+flyable Spitfire-era sorties (aircraft, extra homes, solo vs 2–4 ship section,
+target class, place, immersion) without new Spec mission types. Modern maps
+(Caucasus / Syria / Nevada / Falklands / Kola) stay parked. New families
+(SEAD / AAR / helo / carrier / FAC) stay parked.
+
+**Process:** one OpenSpec change per slice; merge gate ruff + `uv run pytest -q`.
+ME Instant Action is human do-soon. Do not invent DCS ids.
+
+| # | Item | Goal | Status |
+|---|------|------|--------|
+| 8e-usa | `wwii-country-usa` | Packaged WWII countries include verified PyDCS `USA` (P-51 / USAAF Channel/Normandy). Do not copy modern USA radio assumptions | `done` (CLI/API 2026-08-19) |
+| 8e-ac | `wwii-aircraft-expand` | First extra WWII aircraft: `P-51D` radio 124.0, payload `p51d_2x_anm64` (`{AN-M64}` pylons 4+7). No Typhoon in PyDCS `plane_map` | `done` (CLI/API 2026-08-19; ME Instant Action do-soon) |
+| 8e-ch | `channel-invent-extra-homes` | Invent allowlist Hawkinge / Detling / BigginHill with per-home CAP/GA/escort recipes (not Manston 135/25 or 125/76). Parking: max_flight_size 4 | `done` (CLI/API 2026-08-19) |
+| 8e-ny | `normandy-invent-extra-homes` | Invent allowlist Chailey / Tangmere / FordAF with per-home recipes (not NeedsOarPoint 180/63 or 180/133). Tangmere `max_flight_size` 3 | `done` (CLI/API 2026-08-19) |
+| 8e-arty | `channel-shelf-artillery` | Fill `artillery` class: LeFH_18-40-105, Wespe124, M2A1-105; static; soft AI; example GA; invent cues | `done` (CLI/API 2026-08-19; ME Instant Action do-soon) |
+| 15f | `agent-sortie-size-assertive` | Agent chooses solo (omit `player.flight`) vs pair/3/4-ship lead|wingman on vague asks; eval catalog scenarios; do not rebuild compiler | `done` (prompts/schema/eval catalog 2026-08-19) |
+| 23b | `narrative-pack-recon` | Recon `narrative.enabled` prepends ops push then compiler find beat | `done` (CLI/API 2026-08-19) |
+| 30g | `mission-inspiration-r3` | Historical colour cards (`rhubarb_pair`, `dawn_recce_narrative`, `mustang_channel_strafe`); advisory only | `done` (catalog 2026-08-19) |
+| 22b-card | `failures-behaviour-card` | Existing Spec `failures` exposed as `mission_behaviour` `aircraft_failures` | `done` (catalog 2026-08-19) |
+| 17b | `static-objects-placement` | Ranked PyDCS fortification ids + Channel `scenery[]` smoke + `airfield_scenery` card | `done` (CLI/API 2026-08-19; ME Instant Action do-soon) |
+| F7 | `germanycw-cold-freeflight` | Optional later Stage A only if installed (`dcs-miz theatres --refresh`). Six existing types; no new mission families | `idea` (gated: not in R11 owned fleet) |
+
+Human do-soon (does not block M8): Instant Action smokes already listed under M4
+(Normandy FF, convoy airborne, wingman join-up) plus P-51 / extra-home / artillery /
+scenery `.miz` files.
 
 ---
 

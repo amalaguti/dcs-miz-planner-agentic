@@ -362,14 +362,14 @@ remain theatre-scoped (Normandy id 4 is Maupertus, not Channel Abbeville).
   TheChannel airfield
 
 ### Requirement: WWII countries in era package
-The packaged registry SHALL list exact PyDCS country class names `UK` and
-`ThirdReich` from era YAML (`data/era/wwii/countries.yaml`). `Germany` MUST
+The packaged registry SHALL list exact PyDCS country class names `UK`,
+`ThirdReich`, and `USA` from era YAML (`data/era/wwii/countries.yaml`). `Germany` MUST
 NOT be a known country id (hint to `ThirdReich` MAY remain). The registry MUST
-NOT invent country strings.
+NOT invent country strings. `usaaf` MUST NOT be a known country (`usaaf` is voice only).
 
-#### Scenario: UK and ThirdReich known
-- **WHEN** the registry lists countries
-- **THEN** the set MUST include `UK` and `ThirdReich` and MUST NOT include
+#### Scenario: UK, ThirdReich, and USA known
+- **WHEN** the registry lists countries for era `wwii`
+- **THEN** the set MUST include `UK`, `ThirdReich`, and `USA` and MUST NOT include
   `Germany` as a known id
 
 ### Requirement: Theatre era membership is retained
@@ -431,18 +431,19 @@ PyDCS countries `Georgia`, `Turkey`, `USA`, `UK`, `Russia`, `Syria`,
 `Argentina`, and `Norway`, aircraft `Su-25T` with group radio 251.0 MHz, and
 dual-era `SpitfireLFMkIX` / `SpitfireLFMkIXCW` with group radio 124.0 MHz
 (same refs as WWII). `UK` and those Spitfire types MUST remain in the WWII
-era package as well. It MUST NOT add Georgia/Turkey/USA/Russia/Syria/
+era package as well. `USA` MAY appear in both era packages (WWII Channel/Normandy
+P-51D; modern Nevada). It MUST NOT add Georgia/Turkey/Russia/Syria/
 Argentina/Norway or `Su-25T` to the WWII era package. Known-country and
 known-aircraft queries used for validation SHALL be filterable by era so
-Channel/Normandy remain `UK` / `ThirdReich` and WWII aircraft (including
-Spitfire) only for jets — `Su-25T` stays modern-only. `usaaf` MUST NOT be a
+Channel/Normandy remain `UK` / `ThirdReich` / `USA` and WWII aircraft (including
+Spitfire and `P-51D`) only for jets — `Su-25T` stays modern-only. `usaaf` MUST NOT be a
 known country. `Germany` MUST NOT be a known country in any era. `Chile`
 MUST NOT be a known country.
 
-#### Scenario: WWII countries unchanged
+#### Scenario: WWII countries include USA
 - **WHEN** the registry lists countries for era `wwii`
-- **THEN** the set MUST be `UK` and `ThirdReich` and MUST NOT include
-  `Georgia`, `Turkey`, `USA`, `Russia`, `Syria`, `Argentina`, `Norway`, or
+- **THEN** the set MUST be `UK`, `ThirdReich`, and `USA` and MUST NOT include
+  `Georgia`, `Turkey`, `Russia`, `Syria`, `Argentina`, `Norway`, or
   `Germany`
 
 #### Scenario: Modern smoke identity
@@ -625,3 +626,22 @@ MUST NOT dump every Kola airport.
 #### Scenario: Bodo resolves
 - **WHEN** the registry is queried for airfield `Bodo` with theatre `Kola`
 - **THEN** it MUST return `airdromeId` 7
+
+### Requirement: WWII P-51D aircraft and payload
+The packaged WWII aircraft table SHALL include exact PyDCS type `P-51D` with
+group radio 124.0 MHz. A named payload `p51d_2x_anm64` MUST place verified
+CLSID `{AN-M64}` on pylons 4 and 7. The registry MUST NOT list a Typhoon type
+id (absent from PyDCS `plane_map`).
+
+#### Scenario: P-51D radio and bombs resolve
+- **WHEN** the registry is queried for aircraft `P-51D` and payload `p51d_2x_anm64`
+- **THEN** radio MUST be 124.0 MHz and pylons MUST be 4 and 7 with `{AN-M64}`
+
+### Requirement: WWII static object ids
+The packaged WWII statics table SHALL list exact PyDCS `fortification_map` keys
+used for Channel scenery (`Hangar A`, `Revetment_x4`, `Tent01`, `Belgian gate`,
+`Shelter`). Lookup MUST fail clearly for unknown ids.
+
+#### Scenario: Hangar A is known
+- **WHEN** the registry lists statics
+- **THEN** it MUST include `Hangar A`

@@ -170,6 +170,15 @@ class Player(SpecModel):
     flight: PlayerFlight | None = None  # multi-ship section; omit = solo
 
 
+class SceneryObject(SpecModel):
+    """Airfield-relative ME static (curated fortification id; no Lua)."""
+
+    type: str
+    bearing_deg: float = Field(ge=0, le=360)
+    distance_km: float = Field(ge=0, le=5)
+    heading_deg: float = Field(default=0, ge=0, le=360)
+
+
 def player_group_size(flight: PlayerFlight | None) -> int:
     """Size of the *player-controlled* flying group.
 
@@ -798,6 +807,7 @@ class MissionSpec(SpecModel):
     recon: Recon | None = None
     narrative: NarrativeSpec | None = None
     dynamics: DynamicsSpec | None = None
+    scenery: list[SceneryObject] = Field(default_factory=list)
 
     @field_validator("schema_version")
     @classmethod

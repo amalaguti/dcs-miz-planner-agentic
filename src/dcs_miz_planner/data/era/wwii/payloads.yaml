@@ -28,3 +28,12 @@ payloads:
     pylons:
       - pylon: 2
         clsid: British_GP_500LBS_Bomb_MK4_on_British_UniversalBC_MK3
+
+  p51d_2x_anm64:
+    aircraft: P-51D
+    label: 2x AN-M64 500 lb (pylons 4 and 7)
+    pylons:
+      - pylon: 4
+        clsid: "{AN-M64}"
+      - pylon: 7
+        clsid: "{AN-M64}"

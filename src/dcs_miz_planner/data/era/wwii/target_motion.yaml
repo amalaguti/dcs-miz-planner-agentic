@@ -83,4 +83,4 @@ units:
   HarborTug: sea_cargo
   LST_Mk2: sea_cargo
   USS_Samuel_Chase: sea_cargo
-  # Future: artillery class when verified (#8e).
+  # Artillery is emplaced (static) — omit from motion profiles.

@@ -31,7 +31,8 @@ entries). Index: [`docs/LESSONS_LEARNED.md`](../../../docs/LESSONS_LEARNED.md).
 5. **Narrative XOR dynamics** expand before validate/compile; empty hand triggers.
 6. **Recon find pack** — `mission_type: recon` requires empty zones/triggers; after
    validate, `recon.expand_recon_find_pack` injects `recon_aoi` + mark/find once
-   triggers (flag **830**). Do not hand-author recon immersion in v1.
+   triggers (flag **830**). Optional `narrative.enabled` prepends `narrative_push`
+   in that same expander — do **not** run the CAP/GA narrative pack on recon.
 
 ## Code touchpoints
 

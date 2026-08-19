@@ -137,7 +137,7 @@ class PyDCSCompiler(CompilerInterface):
         if spec.mission_type is MissionType.RECON:
             from ..recon import expand_recon_find_pack
 
-            spec = expand_recon_find_pack(spec)
+            spec = expand_recon_find_pack(spec, voice=voice)
 
         aircraft_type = plane_map.get(spec.player.aircraft)
         if aircraft_type is None:
@@ -286,6 +286,8 @@ class PyDCSCompiler(CompilerInterface):
                 mission, countries, registry, task_group, airport, spec
             )
 
+        self._apply_scenery(mission, country, airport, spec, registry)
+
         self._apply_zones_and_triggers(
             mission,
             airport,
@@ -398,6 +400,25 @@ class PyDCSCompiler(CompilerInterface):
                 altitude_difference=_JOINUP_FOLLOW_ALT_DIFF_M,
             )
         )
+
+    @staticmethod
+    def _apply_scenery(mission, country, airport, spec: MissionSpec, registry) -> None:
+        if not spec.scenery:
+            return
+        from dcs.statics import fortification_map
+
+        for i, obj in enumerate(spec.scenery):
+            static_cls = fortification_map.get(obj.type)
+            if static_cls is None:
+                raise ValueError(f"Unknown PyDCS static type: {obj.type}")
+            pos = airport.position.point_from_heading(obj.bearing_deg, obj.distance_km * 1000.0)
+            mission.static_group(
+                country,
+                f"{spec.name} scenery {i + 1}",
+                static_cls,
+                pos,
+                heading=obj.heading_deg,
+            )
 
     @staticmethod
     def _apply_zones_and_triggers(

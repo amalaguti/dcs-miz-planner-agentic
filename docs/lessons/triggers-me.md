@@ -5,6 +5,16 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Recon narrative prepends push then find beat (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** `narrative.enabled` on recon is allowed. `apply_narrative` returns
+  the Spec unchanged so the AOI find pack stays the single zone graph.
+  `expand_recon_find_pack(..., voice=)` prepends `narrative_push` (T+120 ops
+  colour) then mark/find, then clears `narrative.enabled`. Do not expand recon
+  through the CAP/GA pack helpers.
+- **Code:** `narrative.py`, `recon.py`, `examples/manston_recon_narrative.yaml`.
+
 ## Recon AOI land/sea domain for contacts (2026-08-07)
 
 - **Date:** 2026-08-07

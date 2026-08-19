@@ -5,6 +5,17 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Extra-home parking honesty (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** Size 2–4 already compiles (`player.flight`). Extra invent homes
+  publish `max_flight_size` in `channel_place` meta. Hawkinge 54 / Detling 32 /
+  BigginHill 64 / Chailey 56 / FordAF 84 → four-ship OK; **Tangmere 15 parking
+  → max 3**. Prefer Manston for four-ship when the ask is vague. Do not emit
+  overlapping parking on a field that cannot hold the section.
+- **Code:** `planning_options.yaml` extra homes; examples
+  `hawkinge_freeflight_pair.yaml`.
+
 ## Fail-to-follow discipline (`player.flight.discipline`) (2026-08-07)
 
 - **Date:** 2026-08-07

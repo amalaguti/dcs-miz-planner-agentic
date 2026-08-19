@@ -230,6 +230,11 @@ _TYPE_NOTES: dict[str, tuple[str, ...]] = {
         ),
         "AOI is airfield-relative — never invent raw map x/y. enemies must be empty.",
         "omit strike, cap, escort, package. zones/triggers must stay empty (find beat injected).",
+        (
+            "optional narrative.enabled true: apply_narrative defers; expand_recon_find_pack "
+            "prepends a voice push then the AOI find beat. Requires empty zones/triggers. "
+            "See manston_recon_narrative.yaml."
+        ),
         "Not a bomb run — weapons hold; report AOI then RTB.",
     ),
 }
@@ -250,6 +255,10 @@ _COMMON_NOTES: tuple[str, ...] = (
         "Optional player.flight on any mission type: {size: 2-4, role: lead|wingman, "
         "ai_skill, join_up, orders?, discipline?}; omit for solo. Human skill must stay Player; mates use "
         "ai_skill. Wingman join_up (default true) → Follow AI lead + shared route. "
+        "When the ask is vague (pair, section, Rhubarb, CAP/escort with mates) emit "
+        "player.flight size 2 role lead; omit the block when the ask is clearly solo. "
+        "Four-ship prefer Manston (also Hawkinge/Detling/BigginHill/Chailey/FordAF); "
+        "Tangmere max_flight_size 3. "
         "Optional orders: curated list [rejoin|engage|orbit|rtb|break] → F10 Section:… "
         "menus (list_mission_options family player_flight_order). "
         "Optional discipline (wingman+join_up only): {radius_m?, soft_after_s?, "
@@ -281,10 +290,13 @@ _COMMON_NOTES: tuple[str, ...] = (
         "only). sound uses curated asset_id only "
         "(no paths). enemies/targets may set late_activation true (dormant until "
         "activate_group). Compiler emits native ME trigger tables for validated "
-        "graphs. Optional narrative.enabled (cap|intercept|escort|ground_attack) "
+        "graphs. Optional narrative.enabled (cap|intercept|escort|ground_attack|recon) "
         "expands a curated pack into that vocabulary when zones/triggers are empty. "
+        "Recon narrative adds an ops push then the compiler find beat. "
         "Optional dynamics (fixed|live|choose|hybrid + pools) expands play-time "
         "dice/F10/activate graphs the same way; XOR with narrative.enabled."
+        " Optional scenery[] (Hangar A, Revetment_x4, Tent01, Belgian gate, Shelter) "
+        "places curated statics near the player airfield (see manston_freeflight_scenery.yaml)."
     ),
     "Fill DCS ids and airfield names from tools/prefs — examples are Channel templates.",
     (
@@ -1474,16 +1486,28 @@ def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
             return _NORMANDY_RECON_NOTES
         extra = (
             (
-                "Normandy invent is all six types: airfield NeedsOarPoint, "
-                "SpitfireLFMkIX, sunny_clear, UK blue. CAP, intercept, and escort "
-                "station 180° / 63 km / 4000 m (not Manston 135/25 or escort 120/55, "
-                "not Hawkinge). Ground attack and recon AOI 180° / 133 km inland of "
-                "Maupertus (not Manston 125/76). Do not copy channel_place "
-                "geometry (french coast belts, Hawkinge) onto Normandy."
+                "Normandy invent is all six types at NeedsOarPoint (default) or extra "
+                "homes Chailey / Tangmere / FordAF — copy chailey_home / tangmere_home / "
+                "ford_af_home cap_* and strike_* (not NeedsOarPoint 180/63 or 180/133). "
+                "SpitfireLFMkIX or P-51D (country USA). sunny_clear, UK blue unless P-51. "
+                "Default CAP/intercept/escort from NeedsOarPoint: 180° / 63 km / 4000 m "
+                "(not Manston 135/25 or escort 120/55, not Hawkinge). Default GA/recon AOI "
+                "180° / 133 km inland of Maupertus (not Manston 125/76). Do not copy "
+                "channel_place geometry (french coast belts, Hawkinge) onto Normandy."
             ),
         )
         return extra + _COMMON_NOTES + _TYPE_NOTES.get(mission_type, ())
-    return _COMMON_NOTES + _TYPE_NOTES.get(mission_type, ())
+    extra = (
+        (
+            "Channel invent default is Manston. Extra homes Hawkinge / Detling / "
+            "BigginHill: copy hawkinge_home / detling_home / biggin_hill_home "
+            "cap_* / strike_* / escort_* — do not copy Manston 135/25 or 125/76 onto "
+            "those fields (Hawkinge CAP is 76°/32 km, not 135/25). Player aircraft "
+            "SpitfireLFMkIX (UK) or P-51D (country USA, "
+            "radio 124.0, payload p51d_2x_anm64). Typhoon is not a PyDCS type id."
+        ),
+    )
+    return extra + _COMMON_NOTES + _TYPE_NOTES.get(mission_type, ())
 
 
 def infer_mission_type(text: str | None, *, default: str = MissionType.FREE_FLIGHT.value) -> str:
@@ -1504,7 +1528,14 @@ def infer_theatre(text: str | None) -> str | None:
     if m and m.group(1) in _SCHEMA_THEATRES:
         return m.group(1)
     af = _AIRFIELD_IN_JSON.search(text)
-    if af and af.group(1) in {"NeedsOarPoint", "Maupertus"}:
+    if af and af.group(1) in {
+        "NeedsOarPoint",
+        "Maupertus",
+        "Chailey",
+        "Tangmere",
+        "FordAF",
+        "Funtington",
+    }:
         return "Normandy"
     if af and af.group(1) in {
         "Batumi",

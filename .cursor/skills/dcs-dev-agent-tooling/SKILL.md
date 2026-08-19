@@ -35,7 +35,12 @@ description: >-
    YAML. Invent unit/preset cues ≠ geometry — use place recipes + invent path
    clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
    `french_coast_rail_corridor` path deltas only —
-   **no** DCS rail-mesh snap (`#8m`).    Invent may use offerable theatres; Normandy is **all six types**
+   **no** DCS rail-mesh snap (`#8m`). Channel invent default is Manston; extra
+   homes Hawkinge / Detling / BigginHill copy per-home recipes (not 135/25 or
+   125/76). Normandy extras Chailey / Tangmere / FordAF copy per-home recipes
+   (Tangmere max_flight_size 3). Vague pair/section → `player.flight` size 2
+   role lead; solo omits the block. Artillery class + P-51D (`USA`) are WWII
+   allowlisted.    Invent may use offerable theatres; Normandy is **all six types**
    (NeedsOarPoint; CAP/intercept/escort 180°/63 km Cherbourg
    corridor, not Hawkinge, not Manston escort 120/55; GA/recon AOI 180°/133 km
    inland of Maupertus). Caucasus is

@@ -1,0 +1,35 @@
+schema_version: "1"
+mission_type: ground_attack
+theatre: TheChannel
+name: Manston Mustang Artillery Strike
+description: >
+  Cold start at Manston in a P-51D with 2x AN-M64. Strike emplaced leFH 18
+  howitzers inland near Dunkirk. Guns are static.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: P-51D
+  airfield: Manston
+  coalition: blue
+  country: USA
+  skill: Player
+  start: cold_parking
+  payload: p51d_2x_anm64
+strike:
+  bearing_deg: 125
+  distance_km: 76
+  altitude_m: 2000
+enemies: []
+targets:
+  - unit: LeFH_18-40-105
+    count: 3
+    skill: Average
+    country: ThirdReich
+    coalition: red
+    ai_preset: convoy_transit
+objectives:
+  - type: attack_ground

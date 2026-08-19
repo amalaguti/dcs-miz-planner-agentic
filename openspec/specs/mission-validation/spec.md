@@ -948,13 +948,18 @@ planner-supported.
 - **WHEN** a Syria Mission Spec sets player aircraft `SpitfireLFMkIX`
 - **THEN** validation MUST succeed when the rest of the Spec is well-formed
 
-### Requirement: Channel rejects USA
-Shared validation SHALL reject player country `USA` on a WWII theatre
-(TheChannel / Normandy) with an unknown-country error. A Nevada Spec MAY
-use `USA`.
+### Requirement: Channel accepts USA
+Shared validation SHALL accept player country `USA` on a WWII theatre
+(TheChannel / Normandy) when the rest of the Spec is well-formed (P-51D or
+other dual-era WWII aircraft). It MUST still reject modern-only countries
+(`Georgia`, `Turkey`, `Russia`, `Syria`, `Argentina`, `Norway`) on Channel.
 
-#### Scenario: Channel rejects USA
+#### Scenario: Channel accepts USA
 - **WHEN** a TheChannel Mission Spec sets player country `USA`
+- **THEN** validation MUST succeed when the rest of the Spec is well-formed
+
+#### Scenario: Channel still rejects Georgia
+- **WHEN** a TheChannel Mission Spec sets player country `Georgia`
 - **THEN** validation MUST fail with an unknown-country error
 
 ### Requirement: Nevada freeflight validates when inventory agrees
@@ -1195,3 +1200,11 @@ planner-supported.
 #### Scenario: Channel still accepts UK
 - **WHEN** a TheChannel Mission Spec sets player country `UK`
 - **THEN** validation MUST succeed for country (WWII era still includes UK)
+
+### Requirement: Unknown scenery types fail validation
+Shared validation SHALL reject `scenery[].type` values absent from the packaged
+WWII statics registry with a stable `unknown_static` error.
+
+#### Scenario: Unknown hangar id fails
+- **WHEN** a Spec lists scenery type `NotARealHangar`
+- **THEN** validation MUST fail with code `unknown_static`

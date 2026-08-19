@@ -79,10 +79,13 @@ options:
   - family: player_flight_size
     id: four_ship
     label: Four-ship
-    description: Four-ship player section via player.flight.size 4 (prefer Manston parking).
+    description: Four-ship player section via player.flight.size 4 (prefer Manston; also Hawkinge, Detling, BigginHill, Chailey, FordAF).
     support: supported
     meta:
       size: 4
+      prefer_airfields: [Manston]
+      extra_homes: [Hawkinge, Detling, BigginHill, Chailey, FordAF]
+      tangmere_max: 3
 
   - family: player_flight_role
     id: lead
@@ -485,7 +488,7 @@ options:
     support: supported
     meta:
       intent: [immersion, win_condition, radio_colour]
-      mission_types: [cap, intercept, ground_attack, escort]
+      mission_types: [cap, intercept, ground_attack, escort, recon]
       recipe: >
         Set narrative.enabled true (and leave zones/triggers empty). Packs expand into
         typed conditions/actions; do not invent Lua.
@@ -494,6 +497,7 @@ options:
         - examples/manston_dawn_intercept_narrative.yaml
         - examples/manston_ground_attack_narrative.yaml
         - examples/manston_escort_narrative.yaml
+        - examples/manston_recon_narrative.yaml
 
   - family: mission_behaviour
     id: radio_late_activation
@@ -547,6 +551,37 @@ options:
         group_life_less with enemy_index or target_index plus percent 1–100 (remaining
         life), then message / flag / mission_end as needed.
       example: examples/manston_ground_attack_life_less.yaml
+
+  - family: mission_behaviour
+    id: aircraft_failures
+    label: Scheduled aircraft failures
+    description: >
+      Opt-in ME Failures panel events on the player Spitfire (magneto, radiator,
+      controls). Omit failures[] for a healthy kite.
+    support: supported
+    meta:
+      intent: [training, degradation, challenge]
+      mission_types: [free_flight, intercept, cap, ground_attack, escort, recon]
+      recipe: >
+        Emit failures[] with curated ids only (e.g. ENG0_MAGNETO0). Never invent
+        ids or Lua. Example: manston_freeflight_magneto_failure.yaml.
+      example: examples/manston_freeflight_magneto_failure.yaml
+
+  - family: mission_behaviour
+    id: airfield_scenery
+    label: Airfield static scenery
+    description: >
+      Place curated ME statics (hangar, revetment, tent, Belgian gate, shelter) near
+      the player airfield via Spec scenery[] — airfield-relative, verified ids only.
+    support: supported
+    meta:
+      intent: [immersion, dispersal, scenery]
+      mission_types: [free_flight, intercept, cap, ground_attack, escort, recon]
+      recipe: >
+        scenery[] entries {type, bearing_deg, distance_km, heading_deg?} using
+        packaged static ids (Hangar A, Revetment_x4, Tent01, Belgian gate, Shelter).
+        Keep distance_km small (parking/dispersal, not the French coast).
+      example: examples/manston_freeflight_scenery.yaml
 
   # --- mission_inspiration: advisory patterns → behaviour ids ---
   - family: mission_inspiration
@@ -624,6 +659,49 @@ options:
       unit_ids: [Uboat_VIIC]
       note: surfaced_only
       preferred_motion: patrol
+
+  - family: mission_inspiration
+    id: rhubarb_pair
+    label: Pair on a Rhubarb
+    description: >
+      Two-ship fighter-bomber hop across the Channel (historical Rhubarb pattern) —
+      pair as lead, optional altitude gates, inland strike or recon. Not a new
+      mission type.
+    support: advisory
+    meta:
+      behaviours: [altitude_speed_gates]
+      related_places: [french_coast_strike_belt, hawkinge_home]
+      mission_types: [ground_attack, recon, free_flight]
+      player_flight_size: pair
+      player_flight_role: lead
+      source: historical Spitfire Rhubarb pattern (R3 colour)
+
+  - family: mission_inspiration
+    id: dawn_recce_narrative
+    label: Dawn recce with ops colour
+    description: >
+      Recon with narrative.enabled so ops call out the recce climb; find beat still
+      compiler-injected. Weapons hold.
+    support: advisory
+    meta:
+      behaviours: [narrative_pack]
+      mission_types: [recon]
+      example: examples/manston_recon_narrative.yaml
+
+  - family: mission_inspiration
+    id: mustang_channel_strafe
+    label: Mustang Channel strafe
+    description: >
+      P-51D (country USA) on Channel/Normandy with 2x AN-M64 against artillery or
+      soft vehicles. Not Typhoon (no PyDCS type id).
+    support: advisory
+    meta:
+      behaviours: []
+      related_classes: [artillery, soft_vehicles]
+      mission_types: [ground_attack]
+      aircraft: P-51D
+      country: USA
+      payload: p51d_2x_anm64
 
   # --- Mission-designer shelves (palette for co-authoring; Spec dynamics = #30f) ---
   # Layer A = dcs-miz randomize (new Spec day). Layer B = dynamics_mode / Spec dynamics
@@ -855,6 +933,23 @@ options:
       preferred_ai_preset: aaa_alert
       cues: [flak, aaa, guns, pak, battery, searchlight, bofors, kdo, quadmount, flak41]
 
+  - family: strike_target_class
+    id: artillery
+    label: Artillery / howitzers
+    description: >
+      Emplaced land artillery on Axis-held French/Belgian coast — not UK home
+      ground, not water. Prefer motion static. Soft AI (not aaa_alert). Spitfire or
+      P-51D bomb payloads. Example: manston_ground_attack_artillery.
+    support: supported
+    meta:
+      domain: land
+      unit_ids: [LeFH_18-40-105, Wespe124, M2A1-105]
+      payload_families: [spitfire_2x250_slipper, spitfire_1x500, p51d_2x_anm64]
+      mission_types: [ground_attack]
+      preferred_motion: static
+      preferred_ai_preset: convoy_transit
+      cues: [artillery, howitzer, lefh, wespe, 105, gun line, battery]
+
   - family: ground_ai_preset
     id: convoy_transit
     label: Convoy transit (soft)
@@ -976,6 +1071,72 @@ options:
       airfield: Manston
       role: home_base
       mission_types: [free_flight, intercept, cap, ground_attack, escort]
+      max_flight_size: 4
+
+  - family: channel_place
+    id: hawkinge_home
+    label: Hawkinge (extra home)
+    description: >
+      RAF Hawkinge — Channel invent extra home (airdromeId 6, 54 parking). Copy
+      per-home CAP/GA geometry; do not copy Manston 135/25 or 125/76 blindly.
+    support: advisory
+    meta:
+      theatre: TheChannel
+      airfield: Hawkinge
+      role: extra_home
+      max_flight_size: 4
+      mission_types: [free_flight, intercept, cap, ground_attack, escort, recon]
+      cap_bearing_deg: 76
+      cap_distance_km: 32
+      cap_altitude_m: 4000
+      strike_bearing_deg: 104
+      strike_distance_km: 78
+      strike_altitude_m: 2000
+      escort_bearing_deg: 92
+      escort_distance_km: 61
+      example: examples/hawkinge_cold_freeflight.yaml
+
+  - family: channel_place
+    id: detling_home
+    label: Detling (extra home)
+    description: >
+      RAF Detling — Channel invent extra home (airdromeId 8, 32 parking).
+    support: advisory
+    meta:
+      theatre: TheChannel
+      airfield: Detling
+      role: extra_home
+      max_flight_size: 4
+      mission_types: [free_flight, cap, ground_attack, escort, recon]
+      cap_bearing_deg: 102
+      cap_distance_km: 71
+      cap_altitude_m: 4000
+      strike_bearing_deg: 110
+      strike_distance_km: 122
+      strike_altitude_m: 2000
+      escort_bearing_deg: 104
+      escort_distance_km: 103
+
+  - family: channel_place
+    id: biggin_hill_home
+    label: Biggin Hill (extra home)
+    description: >
+      RAF Biggin Hill — Channel invent extra home (airdromeId 14, 64 parking).
+    support: advisory
+    meta:
+      theatre: TheChannel
+      airfield: BigginHill
+      role: extra_home
+      max_flight_size: 4
+      mission_types: [free_flight, cap, ground_attack, escort, recon]
+      cap_bearing_deg: 100
+      cap_distance_km: 111
+      cap_altitude_m: 4000
+      strike_bearing_deg: 106
+      strike_distance_km: 160
+      strike_altitude_m: 2000
+      escort_bearing_deg: 102
+      escort_distance_km: 142
 
   - family: channel_place
     id: french_coast_strike_belt
@@ -991,7 +1152,7 @@ options:
       theatre: TheChannel
       domain: land
       geometry_hint: inland_near_dunkirk
-      related_classes: [soft_vehicles, halftracks_apc, armor, troops, aaa_guns, radar_c3]
+      related_classes: [soft_vehicles, halftracks_apc, armor, troops, aaa_guns, radar_c3, artillery]
       mission_types: [ground_attack]
       cues: [dunkirk, calais, french coast, inland, convoy, halftrack, tank, troops, flak, radar]
       preferred_ai_preset_soft: convoy_transit
@@ -1110,6 +1271,67 @@ options:
       airfield: NeedsOarPoint
       role: home_base
       mission_types: [free_flight, cap, ground_attack, intercept, escort, recon]
+      max_flight_size: 4
+
+  - family: channel_place
+    id: chailey_home
+    label: Chailey (extra home)
+    description: >
+      RAF Chailey — Normandy invent extra home (airdromeId 27, 56 parking). Copy
+      per-home Cherbourg/Cotentin geometry; do not copy NeedsOarPoint 180/63 or 180/133.
+    support: advisory
+    meta:
+      theatre: Normandy
+      airfield: Chailey
+      role: extra_home
+      max_flight_size: 4
+      mission_types: [free_flight, cap, ground_attack, escort, recon]
+      cap_bearing_deg: 228
+      cap_distance_km: 130
+      cap_altitude_m: 4000
+      strike_bearing_deg: 212
+      strike_distance_km: 184
+      strike_altitude_m: 2000
+      example: examples/chailey_cold_freeflight.yaml
+
+  - family: channel_place
+    id: tangmere_home
+    label: Tangmere (extra home)
+    description: >
+      RAF Tangmere — Normandy invent extra home (airdromeId 30, 15 parking). Prefer
+      pair/three-ship; four-ship is tight.
+    support: advisory
+    meta:
+      theatre: Normandy
+      airfield: Tangmere
+      role: extra_home
+      max_flight_size: 3
+      mission_types: [free_flight, cap, ground_attack, escort, recon]
+      cap_bearing_deg: 215
+      cap_distance_km: 89
+      cap_altitude_m: 4000
+      strike_bearing_deg: 200
+      strike_distance_km: 152
+      strike_altitude_m: 2000
+
+  - family: channel_place
+    id: ford_af_home
+    label: Ford AF (extra home)
+    description: >
+      RAF Ford — Normandy invent extra home (airdromeId 31, 84 parking).
+    support: advisory
+    meta:
+      theatre: Normandy
+      airfield: FordAF
+      role: extra_home
+      max_flight_size: 4
+      mission_types: [free_flight, cap, ground_attack, escort, recon]
+      cap_bearing_deg: 220
+      cap_distance_km: 92
+      cap_altitude_m: 4000
+      strike_bearing_deg: 203
+      strike_distance_km: 152
+      strike_altitude_m: 2000
 
   - family: channel_place
     id: cherbourg_channel_cap

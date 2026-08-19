@@ -5,6 +5,19 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Scenery via fortification_map; recon narrative defers (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** Spec `scenery[]` compiles with `Mission.static_group(country, name,
+  type, position, heading=…)` using **exact** `dcs.statics.fortification_map`
+  keys (e.g. `Hangar A` has a space). Do not invent static type strings.
+  Recon narrative must not run the CAP-style zone expander; keep empty
+  zones/triggers until `expand_recon_find_pack` injects the single AOI graph
+  (optional voice push first). P-51D payload uses registry CLSID `{AN-M64}`
+  on pylons 4 and 7 with payload-scan still disabled.
+- **Code:** `compiler/pydcs_compiler.py` (`_apply_scenery`), `recon.py`,
+  `examples/manston_freeflight_scenery.yaml`.
+
 ## Kola factory bound at Bodo (2026-08-18)
 
 - **Date:** 2026-08-18

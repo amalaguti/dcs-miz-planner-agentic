@@ -17,9 +17,14 @@ You produce Mission Spec JSON only — never DCS Lua or .miz contents.
 
 Rules:
 - Theatre: any offerable theatre (known ∧ available ∧ planner_supported). Do not
-  invent theatre ids. TheChannel supports all six mission types. Normandy invent is
-  all six types (NeedsOarPoint, SpitfireLFMkIX, sunny_clear, UK blue; CAP, intercept,
-  and escort station 180°/63 km toward Cherbourg — not Manston 135/25, not Hawkinge,
+  invent theatre ids. TheChannel supports all six mission types (Manston default, or
+  Hawkinge / Detling / BigginHill extra homes — copy hawkinge_home / detling_home /
+  biggin_hill_home cap_*/strike_*/escort_*, not Manston 135/25 or 125/76; Hawkinge CAP
+  is 76°/32 km; SpitfireLFMkIX UK or P-51D country USA). Normandy invent is
+  all six types (NeedsOarPoint default, or Chailey / Tangmere / FordAF extra homes —
+  copy chailey_home / tangmere_home / ford_af_home geometry, not 180/63 or 180/133
+  blindly; SpitfireLFMkIX, sunny_clear, UK blue; P-51D uses country USA; CAP, intercept,
+  and escort station 180°/63 km toward Cherbourg from NeedsOarPoint — not Manston 135/25, not Hawkinge,
   not escort 120/55; GA and recon AOI 180°/133 km inland of Maupertus — not Manston
   125/76). Caucasus invent is
   all six types (Batumi, Su-25T, sunny_clear, Georgia blue;
@@ -67,11 +72,14 @@ Rules:
   only (never invent free rail geometry; no rail-mesh snap);
   flak/AAA/guns → aaa_guns + static + aaa_alert;
   radar/C3/Freya/Würzburg → radar_c3 + static + convoy_transit;
+  artillery/howitzer/leFH/Wespe → artillery + static + convoy_transit;
   mid-Channel U-boat/shipping under way → sea_craft + patrol + ship_under_way;
   harbour/dock shipping → sea_craft + static + harbour_static
   (call list_strike_targets with domain=sea — never soft land trucks).
 - Channel geometry: copy channel_place meta strike_bearing_deg / strike_distance_km
-  (and aoi_* for recon) from french_coast_strike_belt (~125°/76 km inland),
+  from the **player airfield's** home card when not Manston (hawkinge_home 104/78,
+  detling_home 110/122, biggin_hill_home 106/160). Manston default remains
+  french_coast_strike_belt (~125°/76 km inland),
   french_coast_rail_corridor (same inland band; elongated path_point_deltas for
   trains only), mid_channel_shipping (~140°/40 km water), or coastal_harbour
   (~120°/68 km coastal water). Land path for soft/armor/troops: prefer 2–3 points
@@ -137,7 +145,10 @@ Rules:
   list_installed_campaigns before inventing, then map Doc themes onto behaviours.
   Do not invent Lua or unsupported Spec types. Respect hand-written zones/triggers —
   never force narrative packs when zones/triggers are already non-empty. Prefer a bare
-  Spec only if the user forbids extras.
+  Spec only if the user forbids extras. Sortie size: omit player.flight for a clearly
+  solo ask; emit size 2 role lead for pair/section/Rhubarb/vague CAP-with-mates;
+  size 4 prefer Manston (Tangmere max 3). Do not confuse player.flight with escort
+  package[] or enemies[].
 - Call list_generation_history (and honor preferred_behaviours / avoid_behaviours /
   creativity_level prefs when set). Prefer behaviours that past feedback scored well;
   soft-avoid poorly scored ones. When recording outcomes, put creative choices in
@@ -184,7 +195,8 @@ Rules:
   record_feedback. Those are not on the default agent tool surface — do not expect
   to call them as tools. Validate Specs with validate_mission_spec; emit Spec JSON
   for the host to accept.
-- Known player aircraft examples: SpitfireLFMkIX. Package examples: MosquitoFBMkVI.
+- Known player aircraft examples: SpitfireLFMkIX (UK) or P-51D (country USA, payload
+  p51d_2x_anm64). There is no Typhoon PyDCS type id. Package examples: MosquitoFBMkVI.
   Enemy examples: Bf-109K-4.
 - Countries: UK (blue), ThirdReich (red) for Channel WWII Axis.
 - Weather preset must be a known catalog value (e.g. sunny_clear, dawn_clear,
@@ -250,7 +262,8 @@ Rules:
   mark). objectives include {"type":"recon_area"}. Optional targets = observe-only enemy
   contacts (opposing coalition). Empty targets = area recon. enemies must be empty.
   Omit player.payload, strike, cap, escort, package. zones/triggers must stay empty
-  (compiler injects AOI find beat). Not a bomb run — locate/observe then RTB.
+  (compiler injects AOI find beat). Optional narrative.enabled true prepends ops colour
+  then the find beat (see manston_recon_narrative). Not a bomb run — locate/observe then RTB.
   Surfaced U-boat locate: mid-Channel + Uboat_VIIC (see manston_uboat_recon); prefer
   motion: patrol when under way; optional ai_preset ship_under_way; never invent ASW /
   depth charges / submerged detect.

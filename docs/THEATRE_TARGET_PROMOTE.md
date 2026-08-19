@@ -85,7 +85,7 @@ halftracks; `#8j` armor; `#8k` troops; `#8l` radar; `#8m` trains + rail corridor
 | `armor` | land | path / patrol (static if dug-in) | Pz_IV_H, Stug_III, Cromwell, Sherman as `#8j` |
 | `troops` | land | path / patrol (static if dug-in) | soldier_mauser98, wwii_br/us as `#8k` |
 | `aaa_guns` | land | **static** | Flak / AT / searchlight as `#8h` |
-| `artillery` | land | static (rare relocate) | Verify before shelving |
+| `artillery` | land | static (rare relocate) | LeFH_18-40-105, Wespe124, M2A1-105 (`channel-shelf-artillery`) |
 | `radar_c3` | land | **static** | FuMG-401, FuSe-65 as `#8l` |
 | `trains` | land | **path** on curated rail | Loco + wagons as `#8m`; `french_coast_rail_corridor` (no mesh snap) |
 | `sea_craft` | sea | patrol / path; harbour → static | Ships / U-boat / cargo / tug as `#8h` |
@@ -101,5 +101,6 @@ Era caution: prefer BoB / Channel-front plausible Axis/Allied sets when promotin
 - Invent cues / presets: `#8d`; geometry: `#8f`/`#8g`
 - Lessons: [`LESSONS_LEARNED.md`](LESSONS_LEARNED.md) → `lessons/agent-tooling.md`
 - Skill: `.cursor/skills/dcs-dev-agent-tooling`
-- Multi-theatre campaign: [`BACKLOG.md`](BACKLOG.md) M7; orchestrator
+- Multi-theatre campaign: [`BACKLOG.md`](BACKLOG.md) M7 (modern maps parked in M8);
+  WWII density: M8. Orchestrator
   `.cursor/skills/full-catalog-orchestrator/SKILL.md`

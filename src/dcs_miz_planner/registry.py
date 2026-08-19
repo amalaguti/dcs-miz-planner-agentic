@@ -93,6 +93,14 @@ class ShipRef:
 
 
 @dataclass(frozen=True)
+class StaticObjectRef:
+    """Known ME static/fortification type (exact PyDCS fortification_map key)."""
+
+    id: str
+    label: str = ""
+
+
+@dataclass(frozen=True)
 class StrikeUnitRef:
     """Land or sea strike target resolved from the Channel registry."""
 
@@ -296,6 +304,7 @@ class ChannelRegistry:
         ships: dict[str, ShipRef] | None = None,
         planning_options: tuple[PlanningOptionRef, ...] | None = None,
         aircraft_failures: dict[str, tuple[AircraftFailureRef, ...]] | None = None,
+        static_objects: dict[str, StaticObjectRef] | None = None,
         airfield_theatres: dict[str, str] | None = None,
         airfields_by_theatre: dict[str, dict[str, int]] | None = None,
         theatre_eras: dict[str, str] | None = None,
@@ -311,6 +320,7 @@ class ChannelRegistry:
         self._ships = dict(ships or {})
         self._planning_options = tuple(planning_options or ())
         self._aircraft_failures = {str(k): tuple(v) for k, v in (aircraft_failures or {}).items()}
+        self._static_objects = dict(static_objects or {})
         if theatre_eras is not None:
             self._theatre_eras = {str(k): str(v) for k, v in theatre_eras.items()}
         else:
@@ -458,6 +468,16 @@ class ChannelRegistry:
                 _parse_aircraft_failure(row) for row in rows
             )
 
+        statics_raw = (
+            _load_yaml_file(wwii_root / "statics.yaml", "era/wwii/statics.yaml").get("statics")
+            or {}
+        )
+        if not isinstance(statics_raw, dict):
+            raise RegistryError("statics.yaml: 'statics' must be a mapping")
+        static_objects = {
+            str(sid): _parse_static_object(str(sid), meta) for sid, meta in statics_raw.items()
+        }
+
         airfields_by_theatre, theatres, theatre_eras = _load_theatre_packages(root / "theatres")
         airfields: dict[str, int] = {}
         airfield_theatres: dict[str, str] = {}
@@ -483,6 +503,7 @@ class ChannelRegistry:
             ships=ships,
             planning_options=planning_options,
             aircraft_failures=aircraft_failures,
+            static_objects=static_objects,
         )
 
     @classmethod
@@ -645,6 +666,20 @@ class ChannelRegistry:
         except KeyError as exc:
             raise RegistryError(f"Unknown ship '{ship_id}'. Known: {sorted(self._ships)}") from exc
 
+    def list_statics(self) -> list[str]:
+        return sorted(self._static_objects)
+
+    def get_static(self, static_id: str) -> StaticObjectRef:
+        try:
+            return self._static_objects[static_id]
+        except KeyError as exc:
+            raise RegistryError(
+                f"Unknown static '{static_id}'. Known: {sorted(self._static_objects)}"
+            ) from exc
+
+    def known_statics(self) -> frozenset[str]:
+        return frozenset(self._static_objects)
+
     def get_strike_unit(self, unit_id: str) -> StrikeUnitRef:
         """Resolve a land or sea strike target id."""
         if unit_id in self._ground_units:
@@ -733,6 +768,14 @@ def _parse_ship(ship_id: str, meta: Any) -> ShipRef:
     if domain != "sea":
         raise RegistryError(f"ships.yaml: {ship_id!r} domain must be 'sea'")
     return ShipRef(id=ship_id, label=str(meta.get("label") or ""), domain="sea")
+
+
+def _parse_static_object(static_id: str, meta: Any) -> StaticObjectRef:
+    if meta is None:
+        return StaticObjectRef(id=static_id)
+    if not isinstance(meta, dict):
+        raise RegistryError(f"statics.yaml: {static_id!r} must map to a mapping")
+    return StaticObjectRef(id=static_id, label=str(meta.get("label") or ""))
 
 
 def _parse_aircraft_failure(meta: Any) -> AircraftFailureRef:

@@ -5,6 +5,27 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Channel extra homes, P-51D, sortie size, recon narrative (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** Channel invent default stays Manston; extra homes Hawkinge /
+  Detling / BigginHill copy **per-home** `cap_*` / `strike_*` / `escort_*`.
+  Normandy extras Chailey / Tangmere / FordAF copy per-home recipes — never
+  NeedsOarPoint 180/63 or 180/133. Vague pair/section/Rhubarb →
+  `player.flight` size 2 role lead; clearly solo → omit the block. Four-ship
+  prefer Manston; Tangmere max 3. Escort `package[]` is strikers you cover,
+  not the section. Live eval 2026-08-19: pair-from-Hawkinge correctly set
+  `player.flight` size 2 role lead at Hawkinge, but still cloned Manston CAP
+  **135/25** — keep repeating per-home `cap_*` (Hawkinge **76/32**). Wingman
+  join-up and recon `narrative.enabled` both fired. Recon `narrative.enabled` does **not** expand in
+  `narrative.py` (would collide with the find-beat zone); `expand_recon_find_pack`
+  prepends `narrative_push` then the AOI find beat. Failures and scenery are
+  behaviour cards (`aircraft_failures`, `airfield_scenery`). Inspirations:
+  `rhubarb_pair`, `dawn_recce_narrative`, `mustang_channel_strafe`. GermanyCW
+  stays unbound unless installed Stage A later.
+- **Code:** `agent/prompts.py`, `agent/spec_schema.py`, `planning_options.yaml`,
+  `recon.py`, `narrative.py`.
+
 ## Kola invent is free_flight only at Bodo (2026-08-18)
 
 - **Date:** 2026-08-18

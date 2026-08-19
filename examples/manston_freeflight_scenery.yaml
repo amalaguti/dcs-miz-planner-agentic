@@ -1,0 +1,27 @@
+schema_version: "1"
+mission_type: free_flight
+theatre: TheChannel
+name: Manston Scenery Hop
+description: Cold start at Manston with a hangar and revetment on the dispersal.
+date:
+  year: 1944
+  month: 6
+  day: 6
+start_time: "09:00"
+weather: sunny_clear
+player:
+  aircraft: SpitfireLFMkIX
+  airfield: Manston
+  coalition: blue
+  country: UK
+  skill: Player
+  start: cold_parking
+scenery:
+  - type: Hangar A
+    bearing_deg: 45
+    distance_km: 0.15
+    heading_deg: 90
+  - type: Revetment_x4
+    bearing_deg: 90
+    distance_km: 0.2
+    heading_deg: 180

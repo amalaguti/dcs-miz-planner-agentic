@@ -71,6 +71,35 @@ Ids are stable; edit `prompt` / `expect` / `notes` as product evolves.
 - **fail if:** hand-written triggers together with narrative, or narrative with no enemies
 - **notes:** Inspiration `cap_with_narrative_beats`.
 
+## pair-as-lead
+
+- **prompt:** take a pair from Hawkinge, keep it simple
+- **expect:**
+  - Channel (or Hawkinge) free_flight / hop framing
+  - `player.flight.size` 2 and `role: lead` (AI mate in the player group)
+  - omit escort `package[]` (this is a section, not a strike package)
+- **fail if:** solo (no `player.flight`) when the ask said pair; or a Mosquito `package[]` used as the wingman
+- **notes:** Catalog `player_flight_size` pair + inspiration `rhubarb_pair`. Compiler already exists (`#15b`).
+
+## wingman-join-up
+
+- **prompt:** I'm flying as two, put me as wingman and I'll join up after takeoff
+- **expect:**
+  - `player.flight.size` 2, `role: wingman`, `join_up` true (or omitted default)
+  - separate AI lead group + Follow (not Player on slot 2)
+- **fail if:** `role: lead` when the ask said wingman; or `join_up: false` with no reason
+- **notes:** Schema already documents wingman Follow. Prefer Manston or Hawkinge parking.
+
+## recon-ops-colour
+
+- **prompt:** dawn recce from Manston, give me some ops colour but I don't want to write triggers
+- **expect:**
+  - `mission_type: recon`
+  - `narrative.enabled: true` and empty zones/triggers in the authored Spec
+  - weapons hold / no payload
+- **fail if:** hand-written recon triggers, or CAP narrative pack used instead of recon
+- **notes:** Inspiration `dawn_recce_narrative`; expander prepends push then find beat.
+
 ---
 
 ## Catalog maintenance checklist

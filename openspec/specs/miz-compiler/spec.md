@@ -1430,3 +1430,12 @@ The compiler MUST keep the install payload-directory scan disabled (`_disable_pa
 #### Scenario: Default compile still disables payload scan
 - **WHEN** a Mission Spec is compiled with a DCS install detectable by PyDCS
 - **THEN** the compiler MUST NOT rely on scanning the install `UnitPayloads` directory unless LESSONS records that scan-on was proven green for that pin
+
+### Requirement: Compile scenery statics
+The compiler SHALL place validated `scenery[]` entries as PyDCS static groups
+via `fortification_map` keys, airfield-relative from the player airport.
+Unknown types MUST already have failed validation.
+
+#### Scenario: Manston scenery compiles
+- **WHEN** `examples/manston_freeflight_scenery.yaml` is compiled
+- **THEN** the `.miz` MUST include static groups for the listed types

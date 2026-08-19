@@ -77,8 +77,18 @@ description: >-
    onto Caucasus GA, do not copy CAP 180/40 onto Syria GA or recon, do
    not copy CAP 350/40 onto Nevada GA or recon, and do not copy CAP 150/40
    onto Falklands GA or recon.
-8. Packaged WWII countries: `UK` and `ThirdReich` only (`data/era/wwii/countries.yaml`).
-   Germany is a hint, not a known id in **any** era.
+8. Packaged WWII countries: `UK`, `ThirdReich`, and `USA`
+   (`data/era/wwii/countries.yaml`). `usaaf` is voice only. `Germany` is a hint,
+   not a known id in **any** era. WWII aircraft include `P-51D` (radio 124.0;
+   payload `p51d_2x_anm64` `{AN-M64}` pylons 4+7). There is **no** Typhoon
+   PyDCS type. Extra Channel invent homes: Hawkinge CAP 76/32 strike 104/78;
+   Detling CAP 102/71 strike 110/122; BigginHill CAP 100/111 strike 106/160
+   — do not copy Manston 135/25 or 125/76. Extra Normandy homes: Chailey
+   CAP 228/130 inland 212/184; Tangmere CAP 215/89 inland 200/152 (max
+   flight size 3); FordAF CAP 220/92 inland 203/152 — do not copy
+   NeedsOarPoint 180/63 or 180/133. Artillery: `LeFH_18-40-105`, `Wespe124`,
+   `M2A1-105`. Scenery: `Hangar A`, `Revetment_x4`, `Tent01`, `Belgian gate`,
+   `Shelter` (exact `fortification_map` keys).
 9. **Caucasus** Spec id is **`Caucasus`** (era `modern`). Curated AFs (8 of 21):
    `Batumi` = 22, `Kobuleti` = 24, `SenakiKolkhi` = 23 (PyDCS `Senaki-Kolkhi`),
    `Kutaisi` = 25, `TbilisiLochini` = 29 (`Tbilisi-Lochini`), `Vaziani` = 31,

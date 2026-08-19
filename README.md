@@ -9,7 +9,10 @@ Natural-language → validated Mission Spec → deterministic `.miz` compiler fo
 Channel Spitfire MVP through M6: Mission Spec (`schema_version: "1"`, unknown fields
 rejected) covers free_flight, intercept, CAP, ground_attack, escort, and recon, plus native ME
 triggers (zones, flags, radio, late activation, sound, markers, altitude/speed gates).
-Manston cold free flight was the first accepted-in-game slice. **Normandy 2.0** is
+Manston cold free flight was the first accepted-in-game slice. **M8** densifies
+Channel/Normandy WWII planning: USA + P-51D, extra invent homes, artillery,
+airfield `scenery[]`, recon narrative, and agent sortie-size (solo vs 2–4 ship).
+Modern-map depth stays parked. **Normandy 2.0** is
 planner-bound for all six mission types at Needs Oar Point
 (`examples/needs_oar_point_cold_freeflight.yaml`,
 `examples/needs_oar_point_cap.yaml`,
