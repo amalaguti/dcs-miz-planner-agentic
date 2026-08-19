@@ -166,6 +166,25 @@ Ids are stable; edit `prompt` / `expect` / `notes` as product evolves.
 - **fail if:** hand-written recon triggers, or CAP narrative pack used instead of recon
 - **notes:** Inspiration `dawn_recce_narrative`; expander prepends push then find beat.
 
+## intercept-different-each-load
+
+- **prompt:** dawn scramble from Manston, make the intercept different every time I load it
+- **expect:**
+  - `mission_type: intercept`
+  - `dynamics.mode: live` with exclusive late-activation pools
+  - player SpitfireLFMkIX
+- **fail if:** static intercept with no `dynamics`; or `narrative.enabled` together with dynamics
+- **notes:** Host invent-product nudge + `manston_dawn_intercept_dynamics_live.yaml`.
+
+## caucasus-spitfire-hop
+
+- **prompt:** something simple out of Batumi, surprise me
+- **expect:**
+  - `theatre: Caucasus`, `airfield: Batumi`
+  - `player.aircraft: SpitfireLFMkIX` (not Su-25T)
+- **fail if:** player Su-25T when the ask did not name Frogfoot
+- **notes:** Invent schema rewrite; compile goldens may still smoke Su-25T.
+
 ---
 
 ## Catalog maintenance checklist

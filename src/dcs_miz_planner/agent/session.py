@@ -33,6 +33,7 @@ from .immersion import (
     theatre_mission_refuse_accept_line,
     theatre_mission_refuse_chat_line,
 )
+from .invent_nudges import host_invent_product_nudge
 from .llm import LLMClient, default_tools
 from .path_clamp import try_clamp_land_paths_if_needed
 from .planner import (
@@ -190,6 +191,17 @@ class PlanSession:
                     output=(
                         content + "\n\n[Host] Draft missed an M8 card implied by the ask — "
                         "commander nudged to apply it. Await a revised Spec JSON, then /accept."
+                    )
+                )
+            product_nudge = host_invent_product_nudge(user_text, parsed)
+            if product_nudge and not getattr(self, "_invent_product_nudge_used", False):
+                self._invent_product_nudge_used = True
+                self.messages.append({"role": "user", "content": product_nudge})
+                return SlashResult(
+                    output=(
+                        content + "\n\n[Host] Draft missed Spitfire player, WWII colour, "
+                        "or dynamics/motion implied by the ask — commander nudged to "
+                        "apply it. Await a revised Spec JSON, then /accept."
                     )
                 )
             nudge = host_immersion_repair_nudge(user_text, parsed)

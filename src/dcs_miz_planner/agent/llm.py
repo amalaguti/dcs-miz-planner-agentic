@@ -51,7 +51,7 @@ BATUMI_COLD_FREE_FLIGHT_JSON = json.dumps(
         "start_time": "09:00",
         "weather": "sunny_clear",
         "player": {
-            "aircraft": "Su-25T",
+            "aircraft": "SpitfireLFMkIX",
             "airfield": "Batumi",
             "coalition": "blue",
             "country": "Georgia",
@@ -76,7 +76,7 @@ NELLIS_COLD_FREE_FLIGHT_JSON = json.dumps(
         "start_time": "09:00",
         "weather": "sunny_clear",
         "player": {
-            "aircraft": "Su-25T",
+            "aircraft": "SpitfireLFMkIX",
             "airfield": "Nellis",
             "coalition": "blue",
             "country": "USA",
@@ -101,7 +101,7 @@ INCIRLIK_COLD_FREE_FLIGHT_JSON = json.dumps(
         "start_time": "09:00",
         "weather": "sunny_clear",
         "player": {
-            "aircraft": "Su-25T",
+            "aircraft": "SpitfireLFMkIX",
             "airfield": "Incirlik",
             "coalition": "blue",
             "country": "Turkey",
@@ -126,7 +126,7 @@ MOUNT_PLEASANT_COLD_FREE_FLIGHT_JSON = json.dumps(
         "start_time": "09:00",
         "weather": "sunny_clear",
         "player": {
-            "aircraft": "Su-25T",
+            "aircraft": "SpitfireLFMkIX",
             "airfield": "MountPleasant",
             "coalition": "blue",
             "country": "UK",

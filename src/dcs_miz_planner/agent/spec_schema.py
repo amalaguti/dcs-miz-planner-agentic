@@ -335,7 +335,7 @@ _COMMON_NOTES: tuple[str, ...] = (
 _CAUCASUS_FF_NOTES: tuple[str, ...] = (
     (
         "Caucasus invent is all six types: airfield Batumi, "
-        "Su-25T, sunny_clear, Georgia blue. CAP, intercept, and escort station 270° / 40 km / 4000 m west "
+        "player SpitfireLFMkIX, sunny_clear, Georgia blue. CAP, intercept, and escort station 270° / 40 km / 4000 m west "
         "over the Black Sea (not Manston 135/25, not Cherbourg 180/63, not Hawkinge, not escort 120/55). "
         "Ground attack and recon AOI 43° / 110 km inland past Kutaisi (not CAP 270/40). "
         "Do not copy Channel or "
@@ -372,7 +372,7 @@ _CAUCASUS_FF_NOTES: tuple[str, ...] = (
 _CAUCASUS_CAP_NOTES: tuple[str, ...] = (
     (
         "Caucasus invent is all six types: airfield Batumi, "
-        "Su-25T, sunny_clear, Georgia blue. CAP, intercept, and escort station 270° / 40 km / 4000 m west "
+        "player SpitfireLFMkIX, sunny_clear, Georgia blue. CAP, intercept, and escort station 270° / 40 km / 4000 m west "
         "over the Black Sea (not Manston 135/25, not Cherbourg 180/63, not escort 120/55). "
         "Enemies: Su-25T, country Russia, coalition red (do not default "
         "ThirdReich)."
@@ -392,7 +392,7 @@ _CAUCASUS_CAP_NOTES: tuple[str, ...] = (
 _CAUCASUS_GA_NOTES: tuple[str, ...] = (
     (
         "Caucasus invent is all six types: airfield Batumi, "
-        "Su-25T, sunny_clear, Georgia blue. Strike 43° / 110 km / 2000 m inland "
+        "player SpitfireLFMkIX, sunny_clear, Georgia blue. Strike 43° / 110 km / 2000 m inland "
         "past Kutaisi (not CAP/escort 270/40 which is sea, not Manston 125/76, not "
         "Cherbourg 180/63). Escort station 270° / 40 km (not Channel escort 120/55). "
         "Call list_strike_targets(theatre=Caucasus) for "
@@ -406,9 +406,8 @@ _CAUCASUS_GA_NOTES: tuple[str, ...] = (
     ),
     "nested strike is required (bearing_deg, distance_km, altitude_m).",
     (
-        "player.payload is required (named preset; prefer su25t_2x_fab250 — "
-        "inner pylons 5 and 7 FAB-250). Omit failures — modern Caucasus has no "
-        "curated aircraft_failure shelf."
+        "player.payload is required (named preset; prefer spitfire_2x250_slipper). "
+        "Omit failures — modern Caucasus has no curated aircraft_failure shelf."
     ),
     (
         "targets must be non-empty land units from list_strike_targets"
@@ -424,7 +423,7 @@ _CAUCASUS_GA_NOTES: tuple[str, ...] = (
 _CAUCASUS_INTERCEPT_NOTES: tuple[str, ...] = (
     (
         "Caucasus invent is all six types: airfield Batumi, "
-        "Su-25T, sunny_clear, Georgia blue. "
+        "player SpitfireLFMkIX, sunny_clear, Georgia blue. "
         "Enemies spawn on the Black Sea corridor (270° / 40 km from "
         "Batumi — same station as batumi_black_sea_cap; not Hawkinge / "
         "Dover / Cherbourg). Escort uses the same 270/40 station (not Channel escort 120/55). "
@@ -446,7 +445,7 @@ _CAUCASUS_INTERCEPT_NOTES: tuple[str, ...] = (
 _CAUCASUS_ESCORT_NOTES: tuple[str, ...] = (
     (
         "Caucasus invent is all six types: airfield Batumi, "
-        "Su-25T, sunny_clear, Georgia blue. Package destination is the Black Sea "
+        "player SpitfireLFMkIX, sunny_clear, Georgia blue. Package destination is the Black Sea "
         "corridor (270° / 40 km / 4000 m — same station as batumi_black_sea_cap; "
         "not Channel escort 120/55, not Cherbourg 180/63). Friendly package e.g. Su-25T, "
         "country Georgia (PackageFlight defaults to UK). Bounce: Su-25T, country "
@@ -473,7 +472,7 @@ _CAUCASUS_ESCORT_NOTES: tuple[str, ...] = (
 _CAUCASUS_RECON_NOTES: tuple[str, ...] = (
     (
         "Caucasus invent is all six types: airfield Batumi, "
-        "Su-25T, sunny_clear, Georgia blue. Recon AOI is inland past Kutaisi "
+        "player SpitfireLFMkIX, sunny_clear, Georgia blue. Recon AOI is inland past Kutaisi "
         "(43° / 110 km / 2000 m — same land station as kutaisi_inland_strike; "
         "not Manston 125/76, not CAP 270/40 sea). Observe land units from "
         "list_strike_targets(theatre=Caucasus). Weapons hold. Do not copy "
@@ -503,7 +502,7 @@ _CAUCASUS_RECON_NOTES: tuple[str, ...] = (
 # Manston YAML, Spitfire failures, and channel_place as templates to copy).
 _SYRIA_FF_NOTES: tuple[str, ...] = (
     (
-        "Syria invent is all six types: airfield Incirlik, Su-25T, "
+        "Syria invent is all six types: airfield Incirlik, player SpitfireLFMkIX, "
         "sunny_clear, Turkey blue. CAP, intercept, and escort station 180° / 40 km / 4000 m south "
         "over the Gulf of Iskenderun (not Cherbourg 180/63, not Caucasus 270/40, not escort 120/55). "
         "GA/recon AOI 121° / 200 km inland past Aleppo (not CAP 180/40). Do not copy Channel, "
@@ -539,7 +538,7 @@ _SYRIA_FF_NOTES: tuple[str, ...] = (
 
 _SYRIA_CAP_NOTES: tuple[str, ...] = (
     (
-        "Syria invent is all six types: airfield Incirlik, Su-25T, "
+        "Syria invent is all six types: airfield Incirlik, player SpitfireLFMkIX, "
         "sunny_clear, Turkey blue. CAP, intercept, and escort station 180° / 40 km / 4000 m south "
         "over the Gulf of Iskenderun (not Cherbourg 180/63, not Caucasus 270/40, "
         "not Manston 135/25, not escort 120/55). Enemies: Su-25T, country Syria, coalition red "
@@ -560,7 +559,7 @@ _SYRIA_CAP_NOTES: tuple[str, ...] = (
 _SYRIA_INTERCEPT_NOTES: tuple[str, ...] = (
     (
         "Syria invent is all six types: airfield Incirlik, "
-        "Su-25T, sunny_clear, Turkey blue. Enemies spawn on the Gulf of "
+        "player SpitfireLFMkIX, sunny_clear, Turkey blue. Enemies spawn on the Gulf of "
         "Iskenderun corridor (180° / 40 km from Incirlik — same station as "
         "incirlik_iskenderun_cap; not Hawkinge / Dover / Cherbourg 180/63 / "
         "Caucasus 270/40 / escort 120/55). "
@@ -581,7 +580,7 @@ _SYRIA_INTERCEPT_NOTES: tuple[str, ...] = (
 _SYRIA_ESCORT_NOTES: tuple[str, ...] = (
     (
         "Syria invent is all six types: airfield Incirlik, "
-        "Su-25T, sunny_clear, Turkey blue. Package destination is the Gulf of "
+        "player SpitfireLFMkIX, sunny_clear, Turkey blue. Package destination is the Gulf of "
         "Iskenderun corridor (180° / 40 km / 4000 m — same station as "
         "incirlik_iskenderun_cap; not Channel escort 120/55, not Cherbourg 180/63, "
         "not Batumi 270/40). Friendly package e.g. Su-25T, "
@@ -611,7 +610,7 @@ _SYRIA_ESCORT_NOTES: tuple[str, ...] = (
 _SYRIA_GA_NOTES: tuple[str, ...] = (
     (
         "Syria invent is all six types: airfield Incirlik, "
-        "Su-25T, sunny_clear, Turkey blue. Strike 121° / 200 km / 2000 m inland "
+        "player SpitfireLFMkIX, sunny_clear, Turkey blue. Strike 121° / 200 km / 2000 m inland "
         "past Aleppo (not CAP/escort 180/40 which is sea, not Kutaisi 43/110, not "
         "Maupertus 180/133, not Manston 125/76). Call list_strike_targets(theatre=Syria) for "
         "modern trucks (Ural-375 / GAZ-66 / ZIL-135). Country Syria red. Do "
@@ -624,9 +623,8 @@ _SYRIA_GA_NOTES: tuple[str, ...] = (
     ),
     "nested strike is required (bearing_deg, distance_km, altitude_m).",
     (
-        "player.payload is required (named preset; prefer su25t_2x_fab250 — "
-        "inner pylons 5 and 7 FAB-250). Omit failures — modern Syria has no "
-        "curated aircraft_failure shelf."
+        "player.payload is required (named preset; prefer spitfire_2x250_slipper). "
+        "Omit failures — modern Syria has no curated aircraft_failure shelf."
     ),
     (
         "targets must be non-empty land units from list_strike_targets"
@@ -642,7 +640,7 @@ _SYRIA_GA_NOTES: tuple[str, ...] = (
 _SYRIA_RECON_NOTES: tuple[str, ...] = (
     (
         "Syria invent is all six types: airfield Incirlik, "
-        "Su-25T, sunny_clear, Turkey blue. Recon AOI is inland past Aleppo "
+        "player SpitfireLFMkIX, sunny_clear, Turkey blue. Recon AOI is inland past Aleppo "
         "(121° / 200 km / 2000 m — same land station as aleppo_inland_strike; "
         "not Manston 125/76, not Kutaisi 43/110, not CAP 180/40 sea). Observe "
         "land units from list_strike_targets(theatre=Syria). Weapons hold. Do "
@@ -672,7 +670,7 @@ _SYRIA_RECON_NOTES: tuple[str, ...] = (
 # Manston YAML, Spitfire failures, and channel_place as templates to copy).
 _NEVADA_FF_NOTES: tuple[str, ...] = (
     (
-        "Nevada invent is all six types: airfield Nellis, Su-25T, "
+        "Nevada invent is all six types: airfield Nellis, player SpitfireLFMkIX, "
         "sunny_clear, USA blue. CAP/intercept/escort station 350° / 40 km / 4000 m north over "
         "desert north-range land (not 180/40, not 270/40, not 180/63, not "
         "Creech 303/40). GA/recon AOI 303° / 85 km inland past Creech (not CAP 350/40). "
@@ -708,7 +706,7 @@ _NEVADA_FF_NOTES: tuple[str, ...] = (
 
 _NEVADA_CAP_NOTES: tuple[str, ...] = (
     (
-        "Nevada invent is all six types: airfield Nellis, Su-25T, "
+        "Nevada invent is all six types: airfield Nellis, player SpitfireLFMkIX, "
         "sunny_clear, USA blue. CAP station 350° / 40 km / 4000 m north over "
         "desert north-range land (not Incirlik 180/40, not Batumi 270/40, not "
         "Cherbourg 180/63, not Manston 135/25, not Creech 303/40). Enemies: "
@@ -733,7 +731,7 @@ _NEVADA_CAP_NOTES: tuple[str, ...] = (
 _NEVADA_INTERCEPT_NOTES: tuple[str, ...] = (
     (
         "Nevada invent is all six types: airfield Nellis, "
-        "Su-25T, sunny_clear, USA blue. Enemies spawn on the desert north-range "
+        "player SpitfireLFMkIX, sunny_clear, USA blue. Enemies spawn on the desert north-range "
         "corridor (350° / 40 km from Nellis — same station as "
         "nellis_north_range_cap; not Hawkinge / Dover / Syria 180/40 / "
         "Caucasus 270/40 / Cherbourg 180/63). "
@@ -757,7 +755,7 @@ _NEVADA_INTERCEPT_NOTES: tuple[str, ...] = (
 _NEVADA_ESCORT_NOTES: tuple[str, ...] = (
     (
         "Nevada invent is all six types: airfield Nellis, "
-        "Su-25T, sunny_clear, USA blue. Package destination is the desert "
+        "player SpitfireLFMkIX, sunny_clear, USA blue. Package destination is the desert "
         "north-range corridor (350° / 40 km / 4000 m — same station as "
         "nellis_north_range_cap; not Channel escort 120/55, not Incirlik 180/40, "
         "not Batumi 270/40, not Cherbourg 180/63). Friendly package e.g. Su-25T, "
@@ -789,7 +787,7 @@ _NEVADA_ESCORT_NOTES: tuple[str, ...] = (
 _NEVADA_GA_NOTES: tuple[str, ...] = (
     (
         "Nevada invent is all six types: "
-        "airfield Nellis, Su-25T, sunny_clear, USA blue. Strike 303° / 85 km / "
+        "airfield Nellis, player SpitfireLFMkIX, sunny_clear, USA blue. Strike 303° / 85 km / "
         "2000 m inland past Creech (not CAP/escort 350/40, not Aleppo 121/200, "
         "not Kutaisi 43/110, not Manston 125/76). Call list_strike_targets"
         "(theatre=Nevada) for modern trucks (Ural-375 / GAZ-66 / ZIL-135). "
@@ -803,9 +801,8 @@ _NEVADA_GA_NOTES: tuple[str, ...] = (
     ),
     "nested strike is required (bearing_deg, distance_km, altitude_m).",
     (
-        "player.payload is required (named preset; prefer su25t_2x_fab250 — "
-        "inner pylons 5 and 7 FAB-250). Omit failures — modern Nevada has no "
-        "curated aircraft_failure shelf."
+        "player.payload is required (named preset; prefer spitfire_2x250_slipper). "
+        "Omit failures — modern Nevada has no curated aircraft_failure shelf."
     ),
     (
         "targets must be non-empty land units from list_strike_targets"
@@ -823,7 +820,7 @@ _NEVADA_GA_NOTES: tuple[str, ...] = (
 _NEVADA_RECON_NOTES: tuple[str, ...] = (
     (
         "Nevada invent is all six types: airfield Nellis, "
-        "Su-25T, sunny_clear, USA blue. Recon AOI is inland past Creech "
+        "player SpitfireLFMkIX, sunny_clear, USA blue. Recon AOI is inland past Creech "
         "(303° / 85 km / 2000 m — same land station as creech_range_strike; "
         "not Manston 125/76, not Aleppo 121/200, not Kutaisi 43/110, not CAP "
         "350/40 north-range). Observe land units from "
@@ -854,7 +851,7 @@ _NEVADA_RECON_NOTES: tuple[str, ...] = (
 # Manston YAML, Spitfire failures, and channel_place as templates to copy).
 _KOLA_FF_NOTES: tuple[str, ...] = (
     (
-        "Kola invent is free_flight only: airfield Bodo, Su-25T, sunny_clear, "
+        "Kola invent is free_flight only: airfield Bodo, player SpitfireLFMkIX, sunny_clear, "
         "Norway blue. Refuse intercept/cap/ground_attack/escort/recon. Do not copy "
         "Channel, Normandy, Caucasus, Syria, Nevada, or Falklands geometry onto Kola."
     ),
@@ -892,7 +889,7 @@ _KOLA_FF_NOTES: tuple[str, ...] = (
 _FALKLANDS_FF_NOTES: tuple[str, ...] = (
     (
         "Falklands invent is all six types: airfield "
-        "MountPleasant, Su-25T, sunny_clear, UK blue. CAP/intercept/escort station "
+        "MountPleasant, player SpitfireLFMkIX, sunny_clear, UK blue. CAP/intercept/escort station "
         "150° / 40 km / 4000 m SSE over the South Atlantic. GA/recon AOI 269° / 21 km "
         "inland short of Goose Green (not CAP 150/40). Do not copy Channel, Normandy, "
         "Caucasus, Syria, or Nevada geometry onto Falklands."
@@ -928,7 +925,7 @@ _FALKLANDS_FF_NOTES: tuple[str, ...] = (
 _FALKLANDS_CAP_NOTES: tuple[str, ...] = (
     (
         "Falklands invent is all six types: airfield "
-        "MountPleasant, Su-25T, sunny_clear, UK blue. CAP station 150° / 40 km "
+        "MountPleasant, player SpitfireLFMkIX, sunny_clear, UK blue. CAP station 150° / 40 km "
         "/ 4000 m SSE over the South Atlantic (not Nellis 350/40, not Incirlik "
         "180/40, not Batumi 270/40, not Cherbourg 180/63, not Manston 135/25). "
         "Enemies: Su-25T, country Argentina, coalition red (do not default "
@@ -953,7 +950,7 @@ _FALKLANDS_CAP_NOTES: tuple[str, ...] = (
 _FALKLANDS_INTERCEPT_NOTES: tuple[str, ...] = (
     (
         "Falklands invent is all six types: airfield "
-        "MountPleasant, Su-25T, sunny_clear, UK blue. Enemies spawn on the "
+        "MountPleasant, player SpitfireLFMkIX, sunny_clear, UK blue. Enemies spawn on the "
         "South Atlantic corridor (150° / 40 km from Mount Pleasant — same "
         "station as mount_pleasant_south_atlantic_cap; not Hawkinge / Dover / "
         "Nellis 350/40 / Incirlik 180/40 / Caucasus 270/40 / Cherbourg 180/63). "
@@ -978,7 +975,7 @@ _FALKLANDS_INTERCEPT_NOTES: tuple[str, ...] = (
 _FALKLANDS_ESCORT_NOTES: tuple[str, ...] = (
     (
         "Falklands invent is all six types: airfield "
-        "MountPleasant, Su-25T, sunny_clear, UK blue. Package destination is the "
+        "MountPleasant, player SpitfireLFMkIX, sunny_clear, UK blue. Package destination is the "
         "South Atlantic corridor (150° / 40 km / 4000 m — same station as "
         "mount_pleasant_south_atlantic_cap; not Channel escort 120/55, not Nellis "
         "350/40, not Incirlik 180/40, not Batumi 270/40, not Cherbourg 180/63). "
@@ -1010,7 +1007,7 @@ _FALKLANDS_ESCORT_NOTES: tuple[str, ...] = (
 _FALKLANDS_GA_NOTES: tuple[str, ...] = (
     (
         "Falklands invent is all six types: "
-        "airfield MountPleasant, Su-25T, sunny_clear, UK blue. Strike 269° / 21 km / "
+        "airfield MountPleasant, player SpitfireLFMkIX, sunny_clear, UK blue. Strike 269° / 21 km / "
         "2000 m inland short of Goose Green (not CAP/escort 150/40, not 269/36 near "
         "Goose Green, not 269/51 Sound sea, not Nevada 303/85, not Aleppo 121/200, "
         "not Kutaisi 43/110, not Manston 125/76). Call list_strike_targets"
@@ -1025,9 +1022,8 @@ _FALKLANDS_GA_NOTES: tuple[str, ...] = (
     ),
     "nested strike is required (bearing_deg, distance_km, altitude_m).",
     (
-        "player.payload is required (named preset; prefer su25t_2x_fab250 — "
-        "inner pylons 5 and 7 FAB-250). Omit failures — modern Falklands has no "
-        "curated aircraft_failure shelf."
+        "player.payload is required (named preset; prefer spitfire_2x250_slipper). "
+        "Omit failures — modern Falklands has no curated aircraft_failure shelf."
     ),
     (
         "targets must be non-empty land units from list_strike_targets"
@@ -1046,7 +1042,7 @@ _FALKLANDS_GA_NOTES: tuple[str, ...] = (
 _FALKLANDS_RECON_NOTES: tuple[str, ...] = (
     (
         "Falklands invent is all six types: airfield MountPleasant, "
-        "Su-25T, sunny_clear, UK blue. Recon AOI is inland short of Goose Green "
+        "player SpitfireLFMkIX, sunny_clear, UK blue. Recon AOI is inland short of Goose Green "
         "(269° / 21 km / 2000 m — same land station as east_falkland_inland_strike; "
         "not Manston 125/76, not Aleppo 121/200, not Kutaisi 43/110, not Nevada "
         "303/85, not CAP 150/40 South Atlantic). Observe land units from "
@@ -1098,6 +1094,39 @@ def supported_mission_types() -> tuple[str, ...]:
     return tuple(_EXAMPLE_FILES.keys())
 
 
+_MODERN_SCHEMA_THEATRES = frozenset({"Caucasus", "Syria", "Nevada", "Falklands", "Kola"})
+_SPITFIRE_PLAYER_NOTE = (
+    "Player.aircraft is SpitfireLFMkIX unless the user names Su-25T/Frogfoot or "
+    "P-51. Do not copy Su-25T from theatre YAML into the player slot. "
+    "WWII/Luftwaffe/1944 colour: enemies Bf-109K-4 or FW-190A8, country ThirdReich. "
+    "Cold War or unspecified modern: red AI and trucks may stay Su-25T / Ural-375. "
+    "Vague unpredictable/dice/F10 asks: emit Spec dynamics.mode live or choose "
+    "(Channel intercept dynamics live example); moving convoy/shipping asks "
+    "need targets motion patrol or path. Do not combine narrative with dynamics."
+)
+
+
+def _prefer_spitfire_player(example: dict[str, Any]) -> dict[str, Any]:
+    """Invent schema: Spitfire in the player slot; leave Su-25T on AI/package."""
+    player = example.get("player")
+    if not isinstance(player, dict) or player.get("aircraft") != "Su-25T":
+        return example
+    rewritten = dict(example)
+    new_player = dict(player)
+    new_player["aircraft"] = "SpitfireLFMkIX"
+    payload = new_player.get("payload")
+    if isinstance(payload, str) and payload.startswith("su25t"):
+        new_player["payload"] = "spitfire_2x250_slipper"
+    rewritten["player"] = new_player
+    return rewritten
+
+
+def _with_spitfire_player_note(notes: tuple[str, ...], theatre: str | None) -> tuple[str, ...]:
+    if theatre in _MODERN_SCHEMA_THEATRES:
+        return (_SPITFIRE_PLAYER_NOTE,) + notes
+    return notes
+
+
 def _finish_schema(
     key: str,
     example: dict[str, Any],
@@ -1110,6 +1139,8 @@ def _finish_schema(
         airfield=airfield_id,
         theatre=theatre_id,
     )
+    if theatre_id in _MODERN_SCHEMA_THEATRES:
+        example = _prefer_spitfire_player(example)
     MissionSpec.model_validate(example)
     notes = _notes_for(key, theatre_id)
     return SpecSchemaView(mission_type=key, example=example, notes=notes)
@@ -1455,55 +1486,63 @@ _NORMANDY_RECON_NOTES: tuple[str, ...] = (
 
 def _notes_for(mission_type: str, theatre: str | None) -> tuple[str, ...]:
     if theatre == "Kola":
-        return _KOLA_FF_NOTES
+        return _with_spitfire_player_note(_KOLA_FF_NOTES, theatre)
     if theatre == "Falklands":
         if mission_type == MissionType.CAP.value:
-            return _FALKLANDS_CAP_NOTES
-        if mission_type == MissionType.INTERCEPT.value:
-            return _FALKLANDS_INTERCEPT_NOTES
-        if mission_type == MissionType.ESCORT.value:
-            return _FALKLANDS_ESCORT_NOTES
-        if mission_type == MissionType.GROUND_ATTACK.value:
-            return _FALKLANDS_GA_NOTES
-        if mission_type == MissionType.RECON.value:
-            return _FALKLANDS_RECON_NOTES
-        return _FALKLANDS_FF_NOTES
+            notes = _FALKLANDS_CAP_NOTES
+        elif mission_type == MissionType.INTERCEPT.value:
+            notes = _FALKLANDS_INTERCEPT_NOTES
+        elif mission_type == MissionType.ESCORT.value:
+            notes = _FALKLANDS_ESCORT_NOTES
+        elif mission_type == MissionType.GROUND_ATTACK.value:
+            notes = _FALKLANDS_GA_NOTES
+        elif mission_type == MissionType.RECON.value:
+            notes = _FALKLANDS_RECON_NOTES
+        else:
+            notes = _FALKLANDS_FF_NOTES
+        return _with_spitfire_player_note(notes, theatre)
     if theatre == "Nevada":
         if mission_type == MissionType.CAP.value:
-            return _NEVADA_CAP_NOTES
-        if mission_type == MissionType.INTERCEPT.value:
-            return _NEVADA_INTERCEPT_NOTES
-        if mission_type == MissionType.ESCORT.value:
-            return _NEVADA_ESCORT_NOTES
-        if mission_type == MissionType.GROUND_ATTACK.value:
-            return _NEVADA_GA_NOTES
-        if mission_type == MissionType.RECON.value:
-            return _NEVADA_RECON_NOTES
-        return _NEVADA_FF_NOTES
+            notes = _NEVADA_CAP_NOTES
+        elif mission_type == MissionType.INTERCEPT.value:
+            notes = _NEVADA_INTERCEPT_NOTES
+        elif mission_type == MissionType.ESCORT.value:
+            notes = _NEVADA_ESCORT_NOTES
+        elif mission_type == MissionType.GROUND_ATTACK.value:
+            notes = _NEVADA_GA_NOTES
+        elif mission_type == MissionType.RECON.value:
+            notes = _NEVADA_RECON_NOTES
+        else:
+            notes = _NEVADA_FF_NOTES
+        return _with_spitfire_player_note(notes, theatre)
     if theatre == "Syria":
         if mission_type == MissionType.CAP.value:
-            return _SYRIA_CAP_NOTES
-        if mission_type == MissionType.INTERCEPT.value:
-            return _SYRIA_INTERCEPT_NOTES
-        if mission_type == MissionType.ESCORT.value:
-            return _SYRIA_ESCORT_NOTES
-        if mission_type == MissionType.GROUND_ATTACK.value:
-            return _SYRIA_GA_NOTES
-        if mission_type == MissionType.RECON.value:
-            return _SYRIA_RECON_NOTES
-        return _SYRIA_FF_NOTES
+            notes = _SYRIA_CAP_NOTES
+        elif mission_type == MissionType.INTERCEPT.value:
+            notes = _SYRIA_INTERCEPT_NOTES
+        elif mission_type == MissionType.ESCORT.value:
+            notes = _SYRIA_ESCORT_NOTES
+        elif mission_type == MissionType.GROUND_ATTACK.value:
+            notes = _SYRIA_GA_NOTES
+        elif mission_type == MissionType.RECON.value:
+            notes = _SYRIA_RECON_NOTES
+        else:
+            notes = _SYRIA_FF_NOTES
+        return _with_spitfire_player_note(notes, theatre)
     if theatre == "Caucasus":
         if mission_type == MissionType.CAP.value:
-            return _CAUCASUS_CAP_NOTES
-        if mission_type == MissionType.GROUND_ATTACK.value:
-            return _CAUCASUS_GA_NOTES
-        if mission_type == MissionType.INTERCEPT.value:
-            return _CAUCASUS_INTERCEPT_NOTES
-        if mission_type == MissionType.ESCORT.value:
-            return _CAUCASUS_ESCORT_NOTES
-        if mission_type == MissionType.RECON.value:
-            return _CAUCASUS_RECON_NOTES
-        return _CAUCASUS_FF_NOTES
+            notes = _CAUCASUS_CAP_NOTES
+        elif mission_type == MissionType.GROUND_ATTACK.value:
+            notes = _CAUCASUS_GA_NOTES
+        elif mission_type == MissionType.INTERCEPT.value:
+            notes = _CAUCASUS_INTERCEPT_NOTES
+        elif mission_type == MissionType.ESCORT.value:
+            notes = _CAUCASUS_ESCORT_NOTES
+        elif mission_type == MissionType.RECON.value:
+            notes = _CAUCASUS_RECON_NOTES
+        else:
+            notes = _CAUCASUS_FF_NOTES
+        return _with_spitfire_player_note(notes, theatre)
     if theatre == "Normandy":
         if mission_type == MissionType.GROUND_ATTACK.value:
             return _NORMANDY_GA_NOTES

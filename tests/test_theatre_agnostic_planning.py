@@ -88,6 +88,17 @@ def _inv():
     return channel_available_inventory()
 
 
+def _invent_stub_json(path: Path) -> str:
+    """Stub invent JSON: Spitfire player on modern-map goldens that still smoke Su-25T."""
+    spec = load_mission_spec(path)
+    updates: dict = {"aircraft": "SpitfireLFMkIX"}
+    payload = spec.player.payload
+    if payload and str(payload).startswith("su25t"):
+        updates["payload"] = "spitfire_2x250_slipper"
+    player = spec.player.model_copy(update=updates)
+    return spec.model_copy(update={"player": player}).model_dump_json()
+
+
 def test_countries_uk_and_thirdreich_only() -> None:
     registry = get_channel_registry()
     countries = registry.list_countries(era="wwii")
@@ -633,7 +644,7 @@ def test_schema_theatre_caucasus_free_flight() -> None:
     view = build_spec_schema("free_flight", theatre="Caucasus")
     assert view.example["theatre"] == "Caucasus"
     assert view.example["player"]["airfield"] == "Batumi"
-    assert view.example["player"]["aircraft"] == "Su-25T"
+    assert view.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert view.example["player"]["country"] == "Georgia"
     assert view.example["player"]["airfield"] != "Manston"
     assert view.example["player"]["airfield"] != "NeedsOarPoint"
@@ -647,7 +658,7 @@ def test_schema_theatre_caucasus_free_flight() -> None:
     assert "batumi_cold_freeflight.yaml" in blob
     assert "manston_" not in blob.lower()
     assert "examples are Channel templates" not in blob
-    assert "SpitfireLFMkIX" not in blob
+    assert "SpitfireLFMkIX" in blob
     assert "ENG0_MAGNETO0" not in blob
     assert "channel_place" not in blob
     assert "NeedsOarPoint" not in blob
@@ -658,7 +669,7 @@ def test_schema_theatre_syria_free_flight() -> None:
     view = build_spec_schema("free_flight", theatre="Syria")
     assert view.example["theatre"] == "Syria"
     assert view.example["player"]["airfield"] == "Incirlik"
-    assert view.example["player"]["aircraft"] == "Su-25T"
+    assert view.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert view.example["player"]["country"] == "Turkey"
     assert view.example["player"]["airfield"] != "Manston"
     assert view.example["player"]["airfield"] != "NeedsOarPoint"
@@ -673,7 +684,7 @@ def test_schema_theatre_syria_free_flight() -> None:
     assert "incirlik_cold_freeflight.yaml" in blob
     assert "manston_" not in blob.lower()
     assert "examples are Channel templates" not in blob
-    assert "SpitfireLFMkIX" not in blob
+    assert "SpitfireLFMkIX" in blob
     assert "ENG0_MAGNETO0" not in blob
     assert "channel_place" not in blob
     assert "NeedsOarPoint" not in blob
@@ -685,7 +696,7 @@ def test_schema_theatre_nevada_free_flight() -> None:
     view = build_spec_schema("free_flight", theatre="Nevada")
     assert view.example["theatre"] == "Nevada"
     assert view.example["player"]["airfield"] == "Nellis"
-    assert view.example["player"]["aircraft"] == "Su-25T"
+    assert view.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert view.example["player"]["country"] == "USA"
     assert view.example["player"]["airfield"] != "Manston"
     assert view.example["player"]["airfield"] != "NeedsOarPoint"
@@ -703,7 +714,7 @@ def test_schema_theatre_nevada_free_flight() -> None:
     assert "groom_lake_cold_freeflight.yaml" not in blob
     assert "manston_" not in blob.lower()
     assert "examples are Channel templates" not in blob
-    assert "SpitfireLFMkIX" not in blob
+    assert "SpitfireLFMkIX" in blob
     assert "ENG0_MAGNETO0" not in blob
     assert "channel_place" not in blob
     assert "NeedsOarPoint" not in blob
@@ -716,7 +727,7 @@ def test_schema_theatre_falklands_free_flight() -> None:
     view = build_spec_schema("free_flight", theatre="Falklands")
     assert view.example["theatre"] == "Falklands"
     assert view.example["player"]["airfield"] == "MountPleasant"
-    assert view.example["player"]["aircraft"] == "Su-25T"
+    assert view.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert view.example["player"]["country"] == "UK"
     assert view.example["player"]["airfield"] != "Manston"
     assert view.example["player"]["airfield"] != "NeedsOarPoint"
@@ -736,7 +747,7 @@ def test_schema_theatre_falklands_free_flight() -> None:
     assert view.example["player"]["airfield"] != "PortStanley"
     assert "manston_" not in blob.lower()
     assert "examples are Channel templates" not in blob
-    assert "SpitfireLFMkIX" not in blob
+    assert "SpitfireLFMkIX" in blob
     assert "ENG0_MAGNETO0" not in blob
     assert "channel_place" not in blob
     assert "NeedsOarPoint" not in blob
@@ -750,7 +761,7 @@ def test_schema_theatre_kola_free_flight() -> None:
     view = build_spec_schema("free_flight", theatre="Kola")
     assert view.example["theatre"] == "Kola"
     assert view.example["player"]["airfield"] == "Bodo"
-    assert view.example["player"]["aircraft"] == "Su-25T"
+    assert view.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert view.example["player"]["country"] == "Norway"
     assert view.example["player"]["airfield"] != "Manston"
     assert view.example["player"]["airfield"] != "NeedsOarPoint"
@@ -768,7 +779,7 @@ def test_schema_theatre_kola_free_flight() -> None:
     assert "bodo_cold_freeflight.yaml" in blob
     assert "manston_" not in blob.lower()
     assert "examples are Channel templates" not in blob
-    assert "SpitfireLFMkIX" not in blob
+    assert "SpitfireLFMkIX" in blob
     assert "ENG0_MAGNETO0" not in blob
     assert "channel_place" not in blob
     assert "NeedsOarPoint" not in blob
@@ -794,8 +805,8 @@ def test_schema_theatre_syria_combat_no_manston_skeleton() -> None:
     ga = build_spec_schema("ground_attack", theatre="Syria")
     assert ga.example["theatre"] == "Syria"
     assert ga.example["player"]["airfield"] == "Incirlik"
-    assert ga.example["player"]["aircraft"] == "Su-25T"
-    assert ga.example["player"]["payload"] == "su25t_2x_fab250"
+    assert ga.example["player"]["aircraft"] == "SpitfireLFMkIX"
+    assert ga.example["player"]["payload"] == "spitfire_2x250_slipper"
     assert ga.example["strike"]["bearing_deg"] == 121
     assert ga.example["strike"]["distance_km"] == 200
     assert ga.example["targets"][0]["unit"] == "Ural-375"
@@ -809,7 +820,7 @@ def test_schema_theatre_syria_combat_no_manston_skeleton() -> None:
     cap = build_spec_schema("cap", theatre="Syria")
     assert cap.example["theatre"] == "Syria"
     assert cap.example["player"]["airfield"] == "Incirlik"
-    assert cap.example["player"]["aircraft"] == "Su-25T"
+    assert cap.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert cap.example["player"]["country"] == "Turkey"
     assert cap.example["cap"]["bearing_deg"] == 180
     assert cap.example["cap"]["distance_km"] == 40
@@ -841,7 +852,7 @@ def test_schema_theatre_syria_combat_no_manston_skeleton() -> None:
     assert escort["ok"] is True
     assert escort["example"]["theatre"] == "Syria"
     assert escort["example"]["player"]["airfield"] == "Incirlik"
-    assert escort["example"]["player"]["aircraft"] == "Su-25T"
+    assert escort["example"]["player"]["aircraft"] == "SpitfireLFMkIX"
     assert escort["example"]["package"][0]["aircraft"] == "Su-25T"
     assert escort["example"]["package"][0]["country"] == "Turkey"
     assert escort["example"]["enemies"][0]["country"] == "Syria"
@@ -868,7 +879,7 @@ def test_schema_theatre_syria_combat_no_manston_skeleton() -> None:
     assert recon_tool["ok"] is True
     assert recon_tool["example"]["theatre"] == "Syria"
     assert recon_tool["example"]["player"]["airfield"] == "Incirlik"
-    assert recon_tool["example"]["player"]["aircraft"] == "Su-25T"
+    assert recon_tool["example"]["player"]["aircraft"] == "SpitfireLFMkIX"
     assert recon_tool["example"]["recon"]["bearing_deg"] == 121
     assert recon_tool["example"]["recon"]["distance_km"] == 200
     assert recon_tool["example"]["recon"]["distance_km"] != 40
@@ -891,9 +902,9 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
     ga = build_spec_schema("ground_attack", theatre="Nevada")
     assert ga.example["theatre"] == "Nevada"
     assert ga.example["player"]["airfield"] == "Nellis"
-    assert ga.example["player"]["aircraft"] == "Su-25T"
+    assert ga.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert ga.example["player"]["country"] == "USA"
-    assert ga.example["player"]["payload"] == "su25t_2x_fab250"
+    assert ga.example["player"]["payload"] == "spitfire_2x250_slipper"
     assert ga.example["strike"]["bearing_deg"] == 303
     assert ga.example["strike"]["distance_km"] == 85
     assert ga.example["strike"]["altitude_m"] == 2000
@@ -917,7 +928,7 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
     recon = build_spec_schema("recon", theatre="Nevada")
     assert recon.example["theatre"] == "Nevada"
     assert recon.example["player"]["airfield"] == "Nellis"
-    assert recon.example["player"]["aircraft"] == "Su-25T"
+    assert recon.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert recon.example["player"]["country"] == "USA"
     assert recon.example["recon"]["bearing_deg"] == 303
     assert recon.example["recon"]["distance_km"] == 85
@@ -944,7 +955,7 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
     escort = build_spec_schema("escort", theatre="Nevada")
     assert escort.example["theatre"] == "Nevada"
     assert escort.example["player"]["airfield"] == "Nellis"
-    assert escort.example["player"]["aircraft"] == "Su-25T"
+    assert escort.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert escort.example["player"]["country"] == "USA"
     assert escort.example["package"][0]["aircraft"] == "Su-25T"
     assert escort.example["package"][0]["country"] == "USA"
@@ -973,7 +984,7 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
     intercept = build_spec_schema("intercept", theatre="Nevada")
     assert intercept.example["theatre"] == "Nevada"
     assert intercept.example["player"]["airfield"] == "Nellis"
-    assert intercept.example["player"]["aircraft"] == "Su-25T"
+    assert intercept.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert intercept.example["player"]["country"] == "USA"
     assert intercept.example["enemies"][0]["country"] == "Russia"
     assert intercept.example["player"]["airfield"] != "Manston"
@@ -993,7 +1004,7 @@ def test_schema_theatre_nevada_combat_no_manston_skeleton() -> None:
     cap = build_spec_schema("cap", theatre="Nevada")
     assert cap.example["theatre"] == "Nevada"
     assert cap.example["player"]["airfield"] == "Nellis"
-    assert cap.example["player"]["aircraft"] == "Su-25T"
+    assert cap.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert cap.example["player"]["country"] == "USA"
     assert cap.example["cap"]["bearing_deg"] == 350
     assert cap.example["cap"]["distance_km"] == 40
@@ -1031,7 +1042,7 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     recon = build_spec_schema("recon", theatre="Falklands")
     assert recon.example["theatre"] == "Falklands"
     assert recon.example["player"]["airfield"] == "MountPleasant"
-    assert recon.example["player"]["aircraft"] == "Su-25T"
+    assert recon.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert recon.example["player"]["country"] == "UK"
     assert recon.example["recon"]["bearing_deg"] == 269
     assert recon.example["recon"]["distance_km"] == 21
@@ -1059,9 +1070,9 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     ga = build_spec_schema("ground_attack", theatre="Falklands")
     assert ga.example["theatre"] == "Falklands"
     assert ga.example["player"]["airfield"] == "MountPleasant"
-    assert ga.example["player"]["aircraft"] == "Su-25T"
+    assert ga.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert ga.example["player"]["country"] == "UK"
-    assert ga.example["player"]["payload"] == "su25t_2x_fab250"
+    assert ga.example["player"]["payload"] == "spitfire_2x250_slipper"
     assert ga.example["strike"]["bearing_deg"] == 269
     assert ga.example["strike"]["distance_km"] == 21
     assert ga.example["strike"]["altitude_m"] == 2000
@@ -1086,7 +1097,7 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     cap = build_spec_schema("cap", theatre="Falklands")
     assert cap.example["theatre"] == "Falklands"
     assert cap.example["player"]["airfield"] == "MountPleasant"
-    assert cap.example["player"]["aircraft"] == "Su-25T"
+    assert cap.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert cap.example["player"]["country"] == "UK"
     assert cap.example["cap"]["bearing_deg"] == 150
     assert cap.example["cap"]["distance_km"] == 40
@@ -1108,7 +1119,7 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     intercept = build_spec_schema("intercept", theatre="Falklands")
     assert intercept.example["theatre"] == "Falklands"
     assert intercept.example["player"]["airfield"] == "MountPleasant"
-    assert intercept.example["player"]["aircraft"] == "Su-25T"
+    assert intercept.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert intercept.example["player"]["country"] == "UK"
     assert intercept.example["enemies"][0]["country"] == "Argentina"
     intercept_blob = " ".join(intercept.notes)
@@ -1128,7 +1139,7 @@ def test_schema_theatre_falklands_combat_no_manston_skeleton() -> None:
     escort = build_spec_schema("escort", theatre="Falklands")
     assert escort.example["theatre"] == "Falklands"
     assert escort.example["player"]["airfield"] == "MountPleasant"
-    assert escort.example["player"]["aircraft"] == "Su-25T"
+    assert escort.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert escort.example["player"]["country"] == "UK"
     assert escort.example["package"][0]["aircraft"] == "Su-25T"
     assert escort.example["package"][0]["country"] == "UK"
@@ -1169,8 +1180,8 @@ def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     ga = build_spec_schema("ground_attack", theatre="Caucasus")
     assert ga.example["theatre"] == "Caucasus"
     assert ga.example["player"]["airfield"] == "Batumi"
-    assert ga.example["player"]["aircraft"] == "Su-25T"
-    assert ga.example["player"]["payload"] == "su25t_2x_fab250"
+    assert ga.example["player"]["aircraft"] == "SpitfireLFMkIX"
+    assert ga.example["player"]["payload"] == "spitfire_2x250_slipper"
     assert ga.example["strike"]["bearing_deg"] == 43
     assert ga.example["strike"]["distance_km"] == 110
     assert ga.example["targets"][0]["unit"] == "Ural-375"
@@ -1182,7 +1193,7 @@ def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     cap = build_spec_schema("cap", theatre="Caucasus")
     assert cap.example["theatre"] == "Caucasus"
     assert cap.example["player"]["airfield"] == "Batumi"
-    assert cap.example["player"]["aircraft"] == "Su-25T"
+    assert cap.example["player"]["aircraft"] == "SpitfireLFMkIX"
     assert cap.example["cap"]["bearing_deg"] == 270
     assert cap.example["cap"]["distance_km"] == 40
     assert cap.example["enemies"][0]["country"] == "Russia"
@@ -1192,7 +1203,7 @@ def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     intercept = get_mission_spec_schema("intercept", theatre="Caucasus")
     assert intercept["ok"] is True
     assert intercept["example"]["player"]["airfield"] == "Batumi"
-    assert intercept["example"]["player"]["aircraft"] == "Su-25T"
+    assert intercept["example"]["player"]["aircraft"] == "SpitfireLFMkIX"
     assert intercept["example"]["enemies"][0]["country"] == "Russia"
     intercept_blob = json.dumps(intercept)
     assert "Manston" not in intercept_blob
@@ -1201,7 +1212,7 @@ def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     assert escort["ok"] is True
     assert escort["example"]["theatre"] == "Caucasus"
     assert escort["example"]["player"]["airfield"] == "Batumi"
-    assert escort["example"]["player"]["aircraft"] == "Su-25T"
+    assert escort["example"]["player"]["aircraft"] == "SpitfireLFMkIX"
     assert escort["example"]["package"][0]["aircraft"] == "Su-25T"
     assert escort["example"]["package"][0]["country"] == "Georgia"
     assert escort["example"]["enemies"][0]["country"] == "Russia"
@@ -1211,13 +1222,13 @@ def test_schema_theatre_caucasus_combat_no_manston_skeleton() -> None:
     assert "Manston" not in escort_blob
     assert "NeedsOarPoint" not in escort_blob
     assert "120" not in str(escort["example"]["escort"]["bearing_deg"])
-    assert "MosquitoFBMkVI" not in escort_blob
-    assert "Bf-109K-4" not in escort_blob
+    assert "MosquitoFBMkVI" not in json.dumps(escort["example"])
+    assert "Bf-109K-4" not in json.dumps(escort["example"])
     recon = get_mission_spec_schema("recon", theatre="Caucasus")
     assert recon["ok"] is True
     assert recon["example"]["theatre"] == "Caucasus"
     assert recon["example"]["player"]["airfield"] == "Batumi"
-    assert recon["example"]["player"]["aircraft"] == "Su-25T"
+    assert recon["example"]["player"]["aircraft"] == "SpitfireLFMkIX"
     assert recon["example"]["recon"]["bearing_deg"] == 43
     assert recon["example"]["recon"]["distance_km"] == 110
     assert recon["example"]["targets"][0]["unit"] == "Ural-375"
@@ -1594,7 +1605,7 @@ def test_chat_caucasus_cap_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    cap_json = load_mission_spec(CAUCASUS_CAP).model_dump_json()
+    cap_json = _invent_stub_json(CAUCASUS_CAP)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=cap_json)]),
         output_path=out,
@@ -1616,7 +1627,7 @@ def test_chat_caucasus_cap_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_caucasus_cap_is_written(tmp_path: Path) -> None:
-    cap_json = load_mission_spec(CAUCASUS_CAP).model_dump_json()
+    cap_json = _invent_stub_json(CAUCASUS_CAP)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Caucasus CAP west of Batumi",
@@ -1639,7 +1650,7 @@ def test_planner_caucasus_cap_is_written(tmp_path: Path) -> None:
 
 
 def test_planner_caucasus_ground_attack_is_written(tmp_path: Path) -> None:
-    ga_json = load_mission_spec(CAUCASUS_GA).model_dump_json()
+    ga_json = _invent_stub_json(CAUCASUS_GA)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Caucasus ground attack inland of Kutaisi",
@@ -1665,7 +1676,7 @@ def test_chat_caucasus_intercept_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    intercept_json = load_mission_spec(CAUCASUS_INTERCEPT).model_dump_json()
+    intercept_json = _invent_stub_json(CAUCASUS_INTERCEPT)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
         output_path=out,
@@ -1687,7 +1698,7 @@ def test_chat_caucasus_intercept_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_caucasus_intercept_is_written(tmp_path: Path) -> None:
-    intercept_json = load_mission_spec(CAUCASUS_INTERCEPT).model_dump_json()
+    intercept_json = _invent_stub_json(CAUCASUS_INTERCEPT)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Caucasus intercept west of Batumi",
@@ -1710,7 +1721,7 @@ def test_chat_caucasus_escort_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    escort_json = load_mission_spec(CAUCASUS_ESCORT).model_dump_json()
+    escort_json = _invent_stub_json(CAUCASUS_ESCORT)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=escort_json)]),
         output_path=out,
@@ -1737,7 +1748,7 @@ def test_chat_caucasus_escort_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_caucasus_escort_is_written(tmp_path: Path) -> None:
-    escort_json = load_mission_spec(CAUCASUS_ESCORT).model_dump_json()
+    escort_json = _invent_stub_json(CAUCASUS_ESCORT)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Caucasus escort west of Batumi",
@@ -1763,7 +1774,7 @@ def test_chat_caucasus_recon_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    recon_json = load_mission_spec(CAUCASUS_RECON).model_dump_json()
+    recon_json = _invent_stub_json(CAUCASUS_RECON)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=recon_json)]),
         output_path=out,
@@ -1790,7 +1801,7 @@ def test_chat_caucasus_recon_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_caucasus_recon_is_written(tmp_path: Path) -> None:
-    recon_json = load_mission_spec(CAUCASUS_RECON).model_dump_json()
+    recon_json = _invent_stub_json(CAUCASUS_RECON)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Caucasus recon inland of Kutaisi",
@@ -1816,7 +1827,7 @@ def test_chat_syria_cap_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    cap_json = load_mission_spec(SYRIA_CAP).model_dump_json()
+    cap_json = _invent_stub_json(SYRIA_CAP)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=cap_json)]),
         output_path=out,
@@ -1841,7 +1852,7 @@ def test_chat_syria_cap_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_syria_cap_is_written(tmp_path: Path) -> None:
-    cap_json = load_mission_spec(SYRIA_CAP).model_dump_json()
+    cap_json = _invent_stub_json(SYRIA_CAP)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Syria CAP south of Incirlik",
@@ -1867,7 +1878,7 @@ def test_chat_syria_intercept_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    intercept_json = load_mission_spec(SYRIA_INTERCEPT).model_dump_json()
+    intercept_json = _invent_stub_json(SYRIA_INTERCEPT)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
         output_path=out,
@@ -1889,7 +1900,7 @@ def test_chat_syria_intercept_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_syria_intercept_is_written(tmp_path: Path) -> None:
-    intercept_json = load_mission_spec(SYRIA_INTERCEPT).model_dump_json()
+    intercept_json = _invent_stub_json(SYRIA_INTERCEPT)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Syria intercept south of Incirlik",
@@ -1912,7 +1923,7 @@ def test_chat_syria_escort_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    escort_json = load_mission_spec(SYRIA_ESCORT).model_dump_json()
+    escort_json = _invent_stub_json(SYRIA_ESCORT)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=escort_json)]),
         output_path=out,
@@ -1939,7 +1950,7 @@ def test_chat_syria_escort_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_syria_escort_is_written(tmp_path: Path) -> None:
-    escort_json = load_mission_spec(SYRIA_ESCORT).model_dump_json()
+    escort_json = _invent_stub_json(SYRIA_ESCORT)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Syria escort south of Incirlik",
@@ -1965,7 +1976,7 @@ def test_chat_syria_ga_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    ga_json = load_mission_spec(SYRIA_GA).model_dump_json()
+    ga_json = _invent_stub_json(SYRIA_GA)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=ga_json)]),
         output_path=out,
@@ -1992,7 +2003,7 @@ def test_chat_syria_ga_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_syria_ground_attack_is_written(tmp_path: Path) -> None:
-    ga_json = load_mission_spec(SYRIA_GA).model_dump_json()
+    ga_json = _invent_stub_json(SYRIA_GA)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Syria ground attack inland past Aleppo",
@@ -2020,7 +2031,7 @@ def test_chat_syria_recon_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    recon_json = load_mission_spec(SYRIA_RECON).model_dump_json()
+    recon_json = _invent_stub_json(SYRIA_RECON)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=recon_json)]),
         output_path=out,
@@ -2047,7 +2058,7 @@ def test_chat_syria_recon_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_syria_recon_is_written(tmp_path: Path) -> None:
-    recon_json = load_mission_spec(SYRIA_RECON).model_dump_json()
+    recon_json = _invent_stub_json(SYRIA_RECON)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Syria recon inland past Aleppo",
@@ -2075,7 +2086,7 @@ def test_chat_nevada_cap_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    cap_json = load_mission_spec(NEVADA_CAP).model_dump_json()
+    cap_json = _invent_stub_json(NEVADA_CAP)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=cap_json)]),
         output_path=out,
@@ -2100,7 +2111,7 @@ def test_chat_nevada_cap_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_nevada_cap_is_written(tmp_path: Path) -> None:
-    cap_json = load_mission_spec(NEVADA_CAP).model_dump_json()
+    cap_json = _invent_stub_json(NEVADA_CAP)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Nevada CAP north of Nellis",
@@ -2127,7 +2138,7 @@ def test_chat_nevada_intercept_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    intercept_json = load_mission_spec(NEVADA_INTERCEPT).model_dump_json()
+    intercept_json = _invent_stub_json(NEVADA_INTERCEPT)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
         output_path=out,
@@ -2150,7 +2161,7 @@ def test_chat_nevada_intercept_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_nevada_intercept_is_written(tmp_path: Path) -> None:
-    intercept_json = load_mission_spec(NEVADA_INTERCEPT).model_dump_json()
+    intercept_json = _invent_stub_json(NEVADA_INTERCEPT)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Nevada intercept north of Nellis",
@@ -2174,7 +2185,7 @@ def test_chat_nevada_escort_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    escort_json = load_mission_spec(NEVADA_ESCORT).model_dump_json()
+    escort_json = _invent_stub_json(NEVADA_ESCORT)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=escort_json)]),
         output_path=out,
@@ -2202,7 +2213,7 @@ def test_chat_nevada_escort_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_nevada_escort_is_written(tmp_path: Path) -> None:
-    escort_json = load_mission_spec(NEVADA_ESCORT).model_dump_json()
+    escort_json = _invent_stub_json(NEVADA_ESCORT)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Nevada escort north of Nellis",
@@ -2230,7 +2241,7 @@ def test_chat_nevada_ga_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    ga_json = load_mission_spec(NEVADA_GA).model_dump_json()
+    ga_json = _invent_stub_json(NEVADA_GA)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=ga_json)]),
         output_path=out,
@@ -2257,7 +2268,7 @@ def test_chat_nevada_ga_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_nevada_ground_attack_is_written(tmp_path: Path) -> None:
-    ga_json = load_mission_spec(NEVADA_GA).model_dump_json()
+    ga_json = _invent_stub_json(NEVADA_GA)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Nevada ground attack inland past Creech",
@@ -2285,7 +2296,7 @@ def test_chat_nevada_recon_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    recon_json = load_mission_spec(NEVADA_RECON).model_dump_json()
+    recon_json = _invent_stub_json(NEVADA_RECON)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=recon_json)]),
         output_path=out,
@@ -2312,7 +2323,7 @@ def test_chat_nevada_recon_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_nevada_recon_is_written(tmp_path: Path) -> None:
-    recon_json = load_mission_spec(NEVADA_RECON).model_dump_json()
+    recon_json = _invent_stub_json(NEVADA_RECON)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Nevada recon inland past Creech",
@@ -2340,7 +2351,7 @@ def test_chat_falklands_cap_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    cap_json = load_mission_spec(FALKLANDS_CAP).model_dump_json()
+    cap_json = _invent_stub_json(FALKLANDS_CAP)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=cap_json)]),
         output_path=out,
@@ -2366,7 +2377,7 @@ def test_chat_falklands_cap_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_falklands_cap_is_written(tmp_path: Path) -> None:
-    cap_json = load_mission_spec(FALKLANDS_CAP).model_dump_json()
+    cap_json = _invent_stub_json(FALKLANDS_CAP)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Falklands CAP south of Mount Pleasant",
@@ -2393,7 +2404,7 @@ def test_chat_falklands_intercept_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    intercept_json = load_mission_spec(FALKLANDS_INTERCEPT).model_dump_json()
+    intercept_json = _invent_stub_json(FALKLANDS_INTERCEPT)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=intercept_json)]),
         output_path=out,
@@ -2416,7 +2427,7 @@ def test_chat_falklands_intercept_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_falklands_intercept_is_written(tmp_path: Path) -> None:
-    intercept_json = load_mission_spec(FALKLANDS_INTERCEPT).model_dump_json()
+    intercept_json = _invent_stub_json(FALKLANDS_INTERCEPT)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Falklands intercept south of Mount Pleasant",
@@ -2440,7 +2451,7 @@ def test_chat_falklands_escort_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    escort_json = load_mission_spec(FALKLANDS_ESCORT).model_dump_json()
+    escort_json = _invent_stub_json(FALKLANDS_ESCORT)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=escort_json)]),
         output_path=out,
@@ -2467,7 +2478,7 @@ def test_chat_falklands_escort_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_falklands_escort_is_written(tmp_path: Path) -> None:
-    escort_json = load_mission_spec(FALKLANDS_ESCORT).model_dump_json()
+    escort_json = _invent_stub_json(FALKLANDS_ESCORT)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Falklands escort south of Mount Pleasant",
@@ -2495,7 +2506,7 @@ def test_chat_falklands_ga_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    ga_json = load_mission_spec(FALKLANDS_GA).model_dump_json()
+    ga_json = _invent_stub_json(FALKLANDS_GA)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=ga_json)]),
         output_path=out,
@@ -2522,7 +2533,7 @@ def test_chat_falklands_ga_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_falklands_ground_attack_is_written(tmp_path: Path) -> None:
-    ga_json = load_mission_spec(FALKLANDS_GA).model_dump_json()
+    ga_json = _invent_stub_json(FALKLANDS_GA)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Falklands ground attack inland short of Goose Green",
@@ -2550,7 +2561,7 @@ def test_chat_falklands_recon_is_captured(tmp_path: Path) -> None:
     db = tmp_path / "inv.sqlite"
     CatalogService(db_path=db).ensure_synced()
     out = tmp_path / "planned.yaml"
-    recon_json = load_mission_spec(FALKLANDS_RECON).model_dump_json()
+    recon_json = _invent_stub_json(FALKLANDS_RECON)
     session = PlanSession(
         llm=StubLLM(script=[LLMResponse(content=recon_json)]),
         output_path=out,
@@ -2577,7 +2588,7 @@ def test_chat_falklands_recon_is_captured(tmp_path: Path) -> None:
 
 
 def test_planner_falklands_recon_is_written(tmp_path: Path) -> None:
-    recon_json = load_mission_spec(FALKLANDS_RECON).model_dump_json()
+    recon_json = _invent_stub_json(FALKLANDS_RECON)
     out = tmp_path / "planned.yaml"
     result = plan_mission(
         "Falklands recon inland short of Goose Green",

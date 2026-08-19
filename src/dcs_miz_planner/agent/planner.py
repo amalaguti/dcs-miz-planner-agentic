@@ -31,6 +31,7 @@ from .immersion import (
     host_normandy_combat_nudge,
     theatre_mission_refuse_planner_error,
 )
+from .invent_nudges import host_invent_product_nudge
 from .llm import LLMClient, default_tools
 from .path_clamp import try_clamp_land_paths_if_needed
 from .prompts import compose_system_prompt, host_spec_repair_nudge
@@ -257,6 +258,11 @@ def plan_mission(
                 if m8_nudge:
                     immersion_repair_used = True
                     messages.append({"role": "user", "content": m8_nudge})
+                    continue
+                product_nudge = host_invent_product_nudge(prompt, spec)
+                if product_nudge:
+                    immersion_repair_used = True
+                    messages.append({"role": "user", "content": product_nudge})
                     continue
                 nudge = host_immersion_repair_nudge(prompt, spec)
                 if nudge:

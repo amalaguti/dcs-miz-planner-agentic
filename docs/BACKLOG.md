@@ -467,6 +467,7 @@ Stage C combat on a new map before Slice 0b is on master.
 | F5f | `falklands-ground-attack` | Falklands GA: Mount Pleasant inland strike short of Goose Green (269°/21 km); Syria-style seaward-window domain; modern Ural/GAZ/ZIL country Argentina red; invent FF+CAP+intercept+escort+GA; recon still refuses | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 | F5g | `falklands-recon` | Falklands recon: Mount Pleasant observe inland short of Goose Green (269°/21 km); invent allow all six types | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
 | F6 | `kola-cold-freeflight` | Kola Stage A bind + smoke (Bodo / Norway / Su-25T; invent FF-only) | `done` (CLI/API 2026-08-18; ME Instant Action do-soon) |
+| F7 | `spitfire-invent-theatres-and-dynamics` | Invent player SpitfireLFMkIX on bound modern maps; WWII colour opposition; cue-gated dynamics/motion host nudge | `done` (CLI/API 2026-08-19; ME Instant Action do-soon) |
 
 Further per-map stages B–D (geography, places+combat, units+invent) are named at
 promote time (`<theatre>-airfields`, `<theatre>-places`, …). Next promote: unbound stay discovered-only (`Iraq` / `MarianaIslandsWWII`). Refresh

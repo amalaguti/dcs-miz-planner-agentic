@@ -33,7 +33,10 @@ at Needs Oar Point. **Caucasus** is planner-bound for cold freeflight at Batumi
 (`examples/batumi_cold_freeflight.yaml`; Spec theatre id `Caucasus`; Su-25T /
 Georgia / 251.0 MHz) plus curated extra airfields and a Mozdok smoke
 (`examples/mozdok_cold_freeflight.yaml`; Russia red). Spitfire LF Mk IX is
-**dual-era** and may fly on Caucasus (`examples/batumi_spitfire_freeflight.yaml`).
+**dual-era** and may fly on Caucasus (`examples/batumi_spitfire_freeflight.yaml`). Invent on Caucasus, Syria,
+Nevada, Falklands, and Kola sits the **player** in that Spitfire (Su-25T stays
+red AI / package unless you name Frogfoot). Vague unpredictable/F10/moving-convoy
+asks get Spec `dynamics` / target `motion` via a host nudge.
 Caucasus invent is **all six types** at Batumi
 (`examples/batumi_black_sea_cap.yaml`; CAP 270°/40 km west over the Black Sea;
 `examples/batumi_kutaisi_ground_attack.yaml`; GA 43°/110 km inland past Kutaisi;

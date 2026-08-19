@@ -72,7 +72,10 @@ description: >-
    they MUST NOT replace the invent/schema home. Port Stanley is heli
    lookup-only. Country `Argentina` is modern-only; Channel+Argentina is
    unknown. Chile is deferred.
-   **Kola** is **free_flight only** (Bodo, Su-25T, Norway blue, 251.0 MHz).
+   **Kola** is **free_flight only** (Bodo, player SpitfireLFMkIX, Norway blue).
+   Invent on Caucasus/Syria/Nevada/Falklands/Kola uses Spitfire in the player
+   slot (Su-25T enemies/package unless WWII colour). Combined host nudge for
+   player, WWII opposition, dynamics.mode, and target motion.
    Combat types refuse every turn (no MountPleasant/Nellis/Incirlik skeleton).
    Extra-AF homes and dual-offer trucks are out of Stage A.
    Refused types refuse every turn
