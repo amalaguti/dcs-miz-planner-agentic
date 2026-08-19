@@ -35,11 +35,17 @@ description: >-
    YAML. Invent unit/preset cues ≠ geometry — use place recipes + invent path
    clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
    `french_coast_rail_corridor` path deltas only —
-   **no** DCS rail-mesh snap (`#8m`). Channel invent default is Manston; extra
+   **no** DCS rail-mesh snap (`#8m`).    Channel invent default is Manston; extra
    homes Hawkinge / Detling / BigginHill copy per-home recipes (not 135/25 or
-   125/76). Normandy extras Chailey / Tangmere / FordAF copy per-home recipes
-   (Tangmere max_flight_size 3). Vague pair/section → `player.flight` size 2
-   role lead; solo omits the block. Artillery class + P-51D (`USA`) are WWII
+   125/76). `get_mission_spec_schema` MUST pass optional `airfield` so Hawkinge
+   examples are not Manston JSON; invent/chat host-clamps cloned default-home
+   stations (`extra_homes.try_clamp_extra_home_stations`) — CLI validate does
+   not. Repair nudges MUST infer airfield from rejected JSON. Normandy extras Chailey / Tangmere / FordAF copy per-home recipes
+   (Tangmere max_flight_size 3).    Vague pair/section → `player.flight` size 2
+   role lead; solo omits the block; host one-shot-nudges size 2 when the ask
+   is a pair and the draft omitted `player.flight`. F10-orders / fail-to-follow
+   (including wander / fail me) fire **before** the size-only pair/wingman
+   nudge. Artillery class + P-51D (`USA`) are WWII
    allowlisted.    Invent may use offerable theatres; Normandy is **all six types**
    (NeedsOarPoint; CAP/intercept/escort 180°/63 km Cherbourg
    corridor, not Hawkinge, not Manston escort 120/55; GA/recon AOI 180°/133 km

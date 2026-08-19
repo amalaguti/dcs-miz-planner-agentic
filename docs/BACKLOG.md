@@ -509,6 +509,25 @@ scenery `.miz` files.
 
 ---
 
+## M9 — Agent uses M8
+
+**Goal:** invent/chat actually uses M8 extra homes and cards instead of cloning
+Manston schema examples. Schema keyed by optional airfield; host clamp of cloned
+default-home stations; one-shot nudges for P-51 / artillery / scenery / failures /
+orders / discipline when the ask implies them.
+
+**Process:** one OpenSpec (`agent-use-m8`); merge gate ruff + `uv run pytest -q`.
+Live eval after implement. ME Instant Action is not a merge gate.
+
+| # | Item | Goal | Status |
+|---|------|------|--------|
+| 9a | `agent-use-m8` | Schema-by-airfield + extra-home geometry clamp + M8 knob nudges + eval catalog | `done` |
+
+Parked until M9 eval is green: more WWII aircraft, R13 leftovers, Kola Stage B–C,
+historical templates (R3), `#19` radio bank, `#22` Lua library.
+
+---
+
 ## Adversarial review track (2026-08-05) — challenge & work
 
 **Source:** [`docs/adversarial-review-2026-08-05.md`](adversarial-review-2026-08-05.md)

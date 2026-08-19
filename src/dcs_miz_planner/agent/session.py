@@ -25,6 +25,7 @@ from ..models import MissionSpec
 from ..tools.research import format_research_host_message, format_research_lines
 from ..tools.surface import list_mission_options, research_guidance
 from ..validation import validate_mission_spec
+from .extra_homes import host_m8_knob_nudge, try_clamp_extra_home_stations
 from .immersion import (
     host_harbour_unit_nudge,
     host_immersion_repair_nudge,
@@ -139,6 +140,7 @@ class PlanSession:
         return self._chat_turn(stripped)
 
     def _chat_turn(self, user_text: str) -> SlashResult:
+        self._last_pilot_ask = user_text
         self.messages.append({"role": "user", "content": user_text})
         print(next(_thinking_cycle), file=sys.stderr, flush=True)
         try:
@@ -162,6 +164,13 @@ class PlanSession:
                 return SlashResult(
                     output=content + "\n\n" + theatre_mission_refuse_chat_line(parsed)
                 )
+            home_clamped = try_clamp_extra_home_stations(parsed, prompt=user_text)
+            if home_clamped is not None:
+                parsed = home_clamped
+                vlog(
+                    self.verbose,
+                    "[verbose] host clamped extra-home station onto place-card geometry",
+                )
             harbour_nudge = host_harbour_unit_nudge(user_text, parsed)
             if harbour_nudge and not getattr(self, "_harbour_nudge_used", False):
                 self._harbour_nudge_used = True
@@ -171,6 +180,16 @@ class PlanSession:
                         content + "\n\n[Host] Harbour ask used land units — "
                         "commander nudged to pick sea_craft via list_strike_targets"
                         "(domain=sea). Await a revised Spec JSON, then /accept."
+                    )
+                )
+            m8_nudge = host_m8_knob_nudge(user_text, parsed)
+            if m8_nudge and not getattr(self, "_m8_knob_nudge_used", False):
+                self._m8_knob_nudge_used = True
+                self.messages.append({"role": "user", "content": m8_nudge})
+                return SlashResult(
+                    output=(
+                        content + "\n\n[Host] Draft missed an M8 card implied by the ask — "
+                        "commander nudged to apply it. Await a revised Spec JSON, then /accept."
                     )
                 )
             nudge = host_immersion_repair_nudge(user_text, parsed)
@@ -392,6 +411,14 @@ class PlanSession:
                 )
             return msg
         do_compile = compile_after or self.compile_on_accept
+        home_clamped = try_clamp_extra_home_stations(
+            spec, prompt=getattr(self, "_last_pilot_ask", None)
+        )
+        if home_clamped is not None:
+            spec = home_clamped
+            self.proposed_spec = home_clamped
+            self.draft_spec = home_clamped
+            vlog(self.verbose, "[verbose] host clamped extra-home station onto place-card geometry")
         vresult = validate_mission_spec(spec, inventory=self.inventory)
         if not vresult.ok:
             clamped = try_clamp_land_paths_if_needed(spec, list(vresult.errors))

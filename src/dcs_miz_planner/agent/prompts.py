@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .extra_homes import infer_airfield
 from .spec_schema import (
     SPEC_SHAPE_REMINDER,
     build_spec_schema,
@@ -175,8 +176,10 @@ Rules:
   meta.payload. Prefer spitfire_2x250_slipper for Channel crossings; remind the pilot
   to jettison the tank before the attack (cockpit — not Lua). strike_target_class
   meta.payload_families must agree with the chosen payload.
-- Call get_mission_spec_schema(mission_type, theatre) before emitting Spec JSON and
+- Call get_mission_spec_schema(mission_type, theatre, airfield) before emitting Spec JSON and
   match that example's structure (derived from packaged Specs — not invented shapes).
+  Pass airfield when the ask names Hawkinge, Detling, BigginHill, Chailey, Tangmere, or
+  FordAF so the example is that home (Hawkinge CAP 76/32, not Manston 135/25).
   Pass theatre=Normandy for NeedsOarPoint (all six types);
   theatre=Caucasus for Batumi (all six types); theatre=Syria for Incirlik
   (all six types);
@@ -318,18 +321,26 @@ def host_spec_repair_nudge(
     rejected_text: str | None = None,
     mission_type: str | None = None,
     theatre: str | None = None,
+    airfield: str | None = None,
 ) -> str:
     """User-role message injected after invalid Spec JSON so the model can repair."""
     mt = mission_type or infer_mission_type(rejected_text)
     theatre = (theatre or "").strip() or infer_theatre(rejected_text)
+    airfield = (airfield or "").strip() or infer_airfield(rejected_text)
     try:
-        fragment = format_spec_schema_fragment(build_spec_schema(mt, theatre=theatre))
+        fragment = format_spec_schema_fragment(
+            build_spec_schema(mt, theatre=theatre, airfield=airfield)
+        )
     except (ValueError, FileNotFoundError, OSError):
         fallback_mt = "free_flight"
         try:
-            fragment = format_spec_schema_fragment(build_spec_schema(fallback_mt, theatre=theatre))
+            fragment = format_spec_schema_fragment(
+                build_spec_schema(fallback_mt, theatre=theatre, airfield=airfield)
+            )
         except (ValueError, FileNotFoundError, OSError):
-            fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
+            fragment = format_spec_schema_fragment(
+                build_spec_schema("free_flight", airfield=airfield)
+            )
     geometry_hint = ""
     err_l = (parse_err or "").lower()
     if "domain_unsupported_theatre" in err_l or "intercept_unsupported_theatre" in err_l:
@@ -442,14 +453,18 @@ def host_spec_repair_nudge(
             )
             schema_mt = "free_flight"
         try:
-            fragment = format_spec_schema_fragment(build_spec_schema(schema_mt, theatre=theatre))
+            fragment = format_spec_schema_fragment(
+                build_spec_schema(schema_mt, theatre=theatre, airfield=airfield)
+            )
         except (ValueError, FileNotFoundError, OSError):
             try:
                 fragment = format_spec_schema_fragment(
-                    build_spec_schema("free_flight", theatre=theatre)
+                    build_spec_schema("free_flight", theatre=theatre, airfield=airfield)
                 )
             except (ValueError, FileNotFoundError, OSError):
-                fragment = format_spec_schema_fragment(build_spec_schema("free_flight"))
+                fragment = format_spec_schema_fragment(
+                    build_spec_schema("free_flight", airfield=airfield)
+                )
     elif "motion_domain_mismatch" in err_l or "strike_domain_mismatch" in err_l:
         if theatre == "Caucasus":
             geometry_hint = (

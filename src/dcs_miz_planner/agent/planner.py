@@ -24,6 +24,7 @@ from ..memory import (
 )
 from ..models import MissionSpec
 from ..validation import validate_mission_spec
+from .extra_homes import host_m8_knob_nudge, try_clamp_extra_home_stations
 from .immersion import (
     host_harbour_unit_nudge,
     host_immersion_repair_nudge,
@@ -225,6 +226,11 @@ def plan_mission(
             messages.append({"role": "user", "content": combat_nudge})
             continue
 
+        home_clamped = try_clamp_extra_home_stations(spec, prompt=prompt)
+        if home_clamped is not None:
+            spec = home_clamped
+            vlog(verbose, "[verbose] host clamped extra-home station onto place-card geometry")
+
         vresult = validate_mission_spec(spec, inventory=inventory)
         if not vresult.ok:
             clamped = try_clamp_land_paths_if_needed(spec, list(vresult.errors))
@@ -246,6 +252,11 @@ def plan_mission(
                 if harbour_nudge:
                     immersion_repair_used = True
                     messages.append({"role": "user", "content": harbour_nudge})
+                    continue
+                m8_nudge = host_m8_knob_nudge(prompt, spec)
+                if m8_nudge:
+                    immersion_repair_used = True
+                    messages.append({"role": "user", "content": m8_nudge})
                     continue
                 nudge = host_immersion_repair_nudge(prompt, spec)
                 if nudge:

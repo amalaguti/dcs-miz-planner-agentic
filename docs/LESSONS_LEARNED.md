@@ -28,6 +28,7 @@ Living agent notes for PyDCS / DCS / compiler / agent pitfalls.
 
 | Date | Lesson | Topic |
 |------|--------|-------|
+| 2026-08-19 | [Extra-home schema and station clamp](lessons/agent-tooling.md#extra-home-schema-and-station-clamp-2026-08-19) | `agent-tooling` |
 | 2026-08-19 | [WWII USA, P-51D, extra homes, artillery, scenery](lessons/channel-ids.md#wwii-usa-p-51d-extra-homes-artillery-scenery-2026-08-19) | `channel-ids` |
 | 2026-08-19 | [Channel extra homes, P-51D, sortie size, recon narrative](lessons/agent-tooling.md#channel-extra-homes-p-51d-sortie-size-recon-narrative-2026-08-19) | `agent-tooling` |
 | 2026-08-19 | [Scenery via fortification_map; recon narrative defers](lessons/pydcs-compile.md#scenery-via-fortification_map-recon-narrative-defers-2026-08-19) | `pydcs-compile` |

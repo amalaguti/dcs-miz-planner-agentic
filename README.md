@@ -12,6 +12,10 @@ triggers (zones, flags, radio, late activation, sound, markers, altitude/speed g
 Manston cold free flight was the first accepted-in-game slice. **M8** densifies
 Channel/Normandy WWII planning: USA + P-51D, extra invent homes, artillery,
 airfield `scenery[]`, recon narrative, and agent sortie-size (solo vs 2–4 ship).
+**M9** makes invent *use* those homes: `get_mission_spec_schema` accepts
+`airfield` (Hawkinge CAP 76/32, not Manston 135/25); invent/chat host-clamps
+cloned default stations; cue-gated nudges for pair size, Mustang, artillery,
+scenery, failures, F10 orders, and wingman discipline.
 Modern-map depth stays parked. **Normandy 2.0** is
 planner-bound for all six mission types at Needs Oar Point
 (`examples/needs_oar_point_cold_freeflight.yaml`,

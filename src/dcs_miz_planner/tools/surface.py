@@ -236,6 +236,7 @@ def list_mission_options(
 def get_mission_spec_schema(
     mission_type: str,
     theatre: str | None = None,
+    airfield: str | None = None,
 ) -> dict[str, Any]:
     """Return a compact derived Mission Spec example + notes for ``mission_type``."""
     # Lazy import: avoid tools ↔ agent package init cycles.
@@ -249,8 +250,9 @@ def get_mission_spec_schema(
             supported=list(supported_mission_types()),
         )
     theatre_id = (theatre or "").strip() or None
+    airfield_id = (airfield or "").strip() or None
     try:
-        view = build_spec_schema(key, theatre=theatre_id)
+        view = build_spec_schema(key, theatre=theatre_id, airfield=airfield_id)
     except ValueError as exc:
         msg = str(exc)
         code = (

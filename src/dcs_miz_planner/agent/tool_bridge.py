@@ -165,8 +165,10 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "all six types use Mount Pleasant "
                 "(150° / 40 km South Atlantic; GA/recon 269° / 21 km inland short of Goose Green); "
                 "Kola free_flight only uses Bodo. "
-                "Call before "
-                "emitting Spec JSON."
+                "Optional airfield: extra homes Hawkinge / Detling / BigginHill (Channel) or "
+                "Chailey / Tangmere / FordAF (Normandy) rewrite the example from that home "
+                "card (Hawkinge CAP 76/32, not Manston 135/25). "
+                "Call before emitting Spec JSON."
             ),
             "parameters": {
                 "type": "object",
@@ -178,6 +180,13 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                     "theatre": {
                         "type": "string",
                         "description": "Optional theatre id (TheChannel, Normandy, Caucasus, Syria, Nevada, Falklands, Kola)",
+                    },
+                    "airfield": {
+                        "type": "string",
+                        "description": (
+                            "Optional player airfield (Manston default; extra homes Hawkinge, "
+                            "Detling, BigginHill, Chailey, Tangmere, FordAF)"
+                        ),
                     },
                 },
                 "required": ["mission_type"],
@@ -469,9 +478,11 @@ def dispatch_tool(
         return list_installed_campaigns(db_path=db_path, include_doc_text=include_doc_text)
     if name == "get_mission_spec_schema":
         theatre = args.get("theatre")
+        airfield = args.get("airfield")
         return get_mission_spec_schema(
             str(args.get("mission_type", "")),
             theatre=str(theatre) if theatre else None,
+            airfield=str(airfield) if airfield else None,
         )
     if name == "get_user_prefs":
         keys = args.get("keys")

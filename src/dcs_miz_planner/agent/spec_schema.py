@@ -14,6 +14,11 @@ from typing import Any
 
 from ..loader import load_mission_spec
 from ..models import MissionSpec, MissionType
+from .extra_homes import (
+    apply_extra_home_example,
+    extra_home_theatre,
+    packaged_extra_home_filename,
+)
 
 _EXAMPLE_FILES: dict[str, str] = {
     MissionType.FREE_FLIGHT.value: "manston_cold_freeflight.yaml",
@@ -1093,7 +1098,28 @@ def supported_mission_types() -> tuple[str, ...]:
     return tuple(_EXAMPLE_FILES.keys())
 
 
-def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSchemaView:
+def _finish_schema(
+    key: str,
+    example: dict[str, Any],
+    theatre_id: str | None,
+    airfield_id: str | None,
+) -> SpecSchemaView:
+    example = apply_extra_home_example(
+        example,
+        mission_type=key,
+        airfield=airfield_id,
+        theatre=theatre_id,
+    )
+    MissionSpec.model_validate(example)
+    notes = _notes_for(key, theatre_id)
+    return SpecSchemaView(mission_type=key, example=example, notes=notes)
+
+
+def build_spec_schema(
+    mission_type: str,
+    theatre: str | None = None,
+    airfield: str | None = None,
+) -> SpecSchemaView:
     """Load and validate the packaged example for ``mission_type`` (immersion-first).
 
     Default / TheChannel stubs stay Manston. ``theatre=Normandy`` uses
@@ -1107,12 +1133,30 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
     short of Goose Green). Falklands recon uses the East Falkland inland example
     (no Manston / NeedsOarPoint / Batumi / Incirlik / Nellis combat skeleton).
     ``theatre=Kola`` uses Bodo for free_flight only (combat types raise).
+    Optional ``airfield`` selects extra-home examples (Hawkinge / Chailey YAML)
+    or rewrites the theatre default from ``*_home`` place-card meta.
     """
     key = (mission_type or "").strip()
     if key not in _EXAMPLE_FILES:
         allowed = ", ".join(supported_mission_types())
         raise ValueError(f"Unsupported mission_type {mission_type!r}; expected one of: {allowed}")
     theatre_id = (theatre or "").strip() or None
+    airfield_id = (airfield or "").strip() or None
+    packed = packaged_extra_home_filename(airfield_id, key)
+    packed_theatre = extra_home_theatre(airfield_id)
+    if packed and (theatre_id is None or theatre_id == packed_theatre):
+        theatre_id = packed_theatre
+        path = examples_dir() / packed
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing Spec example for {key}: {path}")
+        spec = load_mission_spec(path)
+        if spec.mission_type.value != key:
+            raise ValueError(
+                f"Example {path.name} has mission_type {spec.mission_type.value!r}, "
+                f"expected {key!r}"
+            )
+        example = json.loads(spec.model_dump_json())
+        return _finish_schema(key, example, theatre_id, airfield_id)
     if theatre_id == "Kola":
         if key in _KOLA_UNSUPPORTED_COMBAT:
             raise ValueError(
@@ -1130,9 +1174,7 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
                 f"expected {key!r}"
             )
         example = json.loads(spec.model_dump_json())
-        MissionSpec.model_validate(example)
-        notes = _notes_for(key, theatre_id)
-        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+        return _finish_schema(key, example, theatre_id, airfield_id)
 
     if theatre_id == "Falklands":
         if key in _FALKLANDS_UNSUPPORTED_COMBAT:
@@ -1162,9 +1204,7 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
                 f"expected {key!r}"
             )
         example = json.loads(spec.model_dump_json())
-        MissionSpec.model_validate(example)
-        notes = _notes_for(key, theatre_id)
-        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+        return _finish_schema(key, example, theatre_id, airfield_id)
 
     if theatre_id == "Nevada":
         if key in _NEVADA_UNSUPPORTED_COMBAT:
@@ -1194,9 +1234,7 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
                 f"expected {key!r}"
             )
         example = json.loads(spec.model_dump_json())
-        MissionSpec.model_validate(example)
-        notes = _notes_for(key, theatre_id)
-        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+        return _finish_schema(key, example, theatre_id, airfield_id)
 
     if theatre_id == "Syria":
         if key in _SYRIA_UNSUPPORTED_COMBAT:
@@ -1226,9 +1264,7 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
                 f"expected {key!r}"
             )
         example = json.loads(spec.model_dump_json())
-        MissionSpec.model_validate(example)
-        notes = _notes_for(key, theatre_id)
-        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+        return _finish_schema(key, example, theatre_id, airfield_id)
 
     if theatre_id == "Caucasus":
         if key in _CAUCASUS_UNSUPPORTED_COMBAT:
@@ -1258,9 +1294,7 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
                 f"expected {key!r}"
             )
         example = json.loads(spec.model_dump_json())
-        MissionSpec.model_validate(example)
-        notes = _notes_for(key, theatre_id)
-        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+        return _finish_schema(key, example, theatre_id, airfield_id)
 
     if theatre_id == "Normandy":
         if key in _NORMANDY_UNSUPPORTED_COMBAT:
@@ -1290,9 +1324,7 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
                 f"expected {key!r}"
             )
         example = json.loads(spec.model_dump_json())
-        MissionSpec.model_validate(example)
-        notes = _notes_for(key, theatre_id)
-        return SpecSchemaView(mission_type=key, example=example, notes=notes)
+        return _finish_schema(key, example, theatre_id, airfield_id)
 
     filename = _AGENT_EXAMPLE_FILES.get(key) or _EXAMPLE_FILES[key]
 
@@ -1310,10 +1342,7 @@ def build_spec_schema(mission_type: str, theatre: str | None = None) -> SpecSche
             f"Example {path.name} has mission_type {spec.mission_type.value!r}, expected {key!r}"
         )
     example = json.loads(spec.model_dump_json())
-    # Re-validate the projected dict so drift fails loudly.
-    MissionSpec.model_validate(example)
-    notes = _notes_for(key, theatre_id)
-    return SpecSchemaView(mission_type=key, example=example, notes=notes)
+    return _finish_schema(key, example, theatre_id, airfield_id)
 
 
 # Normandy GA: do not concatenate _TYPE_NOTES (those cite french_coast / Manston).
@@ -1605,8 +1634,11 @@ def format_spec_schema_fragment(view: SpecSchemaView) -> str:
 SPEC_SHAPE_REMINDER = """\
 Mission Spec JSON (schema_version "1") — extra fields are rejected.
 Before emitting Spec JSON, call get_mission_spec_schema with the mission_type
-(free_flight | intercept | cap | ground_attack | escort | recon) and optional theatre.
-Copy that example's structure. Default stub is Manston / TheChannel; Normandy
+(free_flight | intercept | cap | ground_attack | escort | recon), optional theatre,
+and optional airfield when the ask names a home (Hawkinge, Detling, BigginHill,
+Chailey, Tangmere, FordAF). Copy that example's structure. Default stub is Manston /
+TheChannel; extra Channel homes use hawkinge_home / detling_home / biggin_hill_home
+geometry (not 135/25). Normandy
 all six types use NeedsOarPoint; Caucasus all six types
 use Batumi; Syria all six types use Incirlik; Nevada all six types use Nellis
 (CAP/intercept/escort 350° / 40 km desert north-range; GA/recon 303° / 85 km

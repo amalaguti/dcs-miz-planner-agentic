@@ -5,6 +5,27 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Extra-home schema and station clamp (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** Notes saying “do not copy Manston 135/25” are not enough when
+  `get_mission_spec_schema` still returns Manston JSON. Pass optional
+  `airfield` so Hawkinge loads packaged YAML (CAP 76/32) and other extras
+  rewrite from `*_home` place-card meta. Invent/chat host-clamps extra-home
+  Specs that cloned Manston 135/25, 125/76, 120/55 or NeedsOarPoint 180/63,
+  180/133. Skip clamp when the ask names a place (French coast, harbour).
+  CLI validate does not clamp. Repair nudges must infer airfield from rejected
+  JSON. Live eval 2026-08-19: Hawkinge CAP schema+clamp landed 76/32, but the
+  model still omitted `player.flight` on a pair ask — host-nudge size 2 role
+  lead when the cue is pair/section and flight is missing. One-shot order:
+  richer cues (F10 orders, fail-to-follow/wander) fire before pair/wingman size
+  so a combined ask is not consumed by the size-only nudge. Discipline cues
+  include wander / fail me, not only “don’t wander”. Bare Hawkinge pair
+  stays size 2 + geometry; do not stack scenery/failures/orders unless the ask
+  implies them.
+- **Code:** `agent/extra_homes.py`, `agent/spec_schema.py`, `agent/planner.py`,
+  `agent/session.py`, `tools/surface.py`.
+
 ## Channel extra homes, P-51D, sortie size, recon narrative (2026-08-19)
 
 - **Date:** 2026-08-19

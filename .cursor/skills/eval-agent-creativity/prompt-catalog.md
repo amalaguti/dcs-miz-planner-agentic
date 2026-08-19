@@ -76,10 +76,56 @@ Ids are stable; edit `prompt` / `expect` / `notes` as product evolves.
 - **prompt:** take a pair from Hawkinge, keep it simple
 - **expect:**
   - Channel (or Hawkinge) free_flight / hop framing
+  - `player.airfield` Hawkinge
   - `player.flight.size` 2 and `role: lead` (AI mate in the player group)
   - omit escort `package[]` (this is a section, not a strike package)
-- **fail if:** solo (no `player.flight`) when the ask said pair; or a Mosquito `package[]` used as the wingman
-- **notes:** Catalog `player_flight_size` pair + inspiration `rhubarb_pair`. Compiler already exists (`#15b`).
+  - if CAP: station **76/32**, not Manston **135/25**
+- **fail if:** solo (no `player.flight`) when the ask said pair; or a Mosquito `package[]` used as the wingman; or Hawkinge with Manston CAP 135/25
+- **notes:** Catalog `player_flight_size` pair + inspiration `rhubarb_pair`. Schema-by-airfield + host clamp (M9).
+
+## mustang-strafe
+
+- **prompt:** Mustang hop from Manston, surprise me
+- **expect:**
+  - `player.aircraft` P-51D
+  - country USA
+- **fail if:** SpitfireLFMkIX when the ask said Mustang
+- **notes:** Inspiration `mustang_channel_strafe`; payload `p51d_2x_anm64` if GA.
+
+## artillery-hunt
+
+- **prompt:** ground attack from Manston, hunt howitzers inland
+- **expect:**
+  - `mission_type`: ground_attack
+  - targets from artillery class (`LeFH_18-40-105` / `Wespe124` / `M2A1-105`)
+  - static + `convoy_transit` (not Blitz)
+- **fail if:** soft trucks when the ask said howitzers
+- **notes:** `list_strike_targets` class artillery.
+
+## scenery-or-failures
+
+- **prompt:** free flight at Manston with some hangars on the field
+- **expect:**
+  - non-empty `scenery[]` (Hangar A / Revetment_x4 / Tent01 / Belgian gate / Shelter)
+- **fail if:** empty scenery when the ask named hangars
+- **notes:** Behaviour `airfield_scenery`. A magneto/failures ask should use `aircraft_failures` instead.
+
+## section-orders
+
+- **prompt:** take a pair, give me F10 section orders to rejoin and engage
+- **expect:**
+  - `player.flight` with curated `orders` including rejoin and/or engage
+- **fail if:** no `player.flight.orders` when the ask named section orders
+- **notes:** Do not invent free-form order strings.
+
+## wingman-discipline
+
+- **prompt:** I'm flying as two, put me as wingman and fail me if I wander off
+- **expect:**
+  - `player.flight.size` 2, `role: wingman`, `join_up` true
+  - `discipline` present (defaults OK)
+- **fail if:** `role: lead`; or no discipline when the ask said wander/fail-to-follow
+- **notes:** Discipline is wingman+join_up only.
 
 ## wingman-join-up
 
