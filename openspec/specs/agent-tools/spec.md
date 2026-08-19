@@ -5,9 +5,7 @@
 Stable, agent-facing callables over the known catalog and the existing validate/compile
 path. Results are structured for later LLM tool calling. No LLM or MCP wiring in this
 capability.
-
 ## Requirements
-
 ### Requirement: Catalog lookup tools
 The system SHALL expose callable tools `find_airfield` and `get_aircraft_details` that query
 the known agent catalog (after ensuring it is synced). Results MUST be structured and MUST NOT
@@ -454,7 +452,6 @@ rather than a machine-specific path.
 - **WHEN** Doc text extract is opted in twice for the same unchanged PDF path
 - **THEN** the second call MUST return the cached excerpt without re-parsing the PDF file
 
-
 ### Requirement: Creative bias from history and feedback
 The system SHALL provide a deterministic helper (callable from tests and planning hosts)
 that, given recent generation history rows (with optional `creative` detail) and
@@ -699,12 +696,12 @@ Normandy combat skeleton.
 
 #### Scenario: Caucasus CAP schema uses Batumi
 - **WHEN** a caller requests the cap Spec schema with theatre `Caucasus`
-- **THEN** the example MUST use `Batumi`, `Su-25T`, CAP 270° / 40 km, and
+- **THEN** the example MUST use `Batumi`, `SpitfireLFMkIX`, CAP 270° / 40 km, and
   MUST NOT use Manston or NeedsOarPoint CAP stations
 
 #### Scenario: Caucasus intercept schema uses Batumi
 - **WHEN** a caller requests an intercept schema with theatre `Caucasus`
-- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, and
+- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, SpitfireLFMkIX, and
   Russia opposition (not Hawkinge / Manston)
 
 ### Requirement: list_mission_options can filter channel_place by theatre
@@ -814,17 +811,18 @@ NOT return a Channel combat skeleton.
 ### Requirement: Spec schema tool accepts Caucasus
 `get_mission_spec_schema` SHALL accept theatre `Caucasus`. When mission type
 is `free_flight`, the derived example MUST follow the Batumi envelope (not
-Manston or NeedsOarPoint) and notes MUST NOT concatenate Channel/Normandy
-template bundles (Manston YAML paths, Spitfire failure shelves,
-`channel_place`). When mission type is `cap`, `ground_attack`, `intercept`,
-or `escort`, the derived example MUST follow the Batumi envelope (not Manston).
-When mission type is `recon`, the tool MUST NOT return a Channel or
-Normandy combat skeleton.
+Manston or NeedsOarPoint) with player `SpitfireLFMkIX` and notes MUST NOT
+concatenate Channel/Normandy template bundles (Manston YAML paths, Spitfire
+failure shelves, `channel_place` as templates to copy). When mission type is
+`cap`, `ground_attack`, `intercept`, or `escort`, the derived example MUST
+follow the Batumi envelope (not Manston) with player SpitfireLFMkIX. When
+mission type is `recon`, the tool MUST NOT return a Channel or Normandy
+combat skeleton.
 
 #### Scenario: Caucasus free_flight schema uses Batumi
 - **WHEN** a caller requests the free_flight Spec schema with theatre
   `Caucasus`
-- **THEN** the example MUST use `Batumi`, `Su-25T`, and `Georgia`
+- **THEN** the example MUST use `Batumi`, `SpitfireLFMkIX`, and `Georgia`
 
 #### Scenario: Caucasus combat schema has no Manston skeleton
 - **WHEN** a caller requests a cap or intercept schema with theatre
@@ -842,7 +840,7 @@ YAML paths.
 #### Scenario: Caucasus ground_attack schema uses Batumi
 - **WHEN** a caller requests the ground_attack Spec schema with theatre
   `Caucasus`
-- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, and
+- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, SpitfireLFMkIX, and
   strike geometry inland past Kutaisi (not Manston 125° / 76 km, not CAP
   270° / 40 km)
 
@@ -855,7 +853,7 @@ concatenate Channel template bundles that cite Hawkinge.
 #### Scenario: Caucasus intercept schema uses Batumi
 - **WHEN** a caller requests the intercept Spec schema with theatre
   `Caucasus`
-- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, and
+- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, SpitfireLFMkIX, and
   Russia opposition (not Hawkinge / Manston)
 
 ### Requirement: Spec schema tool accepts Caucasus escort
@@ -866,7 +864,7 @@ template bundles that cite Manston 120/55.
 
 #### Scenario: Caucasus escort schema uses Batumi
 - **WHEN** a caller requests the escort Spec schema with theatre `Caucasus`
-- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, Georgia
+- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, SpitfireLFMkIX, Georgia
   package, and escort geometry 270° / 40 km (not Manston 120° / 55 km)
 
 ### Requirement: Spec schema tool accepts Caucasus recon
@@ -877,7 +875,7 @@ cite french-coast belts or Manston 125/76.
 
 #### Scenario: Caucasus recon schema uses Batumi
 - **WHEN** a caller requests the recon Spec schema with theatre `Caucasus`
-- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, Su-25T, and
+- **THEN** the example MUST use `Batumi`, theatre `Caucasus`, SpitfireLFMkIX, and
   recon AOI 43° / 110 km (not Manston 125° / 76 km, not CAP 270° / 40 km)
 
 ### Requirement: Spec schema tool accepts Syria
@@ -899,33 +897,33 @@ the same Incirlik Aleppo inland envelope (not Manston 125/76, not CAP 180/40).
 #### Scenario: Syria free_flight schema uses Incirlik
 - **WHEN** a caller requests the free_flight Spec schema with theatre
   `Syria`
-- **THEN** the example MUST use `Incirlik`, `Su-25T`, and `Turkey`
+- **THEN** the example MUST use `Incirlik`, `SpitfireLFMkIX`, and `Turkey`
 
 #### Scenario: Syria CAP schema uses Incirlik
 - **WHEN** a caller requests the CAP Spec schema with theatre `Syria`
-- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, and
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, SpitfireLFMkIX, and
   CAP 180° / 40 km (not Batumi 270° / 40 km)
 
 #### Scenario: Syria intercept schema uses Incirlik
 - **WHEN** a caller requests the intercept Spec schema with theatre `Syria`
-- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, and
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, SpitfireLFMkIX, and
   country-Syria opposition
 
 #### Scenario: Syria escort schema uses Incirlik
 - **WHEN** a caller requests the escort Spec schema with theatre `Syria`
-- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, Turkey
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, SpitfireLFMkIX, Turkey
   package, Syria bounce, and escort geometry 180° / 40 km (not Manston 120° /
   55 km, not Cherbourg 180/63, not Batumi 270/40)
 
 #### Scenario: Syria ground_attack schema uses Incirlik
 - **WHEN** a caller requests the ground_attack Spec schema with theatre `Syria`
-- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, payload
-  `su25t_2x_fab250`, Syria-country trucks, and strike geometry 121° / 200 km
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, SpitfireLFMkIX, payload
+  `spitfire_2x250_slipper`, Syria-country trucks, and strike geometry 121° / 200 km
   (not CAP 180/40, not Kutaisi 43/110, not Manston 125/76)
 
 #### Scenario: Syria recon schema uses Incirlik
 - **WHEN** a caller requests the recon Spec schema with theatre `Syria`
-- **THEN** the example MUST use `Incirlik`, theatre `Syria`, Su-25T, Syria-country
+- **THEN** the example MUST use `Incirlik`, theatre `Syria`, SpitfireLFMkIX, Syria-country
   trucks, and recon AOI 121° / 200 km (not CAP 180/40, not Kutaisi 43/110,
   not Manston 125/76)
 
@@ -939,7 +937,7 @@ other than `cap`, the tool MUST NOT return a prior-map combat skeleton.
 #### Scenario: Nevada free_flight schema uses Nellis
 - **WHEN** a caller requests the free_flight Spec schema with theatre
   `Nevada`
-- **THEN** the example MUST use `Nellis`, `Su-25T`, and `USA`
+- **THEN** the example MUST use `Nellis`, `SpitfireLFMkIX`, and `USA`
 
 #### Scenario: Extra Nevada airfields do not replace Nellis schema
 - **WHEN** a caller requests the free_flight Spec schema with theatre
@@ -960,7 +958,7 @@ other than `cap`, the tool MUST NOT return a prior-map combat skeleton.
 
 #### Scenario: Nevada CAP schema uses Nellis
 - **WHEN** a caller requests the CAP Spec schema with theatre `Nevada`
-- **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, USA, and
+- **THEN** the example MUST use `Nellis`, theatre `Nevada`, SpitfireLFMkIX, USA, and
   CAP 350° / 40 km (not Incirlik 180° / 40 km)
 
 ### Requirement: Spec schema tool accepts Nevada intercept
@@ -970,7 +968,7 @@ envelope (not Hawkinge/Dover, not Incirlik, not Batumi, not Cherbourg).
 
 #### Scenario: Nevada intercept schema uses Nellis
 - **WHEN** a caller requests the intercept Spec schema with theatre `Nevada`
-- **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, USA, and
+- **THEN** the example MUST use `Nellis`, theatre `Nevada`, SpitfireLFMkIX, USA, and
   country-Russia opposition
 
 ### Requirement: Spec schema tool accepts Nevada escort
@@ -984,7 +982,7 @@ not the escort envelope.
 
 #### Scenario: Nevada escort schema uses Nellis
 - **WHEN** a caller requests the escort Spec schema with theatre `Nevada`
-- **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, USA
+- **THEN** the example MUST use `Nellis`, theatre `Nevada`, SpitfireLFMkIX, USA
   package, Russia bounce, and escort geometry 350° / 40 km (not Manston 120° /
   55 km, not Incirlik 180/40, not Batumi 270/40)
 
@@ -998,8 +996,8 @@ return a Channel combat skeleton.
 
 #### Scenario: Nevada ground_attack schema uses Nellis
 - **WHEN** a caller requests the ground_attack Spec schema with theatre `Nevada`
-- **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, payload
-  `su25t_2x_fab250`, Russia-country trucks, and strike geometry 303° / 85 km
+- **THEN** the example MUST use `Nellis`, theatre `Nevada`, SpitfireLFMkIX, payload
+  `spitfire_2x250_slipper`, Russia-country trucks, and strike geometry 303° / 85 km
   (not CAP 350/40, not Aleppo 121/200, not Kutaisi 43/110, not Manston 125/76)
 
 ### Requirement: Spec schema tool accepts Nevada recon
@@ -1011,7 +1009,7 @@ french-coast 125/76.
 
 #### Scenario: Nevada recon schema uses Nellis
 - **WHEN** a caller requests the recon Spec schema with theatre `Nevada`
-- **THEN** the example MUST use `Nellis`, theatre `Nevada`, Su-25T, USA,
+- **THEN** the example MUST use `Nellis`, theatre `Nevada`, SpitfireLFMkIX, USA,
   Russia-country trucks, no payload, and recon AOI 303° / 85 km
   (not CAP 350/40, not Aleppo 121/200, not Kutaisi 43/110, not Manston 125/76)
 
@@ -1027,7 +1025,7 @@ MUST follow the Mount Pleasant dawn intercept envelope. When mission type is
 escort envelope (150° / 40 km; UK package; Argentina bounce; not Channel
 escort 120/55, not Nellis 350/40). When mission type is `ground_attack`,
 the derived example MUST follow the East Falkland inland strike envelope
-(269° / 21 km / 2000 m; `su25t_2x_fab250`; Argentina trucks; not CAP 150/40,
+(269° / 21 km / 2000 m; `spitfire_2x250_slipper`; Argentina trucks; not CAP 150/40,
 not 303/85, not 121/200, not 43/110, not 125/76). When mission type is
 `recon`, the derived example MUST follow the East Falkland inland envelope
 (269° / 21 km / 2000 m; Argentina trucks; no payload; not CAP 150/40,
@@ -1036,7 +1034,7 @@ not 303/85, not 121/200, not 43/110, not 125/76).
 #### Scenario: Falklands free_flight schema uses MountPleasant
 - **WHEN** a caller requests the free_flight Spec schema with theatre
   `Falklands`
-- **THEN** the example MUST use `MountPleasant`, `Su-25T`, and `UK`
+- **THEN** the example MUST use `MountPleasant`, `SpitfireLFMkIX`, and `UK`
 
 #### Scenario: Extra Falklands airfields do not replace MountPleasant schema
 - **WHEN** a caller requests the free_flight Spec schema with theatre
@@ -1047,26 +1045,26 @@ not 303/85, not 121/200, not 43/110, not 125/76).
 #### Scenario: Falklands CAP schema uses MountPleasant
 - **WHEN** a caller requests the CAP Spec schema with theatre `Falklands`
 - **THEN** the example MUST use `MountPleasant`, theatre `Falklands`,
-  Su-25T, UK, Argentina opposition, and CAP 150° / 40 km (not Nellis 350° /
+  SpitfireLFMkIX, UK, Argentina opposition, and CAP 150° / 40 km (not Nellis 350° /
   40 km)
 
 #### Scenario: Falklands intercept schema uses MountPleasant
 - **WHEN** a caller requests the intercept Spec schema with theatre
   `Falklands`
 - **THEN** the example MUST use `MountPleasant`, theatre `Falklands`,
-  Su-25T, UK, and country-Argentina opposition
+  SpitfireLFMkIX, UK, and country-Argentina opposition
 
 #### Scenario: Falklands escort schema uses MountPleasant
 - **WHEN** a caller requests the escort Spec schema with theatre `Falklands`
 - **THEN** the example MUST use `MountPleasant`, theatre `Falklands`,
-  Su-25T, UK package, Argentina bounce, and escort 150° / 40 km (MUST NOT
+  SpitfireLFMkIX player, Su-25T UK package, Argentina bounce, and escort 150° / 40 km (MUST NOT)
   present Manston 120/55 as the template to copy)
 
 #### Scenario: Falklands ground_attack schema uses MountPleasant
 - **WHEN** a caller requests the ground_attack Spec schema with theatre
   `Falklands`
-- **THEN** the example MUST use `MountPleasant`, theatre `Falklands`, Su-25T,
-  UK, payload `su25t_2x_fab250`, Argentina-country trucks, and strike 269° /
+- **THEN** the example MUST use `MountPleasant`, theatre `Falklands`, SpitfireLFMkIX,
+  UK, payload `spitfire_2x250_slipper`, Argentina-country trucks, and strike 269° /
   21 km (MUST NOT present Manston 125/76 or CAP 150/40 as the template)
 
 ### Requirement: Spec schema tool accepts Falklands recon
@@ -1078,7 +1076,7 @@ that cite french-coast 125/76.
 
 #### Scenario: Falklands recon schema uses MountPleasant
 - **WHEN** a caller requests the recon Spec schema with theatre `Falklands`
-- **THEN** the example MUST use `MountPleasant`, theatre `Falklands`, Su-25T,
+- **THEN** the example MUST use `MountPleasant`, theatre `Falklands`, SpitfireLFMkIX,
   UK, Argentina-country trucks, no payload, and recon AOI 269° / 21 km
   (not CAP 150/40, not Nevada 303/85, not Aleppo 121/200, not Kutaisi 43/110,
   not Manston 125/76)
@@ -1103,7 +1101,7 @@ skeleton.
 
 #### Scenario: Kola free_flight schema uses Bodo
 - **WHEN** a caller requests the free_flight Spec schema with theatre `Kola`
-- **THEN** the example MUST use `Bodo`, `Su-25T`, and `Norway`
+- **THEN** the example MUST use `Bodo`, `SpitfireLFMkIX`, and `Norway`
 
 #### Scenario: Kola combat schema has no Manston skeleton
 - **WHEN** a caller requests a cap or intercept schema with theatre `Kola`
@@ -1135,3 +1133,26 @@ a Spec.
 #### Scenario: Tool definitions include airfield
 - **WHEN** the standard agent tool definitions are listed
 - **THEN** `get_mission_spec_schema` MUST document optional `airfield`
+
+### Requirement: Modern-theatre schema player is Spitfire
+`get_mission_spec_schema` / `build_spec_schema` for theatres `Caucasus`,
+`Syria`, `Nevada`, `Falklands`, and `Kola` MUST return example
+`player.aircraft` `SpitfireLFMkIX`. Station geometry, airfield, and country
+MUST stay the theatre envelope. Escort `package` and combat `enemies` MAY
+remain Su-25T for Cold War defaults. Ground-attack example `player.payload`
+MUST be `spitfire_2x250_slipper`. Notes MUST state the Spitfire player rule
+and MUST NOT copy Channel 135/25 onto these maps. Packaged compile YAML MAY
+still show Su-25T as map-smoke.
+
+#### Scenario: Caucasus free_flight schema player is Spitfire
+- **WHEN** a caller requests the free_flight Spec schema with theatre `Caucasus`
+- **THEN** the example MUST use `Batumi`, `SpitfireLFMkIX`, and `Georgia`
+
+#### Scenario: Syria ground_attack schema payload matches Spitfire
+- **WHEN** a caller requests the ground_attack Spec schema with theatre `Syria`
+- **THEN** the example MUST use `player.aircraft` SpitfireLFMkIX and
+  `player.payload` spitfire_2x250_slipper at Incirlik
+
+#### Scenario: Kola free_flight schema player is Spitfire
+- **WHEN** a caller requests the free_flight Spec schema with theatre `Kola`
+- **THEN** the example MUST use `Bodo` and `SpitfireLFMkIX`
