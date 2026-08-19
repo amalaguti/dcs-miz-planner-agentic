@@ -198,6 +198,14 @@ correct class filters.
 - **WHEN** list_strike_targets is called with class_id armor
 - **THEN** results MUST include Tiger_I
 
+### Requirement: Catalog lists R13 leftover strike units
+After catalog sync, list_strike_targets SHALL return leftover ids under the
+correct class filters.
+
+#### Scenario: Artillery filter includes v1_launcher
+- **WHEN** list_strike_targets is called with class_id artillery
+- **THEN** results MUST include v1_launcher
+
 ### Requirement: Known catalog includes Normandy
 After catalog sync from the packaged registry, known theatres MUST include
 `Normandy` and known airfields MUST include `NeedsOarPoint`.

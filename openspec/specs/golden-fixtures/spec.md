@@ -540,6 +540,15 @@ units that validate and compile under Channel inventory.
   examples/manston_ground_attack_lst.yaml are validated and compiled
 - **THEN** each MUST succeed and produce a .miz
 
+### Requirement: R13 leftover examples compile
+Repository SHALL include Manston GA examples exercising leftover V-1 and
+coastal-gun units that validate and compile under Channel inventory.
+
+#### Scenario: V-1 and coastal gun examples compile
+- **WHEN** examples/manston_ground_attack_v1.yaml and
+  examples/manston_ground_attack_coastal_gun.yaml are validated and compiled
+- **THEN** each MUST succeed and produce a .miz
+
 ### Requirement: Hermetic Normandy freeflight compile regression
 The test suite SHALL compile the checked-in Normandy cold freeflight Mission Spec
 with an injected inventory that reports `Normandy` (and typically `TheChannel`)

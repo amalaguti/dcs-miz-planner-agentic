@@ -646,6 +646,19 @@ used for Channel scenery (`Hangar A`, `Revetment_x4`, `Tent01`, `Belgian gate`,
 - **WHEN** the registry lists statics
 - **THEN** it MUST include `Hangar A`
 
+### Requirement: Channel R13 leftover land units
+Packaged Channel registry SHALL include leftover campaign land ids
+`v1_launcher`, `SK_C_28_naval_gun`, `Coach a tank yellow`,
+`Coach a tank blue`, and `Coach a platform`.
+
+#### Scenario: v1_launcher resolvable
+- **WHEN** the registry is queried for v1_launcher
+- **THEN** it MUST return a land-domain strike unit
+
+#### Scenario: Coach a tank yellow resolvable
+- **WHEN** the registry is queried for Coach a tank yellow
+- **THEN** it MUST return a land-domain strike unit
+
 ### Requirement: Spitfire Channel A–E radio bank
 Packaged WWII aircraft entries for `SpitfireLFMkIX` and `SpitfireLFMkIXCW`
 SHALL include a five-channel `radio_channels_mhz` list copied from stock ED

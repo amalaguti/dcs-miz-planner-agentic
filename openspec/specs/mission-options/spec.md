@@ -452,6 +452,18 @@ ship ids on aaa_guns, armor, trains, and sea_craft respectively.
 - **WHEN** catalog sync loads sea_craft
 - **THEN** ship_ids MUST include LST_Mk2 and USS_Samuel_Chase
 
+### Requirement: Class shelves list R13 leftover units
+Mission options SHALL list `v1_launcher` and `SK_C_28_naval_gun` on
+`artillery` unit_ids, and the three leftover Coach ids on `trains` unit_ids.
+
+#### Scenario: Artillery includes v1_launcher
+- **WHEN** catalog sync loads artillery
+- **THEN** unit_ids MUST include v1_launcher and SK_C_28_naval_gun
+
+#### Scenario: Trains include tank coaches
+- **WHEN** catalog sync loads trains
+- **THEN** unit_ids MUST include Coach a tank yellow
+
 ### Requirement: channel_place rows declare TheChannel
 Packaged `channel_place` planning options that describe Channel geography
 SHALL declare theatre `TheChannel` in option meta. The family name MUST remain
