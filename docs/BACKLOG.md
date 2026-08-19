@@ -523,8 +523,9 @@ Live eval after implement. ME Instant Action is not a merge gate.
 |---|------|------|--------|
 | 9a | `agent-use-m8` | Schema-by-airfield + extra-home geometry clamp + M8 knob nudges + eval catalog | `done` |
 
-Parked until M9 eval is green: more WWII aircraft, R13 leftovers, Kola Stage B–C,
-historical templates (R3), `#19` radio bank, `#22` Lua library.
+Parked: more player aircraft (owner install is SpitfireLFMkIX only — keep
+`P-51D` in the registry, do not expand player types), R13 leftovers, Kola
+Stage B–C, historical templates (R3), `#19` radio bank, `#22` Lua library.
 
 ---
 

@@ -1,0 +1,13 @@
+---
+description: Owner install has only Spitfire as a player-flyable module.
+alwaysApply: true
+---
+
+# Player aircraft: Spitfire only
+
+The owner’s DCS install has **one** player module: `SpitfireLFMkIX` (and the CW variant of that same module). Do not plan, eval, or implement work that assumes they can sit in any other cockpit.
+
+- Default player aircraft is `SpitfireLFMkIX` / country `UK`.
+- Leave packaged types such as `P-51D` in the registry/compiler — they are valid Spec ids — but do **not** add more player aircraft, Mustang evals, or “fly the P-51” features unless the owner says they installed the module.
+- AI enemies (Bf 109, FW 190, …) and AI package aircraft are fine; those are not the player cockpit.
+- Vague invent / live hops the owner will fly: Spitfire. Do not nudge them into Mustang/Su-25T/etc. for acceptance testing.
