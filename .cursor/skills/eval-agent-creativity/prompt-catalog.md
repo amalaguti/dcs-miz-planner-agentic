@@ -136,6 +136,26 @@ Ids are stable; edit `prompt` / `expect` / `notes` as product evolves.
 - **fail if:** `role: lead` when the ask said wingman; or `join_up: false` with no reason
 - **notes:** Schema already documents wingman Follow. Prefer Manston or Hawkinge parking.
 
+## circus-escort
+
+- **prompt:** something like a Circus from Hawkinge, keep it flyable
+- **expect:**
+  - `mission_type: escort`
+  - `player.aircraft` SpitfireLFMkIX, country UK
+  - `package[]` with MosquitoFBMkVI (not the wingman)
+- **fail if:** ground_attack with no package when the ask said Circus; or P-51D when the ask did not name Mustang
+- **notes:** Inspiration `circus_escort`. Local campaigns (Beware / The Big Show) already use Mosquito packages.
+
+## noball-ski
+
+- **prompt:** Noball site inland of Calais, surprise me
+- **expect:**
+  - `mission_type: ground_attack`
+  - target `v1_launcher` (artillery class, static)
+  - SpitfireLFMkIX / UK
+- **fail if:** soft trucks when the ask said Noball/V-1; or Mustang unless named
+- **notes:** Inspiration `noball_ski`. Local evidence: The Big Show 08.miz.
+
 ## recon-ops-colour
 
 - **prompt:** dawn recce from Manston, give me some ops colour but I don't want to write triggers

@@ -5,6 +5,19 @@ Index: [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 ---
 
+## Historical Spitfire inspiration vs gitignored research (2026-08-19)
+
+- **Date:** 2026-08-19
+- **Lesson:** R3 research lives in gitignored `research/historical-spitfire-sorties.md`
+  (web Fighter Command names **plus** local Channel campaign/IA `.miz` type
+  scans). Only curated `mission_inspiration` ids enter YAML. Local evidence:
+  Mosquito packages (Beware / The Big Show), E-boats (Fight or Die),
+  `v1_launcher` in The Big Show 08. Do not import `.miz` as Spec. If Wikipedia
+  and ED layout disagree, follow the flyable DCS pattern. New cards:
+  `circus_escort`, `rodeo_sweep`, `channel_stop_shipping`, `noball_ski`
+  (Spitfire UK default — no extra Mustang fly card).
+- **Code:** `data/shared/planning_options.yaml`, `agent/prompts.py`.
+
 ## Extra-home schema and station clamp (2026-08-19)
 
 - **Date:** 2026-08-19

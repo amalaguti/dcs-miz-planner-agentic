@@ -18,7 +18,8 @@ cloned default stations; cue-gated nudges for pair size, Mustang, artillery,
 scenery, failures, F10 orders, and wingman discipline. Compiled Channel
 Spitfires emit the ED Instant Action radio bank (A=124 B=40 C=41 D=42 E=108.9)
 with `radioSet` left false. Channel strike shelf includes R13 leftover campaign
-vehicles (V-1 ski, SK C/28 coastal gun, extra coaches).
+vehicles (V-1 ski, SK C/28 coastal gun, extra coaches). Invent can pick historical
+Spitfire patterns (Circus escort, Rodeo sweep, Channel Stop shipping, Noball ski).
 Modern-map depth stays parked. **Normandy 2.0** is
 planner-bound for all six mission types at Needs Oar Point
 (`examples/needs_oar_point_cold_freeflight.yaml`,

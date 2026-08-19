@@ -703,6 +703,82 @@ options:
       country: USA
       payload: p51d_2x_anm64
 
+  - family: mission_inspiration
+    id: circus_escort
+    label: Circus / Ramrod escort
+    description: >
+      Spitfire escort of a Mosquito package across the Channel (Fighter Command
+      Circus/Ramrod colour). Escort mission type; package MosquitoFBMkVI. Optional
+      altitude gates. Not a new mission type. Default player SpitfireLFMkIX / UK.
+    support: advisory
+    meta:
+      behaviours: [altitude_speed_gates]
+      related_places: [manston_home, hawkinge_home, french_coast_strike_belt]
+      mission_types: [escort]
+      package_aircraft: MosquitoFBMkVI
+      player_flight_size: pair
+      player_flight_role: lead
+      aircraft: SpitfireLFMkIX
+      country: UK
+      example: examples/manston_escort.yaml
+      source: RAF Circus/Ramrod + Channel campaigns (Beware / The Big Show Mosquito packages)
+
+  - family: mission_inspiration
+    id: rodeo_sweep
+    label: Rodeo fighter sweep
+    description: >
+      Fighter sweep without a bomber package (Rodeo) — CAP on a Channel station.
+      Optional pair as lead. Spitfire UK. Not escort (no package[]).
+    support: advisory
+    meta:
+      behaviours: [narrative_pack]
+      related_places: [manston_home, hawkinge_home]
+      mission_types: [cap]
+      player_flight_size: pair
+      player_flight_role: lead
+      aircraft: SpitfireLFMkIX
+      country: UK
+      source: RAF Rodeo + Channel fighter-sweep campaign flavour
+
+  - family: mission_inspiration
+    id: channel_stop_shipping
+    label: Channel Stop shipping strike
+    description: >
+      Anti-shipping in the Strait (Channel Stop colour) — ground_attack sea_craft
+      on mid_channel_shipping. Prefer Schnellboot_type_S130 / Dry-cargo / Uboat_VIIC
+      under way (patrol), not land trucks on water.
+    support: advisory
+    meta:
+      behaviours: [mark_smoke]
+      related_classes: [sea_craft]
+      related_places: [mid_channel_shipping]
+      mission_types: [ground_attack, recon]
+      unit_ids: [Schnellboot_type_S130, Dry-cargo ship-1, Dry-cargo ship-2, Uboat_VIIC]
+      preferred_motion: patrol
+      aircraft: SpitfireLFMkIX
+      country: UK
+      example: examples/manston_uboat_hunt.yaml
+      source: Channel Stop + Fight or Die E-boats / The Big Show 06b sea mix
+
+  - family: mission_inspiration
+    id: noball_ski
+    label: Noball V-1 ski
+    description: >
+      Crossbow / Noball strike on a V-1 ski (v1_launcher) inland of the
+      Dunkirk–Calais belt. Ground_attack artillery class, static, soft AI.
+      Spitfire UK. Not a new mission type.
+    support: advisory
+    meta:
+      behaviours: [mark_smoke]
+      related_classes: [artillery]
+      related_places: [french_coast_strike_belt]
+      mission_types: [ground_attack]
+      unit_ids: [v1_launcher]
+      aircraft: SpitfireLFMkIX
+      country: UK
+      example: examples/manston_ground_attack_v1.yaml
+      source: Noball/Crossbow + The Big Show 08.miz v1_launcher
+
   # --- Mission-designer shelves (palette for co-authoring; Spec dynamics = #30f) ---
   # Layer A = dcs-miz randomize (new Spec day). Layer B = dynamics_mode / Spec dynamics
   # (play-time variation inside one .miz).

@@ -210,6 +210,14 @@ def test_list_mission_options_includes_types_and_offerable(tmp_path: Path) -> No
     assert "recon" in by_key[("channel_place", "mid_channel_shipping")]["meta"]["mission_types"]
     insp = by_key[("mission_inspiration", "low_level_channel_hop")]
     uboat = by_key[("mission_inspiration", "uboat_surfaced_hunt")]
+    circus = by_key[("mission_inspiration", "circus_escort")]
+    assert circus["support"] == "advisory"
+    assert circus["meta"]["package_aircraft"] == "MosquitoFBMkVI"
+    noball = by_key[("mission_inspiration", "noball_ski")]
+    assert "v1_launcher" in noball["meta"]["unit_ids"]
+    assert by_key[("mission_inspiration", "rodeo_sweep")]["meta"]["mission_types"] == ["cap"]
+    stop = by_key[("mission_inspiration", "channel_stop_shipping")]
+    assert "Schnellboot_type_S130" in stop["meta"]["unit_ids"]
     assert uboat["support"] == "advisory"
     assert "Uboat_VIIC" in uboat["meta"]["unit_ids"]
     assert insp["support"] == "advisory"

@@ -32,7 +32,9 @@ description: >-
    target shelves, follow [`docs/THEATRE_TARGET_PROMOTE.md`](../../../docs/THEATRE_TARGET_PROMOTE.md)
    (`#8e`). Local gitignored `research/` QAG HTML is `research_guidance` colour
    only — never ship those pages, never auto-promote QAG UI names into catalog
-   YAML. Invent unit/preset cues ≠ geometry — use place recipes + invent path
+   YAML. R3 historical sortie notes stay gitignored (`research/historical-spitfire-sorties.md`);
+   only curated `mission_inspiration` cards ship (`circus_escort`, `rodeo_sweep`,
+   `channel_stop_shipping`, `noball_ski`). Invent unit/preset cues ≠ geometry — use place recipes + invent path
    clamp (`#8f`/`#8g`) **only when Spec theatre is TheChannel**. Trains use
    `french_coast_rail_corridor` path deltas only —
    **no** DCS rail-mesh snap (`#8m`).    Channel invent default is Manston; extra

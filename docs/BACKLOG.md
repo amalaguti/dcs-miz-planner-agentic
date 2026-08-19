@@ -525,7 +525,7 @@ Live eval after implement. ME Instant Action is not a merge gate.
 
 Parked: more player aircraft (owner install is SpitfireLFMkIX only — keep
 `P-51D` in the registry, do not expand player types), Kola Stage B–C,
-historical templates (R3), `#22` Lua library.
+`#22` Lua library.
 
 ---
 
@@ -573,7 +573,7 @@ Work stays under gitignored `research/` until a change promotes durable facts in
 |---|------|------|--------|
 | R1 | `research-spitfire-user-missions` | Download/track Spitfire single missions ([DCS User Files filter](https://files.digitalcombatsimulator.com/en/files/filter/type-is-single/game-is-world_2.9/unit-is-spitfire_lf_mk.ix/apply/)); note map/aircraft reqs; extract mission-design patterns for M4; **also open each `.miz` and note how triggers / `DO SCRIPT` / embedded `.lua` are used** | `done` (2026-08-05; Channel priority set audited — see `research/spitfire-user-missions.md`; Mist rare; native radio/late-act + flag-random) |
 | R2 | `research-spitfire-campaigns` | Same for campaigns ([filter](https://files.digitalcombatsimulator.com/en/files/filter/type-is-campaign/unit-is-spitfire_lf_mk.ix/apply/)); track each file; learn campaign structure; **same Lua/trigger audit as R1 across campaign missions** | `done` (2026-08-05; installed Beware/FoD/Epsom/Big Show = 60× no Mist/triggers; UF Channel facet 0 — see `research/spitfire-campaigns.md`) |
-| R3 | `research-historical-spitfire-sorties` | Web research of real historical Spitfire sorties usable as mission templates (feeds intercept/CAP/escort + historical validation). **Also:** note weather/visibility mentions for Channel/SE England pattern cards (feeds `#17a` / R10 meteo) | `idea` |
+| R3 | `research-historical-spitfire-sorties` | Web research of real historical Spitfire sorties usable as mission templates (feeds intercept/CAP/escort + historical validation). **Also:** note weather/visibility mentions for Channel/SE England pattern cards (feeds `#17a` / R10 meteo) | `done` (2026-08-19; gitignored `research/historical-spitfire-sorties.md` + local campaign/IA scan; cards `circus_escort` / `rodeo_sweep` / `channel_stop_shipping` / `noball_ski`) |
 | R4 | `research-spitfire-cockpit-args` | Keep [cockpit args list](https://files.digitalcombatsimulator.com/en/files/3349460/) as trigger/training reference only (see `LESSONS_LEARNED.md`); re-verify on DCS version bumps; promote only when an interactive-mission change needs it | `idea` |
 | R5 | `research-lua-usage-patterns` | Stock Channel Spitfire IA + Training + Beware campaign audited; findings in `research/lua-usage-patterns.md` | `done` (2026-07-26; R1 singles + **R2 campaigns 2026-08-05** — ED campaigns stay trigger-empty) |
 | R6 | `research-lua-ide-tooling` | Recipe in `research/lua-ide-tooling.md`: pin dcs-world-schema EmmyLua + LuaLS lab; VEAF MCP only at first `#22` snippet work | `done` (notes only; lab vendor not installed) |

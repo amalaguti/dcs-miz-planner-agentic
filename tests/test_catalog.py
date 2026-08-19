@@ -393,6 +393,13 @@ def test_schema_bump_clears_synced_at_so_ensure_resyncs(tmp_path: Path) -> None:
 
     inspirations = service.list_rows("planning_options", family="mission_inspiration")
     assert any(r["id"] == "low_level_channel_hop" for r in inspirations)
+    hist = {r["id"] for r in inspirations}
+    assert hist >= {
+        "circus_escort",
+        "rodeo_sweep",
+        "channel_stop_shipping",
+        "noball_ski",
+    }
 
     dynamics = service.list_rows("planning_options", family="dynamics_mode")
     assert {r["id"] for r in dynamics} >= {"fixed", "live", "choose", "hybrid"}

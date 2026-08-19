@@ -148,6 +148,11 @@ Rules:
   never force narrative packs when zones/triggers are already non-empty. Prefer a bare
   Spec only if the user forbids extras. Sortie size: omit player.flight for a clearly
   solo ask; emit size 2 role lead for pair/section/Rhubarb/vague CAP-with-mates;
+  Circus/Ramrod → inspiration circus_escort (escort + MosquitoFBMkVI package);
+  Rodeo → rodeo_sweep (cap, no package); Channel Stop / shipping strike →
+  channel_stop_shipping (GA sea_craft on mid_channel_shipping); Noball / V-1 /
+  ski → noball_ski (GA v1_launcher). Stay SpitfireLFMkIX/UK unless the user
+  names Mustang/P-51.
   size 4 prefer Manston (Tangmere max 3). Do not confuse player.flight with escort
   package[] or enemies[].
 - Call list_generation_history (and honor preferred_behaviours / avoid_behaviours /
