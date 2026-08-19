@@ -1383,11 +1383,46 @@ installed. This is human do-soon after merge, not a hermetic merge gate.
   cold-started at Mount Pleasant around 09:00 in clear weather
 
 ### Requirement: Git-pinned PyDCS does not bind new theatres
-Pinning pydcs to a git revision that contains additional terrain classes (including `Kola` and Cold War Germany) MUST NOT add Spec theatre bindings. Compile and validation MUST still fail closed for unbound theatre ids. The compiler MUST NOT construct `Kola()` (or other unbound terrains) from a Spec.
+Pinning pydcs to a git revision that contains additional terrain classes
+MUST NOT silently add Spec theatre bindings for maps this repo has not
+Stage-A bound. Compile and validation MUST still fail closed for unbound
+theatre ids (`Iraq`, `GermanyCW`). Kola is bound by `kola-cold-freeflight`.
 
-#### Scenario: Kola Spec still fails compile
-- **WHEN** compile is asked to use theatre id `Kola` after pydcs is git-pinned
-- **THEN** compile MUST fail with an unbound-theatre error and MUST NOT write a Kola `.miz`
+#### Scenario: Iraq Spec still fails compile
+- **WHEN** compile is asked to use theatre id `Iraq` after pydcs is git-pinned
+- **THEN** compile MUST fail with an unbound-theatre error and MUST NOT write
+  an Iraq `.miz`
+
+### Requirement: Kola Spec binds to Kola terrain
+The compiler MUST construct PyDCS Kola terrain when compiling a Mission Spec
+with theatre `Kola`.
+
+#### Scenario: Kola Spec uses Kola terrain
+- **WHEN** a Mission Spec with theatre `Kola` is compiled
+- **THEN** the compiler MUST construct a PyDCS Kola terrain for the mission
+
+### Requirement: Cold parking freeflight at Bodo
+The compiler SHALL place the player Su-25T as a cold start from parking at
+Bodo on Kola when the Spec requests that combination. Group radio MUST be
+251.0 MHz.
+
+#### Scenario: Cold parking at Bodo
+- **WHEN** the Mission Spec requests cold parking at `Bodo` for `Su-25T`
+  with skill Player, country Norway, and theatre `Kola`
+- **THEN** the compiled mission MUST use Kola theatre, player type
+  `Su-25T`, skill `Player`, frequency 251.0, and parking cold-start at Bodo
+  (airdromeId 7)
+
+### Requirement: Human acceptance on Kola
+A compiled Bodo cold free-flight `.miz` MUST be openable in the DCS Mission
+Editor and flyable as Instant Action with Kola and Su-25T installed. This is
+human do-soon after merge, not a hermetic merge gate.
+
+#### Scenario: Load Kola smoke in DCS
+- **WHEN** a user opens the compiled Kola cold freeflight `.miz` in DCS ME
+  or Instant Action
+- **THEN** the mission MUST load without editor errors and present the
+  player cold-started at Bodo around 09:00 in clear weather
 
 ### Requirement: Payload-directory scan stays disabled until proven
 The compiler MUST keep the install payload-directory scan disabled (`_disable_payload_scan` or equivalent) after the git pin, unless a recorded compile with a real DCS World install present succeeds with scanning enabled. Ground-attack loadouts MUST continue to use registry CLSIDs. Free-flight, intercept, and CAP compile MUST remain independent of install payload lua.

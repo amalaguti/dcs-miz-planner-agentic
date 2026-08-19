@@ -370,3 +370,14 @@ Stored `theatre_id` MUST remain `Caucasus`. Channel MUST NOT receive Ural ids.
 - **WHEN** catalog/tools list strike units for theatre `Falklands`
 - **THEN** `Ural-375`, `GAZ-66`, and `ZIL-135` MUST be present and Channel
   WWII trucks MUST be absent
+
+### Requirement: Catalog lists Kola and Bodo
+After catalog sync from the packaged registry, known theatres MUST include
+`Kola` and known airfields MUST include `Bodo` with `airdromeId` 7 and
+theatre `Kola`.
+
+#### Scenario: Sync populates Bodo
+- **WHEN** a catalog sync runs against the packaged registry after this
+  change
+- **THEN** the catalog MUST contain theatre `Kola` and airfield `Bodo` with
+  `airdromeId` 7
